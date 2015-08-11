@@ -8,7 +8,7 @@
 !ManuscriptsTable.sql
 !TempcollateTable.sql
 
-#first specify which folder you do not want to be ignored
+#first specify which folder you do not want ignored
 !initialUpload
 #after this, specify that you want to ignore everything in this folder
 initialUpload/*
@@ -19,7 +19,7 @@ initialUpload/*
 zoomImages/*
 !zoomImages/.htaccess
 
-#the procedure for specifying the directories not to be ignored in w, is the same as used for Initialupload
+#the procedure for specifying the directories not to be ignored in w, is the same as was used for Initialupload
 !w
 w/*
 !w/extensions
