@@ -34,6 +34,12 @@ w/skins/*
 !w/extensions/TEITags/*
 !w/skins/CbpTranscriptionEnhanced/*
 
+!w/extensions/collate/*/*
+!w/extensions/newManuscript/*/*
+!w/extensions/JBTEIToolbar/*/*
+!w/extensions/TEITags/*/*
+!w/skins/CbpTranscriptionEnhanced/*/*
+
 
 
 
