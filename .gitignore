@@ -4,13 +4,14 @@
 # But not these files...
 !.gitignore
 !.htaccess
+!CollateTable.sql
+!ManuscriptsTable.sql
+!TempcollateTable.sql
 
 !initialUpload
 initialUpload/*
 !initialUpload/.htaccess
 
-!CollateTable.sql
-!ManuscriptsTable.sql
-!TempcollateTable.sql
+
 
 
