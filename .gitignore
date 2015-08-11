@@ -12,6 +12,28 @@
 initialUpload/*
 !initialUpload/.htaccess
 
+!zoomImages
+zoomImages/*
+!zoomImages/.htaccess
+
+!w
+w/*
+!w/extensions
+!w/skins
+w/extensions/*
+w/skins/*
+!w/extensions/collate
+!w/extensions/newManuscript
+!w/extensions/JBTEIToolbar
+!w/extensions/TEITags
+!w/skins/CbpTranscriptionEnhanced
+
+!w/extensions/collate/*
+!w/extensions/newManuscript/*
+!w/extensions/JBTEIToolbar/*
+!w/extensions/TEITags/*
+!w/skins/CbpTranscriptionEnhanced/*
+
 
 
 
