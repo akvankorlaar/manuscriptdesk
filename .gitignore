@@ -4,13 +4,11 @@
 # But not these files...
 !.gitignore
 !.htaccess
+
+!initialUpload
+initialUpload/*
 !initialUpload/.htaccess
-!zoomImages/.htaccess
-!w/extensions/collate/*
-!w/extensions/newManuscript/*
-!w/extensions/JBTEIToolbar/*
-!w/extensions/TEITags/*
-!w/skins/CbpTranscriptionEnhanced/*
+
 !CollateTable.sql
 !ManuscriptsTable.sql
 !TempcollateTable.sql
