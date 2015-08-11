@@ -8,14 +8,18 @@
 !ManuscriptsTable.sql
 !TempcollateTable.sql
 
+#first specify which folder you do not want to be ignored
 !initialUpload
+#after this, specify that you want to ignore everything in this folder
 initialUpload/*
+#make an exception for the file you want
 !initialUpload/.htaccess
 
 !zoomImages
 zoomImages/*
 !zoomImages/.htaccess
 
+#the procedure for specifying the directories not to be ignored in w, is the same as used for Initialupload
 !w
 w/*
 !w/extensions
@@ -34,11 +38,13 @@ w/skins/*
 !w/extensions/TEITags/*
 !w/skins/CbpTranscriptionEnhanced/*
 
+#these last 2 paragraphs are to ensure that folders within folders, and folders within folders within folders are not ignored
 !w/extensions/collate/*/*
 !w/extensions/newManuscript/*/*
 !w/extensions/JBTEIToolbar/*/*
 !w/extensions/TEITags/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*
+
 
 !w/extensions/collate/*/*/*
 !w/extensions/newManuscript/*/*/*
