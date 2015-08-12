@@ -70,7 +70,7 @@ class collateHooks {
 
    $collate = new collate();
 
-   $html_output = $collate->renderTable($user_name, $date, $titles_array, $collatex_output);
+   $html_output = $collate->renderTable($titles_array, $collatex_output, $user_name, $date);
 
    //something went wrong when rendering the table
    if(!$html_output){
@@ -78,7 +78,7 @@ class collateHooks {
    }
 
   $output->addHTML($html_output);
-
+  
   return true; 
   }
 

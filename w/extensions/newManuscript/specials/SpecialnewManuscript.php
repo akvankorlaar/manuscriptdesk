@@ -6,17 +6,15 @@
  * Possible problems: How to save the images in such a way that Gent can access and store these? 
  * Possible problems: What happens when 20 people create a new manuscript at the same time? Will the server be able to handle this? You can delay the processing 
  * (people will have to wait longer), or see if you can have a server with more RAM 
- * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right. 
+ * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
+ * 
+ * Todo: Perhaps find a way to use the javascript importer for the collate code 
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
- * 
- * Todo: Contact Mike Kestemont about Stylometric Analysis 
  *   
  * Todo: Also install a fresh copy of mediawiki at home? 
  * 
  * Todo: Perhaps make a javascript file that shows how many charachters you have left on a page...
- *       
- * Todo: Add copyright information before putting on Github. See GNU website
  * 
  * Todo: Write documentation on how to install the software, and the structure of the software. Also, increase the amount of comments
  * 
@@ -47,7 +45,11 @@
  */
 
 class SpecialnewManuscript extends SpecialPage {
-    
+  
+  /**
+   * This class handles file uploads for the newManuscript extension. 
+   */
+      
   public $request;
 	public $uploadbase_object;
 	public $upload_was_clicked;
@@ -78,7 +80,7 @@ class SpecialnewManuscript extends SpecialPage {
     $this->maximum_pages_per_collection = $wgNewManuscriptOptions['maximum_pages_per_collection'];
     
     $this->document_root = $wgWebsiteRoot;
-    $this->target_dir = $this->document_root . DIRECTORY_SEPARATOR .  $wgNewManuscriptOptions['target_folder']; 
+    $this->target_dir = $this->document_root . DIRECTORY_SEPARATOR .  $wgNewManuscriptOptions['original_images_dir']; 
     
     $this->manuscripts_namespace = $wgNewManuscriptOptions['manuscripts_namespace'];
     $this->zoomimages_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
@@ -605,11 +607,12 @@ class SpecialnewManuscript extends SpecialPage {
     }
 }
  
+class UploadFileForm extends HTMLForm {
+  
 /**
  * This sub class displays the form on the page. Parts of this class have been copied from includes/specials/specialUpload.php,
  * and altered for the purpose of this extension
  */
-class UploadFileForm extends HTMLForm {
     
 	public $max_upload_size; 
   

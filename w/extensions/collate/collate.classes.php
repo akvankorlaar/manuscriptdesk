@@ -35,9 +35,13 @@ class collate {
 	/**
 	 * Generate table
 	 */
-	public function renderTable($user_name, $date, $titles_array, $collatex_output) {
+	public function renderTable($titles_array, $collatex_output, $user_name = null, $date = null) {
     
-    $html = "This page has been created by: " . $user_name . "<br> Date: " . $date . "<br> ";
+    $html = "";
+    
+    if($user_name && $date){
+      $html .= "This page has been created by: " . $user_name . "<br> Date: " . $date . "<br> ";
+    }
     
     //import the javascript and the css
     $html .= "
@@ -48,9 +52,7 @@ class collate {
        <script type='text/javascript' src='/w/extensions/collate/specials/javascriptcss/collatexTwo.js'></script>
        <link rel='stylesheet' type='text/css' href='/w/extensions/collate/specials/javascriptcss/collatex.css'>";
      
-    //load the javascript and the css
     $html .="
-     <body onload='loadTable();'>
       <table class='alignment'>"; 
    
     foreach($titles_array as $key=>$title){
@@ -65,10 +67,8 @@ class collate {
     <div id='body'>
       <div id='result'>
       </div>
-    </div>
-    </body>";
+    </div>"; 
       
-    return $html;
-    
+    return $html;   
 	} 
 }
