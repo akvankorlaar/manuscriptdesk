@@ -23,3 +23,5 @@ function loadTable(){$("table").each(function () {
     });
     $(".alignment").show();
     return false;}
+  
+  window.onload = loadTable; 

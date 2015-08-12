@@ -724,36 +724,11 @@ class SpecialBeginCollate extends SpecialPage {
             </form>
        </div>";
     
-    $html .= "
-       <script> var at = $collatex_output;</script>
-       <script type='text/javascript' src='/w/extensions/collate/specials/javascriptcss/yui-min.js'></script>
-       <script src='/w/extensions/collate/specials/javascriptcss/jquery.min.js'></script>
-       <script type='text/javascript' src='/w/extensions/collate/specials/javascriptcss/collatex.js'></script>
-       <script type='text/javascript' src='/w/extensions/collate/specials/javascriptcss/collatexTwo.js'></script>
-       <link rel='stylesheet' type='text/css' href='/w/extensions/collate/specials/javascriptcss/collatex.css'> 
-       ";
+    $collate = new collate();
     
- 
-    $html .="
-     <body onload='loadTable();'>
-      <table class='alignment'>"; 
+    $html .= $collate->renderTable($title_array, $collatex_output);
     
-    foreach($title_array as $key=>$title){
-      $html .=
-      "<tr>
-       <th>$title</th>
-       </tr>";
-    }
-    
-    $html .= "         
-    </table>
-    <div id='body'>
-      <div id='result'>
-      </div>
-    </div>
-    </body>";
-    
-    $out->addHTML($html);  
+    return $out->addHTML($html);
   }
     
   /**
