@@ -243,7 +243,7 @@ class newManuscriptHooks {
     
     $link_original_image_path = $partial_original_image_path . $image_file; 
     
-    return "<a href='$link_original_image_path'>Original Image</a>";   
+    return "<a href='$link_original_image_path' target='_blank'>Original Image</a>";   
   }
   
   /**

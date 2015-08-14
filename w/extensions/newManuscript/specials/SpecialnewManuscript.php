@@ -8,9 +8,11 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
- * Todo: Perhaps find a way to use the javascript importer for the collate code 
- * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
+ * 
+ * Todo: In case of a number, the text 'There are no collations that begin with this letter yet.', should be changed 
+ * 
+ * Todo: Summary Pages should be placed in a new extension... 
  *   
  * Todo: Also install a fresh copy of mediawiki at home? 
  * 

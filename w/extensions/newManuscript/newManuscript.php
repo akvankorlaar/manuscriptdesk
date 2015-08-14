@@ -58,6 +58,7 @@ $wgAutoloadClasses['SpecialuserPage'] = $dir . '/specials/SpecialuserPage.php';
 $wgAutoloadClasses['SpecialallManuscriptPages'] = $dir . '/specials/SpecialallManuscriptPages.php';
 $wgAutoloadClasses['SpecialallCollections'] = $dir . '/specials/SpecialallCollections.php';
 $wgAutoloadClasses['SpecialrecentManuscriptPages'] = $dir . '/specials/SpecialrecentManuscriptPages.php';
+$wgAutoloadClasses['summaryPages'] = $dir . '/specials/summaryPages.php';
 
 $wgSpecialPages['newManuscript'] = 'SpecialnewManuscript';
 $wgSpecialPages['userPage'] = 'SpecialuserPage';

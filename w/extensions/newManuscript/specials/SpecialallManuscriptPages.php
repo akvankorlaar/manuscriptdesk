@@ -22,115 +22,16 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SpecialallManuscriptPages extends SpecialPage {
+class SpecialallManuscriptPages extends summaryPages {
   
 /**
  * SpecialallManuscriptPages page. Organises all manuscripts 
  */
   
-  public $lowercase_alphabet; 
-  public $uppercase_alphabet; 
-  public $article_url;
-  
-  private $button_name; //value of the button the user clicked on 
-  private $max_on_page; //maximum manuscripts shown on a page
-  private $next_page_possible;
-  private $previous_page_possible;   
-  private $offset; 
-  
-   //class constructor 
-	public function __construct(){
+  public function __construct(){
     
-    global $wgNewManuscriptOptions, $wgArticleUrl; 
-    
-    $this->article_url = $wgArticleUrl; 
-    
-    $this->max_on_page = $wgNewManuscriptOptions['max_on_page'];
-        
-    $this->next_page_possible = false;//default value
-    $this->previous_page_possible = false;//default value
-    
-    $numbers = array('0','1','2','3','4','5','6','7','8','9');
-                
-    //there is both a lowercase alphabet, and a uppercase alphabet, because the lowercase alphabet is used for the database query, and the uppercase alphabet
-    //for the button values
-    $this->lowercase_alphabet = array_merge(range('a','z'),$numbers); 
-    $this->uppercase_alphabet = array_merge(range('A','Z'),$numbers);
-    
-    $this->offset = 0; //default value
-    
-		parent::__construct('allManuscriptPages');
-	}
-  
-  /**
-   * This function loads requests when a user selects a letter, moves to the previous page, or to the next page
-   */
-  private function loadRequest(){
-    
-    $request = $this->getRequest();
-        
-    if(!$request->wasPosted()){
-      return false;  
-    }
-    
-    $lowercase_alphabet = $this->lowercase_alphabet;  
-    $uppercase_alphabet = $this->uppercase_alphabet; 
-    $posted_names = $request->getValueNames();    
-     
-    //identify the button pressed, and assign $posted_names to values
-    foreach($posted_names as $key=>$value){
-      //get the posted button
-      
-      if(in_array($value,$lowercase_alphabet)){
-        $this->button_name = strval($value);
-        
-      //get offset, if it is available. The offset specifies at which place in the database the query should begin relative to the start 
-      }elseif ($value === 'offset'){
-        $string = $request->getText($value);      
-        $int = (int)$string;
-      
-        if($int >= 0){
-          $this->offset = $int;             
-        }else{
-          return false; 
-        }        
-      }
-    }
-    
-    //if there is no button, there was no correct request
-    if(!isset($this->button_name)){
-      return false;
-    }  
-    
-    if($this->offset >= $this->max_on_page){
-      $this->previous_page_possible = true; 
-    }
-    
-    return true; 
-  }
-  
-  /**
-   * This function calls processRequest() if a request was posted, or calls showDefaultPage() if no request was posted
-   */
-	public function execute(){
-    
-    $request_was_posted = $this->loadRequest();
-    
-    if($request_was_posted){
-      return $this->processRequest();
-    }
-    
-    return $this->showDefaultPage();     
-	}
-  
-  /**
-   * This function processes the request if it was posted
-   */
-  private function processRequest(){
-            
-    $title_array = $this->retrieveManuscriptTitles();
-    
-    $this->showPage($title_array);          
+    //call the parent constructor. The parent constructor (in 'summaryPages' class) will call the 'SpecialPage' class (grandparent) 
+    parent::__construct('allManuscriptPages');
   }
   
   /**
@@ -138,7 +39,7 @@ class SpecialallManuscriptPages extends SpecialPage {
    * 
    * @return type an array of all manuscripts
    */
-  private function retrieveManuscriptTitles(){
+  protected function retrieveManuscriptTitles(){
             
     $dbr = wfGetDB(DB_SLAVE);
     
@@ -154,36 +55,11 @@ class SpecialallManuscriptPages extends SpecialPage {
   }
   
   /**
-   * This function gets the next letter of the alphabet
-   * 
-   * @return string
-   */
-  private function getNextLetter(){
-    
-    $button_name = $this->button_name; 
-    $lowercase_alphabet = $this->lowercase_alphabet;
-    $next_letter = null; 
-    
-    $index = array_search($button_name,$lowercase_alphabet);
-    
-    if($index !== false){
-      $next_letter = isset($lowercase_alphabet[$index+1]) ? $lowercase_alphabet[$index+1] : null; 
-    }
-    
-    if($next_letter){
-      return $next_letter; 
-    }
-
-    //current letter is 'z', so do not set an upper limit
-    return ''; 
-  }
-  
-  /**
    * This function retrieves titles from the wiki database
    * 
    * @return type
    */
-  private function retrieveFromDatabase($dbr,$conds, $title_array = array()){
+  protected function retrieveFromDatabase($dbr,$conds, $title_array = array()){
     
     //Database query
     $res = $dbr->select(
@@ -236,7 +112,7 @@ class SpecialallManuscriptPages extends SpecialPage {
    * 
    * @param type $title_array
    */
-  private function showPage($title_array){
+  protected function showPage($title_array){
     
     $out = $this->getOutput(); 
     
@@ -266,6 +142,10 @@ class SpecialallManuscriptPages extends SpecialPage {
       
       $out->addHTML($html);
 
+      if($this->is_number){
+        return $out->addWikiText($this->msg('allmanuscriptpages-nomanuscripts-number'));
+      }
+      
       return $out->addWikiText($this->msg('allmanuscriptpages-nomanuscripts'));
     }
     
@@ -324,7 +204,7 @@ class SpecialallManuscriptPages extends SpecialPage {
   /**
    * This function shows the default page if no request was posted 
    */
-  private function showDefaultPage(){
+  protected function showDefaultPage(){
       
     $out = $this->getOutput();
     
