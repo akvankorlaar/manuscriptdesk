@@ -146,7 +146,7 @@ class SpecialallCollections extends summaryPages {
       $out->addHTML($html);
       
       if($this->is_number){
-        return $out->addWikiText($this->msg('allmanuscriptpages-nomanuscripts-number'));
+        return $out->addWikiText($this->msg('allcollections-nocollections-number'));
       }
 
       return $out->addWikiText($this->msg('allcollections-nocollections'));
