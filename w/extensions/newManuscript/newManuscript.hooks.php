@@ -685,9 +685,6 @@ class newManuscriptHooks {
     if($title_object->getNamespace() === NS_MANUSCRIPTS){
       //add css for metatable
       $out->addModuleStyles('ext.metatable');
-    }elseif($page_title === 'Special:AllManuscriptPages' || $page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections'){
-      //add css for correct button display on 'All Manuscripts' and 'User Page'
-      $out->addModuleStyles("ext.buttonStyles");    
     }
     
     return true; 

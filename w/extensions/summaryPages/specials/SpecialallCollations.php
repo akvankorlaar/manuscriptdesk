@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the newManuscript extension
+ * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,18 +22,18 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SpecialallCollections extends summaryPages {
+class SpecialallCollations extends baseSummaryPage {
   
 /**
- * SpecialallCollections page. Organises all collections. The method 'execute', located in the parent class 'summaryPages', is the first class that will run when opening
- * this page.  
+ * SpecialallCollations page. Organises all collations 
  */
   
   public function __construct(){
     
     //call the parent constructor. The parent constructor (in 'summaryPages' class) will call the 'SpecialPage' class (grandparent) 
-    parent::__construct('allCollections');
+    parent::__construct('allCollations');
   }
+  
   
   /**
    * This function prepares the database configuration settings, and then calls the database to fetch manuscript titles
@@ -48,9 +48,8 @@ class SpecialallCollections extends summaryPages {
     $next_letter_alphabet = $this->getNextLetter();
                            
     $conds = array(
-    'manuscripts_lowercase_collection >= ' . $dbr->addQuotes($button_name),
-    'manuscripts_lowercase_collection < '  . $dbr->addQuotes($next_letter_alphabet),
-    'manuscripts_lowercase_collection != ' . $dbr->addQuotes("none"),
+    'collations_main_title_lowercase >= ' . $dbr->addQuotes($button_name),
+    'collations_main_title_lowercase < ' . $dbr->addQuotes($next_letter_alphabet), 
     );
              
     return $this->retrieveFromDatabase($dbr,$conds);    
@@ -65,19 +64,18 @@ class SpecialallCollections extends summaryPages {
     
     //Database query
     $res = $dbr->select(
-      'manuscripts', //from
+      'collations', //from
       array(
-        'manuscripts_title', //values
-        'manuscripts_user',
-        'manuscripts_url',
-        'manuscripts_date',
-        'manuscripts_collection',
-        'manuscripts_lowercase_collection',
+        'collations_user',//values
+        'collations_url',
+        'collations_date',
+        'collations_main_title',
+        'collations_main_title_lowercase'
         ), 
       $conds, //conditions
       __METHOD__,
       array(
-        'ORDER BY' => 'manuscripts_collection',
+        'ORDER BY' => 'collations_main_title_lowercase',
         'LIMIT' => $this->max_on_page+1,
         'OFFSET' => $this->offset, 
       )
@@ -91,11 +89,10 @@ class SpecialallCollections extends summaryPages {
         if (count($title_array) < $this->max_on_page){
           
           $title_array[] = array(
-          'manuscripts_title' => $s->manuscripts_title,
-          'manuscripts_user' => $s->manuscripts_user,
-          'manuscripts_url' => $s->manuscripts_url,
-          'manuscripts_date' => $s->manuscripts_date,
-          'manuscripts_collection' => $s->manuscripts_collection,
+          'collations_user'       => $s->collations_user,
+          'collations_url'        => $s->collations_url,
+          'collations_date'       => $s->collations_date,
+          'collations_main_title' => $s->collations_main_title,
         );
 
         //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
@@ -109,7 +106,7 @@ class SpecialallCollections extends summaryPages {
    
   return $title_array;   
   }
-       
+    
   /**
    * This function shows the page after a request has been processed
    * 
@@ -121,9 +118,9 @@ class SpecialallCollections extends summaryPages {
     
     $article_url = $this->article_url; 
     
-    $out->setPageTitle($this->msg('allcollections-title'));
-    
-    $html ='<form action="' . $article_url . 'Special:AllCollections" method="post">';
+    $out->setPageTitle($this->msg('allcollations-title'));
+     
+    $html ='<form action="' . $article_url . 'Special:AllCollations" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
@@ -142,28 +139,28 @@ class SpecialallCollections extends summaryPages {
     $html .= '</form>';
         
     if(empty($title_array)){
-      
+     
       $out->addHTML($html);
       
       if($this->is_number){
-        return $out->addWikiText($this->msg('allcollections-nocollections-number'));
+        return $out->addWikiText($this->msg('allcollations-nocollations-number'));
       }
 
-      return $out->addWikiText($this->msg('allcollections-nocollections'));
+      return $out->addWikiText($this->msg('allcollations-nocollations'));
     }
-    
+             
     if($this->previous_page_possible){
+      
+      $previous_hover_message = $this->msg('allcollations-previoushover');
+      $previous_message = $this->msg('allcollations-previous');
       
       $previous_offset = ($this->offset)-($this->max_on_page); 
       
-      $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
-      $previous_message = $this->msg('allmanuscriptpages-previous');
-      
-      $html .='<form action="' . $article_url . 'Special:AllCollections" method="post">';
+      $html .='<form action="' . $article_url . 'Special:AllCollations" method="post">';
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
-      $html .= "<input type='submit' id = 'button' name = 'redirect_page_back' id='button' title='$previous_message_hover'  value='$previous_message'>";
+      $html .= "<input type='submit' name = 'redirect_page_back' id='button' title='$previous_hover_message'  value='$previous_message'>";
       
       $html.= "</form>";
     }
@@ -174,44 +171,32 @@ class SpecialallCollections extends summaryPages {
         $html.='<br>';
       }
       
-      $next_message_hover = $this->msg('allmanuscriptpages-nexthover');    
-      $next_message = $this->msg('allmanuscriptpages-next');
+      $next_hover_message = $this->msg('allcollations-nexthover');
+      $next_message = $this->msg('allcollations-next');
       
-      $html .='<form action="' . $article_url . 'Special:AllCollections" method="post">';
+      $html .='<form action="' . $article_url . 'Special:AllCollations" method="post">';
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
-      $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
-      $html .= "<input type='submit' id = 'button' name = 'redirect_page_forward' id='button' title='$next_message_hover' value='$next_message'>";
+      $html .=("<input type='hidden' name='$this->button_name' value='$this->button_name'>"); 
+      $html .= "<input type='submit' name = 'redirect_page_forward' id='button' title='$next_hover_message' value='$next_message'>";
       
       $html.= "</form>";
     }
         
     $out->addHTML($html);
     
-    $created_message = $this->msg('allmanuscriptpages-created');
-    $on_message = $this->msg('allmanuscriptpages-on');
-    
-    $displayed_collections = array();
-    $wiki_text = "";
+    $created_message = $this->msg('allcollations-created');  
+    $on_message = $this->msg('allcollations-on');
     
     foreach($title_array as $key=>$array){
       
-      $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
-      $user = isset($array['manuscripts_user']) ? $array['manuscripts_user'] : '';
-      $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
-      $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
-      $collection = isset($array['manuscripts_collection']) ? $array['manuscripts_collection'] : '';
+      $user = isset($array['collations_user']) ? $array['collations_user'] : ''; 
+      $url = isset($array['collations_url']) ? $array['collations_url'] : '';
+      $date = isset($array['collations_date']) ? $array['collations_date'] : '';
+      $title = isset($array['collations_main_title']) ? $array['collations_main_title'] : '';
       
-      if(in_array($collection, $displayed_collections)){
-          $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . ' ' . $user .  '<br> ' . $on_message . $date;
-          
-      }else{
-          $wiki_text .= '<br><br>' . "'''" . $collection . ':' . "'''" . '<br><br>' . '[[' . $url . '|' . $title .']] <br>' . $created_message . ' ' . $user .  '<br> ' . $on_message . $date;
-          $displayed_collections[] = $collection; 
-      }             
+      $out->addWikiText('[[' . $url . '|' . $title . ']]<br>' . $created_message . ' ' . $user . '<br> ' . $on_message . ' ' . $date);  
     }
-    
-    $out->addWikiText($wiki_text);      
     
     return true; 
   }
@@ -224,10 +209,10 @@ class SpecialallCollections extends summaryPages {
     $out = $this->getOutput();
     
     $article_url = $this->article_url; 
-        
-    $out->setPageTitle($this->msg('allcollections-title'));    
     
-    $html ='<form action="' . $article_url . 'Special:AllCollections" method="post">';
+    $out->setPageTitle($this->msg('allcollations-title'));    
+    
+    $html ='<form action="' . $article_url . 'Special:AllCollations" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
@@ -240,10 +225,9 @@ class SpecialallCollections extends summaryPages {
     
     $html .= '</form><br>';
     
-    $out->addHTML($html);
+    $out->addHTML($html);  
     
-    return $out->addWikiText($this->msg('allcollections-instruction'));
+    return $out->addWikiText($this->msg('allcollations-instruction'));
   }
 }
-
 
