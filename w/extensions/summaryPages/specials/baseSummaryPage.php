@@ -22,7 +22,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class summaryPages extends SpecialPage {
+class baseSummaryPage extends SpecialPage {
   
   public $lowercase_alphabet; 
   public $uppercase_alphabet; 

@@ -22,16 +22,17 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SpecialallManuscriptPages extends summaryPages {
+class SpecialallCollections extends baseSummaryPage {
   
 /**
- * SpecialallManuscriptPages page. Organises all manuscripts 
+ * SpecialallCollections page. Organises all collections. The method 'execute', located in the parent class 'summaryPages', is the first class that will run when opening
+ * this page.  
  */
   
   public function __construct(){
     
     //call the parent constructor. The parent constructor (in 'summaryPages' class) will call the 'SpecialPage' class (grandparent) 
-    parent::__construct('allManuscriptPages');
+    parent::__construct('allCollections');
   }
   
   /**
@@ -47,8 +48,9 @@ class SpecialallManuscriptPages extends summaryPages {
     $next_letter_alphabet = $this->getNextLetter();
                            
     $conds = array(
-    'manuscripts_lowercase_title >= ' . $dbr->addQuotes($button_name),
-    'manuscripts_lowercase_title < ' . $dbr->addQuotes($next_letter_alphabet), 
+    'manuscripts_lowercase_collection >= ' . $dbr->addQuotes($button_name),
+    'manuscripts_lowercase_collection < '  . $dbr->addQuotes($next_letter_alphabet),
+    'manuscripts_lowercase_collection != ' . $dbr->addQuotes("none"),
     );
              
     return $this->retrieveFromDatabase($dbr,$conds);    
@@ -69,13 +71,13 @@ class SpecialallManuscriptPages extends summaryPages {
         'manuscripts_user',
         'manuscripts_url',
         'manuscripts_date',
-        'manuscripts_lowercase_title',
+        'manuscripts_collection',
+        'manuscripts_lowercase_collection',
         ), 
       $conds, //conditions
       __METHOD__,
       array(
-        'ORDER BY' => 'manuscripts_lowercase_title',
-        //'USE INDEX' => 'name_title', //can this still be used?
+        'ORDER BY' => 'manuscripts_collection',
         'LIMIT' => $this->max_on_page+1,
         'OFFSET' => $this->offset, 
       )
@@ -93,6 +95,7 @@ class SpecialallManuscriptPages extends summaryPages {
           'manuscripts_user' => $s->manuscripts_user,
           'manuscripts_url' => $s->manuscripts_url,
           'manuscripts_date' => $s->manuscripts_date,
+          'manuscripts_collection' => $s->manuscripts_collection,
         );
 
         //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
@@ -106,7 +109,7 @@ class SpecialallManuscriptPages extends summaryPages {
    
   return $title_array;   
   }
-    
+       
   /**
    * This function shows the page after a request has been processed
    * 
@@ -118,9 +121,9 @@ class SpecialallManuscriptPages extends summaryPages {
     
     $article_url = $this->article_url; 
     
-    $out->setPageTitle($this->msg('allmanuscriptpages-title'));
+    $out->setPageTitle($this->msg('allcollections-title'));
     
-    $html ='<form action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+    $html ='<form action="' . $article_url . 'Special:AllCollections" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
@@ -141,12 +144,12 @@ class SpecialallManuscriptPages extends summaryPages {
     if(empty($title_array)){
       
       $out->addHTML($html);
-
-      if($this->is_number){
-        return $out->addWikiText($this->msg('allmanuscriptpages-nomanuscripts-number'));
-      }
       
-      return $out->addWikiText($this->msg('allmanuscriptpages-nomanuscripts'));
+      if($this->is_number){
+        return $out->addWikiText($this->msg('allcollections-nocollections-number'));
+      }
+
+      return $out->addWikiText($this->msg('allcollections-nocollections'));
     }
     
     if($this->previous_page_possible){
@@ -156,7 +159,7 @@ class SpecialallManuscriptPages extends summaryPages {
       $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
       $previous_message = $this->msg('allmanuscriptpages-previous');
       
-      $html .='<form action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+      $html .='<form action="' . $article_url . 'Special:AllCollections" method="post">';
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
@@ -174,10 +177,10 @@ class SpecialallManuscriptPages extends summaryPages {
       $next_message_hover = $this->msg('allmanuscriptpages-nexthover');    
       $next_message = $this->msg('allmanuscriptpages-next');
       
-      $html .='<form action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+      $html .='<form action="' . $article_url . 'Special:AllCollections" method="post">';
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
-      $html .=("<input type='hidden' name='$this->button_name' value='$this->button_name'>"); 
+      $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
       $html .= "<input type='submit' id = 'button' name = 'redirect_page_forward' id='button' title='$next_message_hover' value='$next_message'>";
       
       $html.= "</form>";
@@ -188,15 +191,27 @@ class SpecialallManuscriptPages extends summaryPages {
     $created_message = $this->msg('allmanuscriptpages-created');
     $on_message = $this->msg('allmanuscriptpages-on');
     
+    $displayed_collections = array();
+    $wiki_text = "";
+    
     foreach($title_array as $key=>$array){
       
       $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
       $user = isset($array['manuscripts_user']) ? $array['manuscripts_user'] : '';
       $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
       $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
-            
-      $out->addWikiText('[[' . $url . '|' . $title . ']]<br>' . $created_message . ' ' . $user .  '<br> ' . $on_message . $date);      
+      $collection = isset($array['manuscripts_collection']) ? $array['manuscripts_collection'] : '';
+      
+      if(in_array($collection, $displayed_collections)){
+          $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . ' ' . $user .  '<br> ' . $on_message . $date;
+          
+      }else{
+          $wiki_text .= '<br><br>' . "'''" . $collection . ':' . "'''" . '<br><br>' . '[[' . $url . '|' . $title .']] <br>' . $created_message . ' ' . $user .  '<br> ' . $on_message . $date;
+          $displayed_collections[] = $collection; 
+      }             
     }
+    
+    $out->addWikiText($wiki_text);      
     
     return true; 
   }
@@ -210,9 +225,9 @@ class SpecialallManuscriptPages extends summaryPages {
     
     $article_url = $this->article_url; 
         
-    $out->setPageTitle($this->msg('allmanuscriptpages-title'));    
+    $out->setPageTitle($this->msg('allcollections-title'));    
     
-    $html ='<form action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+    $html ='<form action="' . $article_url . 'Special:AllCollections" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
@@ -227,7 +242,8 @@ class SpecialallManuscriptPages extends summaryPages {
     
     $out->addHTML($html);
     
-    return $out->addWikiText($this->msg('allmanuscriptpages-instruction'));
+    return $out->addWikiText($this->msg('allcollections-instruction'));
   }
 }
+
 

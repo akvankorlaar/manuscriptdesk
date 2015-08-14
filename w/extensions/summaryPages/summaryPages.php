@@ -50,29 +50,34 @@ $wgExtensionCredits['parserhook'][] = array(
 $dir = __DIR__ . '/';
 
 // Auto load classes 
-$wgAutoloadClasses['collateHooks']    = $dir . '/collate.hooks.php';
-$wgAutoloadClasses['collate'] = $dir . '/collate.classes.php';
-$wgExtensionMessagesFiles['collate']  = __DIR__ . '/collate.i18n.php';
+$wgAutoloadClasses['summaryPagesHooks']    = $dir . '/summaryPages.hooks.php';
+$wgExtensionMessagesFiles['summaryPages']  = __DIR__ . '/summaryPages.i18n.php';
 
 // Register auto load for the special page classes and register special pages
-$wgAutoloadClasses['SpecialBeginCollate'] = $dir . '/specials/SpecialBeginCollate.php';
+$wgAutoloadClasses['SpecialuserPage'] = $dir . '/specials/SpecialuserPage.php';
+$wgAutoloadClasses['SpecialallManuscriptPages'] = $dir . '/specials/SpecialallManuscriptPages.php';
+$wgAutoloadClasses['SpecialallCollections'] = $dir . '/specials/SpecialallCollections.php';
+$wgAutoloadClasses['SpecialrecentManuscriptPages'] = $dir . '/specials/SpecialrecentManuscriptPages.php';
+$wgAutoloadClasses['SpecialallCollations'] = $dir . '/specials/SpecialallCollations.php';
+$wgAutoloadClasses['baseSummaryPage'] = $dir . '/specials/baseSummaryPage.php';
 
-$wgSpecialPages['BeginCollate'] = 'SpecialBeginCollate';
+$wgSpecialPages['userPage'] = 'SpecialuserPage';
+$wgSpecialPages['allManuscriptPages'] = 'SpecialallManuscriptPages';
+$wgSpecialPages['allCollections'] = 'SpecialallCollections';
+$wgSpecialPages['recentManuscriptPages'] = 'SpecialrecentManuscriptPages';
+$wgSpecialPages['allCollations'] = 'SpecialallCollations';
 
 //Extra file loaded later 
-$wgResourceModules['ext.collate' ] = array(
-		'localBasePath' => dirname( __FILE__ ) . '/css',  
-		'styles'  => '/ext.collate.css',
+
+$wgResourceModules['ext.buttonStyles'] = array(
+  	'localBasePath' => dirname( __FILE__ ) . '/css',  
+		'styles'  => '/ext.buttonStyles.css',
 );
 
-
 ////Instantiate the collateHooks class and register the hooks
-$collateHooks = new collateHooks();
+$summary_pages_hooks_object = new summaryPagesHooks();
 
-$wgHooks['MediaWikiPerformAction'][] = array($collateHooks, 'onMediaWikiPerformAction');
-$wgHooks['ArticleDelete'][] = array($collateHooks, 'onArticleDelete');
-$wgHooks['PageContentSave'][] = array($collateHooks,'onPageContentSave');
-$wgHooks['BeforePageDisplay'][] = array($collateHooks, 'onBeforePageDisplay');
+$wgHooks['BeforePageDisplay'][] = array($summary_pages_hooks_object, 'onBeforePageDisplay');
 
 
 

@@ -54,17 +54,8 @@ $wgExtensionMessagesFiles['NewManuscript']  = __DIR__ . '/newManuscript.i18n.php
 
 // Register auto load for the special page classes and register special pages
 $wgAutoloadClasses['SpecialnewManuscript'] = $dir . '/specials/SpecialnewManuscript.php';
-$wgAutoloadClasses['SpecialuserPage'] = $dir . '/specials/SpecialuserPage.php';
-$wgAutoloadClasses['SpecialallManuscriptPages'] = $dir . '/specials/SpecialallManuscriptPages.php';
-$wgAutoloadClasses['SpecialallCollections'] = $dir . '/specials/SpecialallCollections.php';
-$wgAutoloadClasses['SpecialrecentManuscriptPages'] = $dir . '/specials/SpecialrecentManuscriptPages.php';
-$wgAutoloadClasses['summaryPages'] = $dir . '/specials/summaryPages.php';
 
 $wgSpecialPages['newManuscript'] = 'SpecialnewManuscript';
-$wgSpecialPages['userPage'] = 'SpecialuserPage';
-$wgSpecialPages['allManuscriptPages'] = 'SpecialallManuscriptPages';
-$wgSpecialPages['allCollections'] = 'SpecialallCollections';
-$wgSpecialPages['recentManuscriptPages'] = 'SpecialrecentManuscriptPages';
 
 //Extra files containing CSS loaded later 
 $wgResourceModules['ext.JBZV' ] = array(
@@ -75,11 +66,6 @@ $wgResourceModules['ext.JBZV' ] = array(
 $wgResourceModules['ext.metatable'] = array(
 		'localBasePath' => dirname( __FILE__ ) . '/css',  
 		'styles'  => '/ext.metatable.css',
-);
-
-$wgResourceModules['ext.buttonStyles'] = array(
-  	'localBasePath' => dirname( __FILE__ ) . '/css',  
-		'styles'  => '/ext.buttonStyles.css',
 );
 
 //Instantiate the newManuscriptHooks class and register the hooks
