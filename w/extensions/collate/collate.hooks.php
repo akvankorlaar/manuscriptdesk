@@ -248,8 +248,6 @@ private function getCollations($url){
     if($title_object->getNamespace() === NS_COLLATIONS || $page_title === 'Special:BeginCollate'){
       //add css for the collation table    
       $out->addModuleStyles('ext.collate');
-    }elseif($page_title === 'Special:AllCollations'){
-      $out->addModuleStyles('ext.buttonStylesCollation');    
     }
 
     return true; 

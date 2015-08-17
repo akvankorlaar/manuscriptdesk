@@ -243,7 +243,7 @@ class newManuscriptHooks {
     
     $link_original_image_path = $partial_original_image_path . $image_file; 
     
-    return "<a href='$link_original_image_path'>Original Image</a>";   
+    return "<a href='$link_original_image_path' target='_blank'>Original Image</a>";   
   }
   
   /**
@@ -685,9 +685,6 @@ class newManuscriptHooks {
     if($title_object->getNamespace() === NS_MANUSCRIPTS){
       //add css for metatable
       $out->addModuleStyles('ext.metatable');
-    }elseif($page_title === 'Special:AllManuscriptPages' || $page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections'){
-      //add css for correct button display on 'All Manuscripts' and 'User Page'
-      $out->addModuleStyles("ext.buttonStyles");    
     }
     
     return true; 
