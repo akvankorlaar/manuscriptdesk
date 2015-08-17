@@ -714,13 +714,13 @@ class SpecialBeginCollate extends SpecialPage {
     $save_message = $this->msg('collate-save');
     
     $html .= "
-       <div>
-            <form action='" . $article_url . "Special:BeginCollate' method='post'> 
-            <input type='submit' style = 'width: 30em; height: 1.5em; cursor: pointer;' name = 'redirect_to_start' title='$redirect_hover_message'  value='$redirect_message'>
-            </form><br>
+       <div id = 'begincollate-buttons'>
+            <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
+            <input type='submit' class='begincollate-submitbutton-two' name ='redirect_to_start' title='$redirect_hover_message'  value='$redirect_message'>
+            </form>
             
-            <form action='" . $article_url . "Special:BeginCollate' method='post'> 
-            <input type='submit' style = 'width: 30em; height: 1.5em; cursor: pointer;' name = 'save_current_table' title='$save_hover_message' value='$save_message'> 
+            <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
+            <input type='submit' class='begincollate-submitbutton-two' name= 'save_current_table' title='$save_hover_message' value='$save_message'> 
             </form>
        </div>";
     
@@ -750,12 +750,11 @@ class SpecialBeginCollate extends SpecialPage {
     $software_message = $this->msg('collate-software');
     $lastedit_message = $this->msg('collate-lastedit');
     
-    $html  = "<table class='infobox'";
-    $html .= "style='padding:0.3em; float:right; margin-left:15px; margin-bottom:8px; border:1px solid #aa8899; background:#e1e9e1; text-align:center; font-size:95%; line-height:1.5em; width: 28em;'>";
-    $html .= "<tr><th style='background:#286819; padding:0.3em; font-size:1.1em;  color: #FFF'>$about_message</th></tr>";
+    $html  = "<table id='begincollate-infobox'>";
+    $html .= "<tr><th>$about_message</th></tr>";
     $html .= "<tr><td>$version_message</td></tr>";
     $html .= "<tr><td>$software_message <a href= 'http://collatex.net' target='_blank'> Collatex Tools 1.5</a>.</td></tr>";
-    $html .= "<tr><td style='background:#286819; padding:0.3em; color: #FFF;'><small>$lastedit_message</small></td></tr>";
+    $html .= "<tr><td id='begincollate-td'><small>$lastedit_message</small></td></tr>";
     $html .= "</table>";
     
     $html .= $this->msg('collate-instruction1') . '<br>';
@@ -830,7 +829,7 @@ class SpecialBeginCollate extends SpecialPage {
     $submit_hover_message = $this->msg('collate-hover');
     $submit_message = $this->msg('collate-submit');
     
-    $html .= "<input type = 'submit' style = 'width: 30em; height: 1.5em; cursor: pointer;' title = $submit_hover_message value=$submit_message></form>";
+    $html .= "<input type = 'submit' id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message></form>";
         
     $out->addHTML($html);  
   }

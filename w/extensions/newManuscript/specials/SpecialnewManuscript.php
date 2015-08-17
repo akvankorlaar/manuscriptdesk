@@ -10,9 +10,10 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
- * Todo: In case of a number, the text 'There are no collations that begin with this letter yet.', should be changed 
+ * Todo: Try to create unit tests for the extensions. See: https://www.mediawiki.org/wiki/Manual:PHP_unit_testing/Writing_unit_tests_for_extensions , and check 
+ * http://www.gossamer-threads.com/lists/wiki/mediawiki/520085 why the tests directory is missing for this version. Perhaps try to get them from github? 
  * 
- * Todo: Summary Pages should be placed in a new extension... 
+ * Todo: Check the limitations for the collation tool, and alter them if needed  
  *   
  * Todo: Also install a fresh copy of mediawiki at home? 
  * 
