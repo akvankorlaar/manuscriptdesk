@@ -24,7 +24,7 @@
 /**
  * pre overrides earlier mediawiki CSS, and is needed for correct table display. 
  */
-pre {
+pre{
   border: none !important;
   padding: 0px !important;
   background-color: transparent !important; 
