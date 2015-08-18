@@ -48,7 +48,7 @@ class SpecialuserPage extends SpecialPage {
   private $id_collections; 
   
    //class constructor 
-	public function __construct(){
+  public function __construct(){
     
     global $wgNewManuscriptOptions, $wgPrimaryDisk, $wgArticleUrl; 
     
@@ -73,8 +73,8 @@ class SpecialuserPage extends SpecialPage {
     $this->id_collations = 'button';
     $this->id_collections = 'button';
     
-		parent::__construct('userPage');
-	}
+    parent::__construct('userPage');
+  }
   
   /**
    * This function loads requests when a user selects a button, moves to the previous page, or to the next page
