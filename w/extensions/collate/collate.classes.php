@@ -29,13 +29,13 @@ class collate {
  */
      
   //class constructor 
-	public function __construct(){
+  public function __construct(){
   }
-
-	/**
-	 * Generate table
-	 */
-	public function renderTable($titles_array, $collatex_output, $user_name = null, $date = null) {
+  
+  /**
+   * Generate table
+   */
+  public function renderTable($titles_array, $collatex_output, $user_name = null, $date = null) {
     
     $html = "";
     
@@ -69,6 +69,6 @@ class collate {
       </div>
     </div>"; 
       
-    return $html;   
-	} 
+    return $html;
+  }
 }

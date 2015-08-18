@@ -35,7 +35,7 @@ if (!defined( 'MEDIAWIKI')){
 
 /* Configuration */
 
-// Credits
+//Credits
 $wgExtensionCredits['parserhook'][] = array(
 	'path'           => __FILE__,
 	'name'           => 'collate',
@@ -46,15 +46,15 @@ $wgExtensionCredits['parserhook'][] = array(
 	'descriptionmsg' =>  '',
 );
 
-// Shortcut to this extension directory
+//Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
-// Auto load classes 
+//Auto load classes 
 $wgAutoloadClasses['collateHooks']    = $dir . '/collate.hooks.php';
 $wgAutoloadClasses['collate'] = $dir . '/collate.classes.php';
 $wgExtensionMessagesFiles['collate']  = __DIR__ . '/collate.i18n.php';
 
-// Register auto load for the special page classes and register special pages
+//Register auto load for the special page classes and register special pages
 $wgAutoloadClasses['SpecialBeginCollate'] = $dir . '/specials/SpecialBeginCollate.php';
 
 $wgSpecialPages['BeginCollate'] = 'SpecialBeginCollate';
@@ -66,7 +66,7 @@ $wgResourceModules['ext.collate' ] = array(
 );
 
 
-////Instantiate the collateHooks class and register the hooks
+//Instantiate the collateHooks class and register the hooks
 $collateHooks = new collateHooks();
 
 $wgHooks['MediaWikiPerformAction'][] = array($collateHooks, 'onMediaWikiPerformAction');

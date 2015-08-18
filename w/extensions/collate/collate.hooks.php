@@ -88,44 +88,44 @@ class collateHooks {
  * @param type $url
  * @return boolean
  */
-private function getCollations($url){
-      
-  $dbr = wfGetDB(DB_SLAVE);
+  private function getCollations($url){
 
-  $conds =  array(
-    'collations_url = ' . $dbr->addQuotes($url),  
-    ); 
+    $dbr = wfGetDB(DB_SLAVE);
 
-  //Database query
-  $res = $dbr->select(
-    'collations', //from
-    array(
-      'collations_user',//values
-      'collations_url',
-      'collations_date',
-      'collations_titles_array',
-      'collations_collatex'
-       ),
-    $conds, //conditions
-    __METHOD__ 
-    );
-        
-    //there should be exactly 1 result
-  if ($res->numRows() === 1){
-    $s = $res->fetchObject();
+    $conds =  array(
+      'collations_url = ' . $dbr->addQuotes($url),  
+      ); 
 
-    $user_name = $s->collations_user;
-    $date = $s->collations_date; 
-    $titles_array = $s->collations_titles_array;
-    $collatex_output = $s->collations_collatex;
+    //Database query
+    $res = $dbr->select(
+      'collations', //from
+      array(
+        'collations_user',//values
+        'collations_url',
+        'collations_date',
+        'collations_titles_array',
+        'collations_collatex'
+         ),
+      $conds, //conditions
+      __METHOD__ 
+      );
 
-    return array($user_name, $date, $titles_array,$collatex_output);
+      //there should be exactly 1 result
+    if ($res->numRows() === 1){
+      $s = $res->fetchObject();
 
-  }else{
+      $user_name = $s->collations_user;
+      $date = $s->collations_date; 
+      $titles_array = $s->collations_titles_array;
+      $collatex_output = $s->collations_collatex;
 
-    return false; 
-  }     
-}
+      return array($user_name, $date, $titles_array,$collatex_output);
+
+    }else{
+
+      return false; 
+    }     
+  }
 
   /**
    * This function prevents users from making any pages on NS_COLLATIONS, if they are not creating this page
@@ -225,13 +225,13 @@ private function getCollations($url){
       'collations_url' => $page_title), //conditions
       __METHOD__ );
     
-    	if ($dbw->affectedRows()){
-        //something was deleted from the manuscripts table  
-        return true;
-		  }else{
-        //nothing was deleted
-        return false;
-		}
+    if ($dbw->affectedRows()){
+      //something was deleted from the manuscripts table  
+      return true;
+    }else{
+      //nothing was deleted
+      return false;
+    }
   }
     
   /**

@@ -14,6 +14,8 @@
  * http://www.gossamer-threads.com/lists/wiki/mediawiki/520085 why the tests directory is missing for this version. Perhaps try to get them from github? 
  * 
  * Todo: Check the limitations for the collation tool, and alter them if needed  
+ * 
+ * Todo: Also check the page-link feature in place 
  *   
  * Todo: Also install a fresh copy of mediawiki at home? 
  * 
@@ -102,7 +104,6 @@ class SpecialnewManuscript extends SpecialPage {
     $this->uploadbase_object = UploadBase::createFromRequest($request);
     $this->upload_was_clicked = $request->wasPosted()
 			&& ( $request->getCheck('wpUpload'));
-				//|| $request->getCheck('wpUploadIgnoreWarning'));
     
     // If it was posted check for the token (no remote POST'ing with user credentials)
     $token = $request->getVal('wpEditToken');
@@ -116,7 +117,7 @@ class SpecialnewManuscript extends SpecialPage {
    * This function checks if the user has the right to create new manuscript pages, loads the requests and checks if the request was valid. 
    * If a valid request was posted, this request is processed. Otherwise, the default page is shown, if the user has not reached the maximum allowed manuscript uploads.
    * Also, the page title is set.
-	 */
+   */
   public function execute() {
         
     $out = $this->getOutput();
@@ -452,8 +453,7 @@ class SpecialnewManuscript extends SpecialPage {
       $collection_error = $this->checkNumberOfPagesPostedCollection($posted_collection);
     }
     
-    return $collection_error; 
-    
+    return $collection_error;    
   }
   
   /**
@@ -586,8 +586,9 @@ class SpecialnewManuscript extends SpecialPage {
     }else{
     //return error
       return false;
-		}
-	}
+      
+    }
+  }
   
   /**
    * Show the upload form with error message, but do not stash the file.
@@ -732,7 +733,7 @@ class UploadFileForm extends HTMLForm {
       "</div>\n";
     
     return $extensionsList;
-	}
+  }
   
   /**
    * Add the upload JS and show the form.
