@@ -168,7 +168,7 @@ class newManuscriptHooks {
     $this->loadViewer($output);
     
     return true;
-	}
+  }
   
   /**
    * This function retrieves the collection of the current page
@@ -336,8 +336,8 @@ class newManuscriptHooks {
     $view_content = $this->formatIframeHTML();
     $output->addHTML($view_content);
     
-    return true; 
-	}
+    return true;
+  }
   
   /**
    * Generates the HTML for the iframe
@@ -363,7 +363,7 @@ class newManuscriptHooks {
     $iframeHTML = '<iframe id="zoomviewerframe" src="' .  $mediawiki_dir . '/extensions/newManuscript/' . $viewer_path . '?image=' . $image_file_path . '&amp;lang=' . $lang . '&amp;sitename=' . urlencode($siteName) . '"></iframe>';
     
     return $iframeHTML;
-    }
+  }
     
  /**
   * Get the default viewer type.
@@ -414,7 +414,7 @@ class newManuscriptHooks {
       $image_file_path = '/' . $images_root_dir . '/' . $user_fromurl . '/' . $filename_fromurl . '/';
       
       return $image_file_path;
-	}
+   }
   
   /**
    * The function register, registers the wikitext <metadata> </metadata>

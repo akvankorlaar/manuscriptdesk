@@ -212,9 +212,9 @@ class metaTable{
     $values = array();
     $input_array = explode("\n", $input);
     
-    foreach ($input_array as $line){  
-      if (strpos($line,'=') === false){
-        
+    foreach ($input_array as $line){
+      
+      if (strpos($line,'=') === false){  
         continue;    
       }
       
