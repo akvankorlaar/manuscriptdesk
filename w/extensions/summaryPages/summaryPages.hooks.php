@@ -36,7 +36,7 @@ class summaryPagesHooks {
     $page_title = $title_object->mPrefixedText; 
 
     if($page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections'|| $page_title === 'Special:AllManuscriptPages' || $page_title === 'Special:AllCollations'){
-      //add css for correct button display on 'All Manuscripts' and 'User Page'
+      
       $out->addModuleStyles("ext.buttonStyles");    
     }
     

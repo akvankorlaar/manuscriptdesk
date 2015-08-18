@@ -32,27 +32,27 @@ class SpecialrecentManuscriptPages extends SpecialPage {
   
   private $max_on_page; //maximum manuscripts shown on a page
   
-   //class constructor 
-	public function __construct(){
+   //class constructor
+  public function __construct(){
     
     global $wgNewManuscriptOptions, $wgArticleUrl; 
     
     $this->article_url = $wgArticleUrl; 
     
     $this->max_on_page = $wgNewManuscriptOptions['max_recent'];
-          
-		parent::__construct('recentManuscriptPages');
-	}
+    
+    parent::__construct('recentManuscriptPages');
+  }
   
   /**
    * This function 
    */
-	public function execute(){
+  public function execute(){
         
     $title_array = $this->retrieveManuscriptTitles();
         
-    $this->showPage($title_array);          
-	}
+    $this->showPage($title_array);
+  }
   
   /**
    * This function prepares the database configuration settings, and then calls the database to fetch manuscript titles

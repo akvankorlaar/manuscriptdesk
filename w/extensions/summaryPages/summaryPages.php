@@ -27,7 +27,7 @@
  * require_once( "$IP/extensions/collate/collate.php" );
  */
 
-// Check environment
+//Check environment
 if (!defined( 'MEDIAWIKI')){
 	echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
 	die( -1 );
@@ -35,7 +35,7 @@ if (!defined( 'MEDIAWIKI')){
 
 /* Configuration */
 
-// Credits
+//Credits
 $wgExtensionCredits['parserhook'][] = array(
 	'path'           => __FILE__,
 	'name'           => 'collate',
@@ -46,14 +46,14 @@ $wgExtensionCredits['parserhook'][] = array(
 	'descriptionmsg' =>  '',
 );
 
-// Shortcut to this extension directory
+//Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
-// Auto load classes 
+//Auto load classes 
 $wgAutoloadClasses['summaryPagesHooks']    = $dir . '/summaryPages.hooks.php';
 $wgExtensionMessagesFiles['summaryPages']  = __DIR__ . '/summaryPages.i18n.php';
 
-// Register auto load for the special page classes and register special pages
+//Register auto load for the special page classes and register special pages
 $wgAutoloadClasses['SpecialuserPage'] = $dir . '/specials/SpecialuserPage.php';
 $wgAutoloadClasses['SpecialallManuscriptPages'] = $dir . '/specials/SpecialallManuscriptPages.php';
 $wgAutoloadClasses['SpecialallCollections'] = $dir . '/specials/SpecialallCollections.php';
@@ -68,13 +68,12 @@ $wgSpecialPages['recentManuscriptPages'] = 'SpecialrecentManuscriptPages';
 $wgSpecialPages['allCollations'] = 'SpecialallCollations';
 
 //Extra file loaded later 
-
 $wgResourceModules['ext.buttonStyles'] = array(
   	'localBasePath' => dirname( __FILE__ ) . '/css',  
 		'styles'  => '/ext.buttonStyles.css',
 );
 
-////Instantiate the collateHooks class and register the hooks
+//Instantiate the collateHooks class and register the hooks
 $summary_pages_hooks_object = new summaryPagesHooks();
 
 $wgHooks['BeforePageDisplay'][] = array($summary_pages_hooks_object, 'onBeforePageDisplay');

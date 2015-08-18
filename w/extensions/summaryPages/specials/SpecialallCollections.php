@@ -107,7 +107,7 @@ class SpecialallCollections extends baseSummaryPage {
       }     
     }
    
-  return $title_array;   
+    return $title_array;   
   }
        
   /**

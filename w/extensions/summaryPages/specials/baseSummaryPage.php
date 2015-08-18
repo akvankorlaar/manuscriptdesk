@@ -59,7 +59,7 @@ class baseSummaryPage extends SpecialPage {
     $this->offset = 0; //default value
     
     parent::__construct($page_name);
-	}
+  }
   
   /**
    * This function loads requests when a user selects a letter, moves to the previous page, or to the next page

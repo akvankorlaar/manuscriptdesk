@@ -48,11 +48,11 @@ class metaTable{
   private $notes_public_v = "";
   private $id_number_v = "";
   
-  //class constructor 
-	public function __construct(){
+  //class constructor
+  public function __construct(){
     }
-
-	/**
+  
+  /**
    * This function renders the metadata table 
    */
   public function renderTable(){
@@ -192,8 +192,7 @@ class metaTable{
           </td>
       </tr>
        <tr>
-          <td colspan='4' style='text-align: center; background-color: #def;'>
-          
+          <td colspan='4' style='text-align: center; background-color: #def;'>         
           </td>
       </tr>
     </table>
@@ -202,33 +201,31 @@ class metaTable{
      
    return $html_table; 
   }
-
+  
   /**
-	 * Extract options from a blob of text
-	 *
-	 * @param string $input Tag contents
-	 */
-	public function extractOptions($input){
-    
-		wfProfileIn( __METHOD__ ); 
-
-		//Parse all possible options
-		$values = array();
+   * Extract options from a blob of text
+   * 
+   * @param string $input Tag contents
+   */
+  public function extractOptions($input){
+    //Parse all possible options
+    $values = array();
     $input_array = explode("\n", $input);
-		foreach ($input_array as $line){
     
-			if (strpos($line,'=') === false){
-				continue;
+    foreach ($input_array as $line){  
+      if (strpos($line,'=') === false){
+        
+        continue;    
       }
       
-			list($name, $value) = explode('=', $line, 2);
+      list($name, $value) = explode('=', $line, 2);
       $value = Sanitizer::decodeCharReferences(trim($value));
       $value = strip_tags($value);
-			$values[strtolower(trim($name))] = $value;
-		}		
-
-		// Build list of options, with local member names
-		$options = array(
+      $values[strtolower(trim($name))] = $value;     
+    }
+    
+    // Build list of options, with local member names
+    $options = array(
       'title' => 'title_v',
       'author' => 'author_v',
       'date' => 'date_v',
@@ -248,14 +245,13 @@ class metaTable{
       'produced_in_year' => 'produced_in_year_v',
       'notes_public' => 'notes_public_v',
       'id_number' => 'id_number_v',
-		);
+    );
     
-		foreach ($options as $name => $var){
-			if (isset($values[$name])){
-				$this->$var = $values[$name];
-			}
-		}
-
-		wfProfileOut( __METHOD__ );
-	}  
+    foreach ($options as $name => $var){
+      
+      if (isset($values[$name])){
+        $this->$var = $values[$name];    
+      }
+    }  
+  }  
 }
