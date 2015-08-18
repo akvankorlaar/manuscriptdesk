@@ -34,7 +34,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	die( -1 );
 }
 
-// Credits
+//Credits
 $wgExtensionCredits['parserhook'][] = array(
 	'path'           => __FILE__,
 	'name'           => 'newManuscript',
@@ -44,15 +44,15 @@ $wgExtensionCredits['parserhook'][] = array(
 	'description'    => 'Allows users to create new manuscripts and upload images',
 );
 
-// Shortcut to this extension directory
+//Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
-// Auto load classes 
+//Auto load classes 
 $wgAutoloadClasses['newManuscriptHooks']    = $dir . '/newManuscript.hooks.php';
 $wgAutoloadClasses['metaTable'] = $dir . '/newManuscript.classes.php';
 $wgExtensionMessagesFiles['NewManuscript']  = __DIR__ . '/newManuscript.i18n.php';
 
-// Register auto load for the special page classes and register special pages
+//Register auto load for the special page classes and register special pages
 $wgAutoloadClasses['SpecialnewManuscript'] = $dir . '/specials/SpecialnewManuscript.php';
 
 $wgSpecialPages['newManuscript'] = 'SpecialnewManuscript';

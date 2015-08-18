@@ -14,6 +14,8 @@
  * http://www.gossamer-threads.com/lists/wiki/mediawiki/520085 why the tests directory is missing for this version. Perhaps try to get them from github? 
  * 
  * Todo: Check the limitations for the collation tool, and alter them if needed  
+ * 
+ * Todo: Also check the page-link feature in place 
  *   
  * Todo: Also install a fresh copy of mediawiki at home? 
  * 
@@ -54,9 +56,9 @@ class SpecialnewManuscript extends SpecialPage {
    */
       
   public $request;
-	public $uploadbase_object;
-	public $upload_was_clicked;
-	public $token_is_ok;
+  public $uploadbase_object;
+  public $upload_was_clicked;
+  public $token_is_ok;
   public $posted_title;
   public $posted_collection; 
   public $title_ok;
@@ -73,7 +75,7 @@ class SpecialnewManuscript extends SpecialPage {
   private $zoomimages_root_dir; 
   
   //class constructor
-	public function __construct(){
+  public function __construct(){
     
     global $wgNewManuscriptOptions,$wgWebsiteRoot; 
    	 
@@ -90,7 +92,7 @@ class SpecialnewManuscript extends SpecialPage {
 
     
     include('prepareSlicer.php');
-		parent::__construct('newManuscript');
+    parent::__construct('newManuscript');
   }
   
   /**
@@ -102,22 +104,21 @@ class SpecialnewManuscript extends SpecialPage {
     $this->uploadbase_object = UploadBase::createFromRequest($request);
     $this->upload_was_clicked = $request->wasPosted()
 			&& ( $request->getCheck('wpUpload'));
-				//|| $request->getCheck('wpUploadIgnoreWarning'));
     
     // If it was posted check for the token (no remote POST'ing with user credentials)
-		$token = $request->getVal('wpEditToken');
-		$this->token_is_ok = $this->getUser()->matchEditToken($token);   
+    $token = $request->getVal('wpEditToken');
+    $this->token_is_ok = $this->getUser()->matchEditToken($token);
     $this->posted_title = $request->getText('wptitle_field');
     $this->posted_collection = $request->getText('wpcollection_field');
     $this->user_name = $user_object->getName();
   }
-
-	/**
-	 * This function checks if the user has the right to create new manuscript pages, loads the requests and checks if the request was valid. 
-   * If a valid request was posted, this request is processed. Otherwise, the default page is shown, if the user has not reached the maximum allowed manuscript uploads. 
+  
+  /**
+   * This function checks if the user has the right to create new manuscript pages, loads the requests and checks if the request was valid. 
+   * If a valid request was posted, this request is processed. Otherwise, the default page is shown, if the user has not reached the maximum allowed manuscript uploads.
    * Also, the page title is set.
-	 */
-	public function execute() {
+   */
+  public function execute() {
         
     $out = $this->getOutput();
     $user_object = $out->getUser();
@@ -144,7 +145,7 @@ class SpecialnewManuscript extends SpecialPage {
     }
     
     $this->getUploadForm()->show();
-	}
+  }
    
   /**
    * This function checks whether the user has reached the maximum of allowed uploads
@@ -196,12 +197,12 @@ class SpecialnewManuscript extends SpecialPage {
     $form = new UploadFileForm($context, $collections_message);
         
     //Add upload error message. 
-		$form->addPreText($message);
+    $form->addPreText($message);
     
     //This is needed to redisplay the form in case there was an upload error
-    $form->setSubmitCallback(array('SpecialnewManuscript', 'showUploadError2')); 
-       
-		return $form;
+    $form->setSubmitCallback(array('SpecialnewManuscript', 'showUploadError2'));
+    
+    return $form;
   }
   
   /**
@@ -387,8 +388,8 @@ class SpecialnewManuscript extends SpecialPage {
     }
     
     //if no errors, and slice succesfull, redirect to the new page
-    return $this->getOutput()->redirect($local_url);  
-	}
+    return $this->getOutput()->redirect($local_url);
+    }
     
  /**
   * This function checks if posted title is empty, contains invalid charachters, is too long, or already exists in the database.
@@ -452,8 +453,7 @@ class SpecialnewManuscript extends SpecialPage {
       $collection_error = $this->checkNumberOfPagesPostedCollection($posted_collection);
     }
     
-    return $collection_error; 
-    
+    return $collection_error;    
   }
   
   /**
@@ -557,45 +557,47 @@ class SpecialnewManuscript extends SpecialPage {
    * @param type $new_page_url
    * @return boolean
    */
-  	private function writeToDB($posted_title, $collection, $user_name,$new_page_url){
+  private function writeToDB($posted_title, $collection, $user_name,$new_page_url){
       
     $date = date("d-m-Y H:i:s");  
     $date2 = date('YmdHis');
 
     $lowercase_title = strtolower($posted_title);
     $lowercase_collection = strtolower($collection);
-  
-		$dbw = wfGetDB(DB_MASTER);
-		$dbw->insert('manuscripts', //select table
+    
+    $dbw = wfGetDB(DB_MASTER);
+    $dbw->insert('manuscripts', //select table
       array( //insert values
       'manuscripts_id'                   => null,
-			'manuscripts_title'                => $posted_title,
-			'manuscripts_user'                 => $user_name,
-			'manuscripts_url'                  => $new_page_url, 
+      'manuscripts_title'                => $posted_title,
+      'manuscripts_user'                 => $user_name,
+      'manuscripts_url'                  => $new_page_url,
       'manuscripts_date'                 => $date,
       'manuscripts_lowercase_title'      => $lowercase_title,
       'manuscripts_collection'           => $collection, 
       'manuscripts_lowercase_collection' => $lowercase_collection,  
-      'manuscripts_datesort'             => $date2,   
-			),__METHOD__,
-			'IGNORE' );
-		if ($dbw->affectedRows()){
-      //insert succeeded
-			return true;
-		}else{
-		  //return error
-	    return false;
-		}
-	}
-         
+      'manuscripts_datesort'             => $date2,
+       ),__METHOD__,
+       'IGNORE' );
+    if ($dbw->affectedRows()){
+    //insert succeeded
+      return true;
+      
+    }else{
+    //return error
+      return false;
+      
+    }
+  }
+  
   /**
-	 * Show the upload form with error message, but do not stash the file.
-	 *
-	 * @param string $message HTML string
-	 */
-	private function showUploadError($message){
-		$message = '<h2>' . $this->msg( 'uploadwarning' )->escaped() . "</h2>\n" .
-			'<div class="error">' . $message . "</div>\n";
+   * Show the upload form with error message, but do not stash the file.
+   * 
+   * @param string $message HTML string
+   */
+  private function showUploadError($message){
+    $message = '<h2>' . $this->msg( 'uploadwarning' )->escaped() . "</h2>\n" .
+              '<div class="error">' . $message . "</div>\n";
     $this->getUploadForm($message)->show();
   }
   
@@ -616,33 +618,32 @@ class UploadFileForm extends HTMLForm {
  * This sub class displays the form on the page. Parts of this class have been copied from includes/specials/specialUpload.php,
  * and altered for the purpose of this extension
  */
-    
-	public $max_upload_size; 
+  
+  public $max_upload_size; 
   
   private $collections_message; 
   private $allowed_file_extensions; 
  
   //class constructor
-	public function __construct(IContextSource $context = null, $collections_message) {
+  public function __construct(IContextSource $context = null, $collections_message) {
     
     global $wgNewManuscriptOptions;
         
     $this->max_upload_size = $wgNewManuscriptOptions['max_upload_size'];
     $this->collections_message = $collections_message; 
     $this->allowed_file_extensions =  $wgNewManuscriptOptions['allowed_file_extensions'];
-
-		$descriptor = $this->getSourceSection();
+    
+    $descriptor = $this->getSourceSection();
 
     //reference to the parent constructor
-		parent::__construct($descriptor, $context, 'upload'); 
-
-		# Set some form properties
-		$this->setSubmitText($this->msg('newmanuscript-submit'));
-		$this->setSubmitName('wpUpload');
-		# Used message keys: 'accesskey-upload', 'tooltip-upload'
-		$this->setSubmitTooltip('upload');
-		$this->setId('mw-upload-form');
-	}
+    parent::__construct($descriptor, $context, 'upload'); 
+    # Set some form properties
+    $this->setSubmitText($this->msg('newmanuscript-submit'));
+    $this->setSubmitName('wpUpload');
+    # Used message keys: 'accesskey-upload', 'tooltip-upload'
+    $this->setSubmitTooltip('upload');
+    $this->setId('mw-upload-form');
+  }
   
   /**
    * This function adds the title information, the title field, the uploadfile button and the extension information
@@ -653,7 +654,7 @@ class UploadFileForm extends HTMLForm {
    */
   private function getSourceSection(){
     
-		$descriptor = array();
+    $descriptor = array();
          
     $descriptor['title_message'] = array(
       'type' => 'info',
@@ -689,38 +690,37 @@ class UploadFileForm extends HTMLForm {
       'class' => 'HTMLTextField', 
       'maxlength'=> 50,
     );
-		
-		$descriptor['UploadFile'] = array(
-		  'class' => 'UploadSourceFile', //UploadSourceFile
-			'section' => 'source',
-			'type' => 'file',
-			'id' => 'wpUploadFile',
-			'label-message' => 'sourcefilename',
-			'help' => $this->msg( 'upload-maxfilesize',
-				$this->getContext()->getLanguage()->formatSize($this->max_upload_size)
-			)->parse() .
-				$this->msg('word-separator' )->escaped() .
-				$this->msg('upload_source_file' )->escaped(),
-			'checked' => true,
-		);
-
-		$descriptor['Extensions'] = array(
-			'type' => 'info',
-			'section' => 'source', 
-			'default' => $this->getExtensionsMessage(),
-			'raw' => true,
-		);
+    
+    $descriptor['UploadFile'] = array(
+      'class' => 'UploadSourceFile', //UploadSourceFile
+      'section' => 'source',
+      'type' => 'file',
+      'id' => 'wpUploadFile',
+      'label-message' => 'sourcefilename',
+      'help' => $this->msg( 'upload-maxfilesize',
+        $this->getContext()->getLanguage()->formatSize($this->max_upload_size))->parse() .
+      $this->msg('word-separator' )->escaped() .
+      $this->msg('upload_source_file' )->escaped(),
+      'checked' => true,
+    );
+    
+    $descriptor['Extensions'] = array(
+      'type' => 'info',
+      'section' => 'source',
+      'default' => $this->getExtensionsMessage(),
+      'raw' => true,
+    );
               
     //add html form entries
-		return $descriptor;
-	}
+    return $descriptor;
+  }
   
   /**
    * Retrieves a list of allowed file types. 
    * 
    * @return string
    */
-  	private function getExtensionsMessage() {
+  private function getExtensionsMessage() {
 		
     $wg_modified_file_extensions = $this->allowed_file_extensions; 
 
@@ -731,39 +731,38 @@ class UploadFileForm extends HTMLForm {
         $this->getContext()->getLanguage()->commaList( array_unique($wg_modified_file_extensions) )
       )->parseAsBlock() .
       "</div>\n";
-
-		return $extensionsList;
+    
+    return $extensionsList;
+  }
+  
+  /**
+   * Add the upload JS and show the form.
+   */
+  public function show() {
+    $this->addUploadJS();
+    parent::show();
 	}
   
-	/**
-	 * Add the upload JS and show the form.
-	 */
-	public function show() {
-		$this->addUploadJS();
-		parent::show();
-	}
-  
-	/**
-	 * Add upload JS to the OutputPage (the JS construct the preview image)
+  /**
+   * Add upload JS to the OutputPage (the JS construct the preview image)
    * 
    * Location of the javascript files:
    * resources/src/mediawiki.special/mediawiki.special.upload.js
    * skins/common/upload.js
    * 
    * Additional information about the modules can be found in resources/Resources.php
-	 */
-	private function addUploadJS() {
- 
-		$scriptVars = array(
-			'wgMaxUploadSize' => $this->max_upload_size, 
-		);
-
-		$out = $this->getOutput();
-		$out->addJsConfigVars($scriptVars);
-
-		$out->addModules( array(
-			'mediawiki.legacy.upload', // Old form stuff...
-			'mediawiki.special.upload', // Newer extras for thumbnail preview.
+   */
+  private function addUploadJS() {
+    
+    $scriptVars = array(
+      'wgMaxUploadSize' => $this->max_upload_size, 
+    );
+    
+    $out = $this->getOutput();
+    $out->addJsConfigVars($scriptVars);
+    $out->addModules( array(
+      'mediawiki.legacy.upload', // Old form stuff...
+      'mediawiki.special.upload', // Newer extras for thumbnail preview.
     ));
   }
 }

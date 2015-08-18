@@ -50,7 +50,7 @@ class SpecialBeginCollate extends SpecialPage {
   private $max_pages_collection; 
    
   //class constructor
-	public function __construct(){
+  public function __construct(){
     
     global $wgNewManuscriptOptions, $wgMetaTableTag, $wgArticleUrl;  
     
@@ -70,7 +70,7 @@ class SpecialBeginCollate extends SpecialPage {
     $this->collection_array = array();
 
     include('textConverter.php');
-		parent::__construct('BeginCollate');
+    parent::__construct('BeginCollate');
 	}
   
   /**
@@ -124,7 +124,7 @@ class SpecialBeginCollate extends SpecialPage {
   /**
    * This function determines if the user has the right permissions. If a valid request was posted, this request is processed. Otherwise, the default page is shown 
    */
-	public function execute(){
+  public function execute(){
     
     $out = $this->getOutput();
     $user_object = $this->getUser();    
@@ -263,7 +263,7 @@ class SpecialBeginCollate extends SpecialPage {
                         false, null, $editor_object->contentFormat);
     
     if (!$doEditStatus->isOK() ) {
-			$errors = $doEditStatus->getErrorsArray();
+      $errors = $doEditStatus->getErrorsArray();
       return false;
     }
     
@@ -377,17 +377,13 @@ class SpecialBeginCollate extends SpecialPage {
     $filtered_raw_text = $this->filterText($raw_text);
         
     return $filtered_raw_text; 
-    }
+  }
     
   /**
    * This function filters out tags, and text in between certain tags. It also trims the text, and adds a single space to the last charachter if needed 
    */
   private function filterText($raw_text){
-    
-     //filter out anything after the metatable tag
-//    $tag_position = strpos($raw_text,$this->metatable_tag);
-//    $raw_text = substr($raw_text,0,$tag_position);
-        
+            
     //filter out the following tags, and all text in between the tags
     
     //metatable tag
@@ -627,30 +623,31 @@ class SpecialBeginCollate extends SpecialPage {
 
 		$dbw = wfGetDB(DB_MASTER);
     
-    $insert_values = array( 
-			'tempcollate_user'                  => $this->user_name,  
+    $insert_values = array(
+      'tempcollate_user'                  => $this->user_name,  
       'tempcollate_titles_array'          => $titles_array,
       'tempcollate_new_url'               => $new_url,
       'tempcollate_main_title'            => $main_title,
-      'tempcollate_main_title_lowercase'  => $main_title_lowercase,  
-			'tempcollate_collatex'              => $collatex_output
+      'tempcollate_main_title_lowercase'  => $main_title_lowercase,
+      'tempcollate_collatex'              => $collatex_output
 			);
     
     //upsert = INSERT.. ON DUPLICATE KEY UPDATE
-		$dbw->upsert(
+    $dbw->upsert(
         'tempcollate', //select table
          $insert_values,
          array('tempcollate_user'), //tempcollate_unique
          $insert_values,
          __METHOD__ 
         );
-        
-		if ($dbw->affectedRows()){
+    
+    if ($dbw->affectedRows()){
       //insert succeeded
-			return true;
-		}else{
-		  //return error
-	    return false;
+      return true;
+    
+    }else{
+      //return error    
+      return false;
 		}
   }
   
@@ -662,34 +659,36 @@ class SpecialBeginCollate extends SpecialPage {
    * @param type $main_title_lowercase
    * @return boolean
    */
-  	private function storeCollations($new_url, $main_title, $main_title_lowercase, $titles_array, $collatex_output){
+  private function storeCollations($new_url, $main_title, $main_title_lowercase, $titles_array, $collatex_output){
       
     $user_name = $this->user_name; 
       
     $date = date("d-m-Y H:i:s"); 
     
     $main_title_lowercase = strtolower($main_title);
-  
-		$dbw = wfGetDB(DB_MASTER);
-		$dbw->insert('collations', //select table
+    
+    $dbw = wfGetDB(DB_MASTER);
+    $dbw->insert('collations', //select table
       array( //insert values
-			'collations_user'                 => $user_name,
-			'collations_url'                  => $new_url,
+      'collations_user'                 => $user_name,
+      'collations_url'                  => $new_url,
       'collations_date'                 => $date,
       'collations_main_title'           => $main_title, 
       'collations_main_title_lowercase' => $main_title_lowercase,
       'collations_titles_array'         => $titles_array,
-      'collations_collatex'             => $collatex_output    
-			),__METHOD__,
-			'IGNORE' );
-		if ($dbw->affectedRows()){
+      'collations_collatex'             => $collatex_output
+       ),__METHOD__,
+       'IGNORE' );
+    if ($dbw->affectedRows()){
       //insert succeeded
-			return true;
-		}else{
-		  //return error
-	    return false;
-		}
-	}
+      return true;
+      
+    }else{
+      //return error
+      return false;
+    
+    }  
+  }
   
   /**
    * This function constructs the HTML collation table, and buttons

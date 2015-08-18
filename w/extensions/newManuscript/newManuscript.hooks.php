@@ -77,9 +77,9 @@ class newManuscriptHooks {
   private $max_charachters_manuscript; 
    
  /**
-	 * Assigns globals to properties
-	 * Creates default values when these have not been set
-	 */
+  * Assign globals to properties
+  * Creates default values when these have not been set
+  */
   private function assignGlobalsToProperties($old_title = null){
 
     global $wgLang,$wgScriptPath,$wgOut,$wgNewManuscriptOptions,$wgWebsiteRoot;
@@ -103,16 +103,12 @@ class newManuscriptHooks {
     
     return;
   }
-      
+  
   /**
-	 * editPageShowEditFormFields hook
+   * editPageShowEditFormFields hook
    * 
    * This function loads the zoomviewer if the editor is in edit mode. 
-   * 	 
-	 * @param $editPage EditPage
-	 * @param $output OutputPage
-	 * @return bool
-	 */
+   */
   public function onEditPageShowEditFormInitial(EditPage $editPage, OutputPage &$output){
 
     if( isset( $_GET[ 'action' ] ) and $_GET[ 'action' ] !== 'edit' ){
@@ -120,10 +116,10 @@ class newManuscriptHooks {
     }
 			
     $this->assignGlobalsToProperties();
-   
-		if(!$this->urlValid()){
-			return true; 
-		}
+    
+    if(!$this->urlValid()){
+      return true;   
+    }
     
     $this->edit_mode = true; 
     
@@ -151,11 +147,11 @@ class newManuscriptHooks {
       return true; 
     }            
     
-    $this->assignGlobalsToProperties();    
-
-		if(!$this->urlValid()){
-			return true; 
-		}
+    $this->assignGlobalsToProperties();
+    
+    if(!$this->urlValid()){
+      return true;    
+    }
   
     $collection = $this->getCollection();
     
@@ -170,9 +166,9 @@ class newManuscriptHooks {
     $this->viewer_mode = true;
         
     $this->loadViewer($output);
-
+    
     return true;
-	}
+  }
   
   /**
    * This function retrieves the collection of the current page
@@ -319,14 +315,14 @@ class newManuscriptHooks {
     
     return true;    
   }
-      
+  
   /**
-	 * Adds the iframe HTML to the page. This HTML will be used by the zoomviewer so that it can load the correct image
-	 *
-	 * @param $output OutputPage
-	 * @return bool
-	 */
-	private function loadViewer(OutputPage $output ){
+   * Adds the iframe HTML to the page. This HTML will be used by the zoomviewer so that it can load the correct image
+   * 
+   * @param $output OutputPage
+   * @return bool 
+   */
+  private function loadViewer(OutputPage $output ){
     
     //The editor does not display correctly when 'ext.JBZV' is called using AddModuleStyles in edit mode. The reason for this is unknown.
     if($this->viewer_mode){
@@ -336,114 +332,113 @@ class newManuscriptHooks {
     if($this->edit_mode){
       $output->addModules('ext.JBZV');
     }
-        
-		$view_content = $this->formatIframeHTML();
-		$output->addHTML($view_content);
     
-    return true; 
-	}
- 
+    $view_content = $this->formatIframeHTML();
+    $output->addHTML($view_content);
+    
+    return true;
+  }
+  
   /**
-	 * Generates the HTML for the iframe
-	 *
-	 * @return string
-	 */
+   * Generates the HTML for the iframe
+   * 
+   * @return string
+   */
   private function formatIframeHTML(){
-
-		$mediawiki_dir  = $this->mediawiki_dir;
     
-		$viewer_type = $this->getViewerType();
-
-		if($viewer_type === 'js'){
+    $mediawiki_dir  = $this->mediawiki_dir;
+    $viewer_type = $this->getViewerType();
+    
+    if($viewer_type === 'js'){
       $viewer_path = 'tools/ajax-tiledviewer/ajax-tiledviewer.php';
-		}else{
-      $viewer_path = 'tools/zoomify/zoomifyviewer.php';
+      
+    }else{
+      $viewer_path = 'tools/zoomify/zoomifyviewer.php';  
     }
-
-		$image_file_path = $this->constructImageFilePath();
-		$lang = $this->lang;
-		$siteName	= $this->title_options_site_name;
-
-		$iframeHTML = '<iframe id="zoomviewerframe" src="' .  $mediawiki_dir . '/extensions/newManuscript/' . $viewer_path . '?image=' . $image_file_path . '&amp;lang=' . $lang . '&amp;sitename=' . urlencode($siteName) . '"></iframe>';
-
-		return $iframeHTML;
-	}
-  
+    
+    $image_file_path = $this->constructImageFilePath();
+    $lang = $this->lang;
+    $siteName	= $this->title_options_site_name;
+    
+    $iframeHTML = '<iframe id="zoomviewerframe" src="' .  $mediawiki_dir . '/extensions/newManuscript/' . $viewer_path . '?image=' . $image_file_path . '&amp;lang=' . $lang . '&amp;sitename=' . urlencode($siteName) . '"></iframe>';
+    
+    return $iframeHTML;
+  }
+    
  /**
-	 * Gets the default viewer type.
-	 *
-	 * @return string
-	 */ 
-  private function getViewerType(){
+  * Get the default viewer type.
+  * 
+  * @return string
+  */
+   private function getViewerType(){
+     
+     if($this->viewer_type !== NULL){
+       return $this->viewer_type;
+     }
+     
+     if($this->browserIsIE()){
+       return 'js'; 
+     }
+     
+     return 'zv'; 
+   }
+   
+ /**
+  * Determines whether the browser is Internet Explorer.
+  * 
+  * @return bool
+  */
+   private function browserIsIE(){
+     
+     $user_agent = $_SERVER['HTTP_USER_AGENT'];
+     
+     if(preg_match('/MSIE/i', $user_agent)){
+       return true; 
+     }
+     
+     return false; 
+   }
+   
+   /**
+    * Constructs the full path of the image to be passed to the iframe.
+    * 
+    * @return string
+    */
+   private function constructImageFilePath(){
+      
+      $images_root_dir = $this->images_root_dir;
+      $user_fromurl = $this->user_fromurl;
+      $filename_fromurl = $this->filename_fromurl; 
 
-		if($this->viewer_type !== NULL){
-			return $this->viewer_type;
-		}
-
-		if($this->browserIsIE()){
-			return 'js';
-		}
-
-		return 'zv';
-	}
-  
-  /**
-	 * Determines whether the browser is Internet Explorer.
-	 *
-	 * @return bool
-	 */
-	private function browserIsIE(){
-
-		$user_agent = $_SERVER['HTTP_USER_AGENT'];
-
-		if(preg_match('/MSIE/i', $user_agent)){
-			return true;
-		}
-
-		return false;
-	}
-  
-  /**
-	 * Constructs the full path of the image to be passed to the iframe. 
-	 *
-	 * @return string
-	 */
-	private function constructImageFilePath(){
-    
-		$images_root_dir = $this->images_root_dir;
-    $user_fromurl = $this->user_fromurl;
-    $filename_fromurl = $this->filename_fromurl; 
-    
-    //DIRECTORY_SEPARATOR does not work here
-    $image_file_path = '/' . $images_root_dir . '/' . $user_fromurl . '/' . $filename_fromurl . '/';
-
-		return $image_file_path;
-	}
+      //DIRECTORY_SEPARATOR does not work here
+      $image_file_path = '/' . $images_root_dir . '/' . $user_fromurl . '/' . $filename_fromurl . '/';
+      
+      return $image_file_path;
+   }
   
   /**
    * The function register, registers the wikitext <metadata> </metadata>
-   * with the parser, so that the metatable can be loaded. When these tags are encountered in the wikitext, the function render 
+   * with the parser, so that the metatable can be loaded. When these tags are encountered in the wikitext, the function render
    * is called
    */
   public static function register(Parser &$parser){
-		// Register the hook with the parser
-		$parser->setHook('metatable', array('newManuscriptHooks', 'render'));
-
-		return true;
-	}
+    
+    // Register the hook with the parser
+    $parser->setHook('metatable', array('newManuscriptHooks', 'render'));
+    return true;
+  }
   
   /**
    * This function makes a new meta table object, extracts
-   * the options in the tags, and renders the table 
+   * the options in the tags, and renders the table
    */
-	public static function render($input, $args, Parser $parser){
-		
-		$meta_table = new metaTable(); 
+  public static function render($input, $args, Parser $parser){
     
+    $meta_table = new metaTable();
     $meta_table->extractOptions($parser->replaceVariables($input));
-
-		return $meta_table->renderTable($input);
-	}
+    
+    return $meta_table->renderTable($input);
+  }
   
   /**
    * This function runs every time mediawiki gets a delete request. This function prevents
@@ -609,11 +604,11 @@ class newManuscriptHooks {
     	if ($dbw->affectedRows()){
         //something was deleted from the manuscripts table  
         return true;
-		  }else{
+      }else{
         //nothing was deleted
         return false;
-		}
-	}
+    }
+  }
   
   /**
    * This function prevents users from saving new wiki pages on NS_MANUSCRIPTS when there is no corresponding file in the database

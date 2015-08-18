@@ -24,7 +24,7 @@
 
 class prepareSlicer {
   
- /**
+/**
  * Class prepareSlicer. Prepares all paths needed by the slicer, and sends the right information to slice.pl.
  * 
  * Todo: If the slicer encounters an error while executing, the $shell_command and $perl_output should be sent to a log 
@@ -87,7 +87,7 @@ class prepareSlicer {
     global $wgUser; 
 
     $import_path = $this->import_path;
-		$export_path  = $this->export_path;
+    $export_path  = $this->export_path;
     $slicer_path = $this->slicer_path; 
     $file_name = $this->file_name; 
     
@@ -107,8 +107,8 @@ class prepareSlicer {
     elseif(!file_exists($user_export_path)){
       return 'slicer-error-exportpath';
     }
-
-		elseif(file_exists($full_export_path)){
+    
+    elseif(file_exists($full_export_path)){
       return 'slicer-error-upload';
     }
     
@@ -119,45 +119,45 @@ class prepareSlicer {
     $this->user_export_path = $user_export_path;
     $this->full_export_path = $full_export_path; 
     
-    return true; 
-	}
-
-	/*
-	 * Perform the actual slice operation, by executing the perl code (slice.pl and slicer.pl)
-	 *
-	 * @param string $sInputImagePath
-	 * @return void
-	 */
+    return true;
+  }
+  
+  /**
+   * Perform the actual slice operation, by executing the perl code (slice.pl and slicer.pl)
+   * 
+   * @param string $sInputImagePath
+   * @return void
+   */
 	private function process($full_import_path){
 
-		$slicer_path = $this->slicer_path;
+    $slicer_path = $this->slicer_path;
     $user_export_path = $this->user_export_path;
     $perl_path = $this->perl_path; 
-    
-		$shell_command = $perl_path . ' ' . $slicer_path . ' --input_file ' . $full_import_path . ' --output_path ' . $user_export_path;
-		$shell_command = str_replace('\\', '/', $shell_command ); //is this needed? 
-		$shell_command = escapeshellcmd($shell_command);
 
-		$perl_output = '';
+    $shell_command = $perl_path . ' ' . $slicer_path . ' --input_file ' . $full_import_path . ' --output_path ' . $user_export_path;
+    $shell_command = str_replace('\\', '/', $shell_command ); //is this needed? 
+    $shell_command = escapeshellcmd($shell_command);
 
-		ob_start();
-		system($shell_command);
-		$perl_output = ob_get_contents();
-		ob_end_clean();
+    $perl_output = '';
 
-		$perl_output = str_replace( "        1 file(s) moved.\r\n",'',$perl_output);
-    
-		if(strpos(strtolower($perl_output), 'error' ) !== false || !file_exists($this->full_export_path)){
+    ob_start();
+    system($shell_command);
+    $perl_output = ob_get_contents();
+    ob_end_clean();
+
+    $perl_output = str_replace( "        1 file(s) moved.\r\n",'',$perl_output);
+
+    if(strpos(strtolower($perl_output), 'error' ) !== false || !file_exists($this->full_export_path)){
       return 'slicer-error-execute'; 
     }else{
       return true; 
-		}
+    }
 	}
   
   /**
    * Delete all exported files in case something went wrong 
    */
-public function deleteExportFiles(){
+  public function deleteExportFiles(){
         
     $zoom_images_file = $this->full_export_path; 
     

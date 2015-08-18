@@ -31,7 +31,7 @@ class textConverter{
   private $url;  
   private $headers; 
 
-    // Class constructor
+  // Class constructor
   public function __construct(){ 
 
     global $wgCollationOptions;
