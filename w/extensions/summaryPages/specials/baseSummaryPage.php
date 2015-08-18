@@ -36,7 +36,7 @@ class baseSummaryPage extends SpecialPage {
   protected $offset; 
   
    //class constructor 
-	public function __construct($page_name){
+  public function __construct($page_name){
     
     global $wgNewManuscriptOptions, $wgArticleUrl; 
     
@@ -57,8 +57,8 @@ class baseSummaryPage extends SpecialPage {
     $this->uppercase_alphabet = array_merge(range('A','Z'),$numbers);
     
     $this->offset = 0; //default value
-        
-		parent::__construct($page_name);
+    
+    parent::__construct($page_name);
 	}
   
   /**
@@ -115,7 +115,7 @@ class baseSummaryPage extends SpecialPage {
   /**
    * This function calls processRequest() if a request was posted, or calls showDefaultPage() if no request was posted
    */
-	public function execute(){
+  public function execute(){
     
     $request_was_posted = $this->loadRequest();
     
@@ -123,8 +123,8 @@ class baseSummaryPage extends SpecialPage {
       return $this->processRequest();
     }
     
-    return $this->showDefaultPage();     
-	}
+    return $this->showDefaultPage(); 
+  }
   
   /**
    * This function processes the request if it was posted

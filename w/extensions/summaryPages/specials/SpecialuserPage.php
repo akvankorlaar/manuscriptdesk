@@ -135,7 +135,7 @@ class SpecialuserPage extends SpecialPage {
   /**
    * This function calls processRequest() if a request was posted, or calls showDefaultPage() if no request was posted
    */
-	public function execute(){
+  public function execute(){
     
     $out = $this->getOutput();
     $user_object = $this->getUser();
@@ -260,7 +260,7 @@ class SpecialuserPage extends SpecialPage {
       }     
     }
    
-  return $title_array;   
+    return $title_array;   
   }
   
   /**
@@ -312,7 +312,7 @@ class SpecialuserPage extends SpecialPage {
       }     
     }
    
-  return $title_array; 
+    return $title_array; 
   }
   
   /**
