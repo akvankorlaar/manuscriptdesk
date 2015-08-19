@@ -1,6 +1,29 @@
 <?php
-
-/**
+/**  
+ * This file is part of the newManuscript extension
+ * Copyright (C) 2015 Arent van Korlaar
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License Version 2, as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * 
+ * @package MediaWiki
+ * @subpackage Extensions
+ * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
+ * @copyright 2015 Arent van Korlaar
+ * 
+ * This file incorporates work covered by the following copyright and
+ * permission notice: 
+ * 
  * Copyright (C) 2013 Richard Davis
  *
  * This program is free software; you can redistribute it and/or modify
@@ -48,19 +71,9 @@ class JBTEIToolbarHooks {
 		return TRUE;
 	}
 
-
 	private function isInEditMode( $pageTitle ){
     
     global $wgNewManuscriptOptions,$wgWebsiteRoot; 
-
-		/*
-		 * TODO: Need to be able to override this in LocalSettings.php
-		 */
-
-    //checks for default Transcription Desk files. 
-		if (   preg_match( '^\w+\/(\d\d\d)\/(\d\d\d)\/(\d\d\d)^', $pageTitle ) ){
-			return TRUE;
-		}
     
     //checks for manuscripts. 
     $images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
