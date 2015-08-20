@@ -47,7 +47,6 @@ class SpecialBeginCollate extends SpecialPage {
   private $error_message;
   private $manuscripts_namespace_url;
   private $redirect_to_start; 
-  private $max_pages_collection; 
    
   //class constructor
   public function __construct(){
@@ -56,10 +55,9 @@ class SpecialBeginCollate extends SpecialPage {
     
     $this->article_url = $wgArticleUrl; 
     
-    //if $minimum_manuscripts, $maximum_manuscripts and $max_pages_collection is changed, remember to change the corresponding text in collate.i18n.php. 
+    //if $minimum_manuscripts, $maximum_manuscripts and $max_pages_collection is changed, remember to change the corresponding text in collate.i18n.php
     $this->minimum_manuscripts = 2; 
-    $this->maximum_manuscripts = 5; 
-    $this->max_pages_collection = 6; 
+    $this->maximum_manuscripts = 5; //maximum single pages allowed for collation
     
     $this->save_table = false; //default value
     $this->error_message = false; //default value
@@ -164,24 +162,18 @@ class SpecialBeginCollate extends SpecialPage {
       return $this->showError('collate-error-fewtexts');
     }
     
-    //check if the user has checked too many boxes
-    if(count($this->posted_titles_array)+count($this->collection_array) > $this->maximum_manuscripts){
-      return $this->showError('collate-error-manytexts');
-    }
-    
     $collection_count = 0; 
     
     foreach($this->collection_array as $collection_name => $json_url_array){
       $url_array = json_decode($json_url_array);
       $collection_count += count($url_array);
     }
-    
-    //check if there are more pages from collections than is allowed
-    if($collection_count > $this->max_pages_collection){
-      return $this->showError('collate-error-collectionmanytexts');
+      
+    //check if the user has checked too many boxes
+    if(count($this->posted_titles_array)+$collection_count > $this->maximum_manuscripts){
+      return $this->showError('collate-error-manytexts');
     }
-    
-          
+     
     $texts = $this->constructTexts();
     
     //if returned false, one of the posted pages did not exist
@@ -445,7 +437,6 @@ class SpecialBeginCollate extends SpecialPage {
     
     $conds = array(
        'manuscripts_user = ' . $dbr->addQuotes($user_name),
-       'manuscripts_collection != ' . $dbr->addQuotes(""),
        'manuscripts_collection != ' . $dbr->addQuotes("none"),
      ); 
     
@@ -456,11 +447,12 @@ class SpecialBeginCollate extends SpecialPage {
         'manuscripts_title',//values
         'manuscripts_url',
         'manuscripts_collection',
+        'manuscripts_lowercase_title',
       ),
       $conds, //conditions
       __METHOD__,
       array(
-      'ORDER BY' => 'manuscripts_collection',
+      'ORDER BY' => 'manuscripts_lowercase_title',
       )
     );
         

@@ -36,8 +36,7 @@ $messages['en'] = array(
   'collate-nopermission'              => 'You do not have permission to access the functionality of this page',
   'collate-fewuploads'                => 'You need to upload at least 2 manuscripts to be able to collate manuscripts. You can go to Special:newManuscript create a new manuscript page.',
   'collate-error-fewtexts'            => 'You should submit at least 2 manuscript pages in order to be able to collate something.',
-  'collate-error-manytexts'           => 'You can only collate up to 5 single manuscript pages.',
-  'collate-error-collectionmanytexts' => 'The collections you want to collate can only contain 6 single manuscript pages in total.',
+  'collate-error-manytexts'           => 'You can only collate up to 5 single manuscript pages (single pages in collections are also counted).',
   'collate-error-collatex'            => 'Collatex Server is not running or not properly configured. To resolve this, start up collatex, or reconfigure the collatex URL in localsettings.php.',
   'collate-error-notexists'           => 'Something went wrong when retrieving the wiki page texts.',
   'collate-error-database'            => 'Something went wrong while inserting into the database.',
@@ -61,15 +60,8 @@ $messages['en'] = array(
   'collate-contains'                  => 'Contains:',
   'collate-hover'                     => 'Collate the selected texts.',
   'collate-submit'                    => 'Collate',
-  'allcollations-title'               => 'All Collations',
-  'allcollations-instruction'         => 'Click one of the buttons to view all collations starting with the letter of your choice.',
-  'allcollations-nocollations'        => 'There are no collations that begin with this letter yet.',
-  'allcollations-previoushover'       => 'Go to the previous page',
-  'allcollations-previous'            => 'Back to previous page',
-  'allcollations-nexthover'           => 'Go to the next page',
-  'allcollations-next'                => 'Go to next page',
-  'allcollations-created'             => 'Created by:',
-  'allcollations-on'                  => 'On:',
+  'collatehooks-nopermission'         => 'New collations can only be created on the Special:BeginCollate page',
+  'collatehooks-nodeletepermission'   => 'You are not allowed to delete this page',
   );
 
 $messages['en-gb'] = $messages['en'];

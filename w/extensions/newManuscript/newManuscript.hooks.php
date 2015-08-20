@@ -111,7 +111,8 @@ class newManuscriptHooks {
    */
   public function onEditPageShowEditFormInitial(EditPage $editPage, OutputPage &$output){
 
-    if( isset( $_GET[ 'action' ] ) and $_GET[ 'action' ] !== 'edit' ){
+    //submit action will only be true in case the user tries to save a page with too many charachters (see '$this->max_charachters_manuscript')
+    if( isset($_GET['action']) && $_GET[ 'action' ] !== 'edit' && $_GET['action'] !== 'submit'){
       return true; 
     }
 			
@@ -142,7 +143,7 @@ class newManuscriptHooks {
    * @return boolean
    */
   public function onMediaWikiPerformAction($output,$article,$title,$user,$request,$wiki){
-     
+         
     if($wiki->getAction($request) !== 'view' ){
       return true; 
     }            
@@ -152,7 +153,7 @@ class newManuscriptHooks {
     if(!$this->urlValid()){
       return true;    
     }
-  
+      
     $collection = $this->getCollection();
     
     if($collection !== null){
@@ -221,25 +222,25 @@ class newManuscriptHooks {
     $original_image_path = $this->document_root . $partial_original_image_path; 
     
     if(!is_dir($original_image_path)){
-      return "<b>Original image is not available</b>";
+      return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
     }
     
     $file_scan = scandir($original_image_path);    
     $image_file = isset($file_scan[2])? $file_scan[2] : "";
     
     if($image_file === ""){
-      return "<b>Original image is not available</b>";
+      return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
     }
      
     $full_original_image_path = $original_image_path . $image_file; 
     
     if(!$this->isImage($full_original_image_path)){
-      return "<b>Original image is not available</b>";
+      return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
     }
     
     $link_original_image_path = $partial_original_image_path . $image_file; 
     
-    return "<a href='$link_original_image_path' target='_blank'>Original Image</a>";   
+    return "<a href='$link_original_image_path' target='_blank'>" . $this->getMessage('newmanuscripthooks-originalimage') . "</a>";   
   }
   
   /**
@@ -470,7 +471,7 @@ class newManuscriptHooks {
         
     if(($user_fromurl === null || $user_name !== $user_fromurl) && !in_array('sysop',$user_groups)){     
         //deny deletion because the current user did not create this manuscript, and the user is not an administrator
-        $error = '<br>You are not allowed to delete this page';
+        $error = "<br>" . $this->getMessage('newmanuscripthooks-nodeletepermission') . ".";
         return false; 
     }
     
@@ -650,15 +651,19 @@ class newManuscriptHooks {
       
     if(!file_exists($zoom_images_file) || !isset($user_fromurl) || !isset($filename_fromurl)){
       //the page is in NS_MANUSCRIPTS but there is no corresponding file in the database, so don't allow saving
-      $status->fatal(new RawMessage("New manuscripts can only be created on the [[Special:newManuscript]] page"));   
+      
+      $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-nopermission') . "."));   
       return true; 
     }
     
     //check if this page does not have more charachters than $max_charachters_manuscript
-    $new_content = $content->mText; 
+    $new_content = $content->mText;
     
-    if(strlen($new_content) > $this->max_charachters_manuscript){
-       $status->fatal(new RawMessage("Your manuscript page already has more than the maximum allowed charachters. "));   
+    $charachters_current_save = strlen($new_content);
+    
+    if($charachters_current_save > $this->max_charachters_manuscript){
+       $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-maxchar1') . " " . $charachters_current_save . " " . 
+           $this->getMessage('newmanuscripthooks-maxchar2') . " " . $this->max_charachters_manuscript . " " . $this->getMessage('newmanuscripthooks-maxchar3') . "."));   
        return true; 
     }
     
@@ -683,5 +688,15 @@ class newManuscriptHooks {
     }
     
     return true; 
+  }
+  
+  /**
+   * This function retrieves the message from the i18n file for String $identifier
+   * 
+   * @param type $identifier
+   * @return type
+   */
+  public function getMessage($identifier){
+    return wfMessage($identifier)->text();
   }
 }
