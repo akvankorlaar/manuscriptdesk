@@ -60,15 +60,8 @@ $messages['en'] = array(
   'collate-contains'                  => 'Contains:',
   'collate-hover'                     => 'Collate the selected texts.',
   'collate-submit'                    => 'Collate',
-  'allcollations-title'               => 'All Collations',
-  'allcollations-instruction'         => 'Click one of the buttons to view all collations starting with the letter of your choice.',
-  'allcollations-nocollations'        => 'There are no collations that begin with this letter yet.',
-  'allcollations-previoushover'       => 'Go to the previous page',
-  'allcollations-previous'            => 'Back to previous page',
-  'allcollations-nexthover'           => 'Go to the next page',
-  'allcollations-next'                => 'Go to next page',
-  'allcollations-created'             => 'Created by:',
-  'allcollations-on'                  => 'On:',
+  'collatehooks-nopermission'         => 'New collations can only be created on the Special:BeginCollate page',
+  'collatehooks-nodeletepermission'   => 'You are not allowed to delete this page',
   );
 
 $messages['en-gb'] = $messages['en'];

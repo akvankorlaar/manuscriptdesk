@@ -162,7 +162,7 @@ class collateHooks {
     //do not allow to make a new page if title object does not exist and 'save_current_table' was not posted. Leave it like this for now, but in future
     //maybe check if you can also use mediawiki's edit token for example.. 
     if(!$title_object->exists() && !$wgRequest->getText('save_current_table')){
-      $status->fatal(new RawMessage("New collations can only be created on the [[Special:beginCollate]] page")); 
+      $status->fatal(new RawMessage($this->getMessage('collatehooks-nopermission'))); 
       return true;
     }
     
@@ -203,7 +203,7 @@ class collateHooks {
     
     if(($user_fromurl === null || $user_name !== $user_fromurl) && !in_array('sysop',$user_groups)){     
         //deny deletion because the current user did not create this collation, and the user is not an administrator
-        $error = '<br>You are not allowed to delete this page';
+        $error = '<br>' . $this->getMessage('collatehooks-nodeletepermission') . '.';
         return false; 
     }
     
@@ -251,5 +251,15 @@ class collateHooks {
     }
 
     return true; 
+  }
+  
+  /**
+   * This function retrieves the message from the i18n file for String $identifier
+   * 
+   * @param type $identifier
+   * @return type
+   */
+  public function getMessage($identifier){
+    return wfMessage($identifier)->text();
   }
 }
