@@ -22,7 +22,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SpecialrecentManuscriptPages extends SpecialPage {
+class SpecialRecentManuscriptPages extends SpecialPage {
   
 /**
  * Specialrecentmanuscriptpages page. Organises the most recently added manuscript pages 
@@ -41,7 +41,7 @@ class SpecialrecentManuscriptPages extends SpecialPage {
     
     $this->max_on_page = $wgNewManuscriptOptions['max_recent'];
     
-    parent::__construct('recentManuscriptPages');
+    parent::__construct('RecentManuscriptPages');
   }
   
   /**

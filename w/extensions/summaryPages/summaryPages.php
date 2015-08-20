@@ -24,7 +24,7 @@
 
 /**
  * Usage: Add the following line in LocalSettings.php:
- * require_once( "$IP/extensions/collate/collate.php" );
+ * require_once( "$IP/extensions/summaryPages/summaryPages.php" );
  */
 
 //Check environment
@@ -38,12 +38,11 @@ if (!defined( 'MEDIAWIKI')){
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
 	'path'           => __FILE__,
-	'name'           => 'collate',
+	'name'           => 'summaryPages',
 	'author'         => 'Arent van Korlaar',
 	'version'        => '0.0.1',
 	'url'            => '',
-	'description'    => 'Allow collation of text',
-	'descriptionmsg' =>  '',
+	'description'    => 'Various special pages used to summarize data for the Manuscript Desk.',
 );
 
 //Shortcut to this extension directory
@@ -54,18 +53,18 @@ $wgAutoloadClasses['summaryPagesHooks']    = $dir . '/summaryPages.hooks.php';
 $wgExtensionMessagesFiles['summaryPages']  = __DIR__ . '/summaryPages.i18n.php';
 
 //Register auto load for the special page classes and register special pages
-$wgAutoloadClasses['SpecialuserPage'] = $dir . '/specials/SpecialuserPage.php';
-$wgAutoloadClasses['SpecialallManuscriptPages'] = $dir . '/specials/SpecialallManuscriptPages.php';
-$wgAutoloadClasses['SpecialallCollections'] = $dir . '/specials/SpecialallCollections.php';
-$wgAutoloadClasses['SpecialrecentManuscriptPages'] = $dir . '/specials/SpecialrecentManuscriptPages.php';
-$wgAutoloadClasses['SpecialallCollations'] = $dir . '/specials/SpecialallCollations.php';
+$wgAutoloadClasses['SpecialUserPage'] = $dir . '/specials/SpecialUserPage.php';
+$wgAutoloadClasses['SpecialAllManuscriptPages'] = $dir . '/specials/SpecialAllManuscriptPages.php';
+$wgAutoloadClasses['SpecialAllCollections'] = $dir . '/specials/SpecialAllCollections.php';
+$wgAutoloadClasses['SpecialRecentManuscriptPages'] = $dir . '/specials/SpecialRecentManuscriptPages.php';
+$wgAutoloadClasses['SpecialAllCollations'] = $dir . '/specials/SpecialAllCollations.php';
 $wgAutoloadClasses['baseSummaryPage'] = $dir . '/specials/baseSummaryPage.php';
 
-$wgSpecialPages['userPage'] = 'SpecialuserPage';
-$wgSpecialPages['allManuscriptPages'] = 'SpecialallManuscriptPages';
-$wgSpecialPages['allCollections'] = 'SpecialallCollections';
-$wgSpecialPages['recentManuscriptPages'] = 'SpecialrecentManuscriptPages';
-$wgSpecialPages['allCollations'] = 'SpecialallCollations';
+$wgSpecialPages['UserPage'] = 'SpecialUserPage';
+$wgSpecialPages['AllManuscriptPages'] = 'SpecialAllManuscriptPages';
+$wgSpecialPages['AllCollections'] = 'SpecialAllCollections';
+$wgSpecialPages['RecentManuscriptPages'] = 'SpecialRecentManuscriptPages';
+$wgSpecialPages['AllCollations'] = 'SpecialAllCollations';
 
 //Extra file loaded later 
 $wgResourceModules['ext.buttonStyles'] = array(

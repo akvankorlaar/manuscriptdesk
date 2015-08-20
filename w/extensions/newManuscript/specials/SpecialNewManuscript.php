@@ -8,6 +8,10 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
+ * Todo: Find out how to disable viewing 'Maintenance Reports' for normal users
+ * 
+ * Todo: Fix the title of the extension special pages displayed in Special:SpecialPages
+ * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
  * Todo: Try to create unit tests for the extensions. See: https://www.mediawiki.org/wiki/Manual:PHP_unit_testing/Writing_unit_tests_for_extensions , and check 
@@ -43,7 +47,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SpecialnewManuscript extends SpecialPage {
+class SpecialNewManuscript extends SpecialPage {
   
   /**
    * This class handles file uploads for the newManuscript extension. 
@@ -86,7 +90,7 @@ class SpecialnewManuscript extends SpecialPage {
 
     
     include('prepareSlicer.php');
-    parent::__construct('newManuscript');
+    parent::__construct('NewManuscript');
   }
   
   /**
