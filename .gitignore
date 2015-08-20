@@ -4,6 +4,8 @@
 # But not these files...
 !.gitignore
 !.htaccess
+!README.md
+!exampleLocalsettings.php 
 !CollateTable.sql
 !ManuscriptsTable.sql
 !TempcollateTable.sql

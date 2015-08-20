@@ -84,6 +84,7 @@ $messages['en'] = array(
   'newmanuscript-title'                           => 'New Manuscript Page',
   'newmanuscript-title-instruction'               => 'Please enter the title for your manuscript page below. This title can only contain letters or digits.',
   'newmanuscript-collections-instruction'         => 'You can also add your new manuscript page to a collection. In this way you can link your manuscript page to other manuscript pages. This is optional. The collection title can also only contain letters or digits.',
+  'newmanuscript-collections-instruction2'        => 'Note that pages within a collection will be linked in alphabetical order.', 
   'newmanuscript-collections'                     => 'Your current collection(s): ',
   'newmanuscript-submit'                          => 'Create New Manuscript Page',
   'recentmanuscriptpages-title'                   => 'Recent Manuscript Pages',
