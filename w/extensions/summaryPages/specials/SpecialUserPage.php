@@ -22,7 +22,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SpecialuserPage extends SpecialPage {
+class SpecialUserPage extends SpecialPage {
   
 /**
  * SpecialuserPage. Organises all content created by a user
@@ -73,7 +73,7 @@ class SpecialuserPage extends SpecialPage {
     $this->id_collations = 'button';
     $this->id_collections = 'button';
     
-    parent::__construct('userPage');
+    parent::__construct('UserPage');
   }
   
   /**

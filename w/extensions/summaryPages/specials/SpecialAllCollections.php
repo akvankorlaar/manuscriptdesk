@@ -22,7 +22,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SpecialallCollections extends baseSummaryPage {
+class SpecialAllCollections extends baseSummaryPage {
   
 /**
  * SpecialallCollections page. Organises all collections. The method 'execute', located in the parent class 'summaryPages', is the first class that will run when opening
@@ -32,7 +32,7 @@ class SpecialallCollections extends baseSummaryPage {
   public function __construct(){
     
     //call the parent constructor. The parent constructor (in 'summaryPages' class) will call the 'SpecialPage' class (grandparent) 
-    parent::__construct('allCollections');
+    parent::__construct('AllCollections');
   }
   
   /**

@@ -20,9 +20,10 @@ Additionally, your server needs to have:
 
 And ofcourse all the other requirements needed for MediaWiki.
 
+##Technical documentation##
 
-
-
+The extensions are largely built according to the recommended structure for MediaWiki extensions: 
+See <https://www.mediawiki.org/wiki/Manual:Developing_extensions> or see <https://www.mediawiki.org/wiki/Extension:Example> for an example extension.
 
 
 

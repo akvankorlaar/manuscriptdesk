@@ -24,7 +24,7 @@
 
 /**
  * Usage: Add the following line in LocalSettings.php:
- * require_once( "$IP/extensions/collate/collate.php" );
+ * require_once( "$IP/extensions/stylometricAnalysis/stylometricAnalysis.php" );
  */
 
 // Check environment
@@ -38,40 +38,41 @@ if (!defined( 'MEDIAWIKI')){
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
 	'path'           => __FILE__,
-	'name'           => 'collate',
+	'name'           => 'stylometricAnalysis',
 	'author'         => 'Arent van Korlaar',
 	'version'        => '0.0.1',
 	'url'            => '',
-	'description'    => 'This extension permits users to collate texts for the Manuscript Desk.',
+	'description'    => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
 );
 
 //Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
 //Auto load classes 
-$wgAutoloadClasses['collateHooks']    = $dir . '/collate.hooks.php';
-$wgAutoloadClasses['collate'] = $dir . '/collate.classes.php';
-$wgExtensionMessagesFiles['collate']  = __DIR__ . '/collate.i18n.php';
+//$wgAutoloadClasses['collateHooks']    = $dir . '/collate.hooks.php';
+//$wgAutoloadClasses['collate'] = $dir . '/collate.classes.php';
+$wgExtensionMessagesFiles['stylometricAnalysis']  = __DIR__ . '/stylometricAnalysis.i18n.php';
 
-//Register auto load for the special page classes and register special pages
-$wgAutoloadClasses['SpecialBeginCollate'] = $dir . '/specials/SpecialBeginCollate.php';
+////Register auto load for the special page classes and register special pages
+$wgAutoloadClasses['SpecialStylometricAnalysis'] = $dir . '/specials/SpecialstylometricAnalysis.php';
 
-$wgSpecialPages['BeginCollate'] = 'SpecialBeginCollate';
+$wgSpecialPages['stylometricAnalysis'] = 'SpecialStylometricAnalysis';
+//
+////Extra file loaded later 
+//$wgResourceModules['ext.collate' ] = array(
+//		'localBasePath' => dirname( __FILE__ ) . '/css',  
+//		'styles'  => '/ext.collate.css',
+//);
+//
+//
+////Instantiate the collateHooks class and register the hooks
+//$collateHooks = new collateHooks();
+//
+//$wgHooks['MediaWikiPerformAction'][] = array($collateHooks, 'onMediaWikiPerformAction');
+//$wgHooks['ArticleDelete'][] = array($collateHooks, 'onArticleDelete');
+//$wgHooks['PageContentSave'][] = array($collateHooks,'onPageContentSave');
+//$wgHooks['BeforePageDisplay'][] = array($collateHooks, 'onBeforePageDisplay');
 
-//Extra file loaded later 
-$wgResourceModules['ext.collate' ] = array(
-		'localBasePath' => dirname( __FILE__ ) . '/css',  
-		'styles'  => '/ext.collate.css',
-);
-
-
-//Instantiate the collateHooks class and register the hooks
-$collateHooks = new collateHooks();
-
-$wgHooks['MediaWikiPerformAction'][] = array($collateHooks, 'onMediaWikiPerformAction');
-$wgHooks['ArticleDelete'][] = array($collateHooks, 'onArticleDelete');
-$wgHooks['PageContentSave'][] = array($collateHooks,'onPageContentSave');
-$wgHooks['BeforePageDisplay'][] = array($collateHooks, 'onBeforePageDisplay');
 
 
 

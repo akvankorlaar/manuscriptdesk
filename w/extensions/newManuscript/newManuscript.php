@@ -41,7 +41,7 @@ $wgExtensionCredits['parserhook'][] = array(
 	'author'         => 'Arent van Korlaar',
 	'version'        => '0.0.1',
 	'url'            => '',
-	'description'    => 'Allows users to create new manuscripts and upload images',
+	'description'    => 'This extension permits users to create new manuscript pages for the Manuscript Desk.',
 );
 
 //Shortcut to this extension directory
@@ -53,9 +53,9 @@ $wgAutoloadClasses['metaTable'] = $dir . '/newManuscript.classes.php';
 $wgExtensionMessagesFiles['NewManuscript']  = __DIR__ . '/newManuscript.i18n.php';
 
 //Register auto load for the special page classes and register special pages
-$wgAutoloadClasses['SpecialnewManuscript'] = $dir . '/specials/SpecialnewManuscript.php';
+$wgAutoloadClasses['SpecialNewManuscript'] = $dir . '/specials/SpecialNewManuscript.php';
 
-$wgSpecialPages['newManuscript'] = 'SpecialnewManuscript';
+$wgSpecialPages['NewManuscript'] = 'SpecialNewManuscript';
 
 //Extra files containing CSS loaded later 
 $wgResourceModules['ext.JBZV' ] = array(
