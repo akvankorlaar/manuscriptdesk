@@ -212,10 +212,10 @@ $wgHiddenPrefs[] = 'skin';
 ##############################################################
 
 //website root. This is used to locate the zoomImages and initialUpload directories. The full path to the website root must be specified here. 
-$wgWebsiteRoot = 'C:/xampp/htdocs/mediawikinew';
+$wgWebsiteRoot = 'path/to/website/root';
 
 //Primary disk. Disk on which the images and the website is stored.  
-$wgPrimaryDisk = 'C:';
+$wgPrimaryDisk = 'main disk here';
 
 //the following arrays are global configuration settings that are used within the extensions 'collate' and 'newManuscript'
 $wgCollationOptions = array(
