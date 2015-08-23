@@ -51,6 +51,8 @@ $dir = __DIR__ . '/';
 //Auto load classes 
 $wgAutoloadClasses['collateHooks']    = $dir . '/collate.hooks.php';
 $wgAutoloadClasses['collate'] = $dir . '/collate.classes.php';
+$wgAutoloadClasses['textConverter'] = $dir . '/specials/textConverter.php';
+$wgAutoloadClasses['collateWrapper'] = $dir . '/specials/collateWrapper.php';
 $wgExtensionMessagesFiles['collate']  = __DIR__ . '/collate.i18n.php';
 
 //Register auto load for the special page classes and register special pages

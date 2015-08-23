@@ -50,6 +50,9 @@ $dir = __DIR__ . '/';
 //Auto load classes 
 $wgAutoloadClasses['newManuscriptHooks']    = $dir . '/newManuscript.hooks.php';
 $wgAutoloadClasses['metaTable'] = $dir . '/newManuscript.classes.php';
+$wgAutoloadClasses['newManuscriptForm'] = $dir . 'specials/newManuscriptForm.php';
+$wgAutoloadClasses['prepareSlicer'] = $dir . 'specials/prepareSlicer.php';
+$wgAutoloadClasses['newManuscriptWrapper'] = $dir . 'specials/newManuscriptWrapper.php';
 $wgExtensionMessagesFiles['NewManuscript']  = __DIR__ . '/newManuscript.i18n.php';
 
 //Register auto load for the special page classes and register special pages
@@ -64,8 +67,9 @@ $wgResourceModules['ext.JBZV' ] = array(
 );
 
 $wgResourceModules['ext.metatable'] = array(
-		'localBasePath' => dirname( __FILE__ ) . '/css',  
-		'styles'  => '/ext.metatable.css',
+		'localBasePath' => dirname( __FILE__ ),  
+		'styles'  => 'css/ext.metatable.css',
+    'scripts' => 'js/ext.testjavascript.js',
 );
 
 //Instantiate the newManuscriptHooks class and register the hooks

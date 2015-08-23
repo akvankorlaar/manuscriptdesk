@@ -37,6 +37,7 @@ class SpecialUserPage extends SpecialPage {
   private $next_page_possible;
   private $previous_page_possible;   
   private $offset; 
+  private $next_offset; 
   private $user_name; 
   private $view_manuscripts;
   private $view_collations;
@@ -163,207 +164,18 @@ class SpecialUserPage extends SpecialPage {
    * This function processes the request if it was posted
    */
   private function processRequest(){
-            
-    $title_array = $this->retrieveManuscriptTitles();
+    
+    if($this->view_manuscripts){
+      $summary_page_wrapper = new summaryPageWrapper('UserPageManuscriptPages', $this->max_on_page, $this->offset, $this->user_name);
+    }elseif($this->view_collations){
+      $summary_page_wrapper = new summaryPageWrapper('UserPageCollations', $this->max_on_page, $this->offset, $this->user_name);
+    }elseif($this->view_collections){
+      $summary_page_wrapper = new summaryPageWrapper('UserPageCollections', $this->max_on_page, $this->offset, $this->user_name);
+    }
+              
+    list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
     
     $this->showPage($title_array);          
-  }
-  
-  /**
-   * This function prepares the database configuration settings, and then calls the database to fetch manuscript titles
-   * 
-   * @return type an array of all manuscripts
-   */
-  private function retrieveManuscriptTitles(){
-            
-    $dbr = wfGetDB(DB_SLAVE);
-    
-    $user_name = $this->user_name;   
-                               
-    $conds = array(
-    'manuscripts_user = ' . $dbr->addQuotes($user_name),  
-    );       
-       
-    if($this->view_manuscripts){
-      
-      $conds = array(
-        'manuscripts_user = ' . $dbr->addQuotes($user_name),  
-      );  
-
-      return $this->retrieveFromManuscripts($dbr,$conds);
-    }elseif($this->view_collations){
-      
-      $conds = array(
-        'collations_user = ' . $dbr->addQuotes($user_name),  
-      ); 
-
-      return $this->retrieveFromCollations($dbr,$conds);
-      
-    }elseif($this->view_collections){
-      
-      $conds = array(
-        'manuscripts_user = ' . $dbr->addQuotes($user_name),
-        'manuscripts_collection != ' . $dbr->addQuotes(""),
-        'manuscripts_collection != ' . $dbr->addQuotes("none"),
-      ); 
-
-      return $this->retrieveManuscriptCollections($dbr,$conds);
-    }
-  }
-  
-  /**
-   * This function retrieves data from the 'manuscripts' table
-   * 
-   * @return type
-   */
-  private function retrieveFromManuscripts($dbr,$conds, $title_array = array()){
-    
-    //Database query
-    $res = $dbr->select(
-      'manuscripts', //from
-      array(
-        'manuscripts_title',//values
-        'manuscripts_url',
-        'manuscripts_date',
-        'manuscripts_collection',
-        'manuscripts_lowercase_title',
-         ),
-      $conds, //conditions
-      __METHOD__,
-      array(
-        'ORDER BY' => 'manuscripts_lowercase_title',
-        'LIMIT' => $this->max_on_page+1,
-        'OFFSET' => $this->offset, 
-      )
-      );
-        
-    if ($res->numRows() > 0){
-      //while there are still titles in this query
-      while ($s = $res->fetchObject()){
-        
-        //add titles to the title array as long as it is not bigger than max_on_page
-        if (count($title_array) < $this->max_on_page){
-          
-          $title_array[] = array(
-          'manuscripts_title' => $s->manuscripts_title,
-          'manuscripts_url' => $s->manuscripts_url,
-          'manuscripts_date' => $s->manuscripts_date,
-          'manuscripts_collection' => $s->manuscripts_collection,
-        );
-
-        //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
-        }else{
-          $this->next_page_possible = true;
-          $this->next_offset = ($this->offset)+($this->max_on_page);          
-          break; 
-        }
-      }     
-    }
-   
-    return $title_array;   
-  }
-  
-  /**
-   * This function retrieves data from the 'collations' table
-   * 
-   * @param type $dbr
-   * @param type $conds
-   * @param type $titles_array
-   */
-  private function retrieveFromCollations($dbr, $conds, $title_array = array()){
-    
-      //Database query
-    $res = $dbr->select(
-      'collations', //from
-      array(
-        'collations_url',//values
-        'collations_date',
-        'collations_main_title',
-        'collations_main_title_lowercase'
-         ),
-      $conds, //conditions
-      __METHOD__,
-      array(
-        'ORDER BY' => 'collations_main_title_lowercase',
-        'LIMIT' => $this->max_on_page+1,
-        'OFFSET' => $this->offset, 
-      )
-      );
-        
-    if ($res->numRows() > 0){
-      //while there are still titles in this query
-      while ($s = $res->fetchObject()){
-        
-        //add titles to the title array as long as it is not bigger than max_on_page
-        if (count($title_array) < $this->max_on_page){
-          
-          $title_array[] = array(
-          'collations_url' => $s->collations_url,
-          'collations_date' => $s->collations_date,
-          'collations_main_title' => $s->collations_main_title,
-        );
-
-        //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
-        }else{
-          $this->next_page_possible = true;
-          $this->next_offset = ($this->offset)+($this->max_on_page);          
-          break; 
-        }
-      }     
-    }
-   
-    return $title_array; 
-  }
-  
-  /**
-   * This function retrieves data of manuscripts contained in collections from the 'manuscripts' table
-   * 
-   * @return type
-   */
-  private function retrieveManuscriptCollections($dbr, $conds, $title_array = array()){
-    
-     //Database query
-    $res = $dbr->select(
-      'manuscripts', //from
-      array(
-        'manuscripts_title',//values
-        'manuscripts_url',
-        'manuscripts_date',
-        'manuscripts_collection',
-         ),
-      $conds, //conditions
-      __METHOD__,
-      array(
-        'ORDER BY' => 'manuscripts_collection',
-        'LIMIT' => $this->max_on_page+1,
-        'OFFSET' => $this->offset, 
-      )
-      );
-        
-    if ($res->numRows() > 0){
-      //while there are still titles in this query
-      while ($s = $res->fetchObject()){
-        
-        //add titles to the title array as long as it is not bigger than max_on_page
-        if (count($title_array) < $this->max_on_page){
-          
-          $title_array[] = array(
-          'manuscripts_title' => $s->manuscripts_title,
-          'manuscripts_url' => $s->manuscripts_url,
-          'manuscripts_date' => $s->manuscripts_date,
-          'manuscripts_collection' => $s->manuscripts_collection,  
-        );
-
-        //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
-        }else{
-          $this->next_page_possible = true;
-          $this->next_offset = ($this->offset)+($this->max_on_page);          
-          break; 
-        }
-      }     
-    }
-   
-  return $title_array;  
   }
     
   /**

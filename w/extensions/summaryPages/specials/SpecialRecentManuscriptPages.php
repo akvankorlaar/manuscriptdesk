@@ -48,72 +48,14 @@ class SpecialRecentManuscriptPages extends SpecialPage {
    * This function 
    */
   public function execute(){
-        
-    $title_array = $this->retrieveManuscriptTitles();
+      
+    $summary_page_wrapper = new summaryPageWrapper('RecentManuscriptPages',$this->max_on_page);
+    
+    $title_array = $summary_page_wrapper->retrieveFromDatabase();
         
     $this->showPage($title_array);
   }
   
-  /**
-   * This function prepares the database configuration settings, and then calls the database to fetch manuscript titles
-   * 
-   * @return type an array of all manuscripts
-   */
-  private function retrieveManuscriptTitles(){
-            
-    $dbr = wfGetDB(DB_SLAVE);
-                             
-    $conds = array(
-    'manuscripts_lowercase_title >= ' . $dbr->addQuotes(""),
-    );
-             
-    return $this->retrieveFromDatabase($dbr,$conds);    
-  }
-  
-  /**
-   * This function retrieves titles from the wiki database
-   * 
-   * @return type
-   */
-  private function retrieveFromDatabase($dbr,$conds, $title_array = array()){
-    
-    //Database query
-    $res = $dbr->select(
-      'manuscripts', //from
-      array(
-        'manuscripts_title', //values
-        'manuscripts_user',
-        'manuscripts_url',
-        'manuscripts_date',
-        'manuscripts_collection',
-        'manuscripts_lowercase_title',
-        'manuscripts_datesort'
-        ), 
-      $conds, //conditions
-      __METHOD__,
-      array(
-        'ORDER BY' => 'manuscripts_datesort DESC',
-        'LIMIT' => $this->max_on_page,
-      )
-      );
-        
-    if ($res->numRows() > 0){
-      //while there are still titles in this query
-      while ($s = $res->fetchObject()){
-                  
-        $title_array[] = array(
-        'manuscripts_title' => $s->manuscripts_title,
-        'manuscripts_user' => $s->manuscripts_user,
-        'manuscripts_url' => $s->manuscripts_url,
-        'manuscripts_date' => $s->manuscripts_date,
-        'manuscripts_collection' => $s->manuscripts_collection,  
-          );  
-      }     
-    }
-    
-    return $title_array;   
-  }
-    
   /**
    * This function shows the page after a request has been processed
    * 
