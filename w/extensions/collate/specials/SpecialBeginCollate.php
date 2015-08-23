@@ -67,7 +67,6 @@ class SpecialBeginCollate extends SpecialPage {
     $this->posted_titles_array = array();
     $this->collection_array = array();
 
-    include('textConverter.php');
     parent::__construct('BeginCollate');
 	}
   
@@ -199,8 +198,10 @@ class SpecialBeginCollate extends SpecialPage {
     
     //construct an URL for the new page
     list($main_title, $new_url) = $this->makeURL($titles_array);
+    
+    $collate_wrapper = new collateWrapper($this->user_name);
 
-    $status = $this->storeTempcollate($titles_array, $main_title, $new_url, $collatex_output);
+    $status = $collate_wrapper->storeTempcollate($titles_array, $main_title, $new_url, $collatex_output);
     
     if(!$status){
       return $this->showError('collate-error-database');
@@ -215,8 +216,10 @@ class SpecialBeginCollate extends SpecialPage {
    */
   private function processSaveTable(){
     
-    $user_name = $this->user_name; 
-    list($titles_array, $new_url, $main_title, $main_title_lowercase, $collatex_output) = $this->getTempcollate();
+    $user_name = $this->user_name;
+    $collate_wrapper = new collateWrapper($this->user_name);
+    
+    list($titles_array, $new_url, $main_title, $main_title_lowercase, $collatex_output) = $collate_wrapper->getTempcollate();
             
     $local_url = $this->createNewPage($new_url);
     
@@ -224,7 +227,7 @@ class SpecialBeginCollate extends SpecialPage {
       return $this->showError('collate-error-wikipage');
     }
     
-    $status = $this->storeCollations($new_url, $main_title, $main_title_lowercase, $titles_array, $collatex_output);
+    $status = $collate_wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $titles_array, $collatex_output);
     
     if(!$status){
       return $this->showError('collate-error-database');
@@ -250,7 +253,7 @@ class SpecialBeginCollate extends SpecialPage {
        
      //make a new page
     $editor_object = new EditPage($article);
-    $content_new = new wikitextcontent('<!--page created-->');
+    $content_new = new wikitextcontent('<!--You can edit this page to add additional information. The table will still be displayed.-->');
     $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97,
                         false, null, $editor_object->contentFormat);
     
@@ -287,8 +290,7 @@ class SpecialBeginCollate extends SpecialPage {
     }
     
     $titles_array = !empty($posted_hidden_collection_titles) ? array_merge($this->posted_titles_array,$posted_hidden_collection_titles) : $this->posted_titles_array; 
-    
-    
+        
     $full_manuscripts_url = $this->full_manuscripts_url; 
 
     foreach($titles_array as &$full_url){
@@ -413,74 +415,19 @@ class SpecialBeginCollate extends SpecialPage {
    */
   private function prepareDefaultPage($out){
     
-    list($url_array,$title_array) = $this->getManuscriptTitles();
+    $collate_wrapper = new collateWrapper($this->user_name);
+    
+    list($url_array,$title_array) = $collate_wrapper->getManuscriptTitles();
 
     if(count($url_array) < $this->minimum_manuscripts){
       return $out->addWikiText($this->msg('collate-fewuploads'));
     }
-
-    $collection_urls = $this->checkForManuscriptCollections(); 
+    
+    $collection_urls = $collate_wrapper->checkForManuscriptCollections(); 
     
     return $this->showDefaultPage($url_array,$title_array,$collection_urls, $out);    
 	}
    
-  /**
-   * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
-   * 
-   * @param type $collection_urls
-   * @return type
-   */
-  private function checkForManuscriptCollections($collection_urls = array()){
-    
-    $user_name = $this->user_name; 
-    $dbr = wfGetDB(DB_SLAVE);
-    
-    $conds = array(
-       'manuscripts_user = ' . $dbr->addQuotes($user_name),
-       'manuscripts_collection != ' . $dbr->addQuotes("none"),
-     ); 
-    
-     //Database query
-    $res = $dbr->select(
-      'manuscripts', //from
-      array(
-        'manuscripts_title',//values
-        'manuscripts_url',
-        'manuscripts_collection',
-        'manuscripts_lowercase_title',
-      ),
-      $conds, //conditions
-      __METHOD__,
-      array(
-      'ORDER BY' => 'manuscripts_lowercase_title',
-      )
-    );
-        
-    if ($res->numRows() > 0){
-      //while there are still titles in this query
-      while ($s = $res->fetchObject()){
-                    
-        //check if the current collection has been added
-        if(!isset($collection_urls[$s->manuscripts_collection])){
-          $collection_urls[$s->manuscripts_collection] = array(
-              'manuscripts_url' => array($s->manuscripts_url),
-              'manuscripts_title' => array($s->manuscripts_title),
-              );
-     
-        //if the collection already has been added, append the new manuscripts_url to the current array
-        }else{
-          end($collection_urls);
-          $key = key($collection_urls);
-          $collection_urls[$key]['manuscripts_url'][] = $s->manuscripts_url;
-          $collection_urls[$key]['manuscripts_title'][] = $s->manuscripts_title;
-
-        }                
-      }     
-    }
-  
-    return $collection_urls; 
-  }
-  
   /**
    * This function makes a new URL, which will be used when the user saves the current table
    * 
@@ -514,174 +461,7 @@ class SpecialBeginCollate extends SpecialPage {
     
     return $this->prepareDefaultPage($this->getOutput());
   }
-   
-  /**
-   * This function fetches the data showing which pages have been created by the current user by retrieving this data from the 'manuscripts' table
-   * 
-   * @return type
-   */
-  private function getManuscriptTitles($url_array = array(), $title_array = array()){
     
-    $dbr = wfGetDB(DB_SLAVE);
-    $user_name = $this->user_name;   
-        
-    //conditions: the user should be the current user
-      $conds = array(
-      'manuscripts_user = ' . $dbr->addQuotes($user_name),  
-      ); 
-    
-    //Database query
-    $res = $dbr->select(
-      'manuscripts', //from
-      array(
-        'manuscripts_title',//values
-        'manuscripts_url',
-        'manuscripts_lowercase_title',
-         ),
-      $conds, //conditions
-      __METHOD__,
-      array(
-        'ORDER BY' => 'manuscripts_lowercase_title',
-      )
-      );
-        
-    if ($res->numRows() > 0){
-      //while there are still titles in this query
-      while ($s = $res->fetchObject()){
-        
-        //add titles to the title array and url array     
-        $title_array[] = $s->manuscripts_title;
-        $url_array[] = $s->manuscripts_url;     
-      }     
-    }
-   
-  return array($url_array, $title_array);   
-  }
-   
-  /**
-   * This function gets the stored collate values from 'tempcollate'
-   */
-  private function getTempcollate(){
-        
-    $dbr = wfGetDB(DB_SLAVE);
-    $user_name = $this->user_name; 
-    
-    $conds =  array(
-      'tempcollate_user = ' . $dbr->addQuotes($user_name),  
-      ); 
-    
-    //Database query
-    $res = $dbr->select(
-      'tempcollate', //from
-      array(
-        'tempcollate_user',//values
-        'tempcollate_titles_array',
-        'tempcollate_new_url',
-        'tempcollate_main_title',
-        'tempcollate_main_title_lowercase',
-        'tempcollate_collatex'
-         ),
-      $conds, //conditions
-      __METHOD__ 
-      );
-        
-    if ($res->numRows() === 1){
-      $s = $res->fetchObject();
-       
-      $titles_array = $s->tempcollate_titles_array;
-      $new_url = $s->tempcollate_new_url;
-      $main_title = $s->tempcollate_main_title;
-      $main_title_lowercase = $s->tempcollate_main_title_lowercase; 
-      $collatex_output = $s->tempcollate_collatex;
-      
-      
-      return array($titles_array, $new_url, $main_title, $main_title_lowercase, $collatex_output);
-    
-    }else{
-
-      return false; 
-    }
-  }
-  
-  /**
-   * Insert the result of the collation into 'tempcollate', which will be used when the user wants to save the current table
-   *  
-   * @param type $collatex_output
-   */
-  private function storeTempcollate($titles_array, $main_title, $new_url, $collatex_output){
-        
-    $titles_array = json_encode($titles_array);
-    $main_title_lowercase = strtolower($main_title);
-
-		$dbw = wfGetDB(DB_MASTER);
-    
-    $insert_values = array(
-      'tempcollate_user'                  => $this->user_name,  
-      'tempcollate_titles_array'          => $titles_array,
-      'tempcollate_new_url'               => $new_url,
-      'tempcollate_main_title'            => $main_title,
-      'tempcollate_main_title_lowercase'  => $main_title_lowercase,
-      'tempcollate_collatex'              => $collatex_output
-			);
-    
-    //upsert = INSERT.. ON DUPLICATE KEY UPDATE
-    $dbw->upsert(
-        'tempcollate', //select table
-         $insert_values,
-         array('tempcollate_user'), //tempcollate_unique
-         $insert_values,
-         __METHOD__ 
-        );
-    
-    if ($dbw->affectedRows()){
-      //insert succeeded
-      return true;
-    
-    }else{
-      //return error    
-      return false;
-		}
-  }
-  
-  /**
-   * This function stores the collation data in 'collations' when the user chooses to save the current table
-   * 
-   * @param type $new_url
-   * @param type $main_title
-   * @param type $main_title_lowercase
-   * @return boolean
-   */
-  private function storeCollations($new_url, $main_title, $main_title_lowercase, $titles_array, $collatex_output){
-      
-    $user_name = $this->user_name; 
-      
-    $date = date("d-m-Y H:i:s"); 
-    
-    $main_title_lowercase = strtolower($main_title);
-    
-    $dbw = wfGetDB(DB_MASTER);
-    $dbw->insert('collations', //select table
-      array( //insert values
-      'collations_user'                 => $user_name,
-      'collations_url'                  => $new_url,
-      'collations_date'                 => $date,
-      'collations_main_title'           => $main_title, 
-      'collations_main_title_lowercase' => $main_title_lowercase,
-      'collations_titles_array'         => $titles_array,
-      'collations_collatex'             => $collatex_output
-       ),__METHOD__,
-       'IGNORE' );
-    if ($dbw->affectedRows()){
-      //insert succeeded
-      return true;
-      
-    }else{
-      //return error
-      return false;
-    
-    }  
-  }
-  
   /**
    * This function constructs the HTML collation table, and buttons
    * 
@@ -714,6 +494,8 @@ class SpecialBeginCollate extends SpecialPage {
             <input type='submit' class='begincollate-submitbutton-two' name= 'save_current_table' title='$save_hover_message' value='$save_message'> 
             </form>
        </div>";
+    
+    $html .= "<br><br>";
     
     $collate = new collate();
     
@@ -753,9 +535,7 @@ class SpecialBeginCollate extends SpecialPage {
     if(!empty($collection_urls)){
       $html .= $this->msg('collate-instruction2') .  '<br>';
     }
-    
-    //$html .= $this->msg('<br>');
-    
+        
     if($this->error_message){
      $error_message = $this->error_message;
      
@@ -768,7 +548,7 @@ class SpecialBeginCollate extends SpecialPage {
     
     $html .= "<div id='begincollate-manuscriptpages'>";
     $html .= "<h3>$manuscript_message</h3>";
-    $html .= "<ol class = 'checkbox_grid'>";
+    $html .= "<ul class = 'begincollate-checkbox'>";
     
     //display a checkbox for each manuscript uploaded by this user
     foreach($url_array as $index=>$url){
@@ -779,7 +559,7 @@ class SpecialBeginCollate extends SpecialPage {
       $html .="<li><input type='checkbox' name='text$index' id= 'collate_checkbox' value='$url'>$title_name</li>";
     }
     
-    $html .= "</ol>";   
+    $html .= "</ul>";   
     $html .= "</div>";
        
     //if there are manuscript collections
@@ -789,7 +569,7 @@ class SpecialBeginCollate extends SpecialPage {
             
       $html .= "<div id='begincollate-collections'>";
       $html .= "<h3>$collection_message</h3>";
-      $html .= "<ol class ='checkbox_grid'>";
+      $html .= "<ul class ='begincollate-checkbox'>";
 
       $a = 0;
       foreach($collection_urls as $collection_name=>$small_url_array){
@@ -811,7 +591,7 @@ class SpecialBeginCollate extends SpecialPage {
         $a = ++$a; 
       }
       
-      $html .= "</ol>";
+      $html .= "</ul>";
     }
   
     $html .= "</div>";

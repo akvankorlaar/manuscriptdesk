@@ -28,17 +28,21 @@ class baseSummaryPage extends SpecialPage {
   public $uppercase_alphabet; 
   public $article_url;
   
+  protected $page_name;
   protected $button_name; //value of the button the user clicked on 
   protected $max_on_page; //maximum manuscripts shown on a page
   protected $next_page_possible;
   protected $previous_page_possible; 
   protected $is_number; 
   protected $offset; 
+  protected $next_offset; 
   
    //class constructor 
   public function __construct($page_name){
     
     global $wgNewManuscriptOptions, $wgArticleUrl; 
+    
+    $this->page_name = $page_name; 
     
     $this->article_url = $wgArticleUrl; 
     
@@ -123,6 +127,7 @@ class baseSummaryPage extends SpecialPage {
       return $this->processRequest();
     }
     
+    //show the page without processing the request
     return $this->showDefaultPage(); 
   }
   
@@ -130,9 +135,17 @@ class baseSummaryPage extends SpecialPage {
    * This function processes the request if it was posted
    */
   protected function processRequest(){
-                
-    $title_array = $this->retrieveManuscriptTitles(); 
+                   
+    //get the next letter of the alphabet
+    $next_letter_alphabet = $this->getNextLetter();
+    
+    //intiialize the database wrapper
+    $summary_page_wrapper = new summaryPageWrapper($this->page_name, $this->max_on_page, $this->offset,"", $this->button_name, $next_letter_alphabet);
+    
+    //retrieve data from the database wrapper
+    list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
         
+    //show the page
     $this->showPage($title_array);          
   }
   
