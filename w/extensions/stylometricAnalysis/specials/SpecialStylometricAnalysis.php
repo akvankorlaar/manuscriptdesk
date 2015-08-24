@@ -67,7 +67,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
 	}
   
   /**
-   * This function loads requests when a user submits the collate form
+   * This function loads requests when a user submits the StylometricAnalysis form
    * 
    * @return boolean
    */
@@ -292,12 +292,16 @@ class SpecialStylometricAnalysis extends SpecialPage {
    */
   private function prepareDefaultPage($out){
     
-    $collection_urls = $this->checkForManuscriptCollections();
+    $stylometric_analysis_wrapper = new stylometricAnalysisWrapper($this->user_name);
     
+    $collection_urls = $stylometric_analysis_wrapper->checkForManuscriptCollections();
+    
+    //check if the total number of collections is less than the minimum
     if(count($collection_urls) < $this->minimum_collections){
       return $out->addWikiText($this->msg('stylometricanalysis-fewcollections'));
     }
     
+    //check for each collection if the number of pages is less than the minimum
     foreach($collection_urls as $collection_name => $smaller_url_array){
       if(count($smaller_url_array) < $this->minimum_pages_per_collection){
         return $out->addWikiText($this->msg('stylometricanalysis-fewpages'));
@@ -306,63 +310,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     return $this->showDefaultPage($collection_urls, $out);    
 	}
-   
-  /**
-   * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
-   * 
-   * @param type $collection_urls
-   * @return type
-   */
-  private function checkForManuscriptCollections($collection_urls = array()){
-    
-    $user_name = $this->user_name; 
-    $dbr = wfGetDB(DB_SLAVE);
-    
-    $conds = array(
-       'manuscripts_user = ' . $dbr->addQuotes($user_name),
-       'manuscripts_collection != ' . $dbr->addQuotes("none"),
-     ); 
-    
-     //Database query
-    $res = $dbr->select(
-      'manuscripts', //from
-      array(
-        'manuscripts_title',//values
-        'manuscripts_url',
-        'manuscripts_collection',
-        'manuscripts_lowercase_title',
-      ),
-      $conds, //conditions
-      __METHOD__,
-      array(
-      'ORDER BY' => 'manuscripts_lowercase_title',
-      )
-    );
-        
-    if ($res->numRows() > 0){
-      //while there are still titles in this query
-      while ($s = $res->fetchObject()){
-                    
-        //check if the current collection has been added
-        if(!isset($collection_urls[$s->manuscripts_collection])){
-          $collection_urls[$s->manuscripts_collection] = array(
-              'manuscripts_url' => array($s->manuscripts_url),
-              'manuscripts_title' => array($s->manuscripts_title),
-              );
-     
-        //if the collection already has been added, append the new manuscripts_url to the current array
-        }else{
-          end($collection_urls);
-          $key = key($collection_urls);
-          $collection_urls[$key]['manuscripts_url'][] = $s->manuscripts_url;
-          $collection_urls[$key]['manuscripts_title'][] = $s->manuscripts_title;
-
-        }                
-      }     
-    }
-  
-    return $collection_urls; 
-  }
    
   /**
    * This function fetches the correct error message, and redirects to showDefaultPage()
@@ -381,8 +328,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   /**
    * This function constructs the HTML for the default page
    * 
-   * @param type $url_array
-   * @param type $title_array
    * @param type $collection_urls
    * @param type $out
    */
@@ -415,10 +360,10 @@ class SpecialStylometricAnalysis extends SpecialPage {
         
     $html .= "<form id='stylometricanalysis-form' action='" . $article_url . "Special:StylometricAnalysis' id='stylometricanalysis-form' method='post'>";
       
-    $collection_message = $this->msg('stylometricanalysis-collections');
+    $collection_header = $this->msg('stylometricanalysis-collectionheader');
 
     $html .= "<div id='stylometricanalysis-collection'>";
-    $html .= "<h3>$collection_message</h3>";
+    $html .= "<h3>$collection_header</h3>";
     $html .= "<ol class ='checkbox_grid'>";
 
     $a = 0;
@@ -445,18 +390,24 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $html .= "</ol>";
     $html .= "</div>";
     
-    //dislpay a second div with a large textfield in which users can paste words they want to use ...and make a second submit button  
-  
-    $html .= "<br><br>"; 
+    $word_form_header = $this->msg('stylometricanalysis-wordformheader');
+    $placeholder_text = $this->msg('stylometricanalysis-placeholder');
     
+    $html .= "<div id='stylometricanlaysis-wordform'>";
+    $html .= "<h3>$word_form_header</h3>";
+      
+    $html .= "<br><br>"; 
+      
+    $html .= "<textarea rows='4' cols = '50' id='stylometricanalysis-textarea' maxlength='500' placeholder='$placeholder_text'>";
+    $html .= "</textarea>";
+      
     $submit_hover_message = $this->msg('stylometricanalysis-hover');
     $submit_message = $this->msg('stylometricanalysis-submit');
     
-    $html .= "<input type = 'submit' id='stylometricanalysis-submitbutton' title = $submit_hover_message value=$submit_message></form>";
-    //$html .= "<input type = 'submit' id='stylometricanalysis-submitbutton-two' title = $submit_hover_message value=$submit_message></form>";
+    $html .= "<input type = 'submit' id='stylometricanalysis-submitbutton' title = $submit_hover_message value=$submit_message>";
+    
+    $html .= "</form>";
         
     $out->addHTML($html);  
   }
 }
-
-

@@ -133,8 +133,8 @@ class SpecialNewManuscript extends SpecialPage {
     }
  
     //set page title
-    $out->setPageTitle($this->msg('newmanuscript-title'));
-    
+    $out->setPageTitle($this->msg('newmanuscript'));
+        
     $max_uploads_reached = $this->checkNumberOfUploads();
     
     //If the user has already uploaded the maximum amount of allowed manuscript pages, do not display the form

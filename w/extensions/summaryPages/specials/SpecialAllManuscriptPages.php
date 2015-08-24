@@ -45,7 +45,7 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
     
     $article_url = $this->article_url; 
     
-    $out->setPageTitle($this->msg('allmanuscriptpages-title'));
+    $out->setPageTitle($this->msg('allmanuscriptpages'));
     
     $html ='<form action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
 
@@ -137,7 +137,7 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
     
     $article_url = $this->article_url; 
         
-    $out->setPageTitle($this->msg('allmanuscriptpages-title'));    
+    $out->setPageTitle($this->msg('allmanuscriptpages'));    
     
     $html ='<form action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
 

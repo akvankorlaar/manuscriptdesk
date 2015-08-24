@@ -43,35 +43,33 @@ $wgExtensionCredits['parserhook'][] = array(
 	'version'        => '0.0.1',
 	'url'            => '',
 	'description'    => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
+  'descriptionmsg' => 'stylometricanalysis-desc'
 );
 
 //Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
 //Auto load classes 
-//$wgAutoloadClasses['collateHooks']    = $dir . '/collate.hooks.php';
-//$wgAutoloadClasses['collate'] = $dir . '/collate.classes.php';
-$wgExtensionMessagesFiles['stylometricAnalysis']  = __DIR__ . '/stylometricAnalysis.i18n.php';
+$wgAutoloadClasses['stylometricAnalysisHooks']    = $dir . '/stylometricAnalysis.hooks.php';
+$wgAutoloadClasses['stylometricAnalysisWrapper'] = $dir . '/specials/stylometricAnalysisWrapper.php';
+$wgExtensionMessagesFiles['stylometricAnalysis']  = $dir . '/stylometricAnalysis.i18n.php';
 
 ////Register auto load for the special page classes and register special pages
 $wgAutoloadClasses['SpecialStylometricAnalysis'] = $dir . '/specials/SpecialstylometricAnalysis.php';
 
 $wgSpecialPages['stylometricAnalysis'] = 'SpecialStylometricAnalysis';
-//
-////Extra file loaded later 
-//$wgResourceModules['ext.collate' ] = array(
-//		'localBasePath' => dirname( __FILE__ ) . '/css',  
-//		'styles'  => '/ext.collate.css',
-//);
-//
-//
-////Instantiate the collateHooks class and register the hooks
-//$collateHooks = new collateHooks();
-//
-//$wgHooks['MediaWikiPerformAction'][] = array($collateHooks, 'onMediaWikiPerformAction');
-//$wgHooks['ArticleDelete'][] = array($collateHooks, 'onArticleDelete');
-//$wgHooks['PageContentSave'][] = array($collateHooks,'onPageContentSave');
-//$wgHooks['BeforePageDisplay'][] = array($collateHooks, 'onBeforePageDisplay');
+
+//Extra file loaded later 
+$wgResourceModules['ext.stylometricAnalysis' ] = array(
+		'localBasePath' => dirname( __FILE__ ) . '/css',  
+		'styles'  => '/ext.stylometricAnalysis.css',
+);
+
+
+//Instantiate the stylometricAnalysisHooks class and register the hooks
+$stylometricAnalysisHooks = new stylometricAnalysisHooks();
+
+$wgHooks['BeforePageDisplay'][] = array($stylometricAnalysisHooks, 'onBeforePageDisplay');
 
 
 

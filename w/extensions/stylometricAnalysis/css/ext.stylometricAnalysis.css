@@ -1,0 +1,77 @@
+/**
+ * This file is part of the collate extension
+ * Copyright (C) 2015 Arent van Korlaar
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * @package MediaWiki
+ * @subpackage Extensions
+ * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
+ * @copyright 2015 Arent van Korlaar
+ */
+
+#stylometricanalysis-infobox{
+padding: 0.3em;
+float: right; 
+margin-left: 15px; 
+margin-bottom: 8px; 
+border: 1px solid #aa8899; 
+background: #e1e9e1; 
+text-align: center; 
+font-size: 95%; 
+line-height: 1.5em; 
+width: 28em;  
+}
+
+#stylometricanalysis-infobox th{
+  background: #286819; 
+  padding: 0.3em; 
+  font-size: 1.1em;  
+  color: #FFF
+}
+
+#stylometricanalysis-td{
+  background: #286819; 
+  padding: 0.3em; 
+  color: #FFF;
+}
+
+#stylometricanalysis-form{
+    overflow-y: auto;  
+    position: relative;
+    height: 100%;
+}
+
+#stylometricanalysis-textarea{
+  display: inline-block;
+  height: 100%;
+  width: 30%; 
+  position: absolute;
+}
+
+#stylometricanalysis-collections{ 
+  display: inline-block;
+  height: 100%; 
+  width: 30%; 
+}
+
+#stylometricanalysis-submitbutton{
+  width: 30em; 
+  height: 1.5em; 
+  cursor: pointer;
+  position: fixed; 
+}
+
+
+

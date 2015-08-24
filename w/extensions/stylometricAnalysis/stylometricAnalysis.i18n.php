@@ -32,7 +32,9 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 
 $messages = array();
 
-$messages['en'] = array(  
+$messages['en'] = array( 
+  'stylometricanalysis'                     => 'Stylometric Analysis',
+  'stylometricanalysis-desc'                => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
   );
 
 $messages['en-gb'] = $messages['en'];

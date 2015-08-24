@@ -32,7 +32,8 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 
 $messages = array();
 
-$messages['en'] = array(  
+$messages['en'] = array(
+  'begincollate'                      => 'Collate Manuscript Pages',
   'collate-nopermission'              => 'You do not have permission to access the functionality of this page',
   'collate-fewuploads'                => 'You need to upload at least 2 manuscripts to be able to collate manuscripts. You can go to Special:newManuscript create a new manuscript page.',
   'collate-error-fewtexts'            => 'You should submit at least 2 manuscript pages in order to be able to collate something.',

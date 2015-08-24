@@ -46,7 +46,7 @@ class SpecialAllCollections extends baseSummaryPage {
     
     $article_url = $this->article_url; 
     
-    $out->setPageTitle($this->msg('allcollections-title'));
+    $out->setPageTitle($this->msg('allcollections'));
     
     $html ='<form action="' . $article_url . 'Special:AllCollections" method="post">';
 
@@ -150,7 +150,7 @@ class SpecialAllCollections extends baseSummaryPage {
     
     $article_url = $this->article_url; 
         
-    $out->setPageTitle($this->msg('allcollections-title'));    
+    $out->setPageTitle($this->msg('allcollections'));    
     
     $html ='<form action="' . $article_url . 'Special:AllCollections" method="post">';
 
