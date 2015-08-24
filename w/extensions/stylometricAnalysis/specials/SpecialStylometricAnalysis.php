@@ -56,7 +56,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->article_url = $wgArticleUrl; 
     
     $this->minimum_collections = 2; 
-    $this->minimum_pages_per_collection = 5; 
+    $this->minimum_pages_per_collection = 1; //change this to 5 later on 
     $this->error_message = false; //default value
     
     $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
@@ -139,151 +139,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * @return type
    */
   private function processRequest(){
+    return true; 
   }
   
-  /**
-   *  This function constructs the $titles_array used by the table, and removes the base url   
-   */
-  private function constructTitles(){
-    
-    $posted_hidden_collection_titles = array();
-    
-    if (isset($this->collection_hidden_array)){
-      //hidden fields are always sent, and so the correct posted collection titles need to be identified
-      foreach($this->collection_hidden_array as $key => $value){
-        
-        //remove everything except the number
-        $number = filter_var($key, FILTER_SANITIZE_NUMBER_INT);
-        
-        //see if this collection name appears in $this->collection_array
-        $collection_match = 'collection' . $number; 
-        if(isset($this->collection_array[$collection_match])){
-          
-          //if it does appear in $this->collection array, add this collection name to $posted_hidden_collection_titles
-          $posted_hidden_collection_titles[$key] = $value;
-        }
-      }
-    }
-    
-    $titles_array = !empty($posted_hidden_collection_titles) ? array_merge($this->posted_titles_array,$posted_hidden_collection_titles) : $this->posted_titles_array; 
-    
-    
-    $full_manuscripts_url = $this->full_manuscripts_url; 
-
-    foreach($titles_array as &$full_url){
-
-      $full_url = trim(str_replace($full_manuscripts_url,'',$full_url));
-    }
-        
-    return $titles_array;
-  }
-  
-  /**
-   * This function loops through all the posted collections and titles, and
-   * retrieves the text from the corresponding pages 
-   * 
-   * @return type
-   */
-  private function constructTexts(){
-    
-    //in $texts both single page texts and combined collection texts will be stored 
-    $texts = array();
-
-    //collect all single pages
-    foreach ($this->posted_titles_array as $file_url){
-      
-      $title_object = Title::newFromText($file_url);
-
-      if(!$title_object->exists()){
-        return false; 
-      }
-
-      $single_page_text = $this->getSinglePageText($title_object);
-
-      $texts[] = $single_page_text; 
-    }
-  
-    if($this->collection_array){
-      //collect all single pages of a collection and merge them together
-      foreach($this->collection_array as $collection_name => $json_url_array){
-
-        $url_array = json_decode($json_url_array);
-
-        $all_texts_for_one_collection = "";
-
-        //go through all urls of a collection
-        foreach($url_array as $file_url){
-
-          $title_object = Title::newFromText($file_url);
-
-          if(!$title_object->exists()){
-            return false; 
-          }
-
-          $single_page_text = $this->getSinglePageText($title_object);
-
-          //add $single_page_text to $single_page_texts
-          $all_texts_for_one_collection .= $single_page_text; 
-        }  
-
-        //add the combined texts to $texts
-        $texts[] = $all_texts_for_one_collection; 
-      }
-    }
-  
-    return $texts; 
-  }
-  
-  /**
-   * This function retrieves the wiki text from a page url
-   * 
-   * @param type $title_object
-   * @return type
-   */
-  private function getSinglePageText($title_object){
-    
-    $article_object = Wikipage::factory($title_object);  
-    $raw_text = $article_object->getRawText();
-    
-    $filtered_raw_text = $this->filterText($raw_text);
-        
-    return $filtered_raw_text; 
-  }
-    
-  /**
-   * This function filters out tags, and text in between certain tags. It also trims the text, and adds a single space to the last charachter if needed 
-   */
-  private function filterText($raw_text){
-            
-    //filter out the following tags, and all text in between the tags
-    
-    //metatable tag
-    $raw_text = preg_replace('/<metatable>[^<]+<\/metatable>/i', '', $raw_text);
-    
-    //del tag
-    $raw_text = preg_replace('/<del>[^<]+<\/del>/i', '', $raw_text);
-
-    //note tag
-    $raw_text = preg_replace('/<note>[^<]+<\/note>/i', '', $raw_text);
-    
-    //filter out any other tags, but keep all text in between the tags
-    $raw_text = strip_tags($raw_text);
-    
-    $raw_text = trim($raw_text);
-       
-    //check if it is possible to get the last charachter of the page
-    if(substr($raw_text, -1) !== false){
-      $last_charachter = substr($raw_text, -1);
-      
-      if($last_charachter !== '-'){
-        //If the last charachter of the current page is '-', this may indicate that the first word of the next page 
-        //is linked to the last word of this page because they form a single word. In other cases, add a space after the last charachter of the current page 
-        $raw_text = $raw_text . ' ';
-      }
-    }
-    
-    return $raw_text; 
-  }  
       
   /**
    * This function prepares the default page, in case no request was posted
@@ -296,34 +154,20 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     $collection_urls = $stylometric_analysis_wrapper->checkForManuscriptCollections();
     
+    //remove collections with less pages than $this->minimum_pages_per_collection from the list
+    foreach($collection_urls as $collection_name => $smaller_url_array){
+      if(count($smaller_url_array) < $this->minimum_pages_per_collection){
+        unset($collection_urls[$collection_name]);
+      }
+    }
+    
     //check if the total number of collections is less than the minimum
     if(count($collection_urls) < $this->minimum_collections){
       return $out->addWikiText($this->msg('stylometricanalysis-fewcollections'));
     }
-    
-    //check for each collection if the number of pages is less than the minimum
-    foreach($collection_urls as $collection_name => $smaller_url_array){
-      if(count($smaller_url_array) < $this->minimum_pages_per_collection){
-        return $out->addWikiText($this->msg('stylometricanalysis-fewpages'));
-      }
-    }
-    
+   
     return $this->showDefaultPage($collection_urls, $out);    
 	}
-   
-  /**
-   * This function fetches the correct error message, and redirects to showDefaultPage()
-   * 
-   * @param type $type
-   */
-  private function showError($type){
-    
-    $error_message = $this->msg($type);
-       
-    $this->error_message = $error_message;    
-    
-    return $this->prepareDefaultPage($this->getOutput());
-  }
    
   /**
    * This function constructs the HTML for the default page
@@ -360,6 +204,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
         
     $html .= "<form id='stylometricanalysis-form' action='" . $article_url . "Special:StylometricAnalysis' id='stylometricanalysis-form' method='post'>";
       
+    $html .= "<div id='stylometricanalysis-contentwrapper'>";
     $collection_header = $this->msg('stylometricanalysis-collectionheader');
 
     $html .= "<div id='stylometricanalysis-collection'>";
@@ -393,13 +238,17 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $word_form_header = $this->msg('stylometricanalysis-wordformheader');
     $placeholder_text = $this->msg('stylometricanalysis-placeholder');
     
-    $html .= "<div id='stylometricanlaysis-wordform'>";
+    $html .= "<div id='stylometricanalysis-textarea'>";
     $html .= "<h3>$word_form_header</h3>";
       
     $html .= "<br><br>"; 
       
-    $html .= "<textarea rows='4' cols = '50' id='stylometricanalysis-textarea' maxlength='500' placeholder='$placeholder_text'>";
+    $html .= "<textarea rows='4' cols = '10' id='stylometricanalysis-textarea' maxlength='500' placeholder='$placeholder_text'>";
     $html .= "</textarea>";
+    
+    $html .= "</div>";
+    
+    $html .= "</div>";
       
     $submit_hover_message = $this->msg('stylometricanalysis-hover');
     $submit_message = $this->msg('stylometricanalysis-submit');

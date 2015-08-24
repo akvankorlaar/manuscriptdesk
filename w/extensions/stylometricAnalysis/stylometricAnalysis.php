@@ -55,9 +55,9 @@ $wgAutoloadClasses['stylometricAnalysisWrapper'] = $dir . '/specials/stylometric
 $wgExtensionMessagesFiles['stylometricAnalysis']  = $dir . '/stylometricAnalysis.i18n.php';
 
 ////Register auto load for the special page classes and register special pages
-$wgAutoloadClasses['SpecialStylometricAnalysis'] = $dir . '/specials/SpecialstylometricAnalysis.php';
+$wgAutoloadClasses['SpecialStylometricAnalysis'] = $dir . '/specials/SpecialStylometricAnalysis.php';
 
-$wgSpecialPages['stylometricAnalysis'] = 'SpecialStylometricAnalysis';
+$wgSpecialPages['StylometricAnalysis'] = 'SpecialStylometricAnalysis';
 
 //Extra file loaded later 
 $wgResourceModules['ext.stylometricAnalysis' ] = array(
