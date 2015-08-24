@@ -33,7 +33,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 $messages = array();
 
 $messages['en'] = array(  
-  'allcollations-title'                           => 'All Collations',
+  'allcollations'                                 => 'All Collations',
   'allcollations-instruction'                     => 'Click one of the buttons to view all collations starting with the letter of your choice.',
   'allcollations-nocollations'                    => 'There are no collations that begin with this letter yet.',
   'allcollations-nocollations-number'             => 'There are no collations that begin with this number yet.',
@@ -43,7 +43,7 @@ $messages['en'] = array(
   'allcollations-next'                            => 'Go to next page',
   'allcollations-created'                         => 'Created by:',
   'allcollations-on'                              => 'On:',  
-  'allmanuscriptpages-title'                      => 'All Manuscript Pages',
+  'allmanuscriptpages'                      => 'All Manuscript Pages',
   'allmanuscriptpages-nomanuscripts'              => 'There are no manuscript pages that begin with this letter yet.',
   'allmanuscriptpages-nomanuscripts-number'       => 'There are no manuscript pages that begin with this number yet.',
   'allmanuscriptpages-previoushover'              => 'Go to the previous page',
@@ -53,7 +53,7 @@ $messages['en'] = array(
   'allmanuscriptpages-created'                    => 'Created by:',
   'allmanuscriptpages-on'                         => 'On:',
   'allmanuscriptpages-instruction'                => 'Click one of the buttons to view all manuscript pages starting with the letter of your choice.',
-  'allcollections-title'                          => 'All Collections',
+  'allcollections'                          => 'All Collections',
   'allcollections-nocollections'                  => 'There are no collections that begin with this letter yet.',
   'allcollections-nocollections-number'           => 'There are no collections that begin with this number yet.',
   'allcollections-instruction'                    => 'Click one of the buttons to view all collections starting with the letter of your choice.',
@@ -69,7 +69,7 @@ $messages['en'] = array(
   'userpage-admin2'                               => 'bytes left on disk, or',
   'userpage-admin3'                               => 'mb, or',
   'userpage-admin4'                               => 'gb',
-  'recentmanuscriptpages-title'                   => 'Recent Manuscript Pages',
+  'recentmanuscriptpages'                   => 'Recent Manuscript Pages',
   'recentmanuscriptpages-nomanuscripts'           => 'No manuscript pages have been created yet.',
   'recentmanuscriptpages-information'             => 'This page shows the 30 most recently created manuscript pages.',
   );

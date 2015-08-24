@@ -65,7 +65,7 @@ class SpecialRecentManuscriptPages extends SpecialPage {
     
     $out = $this->getOutput(); 
         
-    $out->setPageTitle($this->msg('recentmanuscriptpages-title'));
+    $out->setPageTitle($this->msg('recentmanuscriptpages'));
      
     if(empty($title_array)){
       return $out->addWikiText($this->msg('recentmanuscriptpages-nomanuscripts'));

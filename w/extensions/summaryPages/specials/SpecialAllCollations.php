@@ -45,7 +45,7 @@ class SpecialAllCollations extends baseSummaryPage {
     
     $article_url = $this->article_url; 
     
-    $out->setPageTitle($this->msg('allcollations-title'));
+    $out->setPageTitle($this->msg('allcollations'));
      
     $html ='<form action="' . $article_url . 'Special:AllCollations" method="post">';
 
@@ -137,7 +137,7 @@ class SpecialAllCollations extends baseSummaryPage {
     
     $article_url = $this->article_url; 
     
-    $out->setPageTitle($this->msg('allcollations-title'));    
+    $out->setPageTitle($this->msg('allcollations'));    
     
     $html ='<form action="' . $article_url . 'Special:AllCollations" method="post">';
 

@@ -32,7 +32,15 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 
 $messages = array();
 
-$messages['en'] = array(  
+$messages['en'] = array( 
+  'stylometricanalysis'                     => 'Stylometric Analysis',
+  'stylometricanalysis-desc'                => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
+  'stylometricanalysis-welcome'             => 'Welcome to the Stylometric Analysis module',
+  'stylometricanalysis-about'               => 'About the Stylometric Analysis module',
+  'stylometricanalysis-collectionheader'    => 'Collections',
+  'stylometricanalysis-wordformheader'      => 'Enter Words (Optional)',
+  'stylometricanalysis-contains'            => 'Contains:',
+  'stylometricanalysis-submit'              => 'Submit Selection',
   );
 
 $messages['en-gb'] = $messages['en'];
