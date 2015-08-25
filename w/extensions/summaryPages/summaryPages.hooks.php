@@ -37,7 +37,8 @@ class summaryPagesHooks {
 
     if($page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections'|| $page_title === 'Special:AllManuscriptPages' || $page_title === 'Special:AllCollations'){
       
-      $out->addModuleStyles("ext.buttonStyles");    
+      $out->addModuleStyles("ext.buttonStyles");
+      $out->addModules("ext.summarypageloader");
     }
     
     return true; 

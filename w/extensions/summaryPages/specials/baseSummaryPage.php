@@ -172,7 +172,20 @@ class baseSummaryPage extends SpecialPage {
 
     //current letter is 'z', so do not set an upper limit
     return ''; 
-  } 
+  }
+  
+  /**
+   * This function adds html used for the summarypage loader (see ext.summarypageloader)
+   */
+  protected function addSummaryPageLoader(){
+        
+    //shows after submit has been clicked
+    $html  = "<h3 id='summarypage-loaderdiv' style='display: none;'>Loading";
+    $html .= "<span id='summarypage-loaderspan'></span>";
+    $html .= "</h3>";
+    
+    return $html; 
+  }
 }
 
 

@@ -461,6 +461,19 @@ class SpecialBeginCollate extends SpecialPage {
     
     return $this->prepareDefaultPage($this->getOutput());
   }
+  
+  /**
+   * This function adds html used for the begincollate loader (see ext.begincollateloader)
+   */
+  private function AddBeginCollateLoader(){
+     
+    //shows after submit has been clicked
+    $html = "<h3 id='begincollate-loaderdiv'>Loading";
+    $html .= "<span id='begincollate-loaderspan'></span>";
+    $html .= "</h3>";
+    
+    return $html; 
+  }
     
   /**
    * This function constructs the HTML collation table, and buttons
@@ -497,13 +510,15 @@ class SpecialBeginCollate extends SpecialPage {
     
     $html .= "<br><br>";
     
+    $html .= $this->AddBeginCollateLoader();
+    
     $collate = new collate();
     
     $html .= $collate->renderTable($title_array, $collatex_output);
     
     return $out->addHTML($html);
   }
-    
+  
   /**
    * This function constructs the HTML for the default page
    * 
@@ -545,7 +560,7 @@ class SpecialBeginCollate extends SpecialPage {
     
     $manuscript_message = $this->msg('collate-manuscriptpages');
     
-    $html .= "<form action='" . $article_url . "Special:BeginCollate' id='begincollate-form' method='post'>";
+    $html .= "<form class='begincollate-form' action='" . $article_url . "Special:BeginCollate' method='post'>";
     
     $html .= "<div id='begincollate-manuscriptpages'>";
     $html .= "<h3>$manuscript_message</h3>";
@@ -605,10 +620,7 @@ class SpecialBeginCollate extends SpecialPage {
     
     $html .= "<br>";
     
-    //shows after submit has been clicked
-    $html .= "<h3 id='begincollate-loaderdiv'>Loading";
-    $html .= "<span id='begincollate-loaderspan'></span>";
-    $html .= "</h3>";
+    $html .= $this->AddBeginCollateLoader();
         
     $out->addHTML($html);  
   }

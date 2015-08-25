@@ -47,7 +47,7 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
     
     $out->setPageTitle($this->msg('allmanuscriptpages'));
     
-    $html ='<form action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
@@ -64,16 +64,18 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
     }
 
     $html .= '</form>';
-        
+                
     if(empty($title_array)){
       
-      $out->addHTML($html);
-
+      $html .= $this->addSummaryPageLoader();
+           
       if($this->is_number){
-        return $out->addWikiText($this->msg('allmanuscriptpages-nomanuscripts-number'));
+        $html .= "<p>" . $this->msg('allmanuscriptpages-nomanuscripts-number') . "</p>";
+      }else{
+        $html .= "<p>" . $this->msg('allmanuscriptpages-nomanuscripts') . "</p>"; 
       }
       
-      return $out->addWikiText($this->msg('allmanuscriptpages-nomanuscripts'));
+      return $out->addHTML($html);
     }
     
     if($this->previous_page_possible){
@@ -83,7 +85,7 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
       $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
       $previous_message = $this->msg('allmanuscriptpages-previous');
       
-      $html .='<form action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+      $html .='<form class="summarypage-form" action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
@@ -101,7 +103,7 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
       $next_message_hover = $this->msg('allmanuscriptpages-nexthover');    
       $next_message = $this->msg('allmanuscriptpages-next');
       
-      $html .='<form action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+      $html .='<form class="summarypage-form" action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .=("<input type='hidden' name='$this->button_name' value='$this->button_name'>"); 
@@ -109,6 +111,8 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
       
       $html.= "</form>";
     }
+    
+    $html .= $this->addSummaryPageLoader();
         
     $out->addHTML($html);
     
@@ -139,7 +143,7 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
         
     $out->setPageTitle($this->msg('allmanuscriptpages'));    
     
-    $html ='<form action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
@@ -151,10 +155,12 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
     } 
     
     $html .= '</form><br>';
+     
+    $html .= $this->addSummaryPageLoader();
     
-    $out->addHTML($html);
+    $html .= "<p>" . $this->msg('allmanuscriptpages-instruction') . "</p>";
     
-    return $out->addWikiText($this->msg('allmanuscriptpages-instruction'));
+    return $out->addHTML($html);
   }
 }
 

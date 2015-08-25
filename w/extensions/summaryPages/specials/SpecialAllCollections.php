@@ -48,7 +48,7 @@ class SpecialAllCollections extends baseSummaryPage {
     
     $out->setPageTitle($this->msg('allcollections'));
     
-    $html ='<form action="' . $article_url . 'Special:AllCollections" method="post">';
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollections" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
@@ -65,16 +65,18 @@ class SpecialAllCollections extends baseSummaryPage {
     }
 
     $html .= '</form>';
-        
+                
     if(empty($title_array)){
       
-      $out->addHTML($html);
-      
+      $html .= $this->addSummaryPageLoader();
+           
       if($this->is_number){
-        return $out->addWikiText($this->msg('allcollections-nocollections-number'));
+        $html .= "<p>" . $this->msg('allcollections-nocollections-number') . "</p>";
+      }else{
+        $html .= "<p>" . $this->msg('allcollections-nocollections') . "</p>"; 
       }
-
-      return $out->addWikiText($this->msg('allcollections-nocollections'));
+      
+      return $out->addHTML($html);
     }
     
     if($this->previous_page_possible){
@@ -84,7 +86,7 @@ class SpecialAllCollections extends baseSummaryPage {
       $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
       $previous_message = $this->msg('allmanuscriptpages-previous');
       
-      $html .='<form action="' . $article_url . 'Special:AllCollections" method="post">';
+      $html .='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollections" method="post">';
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
@@ -102,7 +104,7 @@ class SpecialAllCollections extends baseSummaryPage {
       $next_message_hover = $this->msg('allmanuscriptpages-nexthover');    
       $next_message = $this->msg('allmanuscriptpages-next');
       
-      $html .='<form action="' . $article_url . 'Special:AllCollections" method="post">';
+      $html .='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollections" method="post">';
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
@@ -110,6 +112,8 @@ class SpecialAllCollections extends baseSummaryPage {
       
       $html.= "</form>";
     }
+    
+    $html .= $this->addSummaryPageLoader();
         
     $out->addHTML($html);
     
@@ -152,7 +156,7 @@ class SpecialAllCollections extends baseSummaryPage {
         
     $out->setPageTitle($this->msg('allcollections'));    
     
-    $html ='<form action="' . $article_url . 'Special:AllCollections" method="post">';
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollections" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
@@ -165,9 +169,11 @@ class SpecialAllCollections extends baseSummaryPage {
     
     $html .= '</form><br>';
     
-    $out->addHTML($html);
+    $html .= $this->addSummaryPageLoader();
     
-    return $out->addWikiText($this->msg('allcollections-instruction'));
+    $html .= "<p>" . $this->msg('allcollections-instruction') . "</p>";
+    
+    return $out->addHTML($html);
   }
 }
 
