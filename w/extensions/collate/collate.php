@@ -48,6 +48,9 @@ $wgExtensionCredits['parserhook'][] = array(
 //Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
+$dir2 = dirname( __FILE__ );
+$dirbasename = basename( $dir2 );
+
 //Auto load classes 
 $wgAutoloadClasses['collateHooks']    = $dir . '/collate.hooks.php';
 $wgAutoloadClasses['collate'] = $dir . '/collate.classes.php';
@@ -62,10 +65,17 @@ $wgSpecialPages['BeginCollate'] = 'SpecialBeginCollate';
 
 //Extra file loaded later 
 $wgResourceModules['ext.collate' ] = array(
-		'localBasePath' => dirname( __FILE__ ) . '/css',  
-		'styles'  => '/ext.collate.css',
+		'localBasePath' => dirname( __FILE__ ),  
+		'styles'  => '/css/ext.collate.css',
 );
 
+$wgResourceModules['ext.collateloader' ] = array(
+		'scripts'  => array(
+      'js/ext.collateloader.js',
+      ),
+    'localBasePath' => __DIR__,
+    'remoteExtPath' => 'collate',
+);
 
 //Instantiate the collateHooks class and register the hooks
 $collateHooks = new collateHooks();
