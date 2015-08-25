@@ -28,9 +28,11 @@
    /**
     * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
     */
-   $('#begincollate-form').submit(function() {
-     $('#begincollate-loaderdiv').show();
-     $('#begincollate-form').hide();   
+   $('#mw-upload-form').submit(function() {
+     $('#mw-upload-form').hide();  
+     $('h2').hide(); 
+     $('.error').hide();
+     $('#newmanuscript-loaderdiv').show();   
    });
          
   /**
@@ -48,10 +50,10 @@
   function loader(){
     
    if(dots < 3){
-        $('#begincollate-loaderspan').append('.');
+        $('#newmanuscript-loaderspan').append('.');
         dots++;
    }else{
-     $('#begincollate-loaderspan').html('');
+     $('#newmanuscript-loaderspan').html('');
      dots = 0;
    }
 }

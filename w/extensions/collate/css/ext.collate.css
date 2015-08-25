@@ -87,14 +87,13 @@ width: 28em;
   display: none;
 }
 
+.begincollate-form-two{
+  position: relative;
+  display: inline-block;
+}
+
 .begincollate-submitbutton-two{
   width: 30em; 
   height: 1.5em; 
   cursor: pointer;
-}
-
-.begincollate-form-two{
-  position: relative;
-  display: inline-block;
-  left: 218px; 
 }

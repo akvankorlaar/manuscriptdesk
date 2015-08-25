@@ -60,7 +60,7 @@ $wgAutoloadClasses['SpecialNewManuscript'] = $dir . '/specials/SpecialNewManuscr
 
 $wgSpecialPages['NewManuscript'] = 'SpecialNewManuscript';
 
-//Extra files containing CSS loaded later 
+//Extra files containing CSS and javascript loaded later 
 $wgResourceModules['ext.JBZV' ] = array(
 		'localBasePath' => dirname( __FILE__ ) . '/css',  
 		'styles'  => '/ext.jbzv.css',
@@ -69,6 +69,14 @@ $wgResourceModules['ext.JBZV' ] = array(
 $wgResourceModules['ext.metatable'] = array(
 		'localBasePath' => dirname( __FILE__ ),  
 		'styles'  => 'css/ext.metatable.css',
+);
+
+$wgResourceModules['ext.newmanuscriptloader' ] = array(
+		'scripts'  => array(
+      'js/ext.newmanuscriptloader.js',
+      ),
+    'localBasePath' => __DIR__,
+    'remoteExtPath' => 'newManuscript',
 );
 
 //Instantiate the newManuscriptHooks class and register the hooks

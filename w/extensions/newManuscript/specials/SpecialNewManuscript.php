@@ -142,9 +142,11 @@ class SpecialNewManuscript extends SpecialPage {
       return $out->addWikiMsg('newmanuscript-maxreached'); 
     }
     
-    $this->getUploadForm()->show();
+    $this->addNewmanuscriptLoader();
+    
+    return $this->getUploadForm()->show();
   }
-   
+  
   /**
    * This function checks whether the user has reached the maximum of allowed uploads
    */
@@ -482,9 +484,27 @@ class SpecialNewManuscript extends SpecialPage {
    * @param string $message HTML string
    */
   private function showUploadError($message){
+    
+    $this->addNewManuscriptLoader();
+    
     $message = '<h2>' . $this->msg( 'uploadwarning' )->escaped() . "</h2>\n" .
               '<div class="error">' . $message . "</div>\n";
-    $this->getUploadForm($message)->show();
+    
+    return $this->getUploadForm($message)->show();
+  }
+  
+  /**
+   * This function adds html used for the newmanuscript loader (see ext.newmanuscriptloader)
+   */
+  private function addNewmanuscriptLoader(){
+    
+    $out = $this->getOutput();
+      //shows after submit has been clicked
+    $html  = "<h3 id='newmanuscript-loaderdiv' style='display: none;'>Loading";
+    $html .= "<span id='newmanuscript-loaderspan'></span>";
+    $html .= "</h3>";
+    
+    $out->addHTML($html);
   }
   
  /**

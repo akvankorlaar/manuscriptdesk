@@ -81,6 +81,11 @@ class newManuscriptForm extends HTMLForm {
       'maxlength'=> 50,
     );
     
+    //shows after submit has been clicked
+    $javascript_loader_message  = "<h3 id='newmanuscript-loaderdiv' style='display: none;'>Loading";
+    $javascript_loader_message .= "<span id='newmanuscript-loaderspan'></span>";
+    $javascript_loader_message .= "</h3>";
+    
     if($this->collections_message === ""){
       $collections_message = "";
     }else{
@@ -156,9 +161,8 @@ class newManuscriptForm extends HTMLForm {
   /**
    * Add upload JS to the OutputPage (the JS construct the preview image)
    * 
-   * Location of the javascript files:
+   * Location of the javascript file:
    * resources/src/mediawiki.special/mediawiki.special.upload.js
-   * skins/common/upload.js
    * 
    * Additional information about the modules can be found in resources/Resources.php
    */
@@ -171,7 +175,6 @@ class newManuscriptForm extends HTMLForm {
     $out = $this->getOutput();
     $out->addJsConfigVars($scriptVars);
     $out->addModules( array(
-      'mediawiki.legacy.upload', // Old form stuff...
       'mediawiki.special.upload', // Newer extras for thumbnail preview.
     ));
   }
