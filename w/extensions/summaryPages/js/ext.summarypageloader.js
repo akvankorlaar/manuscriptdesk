@@ -28,19 +28,11 @@
    /**
     * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
     */
-   $('.begincollate-form').submit(function() {
-     $('.begincollate-form').hide();   
-     $('#begincollate-loaderdiv').show();
+   $('.summarypage-form').submit(function() {
+     $('#summarypage-loaderdiv').show(); 
+     $('p').hide();
    });
-   
-   /**
-    * This function shows #begincollate-loaderdiv and hides .begincollate-form-two after clicking submit
-    */
-   $('.begincollate-form-two').submit(function() {
-     $('.begincollate-form-two').hide();   
-     $('#begincollate-loaderdiv').show();
-   });
-   
+         
   /**
    * This function sets the interval when calling the loader() function
    */       
@@ -56,10 +48,10 @@
   function loader(){
     
    if(dots < 3){
-        $('#begincollate-loaderspan').append('.');
-        dots++;
+      $('#summarypage-loaderspan').append('.');
+      dots++;
    }else{
-     $('#begincollate-loaderspan').html('');
+     $('#summarypage-loaderspan').html('');
      dots = 0;
    }
 }

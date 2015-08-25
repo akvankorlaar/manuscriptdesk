@@ -47,7 +47,7 @@ class SpecialAllCollations extends baseSummaryPage {
     
     $out->setPageTitle($this->msg('allcollations'));
      
-    $html ='<form action="' . $article_url . 'Special:AllCollations" method="post">';
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollations" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
@@ -64,16 +64,18 @@ class SpecialAllCollations extends baseSummaryPage {
     }
 
     $html .= '</form>';
-        
+            
     if(empty($title_array)){
-     
-      $out->addHTML($html);
       
+      $html .= $this->addSummaryPageLoader();
+           
       if($this->is_number){
-        return $out->addWikiText($this->msg('allcollations-nocollations-number'));
+        $html .= "<p>" . $this->msg('allcollations-nocollations-number') . "</p>";
+      }else{
+        $html .= "<p>" . $this->msg('allcollations-nocollations') . "</p>"; 
       }
-
-      return $out->addWikiText($this->msg('allcollations-nocollations'));
+      
+      return $out->addHTML($html);
     }
              
     if($this->previous_page_possible){
@@ -83,7 +85,7 @@ class SpecialAllCollations extends baseSummaryPage {
       
       $previous_offset = ($this->offset)-($this->max_on_page); 
       
-      $html .='<form action="' . $article_url . 'Special:AllCollations" method="post">';
+      $html .='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollations" method="post">';
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
@@ -101,7 +103,7 @@ class SpecialAllCollations extends baseSummaryPage {
       $next_hover_message = $this->msg('allcollations-nexthover');
       $next_message = $this->msg('allcollations-next');
       
-      $html .='<form action="' . $article_url . 'Special:AllCollations" method="post">';
+      $html .='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollations" method="post">';
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .=("<input type='hidden' name='$this->button_name' value='$this->button_name'>"); 
@@ -109,6 +111,8 @@ class SpecialAllCollations extends baseSummaryPage {
       
       $html.= "</form>";
     }
+    
+    $html .= $this->addSummaryPageLoader();
         
     $out->addHTML($html);
     
@@ -139,7 +143,7 @@ class SpecialAllCollations extends baseSummaryPage {
     
     $out->setPageTitle($this->msg('allcollations'));    
     
-    $html ='<form action="' . $article_url . 'Special:AllCollations" method="post">';
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollations" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
@@ -151,10 +155,12 @@ class SpecialAllCollations extends baseSummaryPage {
     } 
     
     $html .= '</form><br>';
+     
+    $html .= $this->addSummaryPageLoader();
     
-    $out->addHTML($html);  
+    $html .= "<p>" . $this->msg('allcollations-instruction') . "</p>";
     
-    return $out->addWikiText($this->msg('allcollations-instruction'));
+    return $out->addHTML($html);  
   }
 }
 

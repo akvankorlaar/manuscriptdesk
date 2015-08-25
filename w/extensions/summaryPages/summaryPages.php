@@ -73,6 +73,14 @@ $wgResourceModules['ext.buttonStyles'] = array(
 		'styles'  => '/ext.buttonStyles.css',
 );
 
+$wgResourceModules['ext.summarypageloader' ] = array(
+		'scripts'  => array(
+      'js/ext.summarypageloader.js',
+      ),
+    'localBasePath' => __DIR__,
+    'remoteExtPath' => 'newManuscript',
+);
+
 //Instantiate the collateHooks class and register the hooks
 $summary_pages_hooks_object = new summaryPagesHooks();
 

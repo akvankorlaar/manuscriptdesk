@@ -177,6 +177,19 @@ class SpecialUserPage extends SpecialPage {
     
     $this->showPage($title_array);          
   }
+  
+  /**
+   * This function adds html used for the summarypage loader (see ext.summarypageloader)
+   */
+  private function addSummaryPageLoader(){
+        
+    //shows after submit has been clicked
+    $html  = "<h3 id='summarypage-loaderdiv' style='display: none;'>Loading";
+    $html .= "<span id='summarypage-loaderspan'></span>";
+    $html .= "</h3>";
+    
+    return $html; 
+  }
     
   /**
    * This function shows the page after a request has been processed
@@ -201,7 +214,7 @@ class SpecialUserPage extends SpecialPage {
     $id_collations = $this->id_collations;
     $id_collections = $this->id_collections; 
 
-    $html ='<form action="' . $article_url . 'Special:userPage" method="post">';
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
     $html .= "<input type='submit' name='viewmanuscripts' id='$id_manuscripts' value='$manuscripts_message'>"; 
     $html .= "<input type='submit' name='viewcollations' id='$id_collations' value='$collations_message'>"; 
     $html .= "<input type='submit' name='viewcollections' id='$id_collections' value='$collections_message'>";   
@@ -230,7 +243,7 @@ class SpecialUserPage extends SpecialPage {
       $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
       $previous_message = $this->msg('allmanuscriptpages-previous');
       
-      $html .='<form action="' . $article_url . 'Special:userPage" method="post">';
+      $html .='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
@@ -248,7 +261,7 @@ class SpecialUserPage extends SpecialPage {
       $next_message_hover = $this->msg('allmanuscriptpages-nexthover');    
       $next_message = $this->msg('allmanuscriptpages-next');
       
-      $html .='<form action="' . $article_url . 'Special:userPage" method="post">';
+      $html .='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .="<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
@@ -256,6 +269,8 @@ class SpecialUserPage extends SpecialPage {
       
       $html.= "</form>";
     }
+    
+    $html .= $this->addSummaryPageLoader();
     
     $out->addHTML($html);
     
@@ -340,11 +355,13 @@ class SpecialUserPage extends SpecialPage {
     $collations_message = $this->msg('userpage-mycollations');
     $collections_message = $this->msg('userpage-mycollections');
 
-    $html ='<form action="' . $article_url . 'Special:userPage" method="post">';
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
     $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
     $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
     $html .= "<input type='submit' name='viewcollections' id='button' value='$collections_message'>";   
     $html .= '</form>';
+    
+    $html .= $this->addSummaryPageLoader();
         
     //if the current user is a sysop, display how much space is still left on the disk
     if($this->sysop){
@@ -357,8 +374,7 @@ class SpecialUserPage extends SpecialPage {
       $admin_message3 = $this->msg('userpage-admin3');
       $admin_message4 = $this->msg('userpage-admin4');
             
-      $html.= "<br><br>";
-      $html.= $admin_message1 . $free_disk_space_bytes . ' ' . $admin_message2 . ' ' . $free_disk_space_mb . ' ' . $admin_message3 . ' ' . $free_disk_space_gb . $admin_message4 . '.';
+      $html.= "<p>" . $admin_message1 . $free_disk_space_bytes . ' ' . $admin_message2 . ' ' . $free_disk_space_mb . ' ' . $admin_message3 . ' ' . $free_disk_space_gb . $admin_message4 . ".</p>";
     }
     
     return $out->addHTML($html);

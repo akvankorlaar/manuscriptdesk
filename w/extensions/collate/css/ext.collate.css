@@ -57,7 +57,7 @@ width: 28em;
   color: #FFF;
 }
 
-#begincollate-form{
+.begincollate-form{
     overflow-y: auto;  
     position: relative;
     height: 100%;
