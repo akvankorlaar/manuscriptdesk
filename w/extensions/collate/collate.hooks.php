@@ -248,6 +248,7 @@ class collateHooks {
     if($title_object->getNamespace() === NS_COLLATIONS || $page_title === 'Special:BeginCollate'){
       //add css for the collation table    
       $out->addModuleStyles('ext.collate');
+      $out->addModules('ext.collateloader');
     }
 
     return true; 

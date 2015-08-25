@@ -539,6 +539,7 @@ class SpecialBeginCollate extends SpecialPage {
     if($this->error_message){
      $error_message = $this->error_message;
      
+     $html .= "<br>";
      $html .= "<div class = 'error'>$error_message</div>";
     }
     
@@ -601,6 +602,13 @@ class SpecialBeginCollate extends SpecialPage {
     $submit_message = $this->msg('collate-submit');
     
     $html .= "<input type = 'submit' id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message></form>";
+    
+    $html .= "<br>";
+    
+    //shows after submit has been clicked
+    $html .= "<h3 id='begincollate-loaderdiv'>Loading";
+    $html .= "<span id='begincollate-loaderspan'></span>";
+    $html .= "</h3>";
         
     $out->addHTML($html);  
   }

@@ -69,7 +69,6 @@ $wgResourceModules['ext.JBZV' ] = array(
 $wgResourceModules['ext.metatable'] = array(
 		'localBasePath' => dirname( __FILE__ ),  
 		'styles'  => 'css/ext.metatable.css',
-    'scripts' => 'js/ext.testjavascript.js',
 );
 
 //Instantiate the newManuscriptHooks class and register the hooks
