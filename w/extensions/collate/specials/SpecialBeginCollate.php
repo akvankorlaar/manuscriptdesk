@@ -415,7 +415,7 @@ class SpecialBeginCollate extends SpecialPage {
    */
   private function prepareDefaultPage($out){
     
-    $collate_wrapper = new collateWrapper($this->user_name);
+    $collate_wrapper = new collateWrapper($this->user_name, $this->maximum_manuscripts);
     
     list($url_array,$title_array) = $collate_wrapper->getManuscriptTitles();
 
@@ -566,7 +566,7 @@ class SpecialBeginCollate extends SpecialPage {
     
     $html .= "<div id='begincollate-manuscriptpages'>";
     $html .= "<h3>$manuscript_message</h3>";
-    $html .= "<ul class = 'begincollate-checkbox'>";
+    $html .= "<ul>";
     
     //display a checkbox for each manuscript uploaded by this user
     foreach($url_array as $index=>$url){
@@ -574,7 +574,7 @@ class SpecialBeginCollate extends SpecialPage {
       //get corresponding title
       $title_name = $title_array[$index];
       
-      $html .="<li><input type='checkbox' name='text$index' id= 'collate_checkbox' value='$url'>$title_name</li>";
+      $html .="<li><input type='checkbox' class='begincollate-checkbox' name='text$index' value='$url'>$title_name</li>";
     }
     
     $html .= "</ul>";   
@@ -587,7 +587,7 @@ class SpecialBeginCollate extends SpecialPage {
             
       $html .= "<div id='begincollate-collections'>";
       $html .= "<h3>$collection_message</h3>";
-      $html .= "<ul class ='begincollate-checkbox'>";
+      $html .= "<ul>";
 
       $a = 0;
       foreach($collection_urls as $collection_name=>$small_url_array){
@@ -600,7 +600,7 @@ class SpecialBeginCollate extends SpecialPage {
                 
         //add a checkbox for the collection
         $html .="<li>";
-        $html .="<input type='checkbox' name='collection$a' value='$json_small_url_array'>$collection_name";
+        $html .="<input type='checkbox' class='begincollate-checkbox-col' name='collection$a' value='$json_small_url_array'>$collection_name";
         $html .="<input type='hidden' name='collection_hidden$a' value='$collection_name'>"; 
         $html .= "<br>";
         $html .= $collection_text; 
@@ -618,7 +618,7 @@ class SpecialBeginCollate extends SpecialPage {
     $submit_hover_message = $this->msg('collate-hover');
     $submit_message = $this->msg('collate-submit');
     
-    $html .= "<input type = 'submit' id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message></form>";
+    $html .= "<input type='submit' disabled id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message></form>";
     
     $html .= "<br>";
     

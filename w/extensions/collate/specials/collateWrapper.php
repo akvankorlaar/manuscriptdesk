@@ -25,13 +25,13 @@
 class collateWrapper{
   
   private $user_name; 
-  private $maximum_pages_per_collection; 
+  private $maximum_manuscripts; 
 
   //class constructor
-  public function __construct($user_name = "", $maximum_pages_per_collection = null){
+  public function __construct($user_name = "", $maximum_manuscripts = null){
     
     $this->user_name = $user_name;
-    $this->maximum_pages_per_collection = $maximum_pages_per_collection; 
+    $this->maximum_manuscripts = $maximum_manuscripts; 
   }
   
   /**
@@ -85,6 +85,13 @@ class collateWrapper{
 
         }                
       }     
+    }
+    
+    //remove collections that have contain too many pages
+    foreach ($collection_urls as $collection_name => &$small_url_array){
+      if (count($small_url_array['manuscripts_url']) > ($this->maximum_manuscripts-1)){
+        unset($collection_urls[$collection_name]);
+      }
     }
   
     return $collection_urls; 

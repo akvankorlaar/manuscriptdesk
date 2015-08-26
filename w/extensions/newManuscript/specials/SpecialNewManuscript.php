@@ -10,6 +10,8 @@
  * 
  * Todo: Find out how to disable viewing 'Maintenance Reports' for normal users
  * 
+ * Todo: Make a page with software credits (name Transcribe Bentham, Wikimedia, Collatex, Stylometric Analysis program and Preloaders.net)
+ * 
  * Todo: Perhaps also implement client-side validation... This could save the server work, and increase user-experience
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
