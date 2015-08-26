@@ -22,47 +22,27 @@
  */
 
 (function (mw, $){
-  
-   var dots = 0;
-   
+     
    /**
-    * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
+    * This function shows #begincollate-loaderdiv and hides p elements, #begincollate-infobox, .error, and #begincollate-form after clicking submit
     */
    $('.begincollate-form').submit(function() {
-     $('.begincollate-form').hide();   
+     $('p').hide();    
+     $('#begincollate-infobox').hide();
+     $('.error').hide();
+     $('.begincollate-form').hide();
      $('#begincollate-loaderdiv').show();
    });
    
    /**
-    * This function shows #begincollate-loaderdiv and hides .begincollate-form-two after clicking submit
+    * This function shows #begincollate-loaderdiv and hides .begincollate-form-two, p elements and #begincollate-tablewrapper after clicking submit
     */
    $('.begincollate-form-two').submit(function() {
-     $('.begincollate-form-two').hide();   
+     $('.begincollate-form-two').hide();
+     $('p').hide();
+     $('#begincollate-tablewrapper').hide();     
      $('#begincollate-loaderdiv').show();
    });
-   
-  /**
-   * This function sets the interval when calling the loader() function
-   */       
-   $(document).ready(function(){
-    setInterval (loader, 600);
-   });
-
-  /**
-   * This function appends dots to the message specified in #begincollate-loaderdiv
-   * 
-   * @returns {undefined}
-   */
-  function loader(){
-    
-   if(dots < 3){
-        $('#begincollate-loaderspan').append('.');
-        dots++;
-   }else{
-     $('#begincollate-loaderspan').html('');
-     dots = 0;
-   }
-}
     
 }(mediaWiki, jQuery));
 

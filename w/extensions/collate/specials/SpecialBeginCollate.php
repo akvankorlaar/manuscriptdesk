@@ -462,15 +462,18 @@ class SpecialBeginCollate extends SpecialPage {
     return $this->prepareDefaultPage($this->getOutput());
   }
   
-  /**
-   * This function adds html used for the begincollate loader (see ext.begincollateloader)
-   */
-  private function AddBeginCollateLoader(){
-     
+ /**
+  * This function adds html used for the begincollate loader (see ext.begincollate)
+  * 
+  * Source of the gif: http://preloaders.net/en/circular
+  */
+  private function addBeginCollateLoader(){
+    
     //shows after submit has been clicked
-    $html = "<h3 id='begincollate-loaderdiv'>Loading";
-    $html .= "<span id='begincollate-loaderspan'></span>";
-    $html .= "</h3>";
+    $html  = "<div id='begincollate-loaderdiv' style='display: none;'>";
+    $html .= "<img id='begincollate-loadergif' src='/w/extensions/collate/specials/assets/362.gif' style='width: 64px; height: 64px;"
+        . " position: relative; left: 50%;'>"; 
+    $html .= "</div>";
     
     return $html; 
   }
@@ -483,13 +486,8 @@ class SpecialBeginCollate extends SpecialPage {
    */
   private function showFirstTable($title_array,$collatex_output){
     
-    $out = $this->getOutput(); 
-    
-    $article_url = $this->article_url; 
-        
-    $html = $this->msg('collate-success') . '<br><br>' . $this->msg('collate-tableread');
-
-    $html .= $this->msg('collate-savetable') . '<br><br>'; 
+    $out = $this->getOutput();     
+    $article_url = $this->article_url;
     
     $redirect_hover_message = $this->msg('collate-redirecthover');
     $redirect_message = $this->msg('collate-redirect');
@@ -497,7 +495,7 @@ class SpecialBeginCollate extends SpecialPage {
     $save_hover_message = $this->msg('collate-savehover');
     $save_message = $this->msg('collate-save');
     
-    $html .= "
+    $html = "
        <div id = 'begincollate-buttons'>
             <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
             <input type='submit' class='begincollate-submitbutton-two' name ='redirect_to_start' title='$redirect_hover_message'  value='$redirect_message'>
@@ -507,14 +505,18 @@ class SpecialBeginCollate extends SpecialPage {
             <input type='submit' class='begincollate-submitbutton-two' name= 'save_current_table' title='$save_hover_message' value='$save_message'> 
             </form>
        </div>";
-    
-    $html .= "<br><br>";
-    
+            
+    $html .= "<p>" . $this->msg('collate-success') . "</p>"  . "<p>" . $this->msg('collate-tableread') . " " . $this->msg('collate-savetable') . "</p>"; 
+   
     $html .= $this->AddBeginCollateLoader();
     
     $collate = new collate();
     
+    $html .= "<div id='begincollate-tablewrapper'>";
+    
     $html .= $collate->renderTable($title_array, $collatex_output);
+    
+    $html .= "</div>";
     
     return $out->addHTML($html);
   }
@@ -545,10 +547,10 @@ class SpecialBeginCollate extends SpecialPage {
     $html .= "<tr><td id='begincollate-td'><small>$lastedit_message</small></td></tr>";
     $html .= "</table>";
     
-    $html .= $this->msg('collate-instruction1') . '<br>';
+    $html .= "<p>" . $this->msg('collate-instruction1') . "</p>";
     
     if(!empty($collection_urls)){
-      $html .= $this->msg('collate-instruction2') .  '<br>';
+      $html .= "<p>" . $this->msg('collate-instruction2') .  "</p>";
     }
         
     if($this->error_message){
