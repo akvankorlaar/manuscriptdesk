@@ -415,7 +415,7 @@ class SpecialBeginCollate extends SpecialPage {
    */
   private function prepareDefaultPage($out){
     
-    $collate_wrapper = new collateWrapper($this->user_name);
+    $collate_wrapper = new collateWrapper($this->user_name, $this->maximum_manuscripts);
     
     list($url_array,$title_array) = $collate_wrapper->getManuscriptTitles();
 
@@ -462,15 +462,18 @@ class SpecialBeginCollate extends SpecialPage {
     return $this->prepareDefaultPage($this->getOutput());
   }
   
-  /**
-   * This function adds html used for the begincollate loader (see ext.begincollateloader)
-   */
-  private function AddBeginCollateLoader(){
-     
+ /**
+  * This function adds html used for the begincollate loader (see ext.begincollate)
+  * 
+  * Source of the gif: http://preloaders.net/en/circular
+  */
+  private function addBeginCollateLoader(){
+    
     //shows after submit has been clicked
-    $html = "<h3 id='begincollate-loaderdiv'>Loading";
-    $html .= "<span id='begincollate-loaderspan'></span>";
-    $html .= "</h3>";
+    $html  = "<div id='begincollate-loaderdiv' style='display: none;'>";
+    $html .= "<img id='begincollate-loadergif' src='/w/extensions/collate/specials/assets/362.gif' style='width: 64px; height: 64px;"
+        . " position: relative; left: 50%;'>"; 
+    $html .= "</div>";
     
     return $html; 
   }
@@ -483,13 +486,8 @@ class SpecialBeginCollate extends SpecialPage {
    */
   private function showFirstTable($title_array,$collatex_output){
     
-    $out = $this->getOutput(); 
-    
-    $article_url = $this->article_url; 
-        
-    $html = $this->msg('collate-success') . '<br><br>' . $this->msg('collate-tableread');
-
-    $html .= $this->msg('collate-savetable') . '<br><br>'; 
+    $out = $this->getOutput();     
+    $article_url = $this->article_url;
     
     $redirect_hover_message = $this->msg('collate-redirecthover');
     $redirect_message = $this->msg('collate-redirect');
@@ -497,7 +495,7 @@ class SpecialBeginCollate extends SpecialPage {
     $save_hover_message = $this->msg('collate-savehover');
     $save_message = $this->msg('collate-save');
     
-    $html .= "
+    $html = "
        <div id = 'begincollate-buttons'>
             <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
             <input type='submit' class='begincollate-submitbutton-two' name ='redirect_to_start' title='$redirect_hover_message'  value='$redirect_message'>
@@ -507,14 +505,18 @@ class SpecialBeginCollate extends SpecialPage {
             <input type='submit' class='begincollate-submitbutton-two' name= 'save_current_table' title='$save_hover_message' value='$save_message'> 
             </form>
        </div>";
-    
-    $html .= "<br><br>";
-    
+            
+    $html .= "<p>" . $this->msg('collate-success') . "</p>"  . "<p>" . $this->msg('collate-tableread') . " " . $this->msg('collate-savetable') . "</p>"; 
+   
     $html .= $this->AddBeginCollateLoader();
     
     $collate = new collate();
     
+    $html .= "<div id='begincollate-tablewrapper'>";
+    
     $html .= $collate->renderTable($title_array, $collatex_output);
+    
+    $html .= "</div>";
     
     return $out->addHTML($html);
   }
@@ -545,10 +547,10 @@ class SpecialBeginCollate extends SpecialPage {
     $html .= "<tr><td id='begincollate-td'><small>$lastedit_message</small></td></tr>";
     $html .= "</table>";
     
-    $html .= $this->msg('collate-instruction1') . '<br>';
+    $html .= "<p>" . $this->msg('collate-instruction1') . "</p>";
     
     if(!empty($collection_urls)){
-      $html .= $this->msg('collate-instruction2') .  '<br>';
+      $html .= "<p>" . $this->msg('collate-instruction2') .  "</p>";
     }
         
     if($this->error_message){
@@ -564,7 +566,7 @@ class SpecialBeginCollate extends SpecialPage {
     
     $html .= "<div id='begincollate-manuscriptpages'>";
     $html .= "<h3>$manuscript_message</h3>";
-    $html .= "<ul class = 'begincollate-checkbox'>";
+    $html .= "<ul>";
     
     //display a checkbox for each manuscript uploaded by this user
     foreach($url_array as $index=>$url){
@@ -572,7 +574,7 @@ class SpecialBeginCollate extends SpecialPage {
       //get corresponding title
       $title_name = $title_array[$index];
       
-      $html .="<li><input type='checkbox' name='text$index' id= 'collate_checkbox' value='$url'>$title_name</li>";
+      $html .="<li><input type='checkbox' class='begincollate-checkbox' name='text$index' value='$url'>$title_name</li>";
     }
     
     $html .= "</ul>";   
@@ -585,7 +587,7 @@ class SpecialBeginCollate extends SpecialPage {
             
       $html .= "<div id='begincollate-collections'>";
       $html .= "<h3>$collection_message</h3>";
-      $html .= "<ul class ='begincollate-checkbox'>";
+      $html .= "<ul>";
 
       $a = 0;
       foreach($collection_urls as $collection_name=>$small_url_array){
@@ -598,7 +600,7 @@ class SpecialBeginCollate extends SpecialPage {
                 
         //add a checkbox for the collection
         $html .="<li>";
-        $html .="<input type='checkbox' name='collection$a' value='$json_small_url_array'>$collection_name";
+        $html .="<input type='checkbox' class='begincollate-checkbox-col' name='collection$a' value='$json_small_url_array'>$collection_name";
         $html .="<input type='hidden' name='collection_hidden$a' value='$collection_name'>"; 
         $html .= "<br>";
         $html .= $collection_text; 
@@ -616,7 +618,7 @@ class SpecialBeginCollate extends SpecialPage {
     $submit_hover_message = $this->msg('collate-hover');
     $submit_message = $this->msg('collate-submit');
     
-    $html .= "<input type = 'submit' id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message></form>";
+    $html .= "<input type='submit' disabled id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message></form>";
     
     $html .= "<br>";
     

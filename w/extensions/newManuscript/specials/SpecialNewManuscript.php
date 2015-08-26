@@ -10,9 +10,9 @@
  * 
  * Todo: Find out how to disable viewing 'Maintenance Reports' for normal users
  * 
- * Todo: Perhaps also implement client-side validation... This could save the server work, and increase user-experience
+ * Todo: Make a page with software credits (name Transcribe Bentham, Wikimedia, Collatex, Stylometric Analysis program and Preloaders.net)
  * 
- * Todo: Perhaps also create a loading screen after you upload a manuscript pages or collate a text
+ * Todo: Perhaps also implement client-side validation... This could save the server work, and increase user-experience
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
@@ -495,14 +495,17 @@ class SpecialNewManuscript extends SpecialPage {
   
   /**
    * This function adds html used for the newmanuscript loader (see ext.newmanuscriptloader)
+   * 
+   * Source of the gif: http://preloaders.net/en/circular
    */
   private function addNewmanuscriptLoader(){
     
     $out = $this->getOutput();
       //shows after submit has been clicked
-    $html  = "<h3 id='newmanuscript-loaderdiv' style='display: none;'>Loading";
-    $html .= "<span id='newmanuscript-loaderspan'></span>";
-    $html .= "</h3>";
+    $html  = "<div id='newmanuscript-loaderdiv' style='display: none;'>";
+    $html .= "<img id='newmanuscript-loadergif' src='/w/extensions/newManuscript/specials/assets/362.gif' style='width: 64px; height: 64px;"
+        . " position: relative; left: 50%;'>"; 
+    $html .= "</div>";
     
     $out->addHTML($html);
   }

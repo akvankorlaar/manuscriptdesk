@@ -22,9 +22,7 @@
  */
 
 (function (mw, $){
-  
-   var dots = 0;
-   
+     
    /**
     * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
     */
@@ -34,29 +32,6 @@
      $('.error').hide();
      $('#newmanuscript-loaderdiv').show();   
    });
-         
-  /**
-   * This function sets the interval when calling the loader() function
-   */       
-   $(document).ready(function(){
-    setInterval (loader, 600);
-   });
-
-  /**
-   * This function appends dots to the message specified in #begincollate-loaderdiv
-   * 
-   * @returns {undefined}
-   */
-  function loader(){
-    
-   if(dots < 3){
-        $('#newmanuscript-loaderspan').append('.');
-        dots++;
-   }else{
-     $('#newmanuscript-loaderspan').html('');
-     dots = 0;
-   }
-}
-    
+            
 }(mediaWiki, jQuery));
 
