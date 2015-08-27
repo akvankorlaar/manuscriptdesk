@@ -78,12 +78,6 @@ $wgResourceModules['ext.collateloader' ] = array(
     'messages' => array(
       'collate-error-manytexts',
      ),
-  'dependencies' => array(
-		'mediawiki.util',
-		'mediawiki.user',
-		'mediawiki.Title',
-	),
-
 );
 
 //Instantiate the collateHooks class and register the hooks
