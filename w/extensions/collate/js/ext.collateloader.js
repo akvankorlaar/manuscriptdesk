@@ -21,10 +21,19 @@
  * @copyright 2015 Arent van Korlaar
  */
 
+/**
+ * This file is mainly concerned with showing the loader gif, and javascript validation. There is also server side validation in SpecialBeginCollate,
+ * so the javascript validation is just to increase user-experience and reduce some irrelevant requests sent to the server
+ * 
+ * @param {type} mw
+ * @param {type} $
+ * @returns {undefined}
+ */
 (function (mw, $){
      
     /**
-     * 
+     * This function calculates how many pages are in the checked collections 
+     *  
      * @returns {undefined}
      */
     function calculateCollectionPages(){
@@ -43,7 +52,7 @@
     }
     
     /**
-     * This function disables or enables the submit button
+     * This function disables or enables the submit button, depending on how many checkboxes are checked, and how many pages are in the checked checkboxes
      */
     function changeSubmit(collection_pages){
 
@@ -72,7 +81,7 @@
     }
     
    /**
-    * This function shows #begincollate-loaderdiv and hides p elements, #begincollate-infobox, .error, and #begincollate-form after clicking submit
+    * This function shows #begincollate-loaderdiv, the loader gif, and hides p elements, #begincollate-infobox, .error, and #begincollate-form after clicking submit
     */
     $('.begincollate-form').submit(function() {
       $('p').hide();    
@@ -83,7 +92,7 @@
     });
    
    /**
-    * This function shows #begincollate-loaderdiv and hides .begincollate-form-two, p elements and #begincollate-tablewrapper after clicking submit
+    * This function shows #begincollate-loaderdiv, the loader gif, and hides .begincollate-form-two, p elements and #begincollate-tablewrapper after clicking submit
     */
     $('.begincollate-form-two').submit(function() {
       $('.begincollate-form-two').hide();
@@ -92,7 +101,7 @@
       $('#begincollate-loaderdiv').show();
     });
     
-    //call the function changeSubmit on change
+    //call the function calculateCollectionPages on change
     $('.begincollate-checkbox').change(calculateCollectionPages);  
     $('.begincollate-checkbox-col').change(calculateCollectionPages); 
        
