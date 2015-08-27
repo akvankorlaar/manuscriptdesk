@@ -27,33 +27,36 @@
      * 
      * @returns {undefined}
      */
-//    function calculateCollectionPages(){
-//      
-//      var total_elements = 0; 
-//      
-//      $.each($("input[class='begincollate-checkbox-col']:checked"), function(){
-//        
-//        var object = jQuery.parseJSON($this); 
-//        var number_elements = object.length;     
-//        total_elements = total_elements + number_elements;         
-//      });
-//      
-//      return changeSubmit(total_elements); 
-//    }
+    function calculateCollectionPages(){
+      
+      var collection_pages = 0; 
+      
+      $.each($("input[class='begincollate-checkbox-col']:checked"), function(){
+        
+        var current_value = $(this).val();
+        var object = jQuery.parseJSON(current_value); 
+        var number_elements = object.length;     
+        collection_pages = collection_pages + number_elements;         
+      });
+      
+      return changeSubmit(collection_pages); 
+    }
     
     /**
      * This function disables or enables the submit button
      */
-    function changeSubmit(){
+    function changeSubmit(collection_pages){
 
       //count the number of checked checkboxes
-      var normal_pages = $("input[type='checkbox']:checked").length;
+      var normal_checked = $("input[class='begincollate-checkbox']:checked").length;
+      var collection_checked = $("input[class='begincollate-checkbox-col']:checked").length;
       
-      //var total_pages_checked = total_collection_pages+normal_pages;
+      var total_checked = normal_checked+collection_checked;
       
-      var total_pages_checked = normal_pages; 
-      
-      if(total_pages_checked >= 2 && total_pages_checked <= 6 ){
+      var total_pages = normal_checked+collection_pages; 
+                  
+      //this should not be true if only 1 collection is checked
+      if(total_checked >= 2 && total_pages <= 5){
         var enable_submit = true;
       }else{
         var enable_submit = false; 
@@ -90,7 +93,7 @@
     });
     
     //call the function changeSubmit on change
-    $('.begincollate-checkbox').change(changeSubmit);  
+    $('.begincollate-checkbox').change(calculateCollectionPages);  
     $('.begincollate-checkbox-col').change(calculateCollectionPages); 
        
 }(mediaWiki, jQuery));
