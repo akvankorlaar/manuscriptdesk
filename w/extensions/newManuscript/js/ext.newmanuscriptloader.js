@@ -23,6 +23,8 @@
 
 (function (mw, $){
      
+     
+     
    /**
     * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
     */

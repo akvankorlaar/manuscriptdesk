@@ -25,10 +25,10 @@
  * pre overrides earlier mediawiki CSS, and is needed for correct table display. 
  */
 pre{
-  border: none !important;
-  padding: 0px !important;
-  background-color: transparent !important; 
-  height: 0px !important; 
+border: none !important;
+padding: 0px !important;
+background-color: transparent !important; 
+height: 0px !important; 
 }
 
 #begincollate-infobox{
@@ -81,6 +81,11 @@ width: 28em;
   height: 1.5em; 
   cursor: default; 
   position: fixed; 
+}
+
+#javascript-error{
+   font-size: larger;
+   color: #cc0000;
 }
 
 #begincollate-loaderdiv{

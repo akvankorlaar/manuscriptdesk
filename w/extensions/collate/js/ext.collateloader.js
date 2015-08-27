@@ -55,28 +55,35 @@
      * This function disables or enables the submit button, depending on how many checkboxes are checked, and how many pages are in the checked checkboxes
      */
     function changeSubmit(collection_pages){
-
+      
+      //the maximum number of pages a user is allowed to collate
+      var max_number_pages = 5;  
+      
       //count the number of checked checkboxes
       var normal_checked = $("input[class='begincollate-checkbox']:checked").length;
       var collection_checked = $("input[class='begincollate-checkbox-col']:checked").length;
       
-      var total_checked = normal_checked+collection_checked;
-      
+      var total_checked = normal_checked+collection_checked;    
       var total_pages = normal_checked+collection_pages; 
-                  
-      //this should not be true if only 1 collection is checked
-      if(total_checked >= 2 && total_pages <= 5){
-        var enable_submit = true;
-      }else{
-        var enable_submit = false; 
-      }
-            
-      if(enable_submit){
+                              
+      if(total_checked >= 2 && total_pages <= max_number_pages){
         $("#begincollate-submitbutton").removeAttr("disabled");
-        $("#begincollate-submitbutton").css("cursor", "pointer");
+        $("#begincollate-submitbutton").css("cursor", "pointer");        
+        $("#javascript-error").empty();
+        
       }else{
         $("#begincollate-submitbutton").attr("disabled","disabled");
-        $("#begincollate-submitbutton").css("cursor", "default");  
+        $("#begincollate-submitbutton").css("cursor", "default"); 
+        
+        if(total_checked < 2){
+          $("#javascript-error").empty();
+        }
+        
+        if ($('#javascript-error').is(':empty')){
+          if(total_pages > max_number_pages){
+            $("#javascript-error").append(mw.msg('collate-error-manytexts'));
+          }
+        }    
       }
     }
     

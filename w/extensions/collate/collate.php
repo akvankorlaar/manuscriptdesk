@@ -72,9 +72,18 @@ $wgResourceModules['ext.collate' ] = array(
 $wgResourceModules['ext.collateloader' ] = array(
 		'scripts'  => array(
       'js/ext.collateloader.js',
-      ),
+     ),
     'localBasePath' => __DIR__,
     'remoteExtPath' => 'collate',
+    'messages' => array(
+      'collate-error-manytexts',
+     ),
+  'dependencies' => array(
+		'mediawiki.util',
+		'mediawiki.user',
+		'mediawiki.Title',
+	),
+
 );
 
 //Instantiate the collateHooks class and register the hooks
