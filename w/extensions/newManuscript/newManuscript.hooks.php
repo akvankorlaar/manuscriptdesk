@@ -686,6 +686,7 @@ class newManuscriptHooks {
       //add css for metatable
       $out->addModuleStyles('ext.metatable');
     }elseif($page_title === 'Special:NewManuscript'){
+      $out->addModuleStyles('ext.newmanuscriptcss');
       $out->addModules('ext.newmanuscriptloader');
     }
       

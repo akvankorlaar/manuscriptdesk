@@ -10,6 +10,10 @@
  * 
  * Todo: Find out how to disable viewing 'Maintenance Reports' for normal users
  * 
+ * Todo: Try to get data from your php scripts to your javascript files
+ * 
+ * Todo: See if there is a better way to organise the content of your css files 
+ * 
  * Todo: Make a page with software credits (name Transcribe Bentham, Wikimedia, Collatex, Stylometric Analysis program and Preloaders.net)
  * 
  * Todo: Perhaps also implement client-side validation... This could save the server work, and increase user-experience

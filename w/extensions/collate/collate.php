@@ -72,9 +72,12 @@ $wgResourceModules['ext.collate' ] = array(
 $wgResourceModules['ext.collateloader' ] = array(
 		'scripts'  => array(
       'js/ext.collateloader.js',
-      ),
+     ),
     'localBasePath' => __DIR__,
     'remoteExtPath' => 'collate',
+    'messages' => array(
+      'collate-error-manytexts',
+     ),
 );
 
 //Instantiate the collateHooks class and register the hooks
@@ -84,6 +87,4 @@ $wgHooks['MediaWikiPerformAction'][] = array($collateHooks, 'onMediaWikiPerformA
 $wgHooks['ArticleDelete'][] = array($collateHooks, 'onArticleDelete');
 $wgHooks['PageContentSave'][] = array($collateHooks,'onPageContentSave');
 $wgHooks['BeforePageDisplay'][] = array($collateHooks, 'onBeforePageDisplay');
-
-
-
+$wgHooks['ResourceLoaderGetConfigVars'][] = array($collateHooks, 'onResourceLoaderGetConfigVars');

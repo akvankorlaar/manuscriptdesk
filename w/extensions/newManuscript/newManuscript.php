@@ -71,10 +71,13 @@ $wgResourceModules['ext.metatable'] = array(
 		'styles'  => 'css/ext.metatable.css',
 );
 
+$wgResourceModules['ext.newmanuscriptcss'] = array(
+		'localBasePath' => dirname( __FILE__ ),  
+		'styles'  => 'css/ext.newmanuscriptcss.css',
+);
+
 $wgResourceModules['ext.newmanuscriptloader' ] = array(
-		'scripts'  => array(
-      'js/ext.newmanuscriptloader.js',
-      ),
+		'scripts'  => 'js/ext.newmanuscriptloader.js',
     'localBasePath' => __DIR__,
     'remoteExtPath' => 'newManuscript',
 );

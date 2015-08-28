@@ -255,6 +255,19 @@ class collateHooks {
   }
   
   /**
+	 * This function sends configuration variables to javascript. In javascript they are accessed through 'mw.config.get('..') 
+	 */
+	public function onResourceLoaderGetConfigVars(&$vars){
+    
+		global $wgCollationOptions;
+        
+		$vars['wgmax_collation_pages'] = $wgCollationOptions['wgmax_collation_pages'];
+    $vars['wgmin_collation_pages'] = $wgCollationOptions['wgmin_collation_pages'];
+		
+		return true;
+	}
+  
+  /**
    * This function retrieves the message from the i18n file for String $identifier
    * 
    * @param type $identifier
