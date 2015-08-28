@@ -58,6 +58,7 @@
       
       //the maximum number of pages a user is allowed to collate
       var max_number_pages = mw.config.get('wgmax_collation_pages');
+      var min_number_pages = mw.config.get('wgmin_collation_pages');
       
       //count the number of checked checkboxes
       var normal_checked = $("input[class='begincollate-checkbox']:checked").length;
@@ -66,7 +67,7 @@
       var total_checked = normal_checked+collection_checked;    
       var total_pages = normal_checked+collection_pages; 
                               
-      if(total_checked >= 2 && total_pages <= max_number_pages){
+      if(total_checked >= min_number_pages && total_pages <= max_number_pages){
         $("#begincollate-submitbutton").removeAttr("disabled");
         $("#begincollate-submitbutton").css("cursor", "pointer");        
         $("#javascript-error").empty();
@@ -75,7 +76,7 @@
         $("#begincollate-submitbutton").attr("disabled","disabled");
         $("#begincollate-submitbutton").css("cursor", "default"); 
         
-        if(total_checked < 2){
+        if(total_checked < min_number_pages){
           $("#javascript-error").empty();
         }
         

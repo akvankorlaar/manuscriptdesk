@@ -51,14 +51,14 @@ class SpecialBeginCollate extends SpecialPage {
   //class constructor
   public function __construct(){
     
-    global $wgNewManuscriptOptions, $wgMetaTableTag, $wgArticleUrl;  
+    global $wgNewManuscriptOptions, $wgMetaTableTag, $wgArticleUrl, $wgCollationOptions;  
     
     $this->article_url = $wgArticleUrl; 
     
     //if $minimum_manuscripts, $maximum_manuscripts and $max_pages_collection is changed, remember to change the corresponding text in collate.i18n.php
-    $this->minimum_manuscripts = 2; 
-    $this->maximum_manuscripts = 5; //maximum single pages allowed for collation
-        
+    $this->minimum_manuscripts = $wgCollationOptions['wgmin_collation_pages'];
+    $this->maximum_manuscripts = $wgCollationOptions['wgmax_collation_pages'];
+                
     $this->save_table = false; //default value
     $this->error_message = false; //default value
     $this->metatable_tag = $wgMetaTableTag;
