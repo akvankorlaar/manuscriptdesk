@@ -87,6 +87,4 @@ $wgHooks['MediaWikiPerformAction'][] = array($collateHooks, 'onMediaWikiPerformA
 $wgHooks['ArticleDelete'][] = array($collateHooks, 'onArticleDelete');
 $wgHooks['PageContentSave'][] = array($collateHooks,'onPageContentSave');
 $wgHooks['BeforePageDisplay'][] = array($collateHooks, 'onBeforePageDisplay');
-
-
-
+$wgHooks['ResourceLoaderGetConfigVars'][] = array($collateHooks, 'onResourceLoaderGetConfigVars');

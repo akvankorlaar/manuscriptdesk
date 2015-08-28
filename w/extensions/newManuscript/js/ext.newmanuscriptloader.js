@@ -23,17 +23,38 @@
 
 (function (mw, $){
      
-     
+    /**
+     * 
+     * @returns {undefined}
+     */
+    function checkInput(){
+          
+      var text_input1 = $('#enter_title').val();
+      var text_input2 = $('#mw-input-wpcollection_field').val();
+      
+      var file_input = $('#wpUploadFile').val();      
+       
+       if(text_input1 != '' && text_input2 != '' && file_input != '' && text_input1.match(/[a-zA-Z0-9]/g) && text_input2.match(/[a-zA-Z0-9]/g)){         
+       //match does not work....... 
+         $(".mw-htmlform-submit").removeAttr("disabled");
+         $(".mw-htmlform-submit").css("cursor", "pointer");        
+       }
+    }
      
    /**
     * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
     */
-   $('#mw-upload-form').submit(function() {
-     $('#mw-upload-form').hide();  
-     $('h2').hide(); 
-     $('.error').hide();
-     $('#newmanuscript-loaderdiv').show();   
-   });
-            
+    $('#mw-upload-form').submit(function() {
+      $('#mw-upload-form').hide();  
+      $('h2').hide(); 
+      $('.error').hide();
+      $('#newmanuscript-loaderdiv').show();   
+    });
+    
+    //call the function checkValidation on change
+    $('#enter_title').keyup(checkInput);  
+    $('#mw-input-wpcollection_field').keyup(checkInput); 
+    $('#wpUploadFile').change(checkInput);
+              
 }(mediaWiki, jQuery));
 

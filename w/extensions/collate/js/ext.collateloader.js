@@ -57,7 +57,7 @@
     function changeSubmit(collection_pages){
       
       //the maximum number of pages a user is allowed to collate
-      var max_number_pages = 5;  
+      var max_number_pages = mw.config.get('wgmax_collation_pages');
       
       //count the number of checked checkboxes
       var normal_checked = $("input[class='begincollate-checkbox']:checked").length;
