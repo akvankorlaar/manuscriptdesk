@@ -29,15 +29,13 @@
 (function (mw, $){
      
     /**
-     * 
+     * This function checks if there is an input in #enter_title, and in #wpUploadFile. It also disables/enables the submit button
      * 
      * @returns {undefined}
      */
     function checkInput(){
           
-      var text_input1 = $('#enter_title').val();
-      var text_input2 = $('#mw-input-wpcollection_field').val();
-      
+      var text_input1 = $('#enter_title').val();      
       var file_input = $('#wpUploadFile').val();      
        
        if(text_input1 != '' && file_input != '' ){         
@@ -53,7 +51,64 @@
          $(".mw-htmlform-submit").css("cursor", "default");
       }         
     }
-     
+      
+  /**
+   * This function prevents users from putting non-alphanumeric charachters into the textfield
+   * 
+   * @param {type} event
+   * @returns {Boolean}
+   */
+    $("#enter_title").on("keypress", function(event) {
+    
+      var regeX = /[a-zA-Z0-9]/g; 
+      var key = String.fromCharCode(event.which);
+        
+      // keyCode == 8  is backspace
+      // keyCode == 37 is left arrow
+      // keyCode == 39 is right arrow
+      if (event.keyCode == 8 || event.keyCode == 37 || event.keyCode == 39 || regeX.test(key)) {
+        return true;
+      }
+
+      return false;
+    });
+    
+      /**
+   * This function prevents users from putting non-alphanumeric charachters into the textfield 
+   * 
+   * @param {type} event
+   * @returns {Boolean}
+   */
+    $("#mw-input-wpcollection_field").on("keypress", function(event) {
+    
+      var regeX = /[a-zA-Z0-9]/g; 
+      var key = String.fromCharCode(event.which);
+        
+      // keyCode == 8  is backspace
+      // keyCode == 37 is left arrow
+      // keyCode == 39 is right arrow
+      if (event.keyCode == 8 || event.keyCode == 37 || event.keyCode == 39 || regeX.test(key)) {
+        return true;
+      }
+
+      return false;
+    });
+    
+    /**
+     * This function disables the paste function 
+     */
+    $('#enter_title').on("paste",function(e){
+      e.preventDefault();
+    });
+    
+    /**
+     * This function disables the paste function 
+     */
+    $('#mw-input-wpcollection_field').on("paste",function(e){
+      e.preventDefault();
+    });
+
+
    /**
     * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
     */
@@ -67,14 +122,14 @@
     /**
      * This function disables the submit button when the document is ready 
      */
-    $( document ).ready(function(){
+    $(document).ready(function(){
       $(".mw-htmlform-submit").attr("disabled","disabled");
     });
     
-    //call the function checkValidation on change
-    $('#enter_title').keyup(checkInput);  
+    //call the function checkInput on change
+    $('#enter_title').keyup(checkInput); 
     $('#mw-input-wpcollection_field').keyup(checkInput); 
     $('#wpUploadFile').change(checkInput);
-              
+                
 }(mediaWiki, jQuery));
 
