@@ -39,8 +39,6 @@
       var file_input = $('#wpUploadFile').val();      
        
        if(text_input1 != '' && file_input != '' ){         
-       //match does not work....... && text_input1.match(/[a-zA-Z0-9]/g) && text_input2.match(/[a-zA-Z0-9]/g)
-       //text_input2 is not required
          $(".mw-htmlform-submit").removeAttr("disabled");
          $(".mw-htmlform-submit").css("color", "black");
          $(".mw-htmlform-submit").css("cursor", "pointer");
@@ -55,60 +53,34 @@
   /**
    * This function prevents users from putting non-alphanumeric charachters into the textfield
    * 
-   * @param {type} event
-   * @returns {Boolean}
-   */
-    $("#enter_title").on("keypress", function(event) {
-    
-      var regeX = /[a-zA-Z0-9]/g; 
-      var key = String.fromCharCode(event.which);
-        
-      // keyCode == 8  is backspace
-      // keyCode == 37 is left arrow
-      // keyCode == 39 is right arrow
-      if (event.keyCode == 8 || event.keyCode == 37 || event.keyCode == 39 || regeX.test(key)) {
-        return true;
-      }
-
-      return false;
-    });
-    
-      /**
-   * This function prevents users from putting non-alphanumeric charachters into the textfield 
+   * First this was used: if (event.keyCode == 8 || event.keyCode == 37 || event.keyCode == 39 || regeX.test(key))
+   * 
+   * keyCode 8, 37 and 39 are supposed to correspond to backspace, left arrow and right arrow respectively. However, these commands were
+   * possible anyway, while signs like '%' were being let through. The current code needs to be tested on other computers to see if you can still do
+   * a backspace, left arrow, right arrow. 
    * 
    * @param {type} event
    * @returns {Boolean}
-   */
-    $("#mw-input-wpcollection_field").on("keypress", function(event) {
+   */  
+    function filterCharachters(event) {
     
       var regeX = /[a-zA-Z0-9]/g; 
       var key = String.fromCharCode(event.which);
         
-      // keyCode == 8  is backspace
-      // keyCode == 37 is left arrow
-      // keyCode == 39 is right arrow
-      if (event.keyCode == 8 || event.keyCode == 37 || event.keyCode == 39 || regeX.test(key)) {
+      if (regeX.test(key)) {
         return true;
       }
 
       return false;
-    });
+    };
     
     /**
      * This function disables the paste function 
      */
-    $('#enter_title').on("paste",function(e){
-      e.preventDefault();
-    });
+    function preventPaste(event){
+      event.preventDefault();
+    };
     
-    /**
-     * This function disables the paste function 
-     */
-    $('#mw-input-wpcollection_field').on("paste",function(e){
-      e.preventDefault();
-    });
-
-
    /**
     * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
     */
@@ -126,10 +98,17 @@
       $(".mw-htmlform-submit").attr("disabled","disabled");
     });
     
-    //call the function checkInput on change
+    //call the function checkInput 
     $('#enter_title').keyup(checkInput); 
-    $('#mw-input-wpcollection_field').keyup(checkInput); 
     $('#wpUploadFile').change(checkInput);
+    
+    //call the function filterCharachters
+    $( "#enter_title" ).keypress(filterCharachters);
+    $('#mw-input-wpcollection_field').keypress(filterCharachters);
+    
+    //call the function preventPaste
+    $('#enter_title').on('paste', preventPaste);
+    $('#mw-input-wpcollection_field').on('paste', preventPaste);
                 
 }(mediaWiki, jQuery));
 

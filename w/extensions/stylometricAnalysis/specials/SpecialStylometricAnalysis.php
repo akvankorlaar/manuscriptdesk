@@ -22,31 +22,21 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-/**
- * Ideas: Only possible to use it on Collections with at least ... 5 pages?
- * 
- * Possible to select multiple collections. However, every single collection must have at least 5 pages
- * 
- * First page: Display a form, with only collections. Error is the user does not have collections. 
- * 
- * Two buttons: Calculate frequent words, and Select these texts and upload your words (.txt file, or coyp paste....)
- * 
- * Submit to the same page
- */
-
 class SpecialStylometricAnalysis extends SpecialPage {
   
   public $article_url; 
   
   private $minimum_collections;
   private $minimum_pages_per_collection; 
+  private $max_input_textarea; 
   private $user_name;  
   private $full_manuscripts_url; 
   private $collection_array;
   private $collection_hidden_array;
   private $error_message;
   private $manuscripts_namespace_url;
-  private $redirect_to_start; 
+  private $redirect_to_start;
+  private $textarea_text; 
    
   //class constructor
   public function __construct(){
@@ -55,13 +45,16 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     $this->article_url = $wgArticleUrl; 
     
-    $this->minimum_collections = 2; 
-    $this->minimum_pages_per_collection = 1; //change this to 5 later on 
+    $this->minimum_collections = 2;  //put this into a global variable later on
+    $this->minimum_pages_per_collection = 1; //change this to 5 later on and put into a global variable
+    $this->max_input_textarea = 500; //the maximum number of input charachters for the textarea 
     $this->error_message = false; //default value
     
     $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
     $this->redirect_to_start = false;
     $this->collection_array = array();
+    $this->collection_hidden_array = array();
+    $this->textarea_text = "";
 
     parent::__construct('StylometricAnalysis');
 	}
@@ -83,28 +76,51 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $posted_names = $request->getValueNames();    
      
     //identify the button pressed
-    foreach($posted_names as $key=>$checkbox){
+    foreach($posted_names as $key=>$name){
       
       //remove the numbers from $checkbox to see if it matches to 'collection', 'collection_hidden', or 'redirect_to_start'
-      $checkbox_without_numbers = trim(str_replace(range(0,9),'',$checkbox));
+      $checkbox_without_numbers = trim(str_replace(range(0,9),'',$name));
 
       if($checkbox_without_numbers === 'collection'){
-        $this->collection_array[$checkbox] = $request->getText($checkbox);    
+        $this->collection_array[$name] = $this->validateInput($request->getText($name));    
       
       }elseif($checkbox_without_numbers === 'collection_hidden'){
-        $this->collection_hidden_array[$checkbox] = $request->getText($checkbox);
+        $this->collection_hidden_array[$name] = $this->validateInput(json_decode($request->getText($name)));
         
+        //does it also send 'textarea', if it contains no input? 
+      }elseif($checkbox_without_numbers === 'textarea'){
+        $this->textarea_text = $this->validateInput($request->getText($name));
+            
       }elseif($checkbox_without_numbers === 'redirect_to_start'){
         $this->redirect_to_start = true; 
-        break;        
-      }      
+        break;      
+      }
     }
     
-    if($this->redirect_to_start){
+    if($this->collection_array === false || $this->collection_hidden_array === false || $this->textarea_text === false || $this->redirect_to_start){
       return false; 
     }
         
     return true; 
+  }
+  
+  /**
+   * This function validates the textarea input
+   * 
+   * @param type $input
+   */
+  private function validateInput($input){
+    
+    //only allow lowercase letters, uppercase letters, digits, comma's and whitespace 
+    if(preg_match('/^[a-zA-Z0-9, ]*$/', $input)){
+      return false; 
+    }
+   
+    if(strlen($input) === 0 || strlen($input) > $this->max_input_textarea){
+      return false; 
+    }
+ 
+    return $input;    
   }
   
   /**
@@ -116,7 +132,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $user_object = $this->getUser();    
     
     if(!in_array('ManuscriptEditors',$user_object->getGroups())){
-      return $out->addWikiText('collate-nopermission');
+      return $out->addWikiText('stylometricanalysis-nopermission');
     }
       
     $user_name = $user_object->getName();
@@ -139,6 +155,22 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * @return type
    */
   private function processRequest(){
+                       
+    //next screen should always be a display of your selected texts, the calculated words, and your entered words.
+       
+    //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both. 
+     
+    //they can also choose to go back, run a PCA analysis or a clustering analysis
+      
+    //only after clicking clustering analysis or PCA analysis, the texts should be assembled 
+    
+//    $texts = $this->constructTexts();
+//    
+//    //if returned false, one of the posted pages did not exist
+//    if(!$texts){
+//      return $this->showError('stylometricanalysis-error-notexists');
+//    }
+    
     return true; 
   }
   
@@ -209,7 +241,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
 
     $html .= "<div id='stylometricanalysis-collection'>";
     $html .= "<h3>$collection_header</h3>";
-    $html .= "<ol class ='checkbox_grid'>";
+    $html .= "<ul class ='checkbox_grid'>";
 
     $a = 0;
     foreach($collection_urls as $collection_name=>$small_url_array){
@@ -232,7 +264,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $a = ++$a; 
     }
       
-    $html .= "</ol>";
+    $html .= "</ul>";
     $html .= "</div>";
     
     $word_form_header = $this->msg('stylometricanalysis-wordformheader');
@@ -243,7 +275,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       
     $html .= "<br><br>"; 
       
-    $html .= "<textarea rows='4' cols = '10' id='stylometricanalysis-textarea' maxlength='500' placeholder='$placeholder_text'>";
+    $html .= "<textarea id='stylometricanalysis-textarea' rows='4' cols = '10' maxlength='500' name='textarea' placeholder='$placeholder_text'>";
     $html .= "</textarea>";
     
     $html .= "</div>";
