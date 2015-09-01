@@ -11,6 +11,7 @@ require_once( $wgExtensionAssetsPath . 'TEITags/TEITags.php' );
 require_once( $wgExtensionAssetsPath . 'collate/collate.php');
 require_once( $wgExtensionAssetsPath . 'newManuscript/newManuscript.php');
 require_once( $wgExtensionAssetsPath . 'summaryPages/summaryPages.php');
+require_once( $wgExtensionAssetsPath . 'stylometricAnalysis/stylometricAnalysis.php');
 
 $wgArticlePath = "/md/$1";
 $wgUsePathInfo = true;        # Enable use of pretty URLs
@@ -164,6 +165,7 @@ $wgHooks['SkinBuildSidebar'][] = 'onSkinBuildSidebar';
     unset($bar['navigation'][1]);
     unset($bar['navigation'][2]);
     unset($bar['navigation'][3]);
+    unset($bar['navigation'][4]);
         
     return true;
   }
@@ -223,6 +225,8 @@ $wgCollationOptions = array(
   'collatex_headers' => array ("Content-type: application/json; charset=UTF-8;",
 		"Accept: application/json"), //headers that are sent to collatex
   'collations_namespace' => 'Collations:', //url namespace for collations
+  'wgmin_collation_pages' => 2, //the minimum number of single manuscript pages that users are allowed to collate
+  'wgmax_collation_pages' => 5, //the maximum number of single manuscript pages that users are allowed to collate
 );
 
 $wgMetaTableTag = array(
@@ -233,7 +237,7 @@ $wgMetaTableTag = array(
 $wgNewManuscriptOptions = array( 
   'allowed_file_extensions' => array('jpg', 'jpeg'), //allowed file extensions 
   'max_manuscripts' => 300, //maximum allowed manuscript pages per user
-  'maximum_pages_per_collection' => 5, //maximum allowed pages for a collection
+  'maximum_pages_per_collection' => 50, //maximum allowed pages for a collection
   'max_upload_size' => 8388608, //maximum upload size (8 mb)
   'original_images_dir' =>'initialUpload', //directory of the original images
   'perl_path' => 'perl', //alternative: /usr/bin/perl'.. for unix?  

@@ -10,21 +10,13 @@
  * 
  * Todo: Find out how to disable viewing 'Maintenance Reports' for normal users
  * 
- * Todo: Rewrite the javascript functions. Try to find a way to not have duplicates 
- * 
- * Todo: Find a way to disable writing the '%' sign in the textbox 
- * 
  * Todo: Check if it is possible to restructure the collatex javascript 
  * 
  * Todo: Perhaps put extra validation in Special:BeginCollate
  * 
- * Todo: Try to get data from your php scripts to your javascript files
- * 
  * Todo: See if there is a better way to organise the content of your css files 
  * 
  * Todo: Make a page with software credits (name Transcribe Bentham, Wikimedia, Collatex, Stylometric Analysis program and Preloaders.net)
- * 
- * Todo: Perhaps also implement client-side validation... This could save the server work, and increase user-experience
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 

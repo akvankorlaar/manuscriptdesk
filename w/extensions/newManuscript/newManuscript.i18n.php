@@ -105,6 +105,7 @@ $messages['en'] = array(
   'newmanuscripthooks-maxchar1'                   => 'Your manuscript page already has more than the maximum allowed charachters. Your page currently has',
   'newmanuscripthooks-maxchar2'                   => 'charachters, while',
   'newmanuscripthooks-maxchar3'                   => 'charachters are allowed',
+  'newmanuscripthooks-move'                       => 'You are not allowed to move manuscript pages',
   );
 
 $messages['en-gb'] = $messages['en'];

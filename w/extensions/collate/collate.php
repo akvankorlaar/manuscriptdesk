@@ -84,6 +84,7 @@ $wgResourceModules['ext.collateloader' ] = array(
 $collateHooks = new collateHooks();
 
 $wgHooks['MediaWikiPerformAction'][] = array($collateHooks, 'onMediaWikiPerformAction');
+$wgHooks['AbortMove'][] = array($collateHooks, 'onAbortMove');
 $wgHooks['ArticleDelete'][] = array($collateHooks, 'onArticleDelete');
 $wgHooks['PageContentSave'][] = array($collateHooks,'onPageContentSave');
 $wgHooks['BeforePageDisplay'][] = array($collateHooks, 'onBeforePageDisplay');
