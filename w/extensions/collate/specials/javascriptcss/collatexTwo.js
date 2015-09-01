@@ -4,8 +4,10 @@
    */
   
 function loadTable(){$("table").each(function () {
+    
         var $this = $(this);
         var newrows = [];
+        
         $this.find("tr").each(function () {
             var i = 0;
             $(this).find("td,th").each(function () {
@@ -16,12 +18,18 @@ function loadTable(){$("table").each(function () {
                 newrows[i].append($(this));
             });
         });
+        
         $this.find("tr").remove();
+        
         $.each(newrows, function () {
             $this.append(this);
         });
+        
     });
+    
     $(".alignment").show();
-    return false;}
+    
+    return false;
+  }
   
   window.onload = loadTable; 
