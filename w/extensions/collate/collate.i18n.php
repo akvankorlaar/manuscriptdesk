@@ -63,6 +63,7 @@ $messages['en'] = array(
   'collate-submit'                    => 'Collate',
   'collatehooks-nopermission'         => 'New collations can only be created on the Special:BeginCollate page',
   'collatehooks-nodeletepermission'   => 'You are not allowed to delete this page',
+  'collatehooks-move'                 => 'You are not allowed to move collation pages',
   );
 
 $messages['en-gb'] = $messages['en'];

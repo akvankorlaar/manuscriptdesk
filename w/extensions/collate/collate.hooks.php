@@ -169,6 +169,27 @@ class collateHooks {
     //allow to make changes or a new page
     return true;   
   }
+   
+  /**
+   * This function prevents users from moving a manuscript page
+   * 
+   * @param Title $oldTitle
+   * @param Title $newTitle
+   * @param User $user
+   * @param type $error
+   * @param type $reason
+   * @return boolean
+   */
+  public function onAbortMove( Title $oldTitle, Title $newTitle, User $user, &$error, $reason ) {
+     
+		if($oldTitle->getNamespace() !== NS_COLLATIONS){
+			return true; 
+		}
+     
+    $error = $this->getMessage('collatehooks-move');
+  
+    return false; 
+  }
   
    /**
    * This function runs every time mediawiki gets a delete request. This function prevents
