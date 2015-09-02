@@ -24,14 +24,14 @@
 
 class SpecialBeginCollate extends SpecialPage {
   
-/**
- * Todo: Perhaps make use of the mediawiki tokens for security
+/**  
+ * This code can run in a few different contexts:
  * 
- * Possible problems: When you have mutliple tabs, and collate multiple times, and go back to the first collation, and save this one, it will save the wrong data....
- * Possible solution: When you save the table in temp_database, send a token to the user (50 digit random number for example), and save this token in the database
+ * 1: on normal entry, no request is posted, and the default page, with all the collections and manuscripts of the current user is shown
+ * 2: on submit, a collation table is constructed, old tempcollate collate data is deleted, the current collate data is stored in the tempcollate table, and the table is shown
+ * 3: when redirecting to start, the default page is shown
+ * 4: when saving the table, the data is retrieved from the tempcollate table, saved to the collations table, a new wiki page is created, and the user is redirected to this page 
  * 
- * Save a time in the database.. check whether the time difference between current and last collation is at least ... 1 hour? If so.. delete all the old collation data from database.
- * Otherwise, keep the data for now. 
  */
   
   public $article_url; 
