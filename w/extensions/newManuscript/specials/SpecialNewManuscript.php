@@ -8,15 +8,7 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
- * Todo: Find out how to disable viewing 'Maintenance Reports' for normal users
- * 
  * Todo: Check if it is possible to restructure the collatex javascript 
- * 
- * Todo: Perhaps put extra validation in Special:BeginCollate
- * 
- * Todo: See what happens if the user specifies a non-existent index for the database call 
- * 
- * Todo: See if there is a better way to organise the content of your css files 
  * 
  * Todo: Make a page with software credits (name Transcribe Bentham, Wikimedia, Collatex, Stylometric Analysis program and Preloaders.net)
  * 
@@ -24,7 +16,7 @@
  * 
  * Todo: Make a tag validator in javascript
  * 
- * Todo: Perhaps add additional tags to the editor
+ * Todo: Add additional tags to the editor
  * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
  * 

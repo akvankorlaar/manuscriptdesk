@@ -153,7 +153,7 @@ class SpecialBeginCollate extends SpecialPage {
       return false; 
     }
     
-    //check for empty variables or unusally long string lengths
+    //check for empty variables or unusually long string lengths
     if($input === null || strlen($input) > 500){
       return false; 
     }
@@ -276,7 +276,8 @@ class SpecialBeginCollate extends SpecialPage {
   }
   
   /**
-   * This function processes the request when the user wants to save the collation table. Preloaded wikitext is retrieved, a new page is made, and the user is redirected to
+   * This function processes the request when the user wants to save the collation table. Collate data is transferred from the 'tempcollate' table to
+   * the 'collations' table, preloaded wikitext is retrieved, a new page is made, and the user is redirected to
    * this page
    */
   private function processSaveTable(){

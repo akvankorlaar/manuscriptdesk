@@ -24,6 +24,12 @@
 
 class baseSummaryPage extends SpecialPage {
   
+  /**
+   * This class provides a set of methods to several classes with very similiar functions (SpecialAllCollations, SpecialAllCollections, SpecialAllManuscriptPages)
+   * 
+   * @var type 
+   */
+  
   public $lowercase_alphabet; 
   public $uppercase_alphabet; 
   public $article_url;
