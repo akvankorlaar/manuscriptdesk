@@ -22,17 +22,9 @@ And ofcourse all the other requirements needed for MediaWiki.
 
 ##Technical documentation##
 
-The extensions are largely built according to the recommended structure for MediaWiki extensions: 
-See <https://www.mediawiki.org/wiki/Manual:Developing_extensions> or see <https://www.mediawiki.org/wiki/Extension:Example> for an example extension.
+The extensions are largely built according to the recommended structure for MediaWiki extensions. See [the manual for developing extensions]
+(https://www.mediawiki.org/wiki/Manual:Developing_extensions) or see the [example extension](https://github.com/wikimedia/mediawiki-extensions-examples/tree/master/Example).
 
-
-
-
-
-
-
-
-
-
-
-
+The MediaWiki website is the main source for information on, for example, [hooks](https://www.mediawiki.org/wiki/Manual:Hooks), 
+[database access](https://www.mediawiki.org/wiki/Manual:Database_access), [user rights](https://www.mediawiki.org/wiki/Manual:User_rights), and
+specific classes such as the [User class](https://www.mediawiki.org/wiki/Manual:User.php).

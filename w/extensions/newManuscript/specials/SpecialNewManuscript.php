@@ -14,11 +14,19 @@
  * 
  * Todo: Perhaps put extra validation in Special:BeginCollate
  * 
+ * Todo: See what happens if the user specifies a non-existent index for the database call 
+ * 
  * Todo: See if there is a better way to organise the content of your css files 
  * 
  * Todo: Make a page with software credits (name Transcribe Bentham, Wikimedia, Collatex, Stylometric Analysis program and Preloaders.net)
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
+ * 
+ * Todo: Make a tag validator in javascript
+ * 
+ * Todo: Perhaps add additional tags to the editor
+ * 
+ * Todo: Make it possible to export collection and single manuscript pages in TEI-format
  * 
  * Todo: Try to create unit tests for the extensions. See: https://www.mediawiki.org/wiki/Manual:PHP_unit_testing/Writing_unit_tests_for_extensions , and check 
  * http://www.gossamer-threads.com/lists/wiki/mediawiki/520085 why the tests directory is missing for this version. Perhaps try to get them from github? 

@@ -161,7 +161,7 @@ $wgHooks['SkinBuildSidebar'][] = 'onSkinBuildSidebar';
       return true; 
     }
     
-    //these elements correspond to 'New Manuscript', 'Collate Manuscripts' and 'My User Page'
+    //these elements correspond to 'New Manuscript', 'Collate Manuscripts' , 'Stylometric Analysis' and 'My User Page'
     unset($bar['navigation'][1]);
     unset($bar['navigation'][2]);
     unset($bar['navigation'][3]);
