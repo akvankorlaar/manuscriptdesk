@@ -30,8 +30,11 @@ class collateWrapper{
   //class constructor
   public function __construct($user_name = "", $maximum_manuscripts = null){
     
+    global $wgCollationOptions; 
+    
     $this->user_name = $user_name;
     $this->maximum_manuscripts = $maximum_manuscripts; 
+    $this->hours_before_delete = $wgCollationOptions['tempcollate_hours_before_delete'];
   }
   
   /**
@@ -186,7 +189,7 @@ class collateWrapper{
    *  
    * @param type $collatex_output
    */
-  public function storeTempcollate($titles_array, $main_title, $new_url, $collatex_output){
+  public function storeTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output){
         
     $titles_array = json_encode($titles_array);
     $main_title_lowercase = strtolower($main_title);
@@ -199,6 +202,7 @@ class collateWrapper{
       'tempcollate_new_url'               => $new_url,
       'tempcollate_main_title'            => $main_title,
       'tempcollate_main_title_lowercase'  => $main_title_lowercase,
+      'tempcollate_time'                  => $time,
       'tempcollate_collatex'              => $collatex_output
 			);
     
@@ -206,7 +210,7 @@ class collateWrapper{
     $dbw->upsert(
         'tempcollate', //select table
          $insert_values,
-         array('tempcollate_user'), //tempcollate_unique
+         array('tempcollate_time'), //tempcollate_unique
          $insert_values,
          __METHOD__ 
         );
@@ -219,6 +223,80 @@ class collateWrapper{
       //return error    
       return false;
 		}
+  }
+  
+  /**
+   * This function checks if there are other stored values for this user in 'tempcollate'. If the time difference between $current_time
+   * and $time of the stored values is larger than $this->hours_before_delete, the values will be deleted 
+   */
+  public function clearTempcollate($current_time){
+     
+    $dbr = wfGetDB(DB_SLAVE);
+    $user_name = $this->user_name; 
+    $time_array = array();
+        
+    //Database query
+    $res = $dbr->select(
+      'tempcollate', //from
+      array(
+        'tempcollate_user',//values
+        'tempcollate_time'
+         ),
+       array(
+      'tempcollate_user = ' . $dbr->addQuotes($user_name), //conditions
+      ),
+      __METHOD__,
+       array(
+      'ORDER BY' => 'tempcollate_time',
+      )
+      );
+      
+    //while there are still titles in this query
+    while ($s = $res->fetchObject()){
+       
+      $time_array[] = $s->tempcollate_time;    
+    }
+    
+    foreach($time_array as $index=>$time){
+      
+      if(intval($current_time) - intval($time) > ($this->hours_before_delete * 10000)){    
+        $status = $this->deleteTempcollate($time);
+        
+        //deletion of an element failed, so something went wrong
+        if(!$status){
+          return false; 
+        }
+      }
+    }
+    
+    return true; 
+  }
+   
+  /**
+   * This function deletes entries from the 'tempcollate' table
+   * 
+   * @param type $time
+   * @return boolean
+   */
+  private function deleteTempcollate($time){
+     
+    $dbw = wfGetDB(DB_MASTER);
+    
+    $dbw->delete( 
+      'tempcollate', //from
+      array( 
+      'tempcollate_user = ' . $dbr->addQuotes($user_name), //conditions
+      'tempcollate_time = ' . $dbr->addQuotes($time),
+        ),
+      __METHOD__ );
+    
+    if ($dbw->affectedRows()){
+      //something was deleted from the manuscripts table  
+      return true;
+    }else{
+      //nothing was deleted
+      return false;
+    }
   }
   
   /**

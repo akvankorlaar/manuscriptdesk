@@ -199,15 +199,38 @@ class SpecialBeginCollate extends SpecialPage {
     //construct an URL for the new page
     list($main_title, $new_url) = $this->makeURL($titles_array);
     
-    $collate_wrapper = new collateWrapper($this->user_name);
-
-    $status = $collate_wrapper->storeTempcollate($titles_array, $main_title, $new_url, $collatex_output);
-    
+    $status = $this->prepareTempcollate($titles_array, $main_title, $new_url, $collatex_output);
+        
     if(!$status){
       return $this->showError('collate-error-database');
     }
            
     $this->showFirstTable($titles_array, $collatex_output);
+  }
+  
+  /**
+   * This function intializes the $collate_wrapper, clears the tempcollate table, and inserts new data into the tempcollate table 
+   */
+  private function prepareTempcollate($titles_array, $main_title, $new_url, $collatex_output){
+    
+    $collate_wrapper = new collateWrapper($this->user_name);
+    
+    //time format: daymonthHourminutesseconds
+    $time = date('dmHis');
+  
+    $status = $collate_wrapper->clearTempcollate($time);
+    
+    if(!$status){
+      return false;
+    }
+        
+    $status = $collate_wrapper->storeTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
+    
+    if(!$status){
+      return false;
+    }
+    
+    return true;   
   }
   
   /**
