@@ -282,13 +282,14 @@ class collateWrapper{
    */
   private function deleteTempcollate($time){
      
-    $dbw = wfGetDB(DB_MASTER);
+    $dbw = wfGetDB(DB_MASTER);    
+    $user_name = $this->user_name; 
     
     $dbw->delete( 
       'tempcollate', //from
       array( 
-      'tempcollate_user = ' . $dbr->addQuotes($user_name), //conditions
-      'tempcollate_time = ' . $dbr->addQuotes($time),
+      'tempcollate_user = ' . $dbw->addQuotes($user_name), //conditions
+      'tempcollate_time = ' . $dbw->addQuotes($time),
         ),
       __METHOD__ );
     
