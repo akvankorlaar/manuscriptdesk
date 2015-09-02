@@ -145,7 +145,7 @@ class collateWrapper{
   /**
    * This function gets the stored collate values from 'tempcollate'
    */
-  public function getTempcollate(){
+  public function getTempcollate($time_identifier){
         
     $dbr = wfGetDB(DB_SLAVE);
     $user_name = $this->user_name; 
@@ -159,10 +159,12 @@ class collateWrapper{
         'tempcollate_new_url',
         'tempcollate_main_title',
         'tempcollate_main_title_lowercase',
+        'tempcollate_time',
         'tempcollate_collatex'
          ),
        array(
       'tempcollate_user = ' . $dbr->addQuotes($user_name), //conditions
+      'tempcollate_time = ' . $dbr->addQuotes($time_identifier),   
       ),
       __METHOD__ 
       );

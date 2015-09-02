@@ -47,6 +47,7 @@ class SpecialBeginCollate extends SpecialPage {
   private $error_message;
   private $manuscripts_namespace_url;
   private $redirect_to_start; 
+  private $time_identifier; 
    
   //class constructor
   public function __construct(){
@@ -63,9 +64,11 @@ class SpecialBeginCollate extends SpecialPage {
     $this->error_message = false; //default value
     $this->metatable_tag = $wgMetaTableTag;
     $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
-    $this->redirect_to_start = false;
+    $this->redirect_to_start = false; //default value
     $this->posted_titles_array = array();
     $this->collection_array = array();
+    $this->collection_hidden_array = array();
+    $this->time_identifier = null; //default value
 
     parent::__construct('BeginCollate');
 	}
@@ -93,22 +96,29 @@ class SpecialBeginCollate extends SpecialPage {
       $checkbox_without_numbers = trim(str_replace(range(0,9),'',$checkbox));
 
       if($checkbox_without_numbers === 'text'){
-        $this->posted_titles_array[$checkbox] = $request->getText($checkbox); 
+        $this->posted_titles_array[$checkbox] = $this->validateInput($request->getText($checkbox)); 
 
       }elseif($checkbox_without_numbers === 'collection'){
-        $this->collection_array[$checkbox] = $request->getText($checkbox);    
+        $this->collection_array[$checkbox] = $this->validateInput(json_decode($request->getText($checkbox)));    
       
       }elseif($checkbox_without_numbers === 'collection_hidden'){
-        $this->collection_hidden_array[$checkbox] = $request->getText($checkbox);
+        $this->collection_hidden_array[$checkbox] = $this->validateInput($request->getText($checkbox));
+                
+      }elseif($checkbox_without_numbers === 'save_current_table'){
+        $this->save_table = true;
+        
+      }elseif($checkbox_without_numbers === 'time'){
+        $this->time_identifier = $this->validateInput($request->getText('time'));
         
       }elseif($checkbox_without_numbers === 'redirect_to_start'){
         $this->redirect_to_start = true; 
         break; 
-        
-      }elseif($checkbox_without_numbers === 'save_current_table'){
-        $this->save_table = true;
-        break;
-      }       
+      }
+    }
+    
+    //return false if something went wrong during validation
+    if($this->posted_titles_array === false || $this->collection_array === false || $this->collection_hidden_array === false || $this->time_identifier === false){
+      return false; 
     }
     
     if($this->redirect_to_start){
@@ -116,6 +126,39 @@ class SpecialBeginCollate extends SpecialPage {
     }
         
     return true; 
+  }
+  
+  /**
+   * This function validates input sent by the client
+   * 
+   * @param type $input
+   */
+  private function validateInput($input){
+    
+    if(is_array($input)){
+      
+      foreach($input as $index => $value){
+        $status = $this->validateInput($value);
+        
+        if(!$status){
+          return false; 
+        }
+      }
+      
+      return $input; 
+    }
+    
+    //see if one or more of these sepcial charachters match
+    if(preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $input)){
+      return false; 
+    }
+    
+    //check for empty variables or unusally long string lengths
+    if($input === null || strlen($input) > 500){
+      return false; 
+    }
+    
+    return $input; 
   }
   
   /**
@@ -163,8 +206,7 @@ class SpecialBeginCollate extends SpecialPage {
     
     $collection_count = 0; 
     
-    foreach($this->collection_array as $collection_name => $json_url_array){
-      $url_array = json_decode($json_url_array);
+    foreach($this->collection_array as $collection_name => $url_array){
       $collection_count += count($url_array);
     }
       
@@ -199,25 +241,25 @@ class SpecialBeginCollate extends SpecialPage {
     //construct an URL for the new page
     list($main_title, $new_url) = $this->makeURL($titles_array);
     
-    $status = $this->prepareTempcollate($titles_array, $main_title, $new_url, $collatex_output);
+    //time format: daymonthHourminutesseconds
+    $time = date('dmHis');
+    
+    $status = $this->prepareTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
         
     if(!$status){
       return $this->showError('collate-error-database');
     }
            
-    $this->showFirstTable($titles_array, $collatex_output);
+    $this->showFirstTable($titles_array, $collatex_output, $time);
   }
   
   /**
    * This function intializes the $collate_wrapper, clears the tempcollate table, and inserts new data into the tempcollate table 
    */
-  private function prepareTempcollate($titles_array, $main_title, $new_url, $collatex_output){
+  private function prepareTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output){
     
     $collate_wrapper = new collateWrapper($this->user_name);
-    
-    //time format: daymonthHourminutesseconds
-    $time = date('dmHis');
-  
+     
     $status = $collate_wrapper->clearTempcollate($time);
     
     if(!$status){
@@ -241,8 +283,15 @@ class SpecialBeginCollate extends SpecialPage {
     
     $user_name = $this->user_name;
     $collate_wrapper = new collateWrapper($this->user_name);
+    $time_identifier = $this->time_identifier; 
     
-    list($titles_array, $new_url, $main_title, $main_title_lowercase, $collatex_output) = $collate_wrapper->getTempcollate();
+    $status = $collate_wrapper->getTempcollate($time_identifier);
+    
+    if(!$status){
+      return $this->showError('collate-error-database');
+    }
+    
+    list($titles_array, $new_url, $main_title, $main_title_lowercase, $collatex_output) = $status; 
             
     $local_url = $this->createNewPage($new_url);
     
@@ -351,9 +400,7 @@ class SpecialBeginCollate extends SpecialPage {
   
     if($this->collection_array){
       //collect all single pages of a collection and merge them together
-      foreach($this->collection_array as $collection_name => $json_url_array){
-
-        $url_array = json_decode($json_url_array);
+      foreach($this->collection_array as $collection_name => $url_array){
 
         $all_texts_for_one_collection = "";
 
@@ -507,7 +554,7 @@ class SpecialBeginCollate extends SpecialPage {
    * @param type $title_array
    * @param type $collatex_output
    */
-  private function showFirstTable($title_array,$collatex_output){
+  private function showFirstTable($title_array,$collatex_output, $time){
     
     $out = $this->getOutput();     
     $article_url = $this->article_url;
@@ -517,7 +564,7 @@ class SpecialBeginCollate extends SpecialPage {
     
     $save_hover_message = $this->msg('collate-savehover');
     $save_message = $this->msg('collate-save');
-    
+        
     $html = "
        <div id = 'begincollate-buttons'>
             <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
@@ -526,6 +573,7 @@ class SpecialBeginCollate extends SpecialPage {
             
             <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
             <input type='submit' class='begincollate-submitbutton-two' name= 'save_current_table' title='$save_hover_message' value='$save_message'> 
+            <input type='hidden' name='time' value='$time'>  
             </form>
        </div>";
             

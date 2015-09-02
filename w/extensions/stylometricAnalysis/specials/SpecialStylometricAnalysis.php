@@ -97,7 +97,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
       }
     }
     
-    if($this->collection_array === false || $this->collection_hidden_array === false || $this->textarea_text === false || $this->redirect_to_start){
+    if($this->collection_array === false || $this->collection_hidden_array === false || $this->textarea_text === false ){
+      return false; 
+    }
+    
+    if($this->redirect_to_start){
       return false; 
     }
         
