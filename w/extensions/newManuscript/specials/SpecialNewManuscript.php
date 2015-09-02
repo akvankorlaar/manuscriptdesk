@@ -14,6 +14,8 @@
  * 
  * Todo: Perhaps put extra validation in Special:BeginCollate
  * 
+ * Todo: See what happens if the user specifies a non-existent index for the database call 
+ * 
  * Todo: See if there is a better way to organise the content of your css files 
  * 
  * Todo: Make a page with software credits (name Transcribe Bentham, Wikimedia, Collatex, Stylometric Analysis program and Preloaders.net)
