@@ -22,6 +22,12 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
+ * Todo: Make a tag validator in javascript
+ * 
+ * Todo: Perhaps add additional tags to the editor
+ * 
+ * Todo: Make it possible to export collection and single manuscript pages in TEI-format
+ * 
  * Todo: Try to create unit tests for the extensions. See: https://www.mediawiki.org/wiki/Manual:PHP_unit_testing/Writing_unit_tests_for_extensions , and check 
  * http://www.gossamer-threads.com/lists/wiki/mediawiki/520085 why the tests directory is missing for this version. Perhaps try to get them from github? 
  *   
