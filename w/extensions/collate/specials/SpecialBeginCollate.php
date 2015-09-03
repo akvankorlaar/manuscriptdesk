@@ -32,6 +32,7 @@ class SpecialBeginCollate extends SpecialPage {
  * 3: when redirecting to start, the default page is shown
  * 4: when saving the table, the data is retrieved from the tempcollate table, saved to the collations table, a new wiki page is created, and the user is redirected to this page 
  * 
+ * Problem: When 20 people collate at the same time, there is a chance 2 people collate at the exact same time..
  */
   
   public $article_url; 
