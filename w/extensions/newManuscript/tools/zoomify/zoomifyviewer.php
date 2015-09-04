@@ -21,6 +21,8 @@
 * @author Richard Davis <r.davis@ulcc.ac.uk>
 * @author Ben Parish <b.parish@ulcc.ac.uk>
 * @copyright 2013 Richard Davis
+* 
+* 04 sept 2015: Small layout changes, and some tags removed @Arent van Korlaar 
 *
 */
 
@@ -36,20 +38,20 @@ $insteadMsg   = $messages[ $lang ][ 'instead' ];
 $viewerTitle  = $messages[ $lang ][ 'flash-viewer' ];
 $errorMsg	  = $messages[ $lang ][ 'error' ];
 
+$requiredGetVars = array( 
+  'image'    => 'imageFilePath',
+	'lang'     => 'lang',
+	'sitename' => 'siteName',
+  );
 
-$requiredGetVars = array( 'image'    => 'imageFilePath'
-					    , 'lang'     => 'lang'
-		  			    , 'sitename' => 'siteName' );
+foreach ($requiredGetVars as $getVar => $varName){
 
-foreach ( $requiredGetVars as $getVar => $varName ){
-
-	if( isset( $_GET[ $getVar ] ) === TRUE ){
+	if(isset($_GET[$getVar]) === true){
 		$$varName = $_GET[ $getVar ];
 	}else{
 		$errorMsg = sprintf( $errorMsg, $getVar );
 		throw new Exception( $errorMsg );
 	}
-
 }
 
 ?>
@@ -74,9 +76,7 @@ foreach ( $requiredGetVars as $getVar => $varName ){
 		type="application/x-shockwave-flash"
 		name="ZoomifyViewer"
 		class="z_embed_style">
-	</embed>
 </object>
 <p><?php echo $useJSMsg ?> <a href="../ajax-tiledviewer/ajax-tiledviewer.php?&image=<?php echo $imageFilePath; ?>&lang=<?php echo $lang; ?>&sitename=<?php echo str_replace( ' ', '%20', $siteName ); ?>"><?php echo $clickHereMsg; ?></a> <?php echo $insteadMsg; ?>.</p>
-</div>
 </body>
 </html>

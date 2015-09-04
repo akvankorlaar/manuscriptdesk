@@ -32,7 +32,7 @@ EOT;
 	exit( 1 );
 }
 
-$wgAutoloadClasses[ 'JBTEIToolbarHooks' ]   = __DIR__ . '/JBTEIToolbar.body.php';
+$wgAutoloadClasses[ 'JBTEIToolbarHooks' ]   = __DIR__ . '/JBTEIToolbar.hooks.php';
 $wgExtensionMessagesFiles[ 'JBTEIToolbar' ] = __DIR__ . '/JBTEIToolbar.i18n.php';
 
 $wgExtensionCredits[ 'jbteitoolbar' ][] = array(
@@ -68,6 +68,7 @@ $wgResourceModules['ext.JBTEIToolbar' ] = array(
 										 ,'toolbar-label-ampersand'
 										 ,'toolbar-label-long-dash'
 										 ,'toolbar-label-comment'
+                     ,'toolbar-label-retrace'
 
 										  /* Peri text */
 										 ,'toolbar-peri-heading'
@@ -81,10 +82,9 @@ $wgResourceModules['ext.JBTEIToolbar' ] = array(
 										 ,'toolbar-peri-spelling'
 										 ,'toolbar-peri-foreign'
 										 ,'toolbar-peri-comment'
+                     ,'toolbar-peri-retrace'
 									)
-
 );
-
 
 $JBTEIToolbarHooks 							 = new JBTEIToolbarHooks();
 

@@ -208,13 +208,11 @@ class collateWrapper{
       'tempcollate_collatex'              => $collatex_output
 			);
     
-    //upsert = INSERT.. ON DUPLICATE KEY UPDATE
-    $dbw->upsert(
+    $dbw->insert(
         'tempcollate', //select table
          $insert_values,
-         array('tempcollate_time'), //tempcollate_unique
-         $insert_values,
-         __METHOD__ 
+         __METHOD__ ,
+        'IGNORE'
         );
     
     if ($dbw->affectedRows()){

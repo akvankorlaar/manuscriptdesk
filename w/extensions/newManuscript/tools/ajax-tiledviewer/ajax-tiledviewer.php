@@ -39,19 +39,21 @@ $insteadMsg   = $messages[ $lang ][ 'instead' ];
 $viewerTitle  = $messages[ $lang ][ 'javascript-viewer' ];
 $jsWarningMsg = $messages[ $lang ][ 'javascript-warning' ];
 
-$requiredGetVars = array( 'image'    => 'imageFilePath'
-					    , 'lang'     => 'lang'
-		  			    , 'sitename' => 'siteName' );
+$requiredGetVars = array( 
+  'image'    => 'imageFilePath',
+	'lang'     => 'lang',
+	'sitename' => 'siteName', 
+  );
 
-foreach ( $requiredGetVars as $getVar => $varName ){
+foreach ($requiredGetVars as $getVar => $varName){
 
-	if( isset( $_GET[ $getVar ] ) === TRUE ){
+	if(isset($_GET[$getVar]) === true){
 		$$varName = $_GET[ $getVar ];
+    
 	}else{
 		$errorMsg = sprintf( $errorMsg, $getVar );
 		throw new Exception( $errorMsg );
 	}
-
 }
 
 $width  = 2731;
@@ -70,7 +72,6 @@ if( isset( $_GET[ 'height' ] ) === TRUE ){
 <head>
 <title>[ <?php echo $siteName; ?> - <?php echo $viewerTitle; ?> ]</title>
 <link rel=stylesheet href="ajax-tiledviewer.css" type="text/css" media=screen>
-</style>
 <script type="text/javascript">
 //EXAMPLE SHOWING HOW TO SET JAVASCRIPT VARIABLES FOR USE IN THE BRAIN MAPS API.
 //UNCOMMENT THE LINE BELOW TO USE THESE VARIABLE VALUES OR ADD YOUR OWN VALUES.

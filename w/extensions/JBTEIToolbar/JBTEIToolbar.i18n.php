@@ -50,6 +50,7 @@ $messages['en'] = array(
 	'toolbar-label-ampersand'    => 'Ampersand',
 	'toolbar-label-long-dash'    => 'Long dash',
 	'toolbar-label-comment'      => 'Comment',
+  'toolbar-label-retrace'     => 'Retrace',
 
 	/* Peri text */
 	'toolbar-peri-heading'       => 'heading',
@@ -62,6 +63,7 @@ $messages['en'] = array(
 	'toolbar-peri-superscript'   => 'superscript text',
 	'toolbar-peri-spelling'      => 'unusually-spelled text',
 	'toolbar-peri-foreign'       => 'foreign language text',
-	'toolbar-peri-comment'       => 'user comment'
+	'toolbar-peri-comment'       => 'user comment',
+  'toolbar-peri-retrace'       => 'retraced text'
 
 );

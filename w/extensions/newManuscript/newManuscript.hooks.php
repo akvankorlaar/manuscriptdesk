@@ -63,6 +63,8 @@ class newManuscriptHooks {
   private $images_root_dir;
   private $mediawiki_dir;
   private $page_title;
+  private $page_title_with_namespace;
+  private $namespace; 
   private $lang;
   private $viewer_type;
   private $user_fromurl;
@@ -71,7 +73,6 @@ class newManuscriptHooks {
   private $manuscript_url_count_size;
   private $original_images_dir;
   private $allowed_file_extensions; 
-  private $manuscripts_namespace_url;
   private $zoomimage_check_before_delete;
   private $original_image_check_before_delete;
   private $max_charachters_manuscript; 
@@ -80,14 +81,16 @@ class newManuscriptHooks {
   * Assign globals to properties
   * Creates default values when these have not been set
   */
-  private function assignGlobalsToProperties($old_title = null){
+  private function assignGlobalsToProperties(){
 
     global $wgLang,$wgScriptPath,$wgOut,$wgNewManuscriptOptions,$wgWebsiteRoot;
     
     $this->manuscript_url_count_size = $wgNewManuscriptOptions['url_count_size'];
     $this->images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
     $this->original_images_dir = $wgNewManuscriptOptions['original_images_dir'];
-    $this->page_title = isset($old_title) ? $old_title : strip_tags($wgOut->getTitle());  
+    $this->page_title = strip_tags($wgOut->getTitle()->mTextform);
+    $this->page_title_with_namespace = strip_tags($wgOut->getTitle()->mPrefixedText);
+    $this->namespace = $wgOut->getTitle()->getNamespace();
     $this->document_root = $wgWebsiteRoot; 
     
     $this->title_options_site_name = 'Manuscript Desk';   
@@ -95,13 +98,12 @@ class newManuscriptHooks {
     $this->lang = $wgLang->getCode();
     
     $this->allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
-    $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
     $this->max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
     
     $this->zoomimage_check_before_delete = false;
     $this->original_image_check_before_delete = false; 
     
-    return;
+    return true;
   }
   
   /**
@@ -178,12 +180,12 @@ class newManuscriptHooks {
    */
   private function getCollection(){
     
-    $page_title = $this->page_title; 
+    $page_title_with_namespace = $this->page_title_with_namespace; 
     
     $dbr = wfGetDB(DB_SLAVE);
     
     $conds = array(
-       'manuscripts_url = ' . $dbr->addQuotes($page_title),
+       'manuscripts_url = ' . $dbr->addQuotes($page_title_with_namespace),
      ); 
     
      //Database query
@@ -286,22 +288,21 @@ class newManuscriptHooks {
    */
   private function urlValid(){
     
-    $page_title_with_namespace = $this->page_title;
-    $manuscripts_namespace = $this->manuscripts_namespace_url; 
+    $page_title = $this->page_title;   
+    $namespace = $this->namespace; 
+    $document_root = $this->document_root;
     $images_root_dir = $this->images_root_dir; 
-    $document_root = $this->document_root;    
     
-    if(substr($page_title_with_namespace,0,strlen($manuscripts_namespace)) !== $manuscripts_namespace){
+    if($namespace !== NS_MANUSCRIPTS){
       return false; 
     }
     
-    $page_title = trim(str_replace($manuscripts_namespace,"",$page_title_with_namespace));  
     $page_title_array = explode("/", $page_title);
     
     $user_fromurl = isset($page_title_array[0]) ? $page_title_array[0] : null; 
     $filename_fromurl = isset($page_title_array[1]) ? $page_title_array[1] : null;
     
-    if(!isset($user_fromurl) || !isset($filename_fromurl) || count($filename_fromurl) > 50 || !ctype_alnum($user_fromurl) || !ctype_alnum($filename_fromurl)){
+    if(!isset($user_fromurl) || !isset($filename_fromurl) || !ctype_alnum($user_fromurl) || !ctype_alnum($filename_fromurl)){
       return false; 
     }
     
@@ -452,10 +453,10 @@ class newManuscriptHooks {
    * @return boolean
    */
   public function onAbortMove( Title $oldTitle, Title $newTitle, User $user, &$error, $reason ) {
-     
-		if($oldTitle->getNamespace() !== NS_MANUSCRIPTS){
-			return true; 
-		}
+    
+    if($oldTitle->getNamespace() !== NS_MANUSCRIPTS){
+      return true;      
+    }
      
     $error = $this->getMessage('newmanuscripthooks-move');
   
@@ -475,21 +476,19 @@ class newManuscriptHooks {
     
     $this->assignGlobalsToProperties();
     
-    $page_title_with_namespace = $this->page_title;
-    $manuscripts_namespace = $this->manuscripts_namespace_url; 
+    $page_title = $this->page_title; 
+    $namespace = $this->namespace; 
     
-    if(substr($page_title_with_namespace,0,strlen($manuscripts_namespace)) !== $manuscripts_namespace){
-      //this is not a manuscript. Allow deletion
+    if($namespace !== NS_MANUSCRIPTS){
+      //this is not a manuscript page. Allow deletion
       return true; 
     }
     
-    $page_title = trim(str_replace($manuscripts_namespace,"",$page_title_with_namespace));  
-    
-    $page_title_array = explode("/", $page_title);
-    $user_fromurl = isset($page_title_array[0]) ? $page_title_array[0] : null; 
     $user_name = $user->getName();  
     $user_groups = $user->getGroups();
-        
+    $page_title_array = explode("/", $page_title);
+    $user_fromurl = isset($page_title_array[0]) ? $page_title_array[0] : null; 
+ 
     if(($user_fromurl === null || $user_name !== $user_fromurl) && !in_array('sysop',$user_groups)){     
         //deny deletion because the current user did not create this manuscript, and the user is not an administrator
         $error = "<br>" . $this->getMessage('newmanuscripthooks-nodeletepermission') . ".";
@@ -519,7 +518,7 @@ class newManuscriptHooks {
     
     $this->deleteOriginalImage();
     
-    $this->deleteDatabaseEntry($page_title);
+    $this->deleteDatabaseEntry();
     
     return true;    
   }
@@ -610,17 +609,16 @@ class newManuscriptHooks {
   /**
    * This function deletes the entry for $page_title in the 'manuscripts' table
    */
-  private function deleteDatabaseEntry($page_title){
+  private function deleteDatabaseEntry(){
     
-    $manuscripts_namespace_url = $this->manuscripts_namespace_url;     
-    $full_page_url = $manuscripts_namespace_url . $page_title; 
+    $page_title_with_namespace = $this->page_title_with_namespace;
     
     $dbw = wfGetDB(DB_MASTER);
     
     $dbw->delete( 
       'manuscripts', //from
       array( 
-      'manuscripts_url' => $full_page_url), //conditions
+      'manuscripts_url' => $page_title_with_namespace), //conditions
       __METHOD__ );
     
     	if ($dbw->affectedRows()){
@@ -651,18 +649,17 @@ class newManuscriptHooks {
     $this->assignGlobalsToProperties();
     
     $page_title_with_namespace = $this->page_title;
-    $manuscripts_namespace = $this->manuscripts_namespace_url; 
+    $page_title = $this->page_title; 
+    $namespace = $this->namespace; 
                  
-    if(substr($page_title_with_namespace,0,strlen($manuscripts_namespace)) !== $manuscripts_namespace){
+    if($namespace !== NS_MANUSCRIPTS){
       //this is not a manuscript. Allow saving
       return true; 
     }
              
     $document_root = $this->document_root; 
     $images_root_dir = $this->images_root_dir;
-    
-    $page_title = trim(str_replace($manuscripts_namespace,"",$page_title_with_namespace));  
-    
+      
     $page_title_array = explode("/", $page_title);
     
     $user_fromurl = isset($page_title_array[0]) ? $page_title_array[0] : null; 
@@ -671,8 +668,8 @@ class newManuscriptHooks {
     $zoom_images_file = $document_root . DIRECTORY_SEPARATOR . $images_root_dir . DIRECTORY_SEPARATOR . $user_fromurl . DIRECTORY_SEPARATOR . $filename_fromurl;
       
     if(!file_exists($zoom_images_file) || !isset($user_fromurl) || !isset($filename_fromurl)){
-      //the page is in NS_MANUSCRIPTS but there is no corresponding file in the database, so don't allow saving
       
+      //the page is in NS_MANUSCRIPTS but there is no corresponding file in the database, so don't allow saving    
       $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-nopermission') . "."));   
       return true; 
     }
@@ -701,6 +698,8 @@ class newManuscriptHooks {
   public function onBeforePageDisplay(OutputPage &$out, Skin &$ski ){
 
     $title_object = $out->getTitle();
+    
+    //mPrefixedText is the page title with the namespace
     $page_title = $title_object->mPrefixedText; 
 
     if($title_object->getNamespace() === NS_MANUSCRIPTS){

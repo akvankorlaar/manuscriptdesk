@@ -8,5 +8,4 @@ CREATE TABLE IF NOT EXISTS `tempcollate` (
   `tempcollate_time` varbinary(255) NOT NULL,
   `tempcollate_collatex` TEXT NOT NULL,
   PRIMARY KEY (`tempcollate_id`),
-  UNIQUE KEY `tempcollate_time` (`tempcollate_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=binary;
