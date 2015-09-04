@@ -201,22 +201,17 @@ class collateHooks {
    * @param type $error
    */
   public function onArticleDelete( WikiPage &$article, User &$user, &$reason, &$error ){
-    
-    global $wgCollationOptions; 
-        
+            
     $title_object = $article->getTitle();
-    $namespace = $title_object->getNamespace();     
+    $namespace = $title_object->getNamespace();
                        
     if($namespace !== NS_COLLATIONS){
       //this is not a collation page. Allow saving
       return true; 
     }
     
-    $collations_namespace_url = $wgCollationOptions['collations_namespace'];
-    $page_title_with_namespace = $title_object->getPrefixedUrl();    
-       
-    $page_title = str_replace($collations_namespace_url,'',$page_title_with_namespace);
-    
+    $page_title = $title_object->mTextform;    
+           
     $page_title_array = explode("/", $page_title);
     $user_fromurl = isset($page_title_array[0]) ? $page_title_array[0] : null; 
     $user_name = $user->getName();  
@@ -228,7 +223,7 @@ class collateHooks {
         return false; 
     }
     
-    $this->deleteDatabaseEntry($page_title_with_namespace); 
+    $this->deleteDatabaseEntry($title_object->mPrefixedText); 
     
     return true; 
   }
@@ -236,14 +231,14 @@ class collateHooks {
   /**
    * This function deletes the entry for corresponding to the page in the 'collations' table
    */
-  private function deleteDatabaseEntry($page_title){
+  private function deleteDatabaseEntry($page_title_with_namespace){
         
     $dbw = wfGetDB(DB_MASTER);
     
     $dbw->delete( 
       'collations', //from
       array( 
-      'collations_url' => $page_title), //conditions
+      'collations_url' => $page_title_with_namespace), //conditions
       __METHOD__ );
     
     if ($dbw->affectedRows()){
@@ -263,10 +258,10 @@ class collateHooks {
    */
   public function onBeforePageDisplay(OutputPage &$out, Skin &$ski ){
 
-    $title_object = $out->getTitle();
-    $page_title = $title_object->mPrefixedText; 
-
-    if($title_object->getNamespace() === NS_COLLATIONS || $page_title === 'Special:BeginCollate'){
+    $page_title_with_namespace = $out->getTitle()->mPrefixedText;
+    $namespace = $out->getTitle()->getNamespace();
+    
+    if($namespace === NS_COLLATIONS || $page_title_with_namespace === 'Special:BeginCollate'){
       //add css for the collation table    
       $out->addModuleStyles('ext.collate');
       $out->addModules('ext.collateloader');

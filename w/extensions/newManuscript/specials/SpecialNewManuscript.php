@@ -26,6 +26,8 @@
  * Todo: Write documentation on how to install the software, and the structure of the software. Also, increase the amount of comments
  * 
  * Todo: Some errors are probably redundant. Additional testing is needed to see if these are necessary. 
+ * 
+ * Todo: For unknown reasons, the javascript viewer doesn't always work... perhaps remove the javascript viewer? 
  */
 
 /**

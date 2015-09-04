@@ -453,10 +453,10 @@ class newManuscriptHooks {
    * @return boolean
    */
   public function onAbortMove( Title $oldTitle, Title $newTitle, User $user, &$error, $reason ) {
-     
-		if($oldTitle->getNamespace() !== NS_MANUSCRIPTS){
-			return true; 
-		}
+    
+    if($oldTitle->getNamespace() !== NS_MANUSCRIPTS){
+      return true;      
+    }
      
     $error = $this->getMessage('newmanuscripthooks-move');
   
