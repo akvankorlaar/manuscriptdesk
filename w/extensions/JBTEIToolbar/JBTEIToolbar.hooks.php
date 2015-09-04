@@ -56,39 +56,42 @@ class JBTEIToolbarHooks {
 	 * @param $toolbar array list of toolbar items
 	 * @return bool
 	 */
-	public function editPageShowEditFormInitial( $toolbar , $out) {
+	public function editPageShowEditFormInitial($toolbar , $out){
 
-		global $wgOut;
-
-		$pageTitle = $wgOut->getTitle();
-
-		if( $this->isInEditMode( $pageTitle ) === false ){
-			return TRUE;
+		$title_object = $out->getTitle();
+    
+		if(!$this->isInEditMode($title_object)){
+			return true;
 		}
         
-		$wgOut->addModules( 'ext.JBTEIToolbar' );
+		$out->addModules('ext.JBTEIToolbar');
 
-		return TRUE;
+		return true;
 	}
-
-	private function isInEditMode( $pageTitle ){
+  
+  /**
+   * This function checks if the current $pageTitle is in edit mode
+   * 
+   * @global type $wgNewManuscriptOptions
+   * @global type $wgWebsiteRoot
+   * @param type $page_title
+   * @return boolean
+   */
+	private function isInEditMode($title_object){
     
     global $wgNewManuscriptOptions,$wgWebsiteRoot; 
     
-    //checks for manuscripts. 
     $images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
-    $manuscripts_namespace = $wgNewManuscriptOptions['manuscripts_namespace']; 
-   
-    $page_title_with_namespace = strip_tags($pageTitle);    
-    $page_title = trim(str_replace($manuscripts_namespace,"",$page_title_with_namespace));    
-    $page_title = strtolower($page_title);
     
+    //mTextform is the page title without namespace
+    $page_title = $title_object->mTextform; 
+   
     $page_title_array = explode("/", $page_title);
     
     $user_fromurl = isset($page_title_array[0]) ? $page_title_array[0] : null;
     $filename_fromurl = isset($page_title_array[1]) ? $page_title_array[1] : null;
     
-    if(!isset($user_fromurl) || !isset($filename_fromurl) || count($filename_fromurl) > 50 || !ctype_alnum($user_fromurl) || !ctype_alnum($filename_fromurl)){
+    if(!isset($user_fromurl) || !isset($filename_fromurl) || !ctype_alnum($user_fromurl) || !ctype_alnum($filename_fromurl)){
       return false; 
     }
     

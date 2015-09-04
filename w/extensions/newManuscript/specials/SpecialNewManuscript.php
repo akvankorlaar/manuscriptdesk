@@ -10,8 +10,6 @@
  * 
  * Todo: Check if it is possible to restructure the collatex javascript 
  * 
- * Todo: Make a page with software credits (name Transcribe Bentham, Wikimedia, Collatex, Stylometric Analysis program and Preloaders.net)
- * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
  * Todo: Make a tag validator in javascript

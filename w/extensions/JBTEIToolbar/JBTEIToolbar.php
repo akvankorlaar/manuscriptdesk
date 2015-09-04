@@ -32,7 +32,7 @@ EOT;
 	exit( 1 );
 }
 
-$wgAutoloadClasses[ 'JBTEIToolbarHooks' ]   = __DIR__ . '/JBTEIToolbar.body.php';
+$wgAutoloadClasses[ 'JBTEIToolbarHooks' ]   = __DIR__ . '/JBTEIToolbar.hooks.php';
 $wgExtensionMessagesFiles[ 'JBTEIToolbar' ] = __DIR__ . '/JBTEIToolbar.i18n.php';
 
 $wgExtensionCredits[ 'jbteitoolbar' ][] = array(
