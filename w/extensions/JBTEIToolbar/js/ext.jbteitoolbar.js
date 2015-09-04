@@ -189,6 +189,15 @@ var addExtraButtonsToClassicToolBar = function(){
         'tagClose'  : ' -->',
         'sampleText': 'user comment'
     });
+    
+    mw.toolbar.addButton({
+    	'id'        : 'mw-editbutton-retrace',
+    	'imageFile' : $images_path + 'jb-button-retrace.png',
+        'speedTip'  : mw.msg( 'toolbar-label-retrace' ),
+        'tagOpen'   : '<retrace>',
+        'tagClose'  : '</retrace>',
+        'sampleText': 'toolbar-peri-retrace'
+    });
 
 }
 
@@ -501,6 +510,20 @@ var addExtraButtons = function() {
 			                    pre:  '<!-- ',
 			                    peri: 'toolbar-peri-comment',
 			                    post: ' -->',
+			                }
+			        }
+			    },
+                            
+                           'retrace': {
+			        label : mw.msg( 'toolbar-label-retrace' ),
+			        type  : 'button',
+			        icon  : $path + 'jb-button-retrace.png',
+			        action: {
+			                type   : 'encapsulate',
+			                options: {
+			                    pre:  '<retrace>',
+			                    peri: mw.msg('toolbar-peri-retrace'),
+			                    post: '</retrace>',
 			                }
 			        }
 			    }

@@ -32,3 +32,4 @@ span.tei-sic {border-bottom: 1px dotted #aa0; }
 span.tei-head { display: block; font-size: large; }
 span.tei-gap:after {content: "[ . . . ]";}
 span.superscript {text-decoration: none; vertical-align: baseline; position: relative; top: -0.4em; }
+span.tei-retrace {text-shadow: 2px 2px;}

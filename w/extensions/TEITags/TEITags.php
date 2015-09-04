@@ -33,7 +33,7 @@ EOT;
 	exit( 1 );
 }
 
-$wgAutoloadClasses[ 'TEITagsHooks' ]   = __DIR__ . '/TEITags.body.php';
+$wgAutoloadClasses[ 'TEITagsHooks' ]   = __DIR__ . '/TEITags.hooks.php';
 $wgExtensionMessagesFiles[ 'TEITags' ] = __DIR__ . '/TEITags.i18n.php';
 
 $wgExtensionCredits[ 'teitags' ][] = array(
