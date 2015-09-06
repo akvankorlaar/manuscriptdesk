@@ -20,6 +20,9 @@
  * @author Richard Davis <r.davis@ulcc.ac.uk>
  * @author Ben Parish <b.parish@ulcc.ac.uk>
  * @copyright 2013 Richard Davis
+ * 
+ * 04 Sept 2015: Added a 'retrace' button
+ * 06 Sept 2015: Removed css call because it now loaded by AddModuleStyles
  */
 
 /*
@@ -41,7 +44,7 @@ var addExtraButtonsToClassicToolBar = function(){
 
     $('#toolbar').insertBefore('#editform');
 
-    $('#wpTextbox1').insertBefore('#zoomviewerframe'); //what does this do? 
+    $('#wpTextbox1').insertBefore('#zoomviewerframe');  
 
 
 	$('#toolbar').empty();
@@ -220,33 +223,15 @@ var addExtraButtonsToClassicToolBar = function(){
  */
 
 var addExtraButtons = function() {
-
-    /*
-     * The toolbar needs to be moved above the edit form so that
-     * the viewer will float alongside the text area
-     */
-
-    $('.wikiEditor-ui-top').insertBefore('#editform')
-
-    $('.wikiEditor-ui').insertAfter('.wikiEditor-ui-top');
-
-    $('#wpTextbox1').insertBefore('#zoomviewerframe');
-
-    /*
-     * Reorganise editor to fit alongside zoom viewer
-     */
-
-    var $style_sheet = 'extensions/JBTEIToolbar/css/ext.jbteitoolbar.css';
-
-    $("body").before("<link rel='stylesheet' href='" + $style_sheet + "' type='text/css' media='screen' />");
-
-    /*
-     * This overrides the width:38% in ext.jbteitoolbar.css intended for the old editor which creates a blue gap in WikiEditor
-     */
-
-    $('#wpTextbox1').css( "width", "38%" );
-
     
+      /*
+       * The toolbar needs to be moved above the edit form so that
+       * the viewer will float alongside the text area
+       */    
+        $('.wikiEditor-ui-top').insertBefore('#editform')
+        $('.wikiEditor-ui').insertAfter('.wikiEditor-ui-top');
+        $('#wpTextbox1').insertBefore('#zoomviewerframe');
+                     
 	$( '#wpTextbox1' ).wikiEditor( 'removeFromToolbar', {
         'section': 'advanced'
 	});
@@ -549,11 +534,11 @@ $(document).ready(function(){
                         $( addExtraButtonsToClassicToolBar );
                     } );
                 }
-
+                
                 // This must come after the buttons are loaded
 
                 $('#toolbar').append( maxMin );
-
+                
                 $( '#maximise' ).click(function() {
                     $("#mw-content-text").addClass("maximise");
                     $("html, body").animate({ scrollTop: 0 }, "fast");

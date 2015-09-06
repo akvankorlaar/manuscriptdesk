@@ -137,7 +137,7 @@ class TEITagsHooks {
 		}
 
 		if( $tag == 'hi' ){
-			$render = $args['rend'];
+			$render = isset($args['rend']) ? $args['rend'] : "superscript";
 			$tag 	.= ' ' . $render;
 		}
 
