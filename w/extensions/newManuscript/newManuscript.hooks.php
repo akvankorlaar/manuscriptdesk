@@ -333,6 +333,7 @@ class newManuscriptHooks {
     
     if($this->edit_mode){
       $output->addModules('ext.JBZV');
+      $output->addModuleStyles('ext.JBZV');
     }
     
     $view_content = $this->formatIframeHTML();

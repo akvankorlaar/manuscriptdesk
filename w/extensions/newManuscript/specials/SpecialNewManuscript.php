@@ -16,6 +16,8 @@
  * 
  * Todo: Add additional tags to the editor
  * 
+ * Todo: Perhaps instead of splitting the URL into $user_fromurl and $file_fromurl, don't split it, and construct the path to zoomimages using just the page title
+ * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
  * 
  * Todo: Try to create unit tests for the extensions. See: https://www.mediawiki.org/wiki/Manual:PHP_unit_testing/Writing_unit_tests_for_extensions , and check 
