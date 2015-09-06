@@ -21,7 +21,8 @@
  * @author Ben Parish <b.parish@ulcc.ac.uk>
  * @copyright 2013 Richard Davis
  * 
- * 06 Sept 2015: Removed some lines that prevented the zoomviewer CSS from being correctly displayed with AddModuleStyles() @Arent van Korlaar
+ * 04 Sept 2015: Added a 'retrace' button
+ * 06 Sept 2015: Removed css call because it now loaded by AddModuleStyles
  */
 
 /*
@@ -230,15 +231,7 @@ var addExtraButtons = function() {
         $('.wikiEditor-ui-top').insertBefore('#editform')
         $('.wikiEditor-ui').insertAfter('.wikiEditor-ui-top');
         $('#wpTextbox1').insertBefore('#zoomviewerframe');
-          
-      //adjust the width of #wpTextbox1 and float it to the left                 
-//      $('#wpTextbox1').css( "width", "38%" );
-//      $('#wpTextbox1').css( "float", "left" );
-//      
-//      $('#zoomviewerframe').css( "float", "right" );
-//      $('#zoomviewerframe').css( "width", "60%" );
-//      $('#zoomviewerframe').css( "height", "660px" );
-           
+                     
 	$( '#wpTextbox1' ).wikiEditor( 'removeFromToolbar', {
         'section': 'advanced'
 	});

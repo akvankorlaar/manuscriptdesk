@@ -21,6 +21,8 @@
 * @author Richard Davis <r.davis@ulcc.ac.uk>
 * @author Ben Parish <b.parish@ulcc.ac.uk>
 * @copyright 2013 Richard Davis
+ * 
+ * 06 Sept 2015: Placed the css into a separate module to load it with AddModuleStyles(), and not make it load again when addModules() is called @Arent van Korlaar
 */
 
 # Alert the user that this is not a valid entry point to MediaWiki if they try to access the special pages file directly.
@@ -45,12 +47,9 @@ $wgExtensionCredits[ 'jbteitoolbar' ][] = array(
 		'description' => new Message( 'jbteitoolbar-descr' )
 );
 
-
-
 $wgResourceModules['ext.JBTEIToolbar' ] = array(
 				'localBasePath' => dirname( __FILE__ ),
 				'scripts'       => 'js/ext.jbteitoolbar.js',
-				'styles'        => 'css/ext.jbteitoolbar.css',
 				'messages'      => array(  /* Label text */
 										  'toolbar-label-line-break'
 										 ,'toolbar-label-page-break'
@@ -85,6 +84,11 @@ $wgResourceModules['ext.JBTEIToolbar' ] = array(
                      ,'toolbar-peri-retrace'
 									)
 );
+
+$wgResourceModules['ext.JBTEIToolbarcss' ] = array(
+				'localBasePath' => dirname( __FILE__ ),
+				'styles'        => 'css/ext.jbteitoolbar.css',
+  );
 
 $JBTEIToolbarHooks 							 = new JBTEIToolbarHooks();
 

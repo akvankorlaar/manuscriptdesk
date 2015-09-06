@@ -325,17 +325,7 @@ class newManuscriptHooks {
    * @return bool 
    */
   private function loadViewer(OutputPage $output ){
-    
-    //The editor does not display correctly when 'ext.JBZV' is called using AddModuleStyles in edit mode. The reason for this is unknown.
-    if($this->viewer_mode){
-      $output->addModuleStyles('ext.JBZV');
-    }
-    
-    if($this->edit_mode){
-      $output->addModules('ext.JBZV');
-      $output->addModuleStyles('ext.JBZV');
-    }
-    
+        
     $view_content = $this->formatIframeHTML();
     $output->addHTML($view_content);
     
@@ -704,8 +694,9 @@ class newManuscriptHooks {
     $page_title = $title_object->mPrefixedText; 
 
     if($title_object->getNamespace() === NS_MANUSCRIPTS){
-      //add css for metatable
-      $out->addModuleStyles('ext.metatable');
+      //add css for the metatable and the zoomviewer
+      $out->addModuleStyles('ext.zoomviewermetatable');
+      
     }elseif($page_title === 'Special:NewManuscript'){
       $out->addModuleStyles('ext.newmanuscriptcss');
       $out->addModules('ext.newmanuscriptloader');

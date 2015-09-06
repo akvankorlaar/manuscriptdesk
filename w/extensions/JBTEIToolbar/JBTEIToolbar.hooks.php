@@ -64,7 +64,7 @@ class JBTEIToolbarHooks {
 			return true;
 		}
         
-    $out->addModuleStyles('ext.JBTEIToolbar');
+    $out->addModuleStyles('ext.JBTEIToolbarcss');
 		$out->addModules('ext.JBTEIToolbar');
 
 		return true;

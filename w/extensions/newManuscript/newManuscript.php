@@ -61,14 +61,10 @@ $wgAutoloadClasses['SpecialNewManuscript'] = $dir . '/specials/SpecialNewManuscr
 $wgSpecialPages['NewManuscript'] = 'SpecialNewManuscript';
 
 //Extra files containing CSS and javascript loaded later 
-$wgResourceModules['ext.JBZV' ] = array(
-		'localBasePath' => dirname( __FILE__ ) . '/css',  
-		'styles'  => '/ext.jbzv.css',
-);
 
-$wgResourceModules['ext.metatable'] = array(
+$wgResourceModules['ext.zoomviewermetatable'] = array(
 		'localBasePath' => dirname( __FILE__ ),  
-		'styles'  => 'css/ext.metatable.css',
+		'styles'  => 'css/ext.zoomviewermetatable.css',
 );
 
 $wgResourceModules['ext.newmanuscriptcss'] = array(
