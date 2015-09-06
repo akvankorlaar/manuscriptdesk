@@ -665,20 +665,68 @@ class newManuscriptHooks {
       return true; 
     }
     
-    //check if this page does not have more charachters than $max_charachters_manuscript
     $new_content = $content->mText;
     
     $charachters_current_save = strlen($new_content);
     
+    //check if this page does not have more charachters than $max_charachters_manuscript
     if($charachters_current_save > $this->max_charachters_manuscript){
+      
        $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-maxchar1') . " " . $charachters_current_save . " " . 
            $this->getMessage('newmanuscripthooks-maxchar2') . " " . $this->max_charachters_manuscript . " " . $this->getMessage('newmanuscripthooks-maxchar3') . "."));   
        return true; 
     }
     
+    //check if the user accidently made an error when typing the tags
+    if(!$this->CheckTagsAreClosed($new_content)){
+      
+      $status->fatal(new RawMessage("Some tags are not well-formed. Please check the tags you've typed and save again."));
+      return true; 
+    }
+    
     //this is a manuscript page, there is a corresponding file in the database, and $max_charachters_manuscript has not been reached, so allow saving
     return true;
     }
+    
+    /**
+     * This function puts all closed tags and all opened tags into seperate arrays, and counts their array lenghts. If the array lenghts do not equal, the user has
+     * made an error when typing one or more tags. <tag> and </tag> are matched. <tag/> is not matched
+     * 
+     * #<([a-z]+)([= "a-z]+)?>#iU
+     * 
+     * The first group ([a-z])+ means the tag should contain one or more alphabetical charachters
+     * 
+     * The second group ([= "a-z]+)? means that optionally (the questionmark), the group can match one or more of the following charachters: =whitespace"a-z
+     * 
+     * #iU are pattern modifiers. i means make it match both lower case and upper case. U inverts all quantifiers from greedy to non-greedy. 
+     * Greedy matching means, match the largest possible string. Non-greedy matching means, match the smallest possible string. 
+     * See: http://docstore.mik.ua/orelly/webprog/pcook/ch13_05.htm 
+     * 
+     * http://www.regular-expressions.info/repeat.html
+     * 
+     * @param type $new_content
+     * @return boolean
+     */
+    private function checkTagsAreClosed($new_content) {
+
+      preg_match_all('#<([a-z]+)([= "a-z]+)?>#iU', $new_content, $opened_tags_result);
+      
+      $openedtags = $opened_tags_result[1]; 
+      $count_opened = count($openedtags);
+
+      preg_match_all('#</([a-z]+)>#iU', $new_content, $closed_tags_result);
+      $closedtags = $closed_tags_result[1];
+      $count_closed = count($closedtags);
+
+      if ($count_opened !== $count_closed){
+      //not all tags are written correctly
+      return false;
+    }
+
+    return true; 
+   } 
+   
+   
     
   /**
    * This function adds additional modules containing CSS before the page is displayed

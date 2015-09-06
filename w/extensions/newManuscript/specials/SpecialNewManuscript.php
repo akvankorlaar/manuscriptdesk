@@ -16,6 +16,8 @@
  * 
  * Todo: Add additional tags to the editor
  * 
+ * Todo: When viewing Summary Pages, the go to next, or previous page buttons should be removed whiel loading
+ * 
  * Todo: Perhaps instead of splitting the URL into $user_fromurl and $file_fromurl, don't split it, and construct the path to zoomimages using just the page title
  * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format

@@ -40,7 +40,7 @@
 
 #wpTextbox1{
 	height: 661px;
-	overflow: hidden; 
+	overflow: scroll; 
 	width: 38%;
         float: left; 
 }
