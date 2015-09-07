@@ -55,10 +55,7 @@ class newManuscriptHooks {
  * making sure a manuscript page can be deleted only by the user that has uploaded it (unless the user is a sysop), and preventing users from making
  * normal wiki pages on NS_MANUSCRIPTS (the manuscripts namespace identified by 'manuscripts:' in the URL)
  */
-  
-  public $viewer_mode = false;
-  public $edit_mode = false;
-    
+      
   private $title_options_site_name;
   private $images_root_dir;
   private $mediawiki_dir;
@@ -123,9 +120,7 @@ class newManuscriptHooks {
     if(!$this->urlValid()){
       return true;   
     }
-    
-    $this->edit_mode = true; 
-    
+        
     $this->loadViewer($output);
 
     return true;
@@ -165,9 +160,7 @@ class newManuscriptHooks {
     $original_image_link = $this->getOriginalImageLink();
     
     $output->addHTML($original_image_link);
-    
-    $this->viewer_mode = true;
-        
+            
     $this->loadViewer($output);
     
     return true;

@@ -52,7 +52,7 @@ class SpecialBeginCollate extends SpecialPage {
   //class constructor
   public function __construct(){
     
-    global $wgNewManuscriptOptions, $wgMetaTableTag, $wgArticleUrl, $wgCollationOptions;  
+    global $wgNewManuscriptOptions, $wgArticleUrl, $wgCollationOptions;  
     
     $this->article_url = $wgArticleUrl; 
     
@@ -62,7 +62,6 @@ class SpecialBeginCollate extends SpecialPage {
                 
     $this->save_table = false; //default value
     $this->error_message = false; //default value
-    $this->metatable_tag = $wgMetaTableTag;
     $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
     $this->redirect_to_start = false; //default value
     $this->posted_titles_array = array();

@@ -1,7 +1,4 @@
-<?php
-##############################################################
-#CUSTOM CONFIGURATION SETTINGS
-##############################################################
+<?php 
 
 $wgExtensionAssetsPath = $IP . '/extensions/';
 
@@ -208,6 +205,16 @@ $wgAllowUserJs = false;
 $wgHiddenPrefs[] = 'language';
 //do not allow users to change the preferred skin
 $wgHiddenPrefs[] = 'skin'; 
+//do not allow users to disable the toolbar 
+$wgHiddenPrefs[] = 'showtoolbar'; 
+//do not allow users to use the experimental feature 'live preview'
+$wgHiddenPrefs[] = 'uselivepreview'; 
+//do not allow users to change the image size on description pages or thumbnail size
+$wgHiddenPrefs[] = 'imagesize'; 
+$wgHiddenPrefs[] = 'thumbsize'; 
+//do not allow users to change the edit box size
+$wgHiddenPrefs[] = 'rows'; 
+$wgHiddenPrefs[] = 'cols'; 
 
 ##############################################################
 #PERSONAL SETTINGS
@@ -224,25 +231,20 @@ $wgCollationOptions = array(
   'collatex_url' => 'localhost:7369/collate', //url of the collatex server
   'collatex_headers' => array ("Content-type: application/json; charset=UTF-8;",
 		"Accept: application/json"), //headers that are sent to collatex
-  'collations_namespace' => 'Collations:', //url namespace for collations
   'wgmin_collation_pages' => 2, //the minimum number of single manuscript pages that users are allowed to collate
   'wgmax_collation_pages' => 5, //the maximum number of single manuscript pages that users are allowed to collate
-);
-
-$wgMetaTableTag = array(
-  'open' => '<metatable>',
-  'close' => '</metatable>',
+  'tempcollate_hours_before_delete'  => 2, //hours before entries are deleted from tempcollate. 
 );
 
 $wgNewManuscriptOptions = array( 
   'allowed_file_extensions' => array('jpg', 'jpeg'), //allowed file extensions 
   'max_manuscripts' => 300, //maximum allowed manuscript pages per user
   'maximum_pages_per_collection' => 50, //maximum allowed pages for a collection
-  'max_upload_size' => 8388608, //maximum upload size (8 mb)
+  'max_upload_size' => 8388608, //maximum upload size in bytes (8 mb --> 8*1024*1024)
   'original_images_dir' =>'initialUpload', //directory of the original images
+  'zoomimages_root_dir' => 'zoomImages',//directory of the zoomimages
   'perl_path' => 'perl', //alternative: /usr/bin/perl'.. for unix?  
   'slicer_path' => '/w/extensions/newManuscript/specials/slicer.pl', //path to the slicer
-  'zoomimages_root_dir' => 'zoomImages',
   'max_on_page' => 10, //maximum entries shown per page on Special:AllManuscripts, Special:AllCollations and Special:UserPpage
   'max_recent' => 30, //maximum entries shown on Special:RecentManuscriptPages
   'manuscripts_namespace' => 'Manuscripts:', //url namespace for manuscripts

@@ -144,8 +144,7 @@ class collateHooks {
   public function onPageContentSave( &$wikiPage, &$user, &$content, &$summary,
     $isMinor, $isWatch, $section, &$flags, &$status){
     
-    global $wgCollationOptions, $wgRequest;
-    $collations_namespace_url = $wgCollationOptions['collations_namespace'];
+    global $wgRequest;
     
     $title_object = $wikiPage->getTitle();
     $namespace = $title_object->getNamespace();     
