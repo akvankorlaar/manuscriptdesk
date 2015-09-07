@@ -555,7 +555,7 @@ var addExtraButtons = function() {
 			                type   : 'encapsulate',
 			                options: {
 			                    pre:  '<!-- ',
-			                    peri: 'toolbar-peri-comment',
+			                    peri: mw.msg('toolbar-peri-comment'),
 			                    post: ' -->',
 			                }
 			        }

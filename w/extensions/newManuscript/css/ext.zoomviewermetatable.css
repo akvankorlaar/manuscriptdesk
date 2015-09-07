@@ -22,9 +22,8 @@
  */
 
 #zoomviewerframe{
-	float: right;
-	width: 60%;
-	height: 660px;
+  width: 60%;
+  height: 660px;
 }
 
 /**
