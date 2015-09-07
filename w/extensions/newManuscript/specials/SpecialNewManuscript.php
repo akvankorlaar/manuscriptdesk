@@ -12,15 +12,7 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
- * Todo: Add additional tags to the editor
- * 
- * Todo: When viewing Summary Pages, the go to next, or previous page buttons should be removed whiel loading
- * 
  * Todo: Find a way to also implement the regex tag matching in javascript. 
- * 
- * Todo: Load the tag CSS with AddModuleStyles()
- * 
- * Todo: Find out what this other editor setting is, specified in the jbteitoolbar javascript
  * 
  * Todo: Perhaps instead of splitting the URL into $user_fromurl and $file_fromurl, don't split it, and construct the path to zoomimages using just the page title
  * 
@@ -82,7 +74,7 @@ class SpecialNewManuscript extends SpecialPage {
   private $user_name; 
   private $document_root; 
   private $max_manuscripts; 
-  private $manuscripts_namespace; 
+  private $manuscripts_namespace_url; 
   private $new_page_title_object; 
   private $zoomimages_root_dir; 
   
@@ -99,7 +91,7 @@ class SpecialNewManuscript extends SpecialPage {
     $this->document_root = $wgWebsiteRoot;
     $this->target_dir = $this->document_root . DIRECTORY_SEPARATOR .  $wgNewManuscriptOptions['original_images_dir']; 
     
-    $this->manuscripts_namespace = $wgNewManuscriptOptions['manuscripts_namespace'];
+    $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
     $this->zoomimages_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
     
     parent::__construct('NewManuscript');
@@ -375,7 +367,7 @@ class SpecialNewManuscript extends SpecialPage {
   private function checkTitle($posted_title){
     
     $user_name = $this->user_name; 
-    $manuscripts_namespace = $this->manuscripts_namespace; 
+    $manuscripts_namespace_url = $this->manuscripts_namespace_url; 
     $posted_title = strip_tags($posted_title);
     $title_error = "";
     $new_page_url = "";
@@ -392,7 +384,7 @@ class SpecialNewManuscript extends SpecialPage {
         
     }else{
       $user_url = $user_name;
-      $new_page_url = trim($manuscripts_namespace . $user_url . '/' . $posted_title);
+      $new_page_url = trim($manuscripts_namespace_url . $user_url . '/' . $posted_title);
       
       if(null !== Title::newFromText($new_page_url)){
         $title_object = Title::newFromText($new_page_url);
@@ -436,15 +428,13 @@ class SpecialNewManuscript extends SpecialPage {
    * This function makes a new wikipage, and auto loads wiki text needed for the metatable.
    */
   private function createNewWikiPage(){
-    
-    global $wgMetaTableTag; 
-    
+        
     $title_object = $this->new_page_title_object;  
     $context = $this->getContext();  
     $article = Article::newFromTitle($title_object, $context);
       
-    $open_tag = $wgMetaTableTag['open'];
-    $close_tag = $wgMetaTableTag['close'];
+    $open_tag = '<metatable>';
+    $close_tag = '</metatable>';
         
     $wiki_text = "
     This page has not been transcribed yet. 

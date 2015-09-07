@@ -21,12 +21,6 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-#zoomviewerframe{
-	float: right;
-	width: 60%;
-	height: 660px;
-}
-
 /**
  * pre overrides earlier mediawiki CSS, and is needed for correct metatable display. 
  */

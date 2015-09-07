@@ -55,10 +55,7 @@ class newManuscriptHooks {
  * making sure a manuscript page can be deleted only by the user that has uploaded it (unless the user is a sysop), and preventing users from making
  * normal wiki pages on NS_MANUSCRIPTS (the manuscripts namespace identified by 'manuscripts:' in the URL)
  */
-  
-  public $viewer_mode = false;
-  public $edit_mode = false;
-    
+      
   private $title_options_site_name;
   private $images_root_dir;
   private $mediawiki_dir;
@@ -124,8 +121,8 @@ class newManuscriptHooks {
       return true;   
     }
     
-    $this->edit_mode = true; 
-    
+    $output->addModuleStyles('ext.zoomvieweredit');
+        
     $this->loadViewer($output);
 
     return true;
@@ -166,8 +163,8 @@ class newManuscriptHooks {
     
     $output->addHTML($original_image_link);
     
-    $this->viewer_mode = true;
-        
+    $output->addModuleStyles('ext.zoomviewerview'); 
+            
     $this->loadViewer($output);
     
     return true;
@@ -743,7 +740,7 @@ class newManuscriptHooks {
 
     if($title_object->getNamespace() === NS_MANUSCRIPTS){
       //add css for the metatable and the zoomviewer
-      $out->addModuleStyles('ext.zoomviewermetatable');
+      $out->addModuleStyles('ext.metatable');
       
     }elseif($page_title === 'Special:NewManuscript'){
       $out->addModuleStyles('ext.newmanuscriptcss');

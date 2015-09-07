@@ -243,7 +243,7 @@ class SpecialUserPage extends SpecialPage {
       $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
       $previous_message = $this->msg('allmanuscriptpages-previous');
       
-      $html .='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+      $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:UserPage" method="post">';
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
@@ -261,7 +261,7 @@ class SpecialUserPage extends SpecialPage {
       $next_message_hover = $this->msg('allmanuscriptpages-nexthover');    
       $next_message = $this->msg('allmanuscriptpages-next');
       
-      $html .='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+      $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:UserPage" method="post">';
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .="<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
