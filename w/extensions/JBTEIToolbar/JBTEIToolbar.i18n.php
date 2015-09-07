@@ -25,6 +25,8 @@
  *
  * @file
  * @ingroup Extensions
+ * 
+ * Sept 2015: Added 8 new tags @Arent van Korlaar
  */
 
 $messages = array();
@@ -50,7 +52,14 @@ $messages['en'] = array(
 	'toolbar-label-ampersand'    => 'Ampersand',
 	'toolbar-label-long-dash'    => 'Long dash',
 	'toolbar-label-comment'      => 'Comment',
-  'toolbar-label-retrace'     => 'Retrace',
+  'toolbar-label-retrace'      => 'Retrace',
+  'toolbar-label-date'         => 'Date',
+  'toolbar-label-name'         => 'Name',
+  'toolbar-label-num'          => 'Number',
+  'toolbar-label-title'        => 'Title',
+  'toolbar-label-metamark'     => 'Metamark',
+  'toolbar-label-restore'      => 'Restore',
+  'toolbar-label-supplied'     => 'Supplied',
 
 	/* Peri text */
 	'toolbar-peri-heading'       => 'heading',
@@ -64,6 +73,14 @@ $messages['en'] = array(
 	'toolbar-peri-spelling'      => 'unusually-spelled text',
 	'toolbar-peri-foreign'       => 'foreign language text',
 	'toolbar-peri-comment'       => 'user comment',
-  'toolbar-peri-retrace'       => 'retraced text'
+  'toolbar-peri-retrace'       => 'retraced text',
+  'toolbar-peri-date'          => 'date',
+  'toolbar-peri-name'          => 'name',
+  'toolbar-peri-num'           => 'number',
+  'toolbar-peri-title'         => 'title',
+  'toolbar-peri-metamark'      => 'metamark',
+  'toolbar-peri-restore'       => 'restored text',
+  'toolbar-peri-supplied'      => 'supplied text',
+
 
 );

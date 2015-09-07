@@ -19,6 +19,10 @@
 * @author Richard Davis <r.davis@ulcc.ac.uk>
 * @author Ben Parish <b.parish@ulcc.ac.uk>
 * @copyright 2013 Richard Davis
+*
+* Sept 2015: Added 8 new tags @Arent van Korlaar 
+*
+* name, num, metamark, restore and supplied are missing because no extra css was intended for those tags
 */
 
 span.tei-del {text-decoration: line-through;}
@@ -33,3 +37,5 @@ span.tei-head { display: block; font-size: large; }
 span.tei-gap:after {content: "[ . . . ]";}
 span.superscript {text-decoration: none; vertical-align: baseline; position: relative; top: -0.4em; }
 span.tei-retrace {text-shadow: 2px 2px;}
+span.tei-date {font-weight: bold;}
+span.tei-title {text-decoration: underline;}

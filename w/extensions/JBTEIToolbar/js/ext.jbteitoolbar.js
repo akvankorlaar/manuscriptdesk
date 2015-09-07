@@ -21,8 +21,7 @@
  * @author Ben Parish <b.parish@ulcc.ac.uk>
  * @copyright 2013 Richard Davis
  * 
- * 04 Sept 2015: Added a 'retrace' button
- * 06 Sept 2015: Removed css call because it now loaded by AddModuleStyles
+ * Sept 2015: Added 8 new tags, and removed css call because it now loads with AddModuleStyles() @Arent van Korlaar
  */
 
 /*
@@ -200,6 +199,69 @@ var addExtraButtonsToClassicToolBar = function(){
         'tagOpen'   : '<retrace>',
         'tagClose'  : '</retrace>',
         'sampleText': 'toolbar-peri-retrace'
+    });
+    
+    mw.toolbar.addButton({
+    	'id'        : 'mw-editbutton-date',
+    	'imageFile' : $images_path + 'jb-button-date.png',
+        'speedTip'  : mw.msg( 'toolbar-label-date' ),
+        'tagOpen'   : '<date>',
+        'tagClose'  : '</date>',
+        'sampleText': 'toolbar-peri-date'
+    });
+    
+    mw.toolbar.addButton({
+    	'id'        : 'mw-editbutton-name',
+    	'imageFile' : $images_path + 'jb-button-name.png',
+        'speedTip'  : mw.msg( 'toolbar-label-name' ),
+        'tagOpen'   : '<name>',
+        'tagClose'  : '</name>',
+        'sampleText': 'toolbar-peri-name'
+    });
+    
+    mw.toolbar.addButton({
+    	'id'        : 'mw-editbutton-num',
+    	'imageFile' : $images_path + 'jb-button-num.png',
+        'speedTip'  : mw.msg( 'toolbar-label-num' ),
+        'tagOpen'   : '<num>',
+        'tagClose'  : '</num>',
+        'sampleText': 'toolbar-peri-num'
+    });
+    
+    mw.toolbar.addButton({
+    	'id'        : 'mw-editbutton-title',
+    	'imageFile' : $images_path + 'jb-button-title.png',
+        'speedTip'  : mw.msg( 'toolbar-label-title' ),
+        'tagOpen'   : '<title>',
+        'tagClose'  : '</title>',
+        'sampleText': 'toolbar-peri-title'
+    });
+    
+    mw.toolbar.addButton({
+    	'id'        : 'mw-editbutton-metamark',
+    	'imageFile' : $images_path + 'jb-button-metamark.png',
+        'speedTip'  : mw.msg( 'toolbar-label-metamark' ),
+        'tagOpen'   : '<metamark>',
+        'tagClose'  : '</metamark>',
+        'sampleText': 'toolbar-peri-metamark'
+    });
+    
+    mw.toolbar.addButton({
+    	'id'        : 'mw-editbutton-restore',
+    	'imageFile' : $images_path + 'jb-button-restore.png',
+        'speedTip'  : mw.msg( 'toolbar-label-restore' ),
+        'tagOpen'   : '<restore>',
+        'tagClose'  : '</restore>',
+        'sampleText': 'toolbar-peri-restore'
+    });
+    
+    mw.toolbar.addButton({
+    	'id'        : 'mw-editbutton-supplied',
+    	'imageFile' : $images_path + 'jb-button-supplied.png',
+        'speedTip'  : mw.msg( 'toolbar-label-supplied' ),
+        'tagOpen'   : '<supplied>',
+        'tagClose'  : '</supplied>',
+        'sampleText': 'toolbar-peri-supplied'
     });
 
 }
@@ -511,7 +573,107 @@ var addExtraButtons = function() {
 			                    post: '</retrace>',
 			                }
 			        }
+			    },
+                            
+                           'date': {
+			        label : mw.msg( 'toolbar-label-date' ),
+			        type  : 'button',
+			        icon  : $path + 'jb-button-date.png',
+			        action: {
+			                type   : 'encapsulate',
+			                options: {
+			                    pre:  '<date>',
+			                    peri: mw.msg('toolbar-peri-date'),
+			                    post: '</date>',
+			                }
+			        }
+			    },
+                            
+                           'name': {
+			        label : mw.msg( 'toolbar-label-name' ),
+			        type  : 'button',
+			        icon  : $path + 'jb-button-name.png',
+			        action: {
+			                type   : 'encapsulate',
+			                options: {
+			                    pre:  '<name>',
+			                    peri: mw.msg('toolbar-peri-name'),
+			                    post: '</name>',
+			                }
+			        }
+			    },
+                            
+                           'num': {
+			        label : mw.msg( 'toolbar-label-num' ),
+			        type  : 'button',
+			        icon  : $path + 'jb-button-num.png',
+			        action: {
+			                type   : 'encapsulate',
+			                options: {
+			                    pre:  '<num>',
+			                    peri: mw.msg('toolbar-peri-num'),
+			                    post: '</num>',
+			                }
+			        }
+			    },
+                            
+                            'title': {
+			        label : mw.msg( 'toolbar-label-title' ),
+			        type  : 'button',
+			        icon  : $path + 'jb-button-title.png',
+			        action: {
+			                type   : 'encapsulate',
+			                options: {
+			                    pre:  '<title>',
+			                    peri: mw.msg('toolbar-peri-title'),
+			                    post: '</title>',
+			                }
+			        }
+			    },
+                            
+                            'metamark': {
+			        label : mw.msg( 'toolbar-label-metamark' ),
+			        type  : 'button',
+			        icon  : $path + 'jb-button-metamark.png',
+			        action: {
+			                type   : 'encapsulate',
+			                options: {
+			                    pre:  '<metamark>',
+			                    peri: mw.msg('toolbar-peri-metamark'),
+			                    post: '</metamark>',
+			                }
+			        }
+			    },
+                            
+                            'restore': {
+			        label : mw.msg( 'toolbar-label-restore' ),
+			        type  : 'button',
+			        icon  : $path + 'jb-button-restore.png',
+			        action: {
+			                type   : 'encapsulate',
+			                options: {
+			                    pre:  '<restore>',
+			                    peri: mw.msg('toolbar-peri-restore'),
+			                    post: '</restore>',
+			                }
+			        }
+			    },
+                            
+                            'supplied': {
+			        label : mw.msg( 'toolbar-label-supplied' ),
+			        type  : 'button',
+			        icon  : $path + 'jb-button-supplied.png',
+			        action: {
+			                type   : 'encapsulate',
+			                options: {
+			                    pre:  '<supplied>',
+			                    peri: mw.msg('toolbar-peri-supplied'),
+			                    post: '</supplied>',
+			                }
+			        }
 			    }
+                            
+                            
         }
 	} );
 };

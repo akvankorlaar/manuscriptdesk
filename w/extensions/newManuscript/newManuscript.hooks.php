@@ -694,6 +694,8 @@ class newManuscriptHooks {
      * 
      * #<([a-z]+)([= "a-z]+)?>#iU
      * 
+     * # is the delimiter
+     * 
      * The first group ([a-z])+ means the tag should contain one or more alphabetical charachters
      * 
      * The second group ([= "a-z]+)? means that optionally (the questionmark), the group can match one or more of the following charachters: =whitespace"a-z
@@ -725,8 +727,6 @@ class newManuscriptHooks {
 
     return true; 
    } 
-   
-   
     
   /**
    * This function adds additional modules containing CSS before the page is displayed
