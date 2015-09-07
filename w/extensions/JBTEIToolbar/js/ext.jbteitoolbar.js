@@ -29,8 +29,8 @@
  * (http://www.mediawiki.org/wiki/Customizing_edit_toolbar#How_do_I_add_more_buttons_on_the_edit_page.3F)
  */
 
-var maxMin = '<button id="minimise" type="button" style="position:relative; float:right;">Minimise</button>'
-			+ '<button id="maximise" type="button" style="position:relative; float:right;">Maximise</button>';
+var maxMin = '<button id="minimise" type="button" style="position:relative; float:right; z-index:999; top: 45px;">Minimise</button>'
+			+ '<button id="maximise" type="button" style="position:relative; float:right; z-index:999; top: 45px">Maximise</button>';
 
 
 var $images_path = "extensions/JBTEIToolbar/images/";
@@ -675,7 +675,7 @@ var addExtraButtons = function() {
                             
                             
         }
-	} );
+	} );    
 };
 
 
@@ -697,60 +697,28 @@ $(document).ready(function(){
                     } );
                 }
                 
-                // This must come after the buttons are loaded
-
-                $('#toolbar').append( maxMin );
-                
+                $('.firstHeading').append( maxMin );
+                                                    
                 $( '#maximise' ).click(function() {
                     $("#mw-content-text").addClass("maximise");
                     $("html, body").animate({ scrollTop: 0 }, "fast");
+                    $("#minimise").css("position", "absolute");
+                    $("#minimise").css("right", "0px");
+                    $("#minimise").css("top", "0px");                    
+                    $("#maximise").css("position", "absolute");''
+                    $("#maximise").css("right", "60px");
+                    $("#maximise").css("top", "0px");                    
                 });
                 $( '#minimise' ).click(function() {
                     $("#mw-content-text").removeClass("maximise");
+                    $("#minimise").css("position", "relative")
+                    $("#minimise").css("top", "45px");              
+                    $("#maximise").css("position", "relative");
+                    $("#maximise").css("right", "auto");
+                    $("#maximise").css("top", "45px");              
                 });
-
+                
             }
         } );
     }
 }( mediaWiki, jQuery ) );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

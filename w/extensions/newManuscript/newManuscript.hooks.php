@@ -120,6 +120,8 @@ class newManuscriptHooks {
     if(!$this->urlValid()){
       return true;   
     }
+    
+    $output->addModuleStyles('ext.zoomvieweredit');
         
     $this->loadViewer($output);
 
@@ -160,6 +162,8 @@ class newManuscriptHooks {
     $original_image_link = $this->getOriginalImageLink();
     
     $output->addHTML($original_image_link);
+    
+    $output->addModuleStyles('ext.zoomviewerview'); 
             
     $this->loadViewer($output);
     
@@ -736,7 +740,7 @@ class newManuscriptHooks {
 
     if($title_object->getNamespace() === NS_MANUSCRIPTS){
       //add css for the metatable and the zoomviewer
-      $out->addModuleStyles('ext.zoomviewermetatable');
+      $out->addModuleStyles('ext.metatable');
       
     }elseif($page_title === 'Special:NewManuscript'){
       $out->addModuleStyles('ext.newmanuscriptcss');
