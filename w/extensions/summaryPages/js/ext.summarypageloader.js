@@ -31,6 +31,8 @@
    $('.summarypage-form').submit(function() {
      $('#summarypage-loaderdiv').show(); 
      $('p').hide();
+     $('#previous-link').hide();
+     $('#next-link').hide();
    });
          
   /**
