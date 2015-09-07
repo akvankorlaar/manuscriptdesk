@@ -21,6 +21,8 @@
 * @author Richard Davis <r.davis@ulcc.ac.uk>
 * @author Ben Parish <b.parish@ulcc.ac.uk>
 * @copyright 2013 Richard Davis
+ * 
+ * Sept 2015: Added 8 new tags @Arent van Korlaar
 */
 
 # Alert the user that this is not a valid entry point to MediaWiki if they try to access the special pages file directly.
@@ -37,26 +39,30 @@ class TEITagsHooks {
 	public function ParserFirstCallInit ( Parser $parser ){
 		global $wgOut;
 
-		$parser->setHook( 'tei'    , array( $this , 'RenderTei' ) );
-		$parser->setHook( 'lb'     , array( $this , 'RenderLb' ));
-		$parser->setHook( 'pb'     , array( $this , 'RenderPb' ));
-		$parser->setHook( 'del'    , array( $this , 'RenderDel' ));
-		$parser->setHook( 'add'    , array( $this , 'RenderAdd' ));
-		$parser->setHook( 'gap'    , array( $this , 'RenderGap' ));
-		$parser->setHook( 'unclear', array( $this , 'RenderUnclear' ));
-		$parser->setHook( 'note'   , array( $this , 'RenderNote' ));
-		$parser->setHook( 'hi'     , array( $this , 'RenderHi' ));
-		$parser->setHook( 'head'   , array( $this , 'RenderHead' ));
-		$parser->setHook( 'sic'    , array( $this , 'RenderSic' ));
-	  $parser->setHook( 'foreign', array( $this , 'RenderForeign' ));
-    
-    //set the hook... call the function
+		$parser->setHook( 'tei'     , array( $this , 'RenderTei' ) );
+		$parser->setHook( 'lb'      , array( $this , 'RenderLb' ));
+		$parser->setHook( 'pb'      , array( $this , 'RenderPb' ));
+		$parser->setHook( 'del'     , array( $this , 'RenderDel' ));
+		$parser->setHook( 'add'     , array( $this , 'RenderAdd' ));
+		$parser->setHook( 'gap'     , array( $this , 'RenderGap' ));
+		$parser->setHook( 'unclear' , array( $this , 'RenderUnclear' ));
+		$parser->setHook( 'note'    , array( $this , 'RenderNote' ));
+		$parser->setHook( 'hi'      , array( $this , 'RenderHi' ));
+		$parser->setHook( 'head'    , array( $this , 'RenderHead' ));
+		$parser->setHook( 'sic'     , array( $this , 'RenderSic' ));
+	  $parser->setHook( 'foreign' , array( $this , 'RenderForeign' ));
     $parser->setHook( 'retrace', array( $this , 'RenderRetrace'  ));
+    $parser->setHook( 'date'    , array( $this , 'RenderDate' ));
+	  $parser->setHook( 'name'    , array( $this , 'RenderName' ));
+	  $parser->setHook( 'num'     , array( $this , 'RenderNum' ));
+	  $parser->setHook( 'title'   , array( $this , 'RenderTitle' ));
+	  $parser->setHook( 'metamark', array( $this , 'RenderMetamark' ));
+	  $parser->setHook( 'restore' , array( $this , 'RenderRestore' ));
+	  $parser->setHook( 'supplied', array( $this , 'RenderSupplied' ));
 
-		$wgOut->addModules( 'ext.TEITags' );
+		$wgOut->addModuleStyles( 'ext.TEITags' );
 
 		return true;
-
 	}
 
 	public function RenderTei(){
@@ -121,6 +127,41 @@ class TEITagsHooks {
 		$HookArgs = func_get_args();
 		return $this->TEITagsRenderer( 'retrace', $HookArgs );
 	}
+  
+  public function RenderDate(){
+		$HookArgs = func_get_args();
+		return $this->TEITagsRenderer( 'date', $HookArgs );
+	}
+  
+  public function RenderName(){
+		$HookArgs = func_get_args();
+		return $this->TEITagsRenderer( 'name', $HookArgs );
+	}
+  
+  public function RenderNum(){
+		$HookArgs = func_get_args();
+		return $this->TEITagsRenderer( 'num', $HookArgs );
+	}
+  
+  public function RenderTitle(){
+		$HookArgs = func_get_args();
+		return $this->TEITagsRenderer( 'title', $HookArgs );
+	}
+  
+  public function RenderMetamark(){
+		$HookArgs = func_get_args();
+		return $this->TEITagsRenderer( 'metamark', $HookArgs );
+	}
+  
+  public function RenderRestore(){
+		$HookArgs = func_get_args();
+		return $this->TEITagsRenderer( 'restore', $HookArgs );
+	}
+  
+  public function RenderSupplied(){
+		$HookArgs = func_get_args();
+		return $this->TEITagsRenderer( 'supplied', $HookArgs );
+	}
 
 	private function TEITagsRenderer ( $tag, $HookArgs ){
 
@@ -131,19 +172,22 @@ class TEITagsHooks {
 
 		$output = '';
 
-		if( $tag != 'gap' ){
+		if( $tag !== 'gap' ){
 			$output = $parser->recursiveTagParse( $input, $frame );
 			$output = htmlspecialchars( $output );
 		}
 
-		if( $tag == 'hi' ){
+		if( $tag === 'hi' ){
 			$render = isset($args['rend']) ? $args['rend'] : "superscript";
 			$tag 	.= ' ' . $render;
 		}
+    
+    if($tag === 'supplied'){
+      return '<span class="tei-' . $tag . '">' . '[' .  $output . ']' . '</span>';
+    }
 
 		return '<span class="tei-' . $tag . '">' . $output . '</span>';
 	}
-
 }
 
 

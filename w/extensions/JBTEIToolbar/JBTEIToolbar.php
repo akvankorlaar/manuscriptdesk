@@ -22,7 +22,8 @@
 * @author Ben Parish <b.parish@ulcc.ac.uk>
 * @copyright 2013 Richard Davis
  * 
- * 06 Sept 2015: Placed the css into a separate module to load it with AddModuleStyles(), and not make it load again when addModules() is called @Arent van Korlaar
+ * Sept 2015: Added 8 new tags. Placed the css into a new module in order to load 
+ * it separately with AddModuleStyles(), and to not make it load again when addModules() is called @Arent van Korlaar 
 */
 
 # Alert the user that this is not a valid entry point to MediaWiki if they try to access the special pages file directly.
@@ -68,6 +69,14 @@ $wgResourceModules['ext.JBTEIToolbar' ] = array(
 										 ,'toolbar-label-long-dash'
 										 ,'toolbar-label-comment'
                      ,'toolbar-label-retrace'
+                     ,'toolbar-label-date'
+                     ,'toolbar-label-name'
+                     ,'toolbar-label-num'
+                     ,'toolbar-label-title'
+                     ,'toolbar-label-metamark'
+                     ,'toolbar-label-restore'
+                     ,'toolbar-label-supplied'
+
 
 										  /* Peri text */
 										 ,'toolbar-peri-heading'
@@ -82,6 +91,14 @@ $wgResourceModules['ext.JBTEIToolbar' ] = array(
 										 ,'toolbar-peri-foreign'
 										 ,'toolbar-peri-comment'
                      ,'toolbar-peri-retrace'
+                     ,'toolbar-peri-date'
+                     ,'toolbar-peri-name'
+                     ,'toolbar-peri-num'
+                     ,'toolbar-peri-title'
+                     ,'toolbar-peri-metamark'
+                     ,'toolbar-peri-restore'
+                     ,'toolbar-peri-supplied'
+
 									)
 );
 

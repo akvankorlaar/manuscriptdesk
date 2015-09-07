@@ -12,11 +12,15 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
- * Todo: Make a tag validator in javascript
- * 
  * Todo: Add additional tags to the editor
  * 
  * Todo: When viewing Summary Pages, the go to next, or previous page buttons should be removed whiel loading
+ * 
+ * Todo: Find a way to also implement the regex tag matching in javascript. 
+ * 
+ * Todo: Load the tag CSS with AddModuleStyles()
+ * 
+ * Todo: Find out what this other editor setting is, specified in the jbteitoolbar javascript
  * 
  * Todo: Perhaps instead of splitting the URL into $user_fromurl and $file_fromurl, don't split it, and construct the path to zoomimages using just the page title
  * 
