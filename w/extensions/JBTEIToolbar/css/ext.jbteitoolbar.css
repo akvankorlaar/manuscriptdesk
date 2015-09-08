@@ -42,13 +42,11 @@
 	height: 661px;
 	overflow: scroll; 
 	width: 38%;
-        float: left; 
+        float: left;
 }
-
 
  // * Extend width to accomodate maximise/minimise buttons
  
-
 .toolbar,
 #toolbar {
 	width:99%;

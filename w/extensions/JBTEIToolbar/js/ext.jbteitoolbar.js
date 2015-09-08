@@ -21,7 +21,7 @@
  * @author Ben Parish <b.parish@ulcc.ac.uk>
  * @copyright 2013 Richard Davis
  * 
- * Sept 2015: Added 8 new tags, and removed css call because it now loads with AddModuleStyles() @Arent van Korlaar
+ * Sept 2015: Added 8 new tags, and made some small changes @Arent van Korlaar
  */
 
 /*
@@ -698,7 +698,7 @@ $(document).ready(function(){
                 }
                 
                 $('.firstHeading').append( maxMin );
-                                                    
+                                                                    
                 $( '#maximise' ).click(function() {
                   
                     $("#mw-content-text").addClass("maximise");
@@ -710,7 +710,8 @@ $(document).ready(function(){
                     $("#maximise").css("right", "60px");
                     $("#maximise").css("top", "0px");                    
                 });
-                $( '#minimise' ).click(function() {
+                
+                $('#minimise').click(function() {
                   
                     $("#mw-content-text").removeClass("maximise");
                     $("#minimise").css("position", "relative")
@@ -720,6 +721,36 @@ $(document).ready(function(){
                     $("#maximise").css("top", "45px");              
                 });
                 
+                $('#minimise').click(function() {
+                                                      
+                  var wp_textbox1 = $('#wpTextbox1').val();
+                  
+                  number_opened_tags = 0;
+                  number_closed_tags = 0;
+                                                      
+                  var open_regex = /<[a-zA-Z\d" =]+>/g;
+                  var close_regex = /<\/[a-zA-Z\d" =]+>/g;
+                               
+                  var opened_tags = wp_textbox1.match(open_regex);
+                  var closed_tags = wp_textbox1.match(close_regex); 
+                  
+                  if(opened_tags !== null){
+                    var number_opened_tags = opened_tags.length; 
+                  }
+                  
+                  if(closed_tags !== null){
+                    var number_closed_tags = closed_tags.length; 
+                  }
+                  
+                  if(number_opened_tags == number_closed_tags && number_opened_tags != 0 && number_closed_tags != 0){
+                    alert('hello');
+                  }else{
+                    alert('false');
+                  }
+               
+                });
+              
+                                
             }
         } );
     }
