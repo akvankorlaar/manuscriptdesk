@@ -62,14 +62,9 @@ $wgSpecialPages['NewManuscript'] = 'SpecialNewManuscript';
 
 //Extra files containing CSS and javascript loaded later 
 
-$wgResourceModules['ext.zoomvieweredit'] = array(
+$wgResourceModules['ext.zoomviewer'] = array(
 		'localBasePath' => dirname( __FILE__ ),  
-		'styles'  => 'css/ext.zoomvieweredit.css',
-);
-
-$wgResourceModules['ext.zoomviewerview'] = array(
-		'localBasePath' => dirname( __FILE__ ),  
-		'styles'  => 'css/ext.zoomviewerview.css',
+		'styles'  => 'css/ext.zoomviewer.css',
 );
 
 $wgResourceModules['ext.metatable'] = array(
