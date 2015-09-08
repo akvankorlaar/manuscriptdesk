@@ -721,7 +721,7 @@ $(document).ready(function(){
                     $("#maximise").css("top", "45px");              
                 });
                 
-                $('#minimise').click(function() {
+                $('#editform').submit(function(event) {
                                                       
                   var wp_textbox1 = $('#wpTextbox1').val();
                   
@@ -729,7 +729,7 @@ $(document).ready(function(){
                   number_closed_tags = 0;
                                                       
                   var open_regex = /<[a-zA-Z\d" =]+>/g;
-                  var close_regex = /<\/[a-zA-Z\d" =]+>/g;
+                  var close_regex = /<\/[a-zA-Z\d]+>/g;
                                
                   var opened_tags = wp_textbox1.match(open_regex);
                   var closed_tags = wp_textbox1.match(close_regex); 
@@ -742,10 +742,15 @@ $(document).ready(function(){
                     var number_closed_tags = closed_tags.length; 
                   }
                   
-                  if(number_opened_tags == number_closed_tags && number_opened_tags != 0 && number_closed_tags != 0){
-                    alert('hello');
-                  }else{
-                    alert('false');
+                  if(number_opened_tags == number_closed_tags && number_opened_tags != 0 && number_closed_tags != 0){            
+                    $('.error').remove();
+                    $('.editOptions').fadeOut(2000);
+                    
+                  }else{                
+                    event.preventDefault();
+                    $('.error').remove();
+                    $('.editOptions').append('<p class="error">Just a test</p>');
+                    $('.error').fadeOut(5000);
                   }
                
                 });
