@@ -12,8 +12,6 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
- * Todo: Find a way to also implement the regex tag matching in javascript. 
- * 
  * Todo: Perhaps instead of splitting the URL into $user_fromurl and $file_fromurl, don't split it, and construct the path to zoomimages using just the page title
  * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
