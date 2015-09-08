@@ -215,6 +215,8 @@ $wgHiddenPrefs[] = 'thumbsize';
 //do not allow users to change the edit box size
 $wgHiddenPrefs[] = 'rows'; 
 $wgHiddenPrefs[] = 'cols'; 
+//do not allow users to change the editing toolbar
+$wgHiddenPrefs[] = 'usebetatoolbar';
 
 ##############################################################
 #PERSONAL SETTINGS

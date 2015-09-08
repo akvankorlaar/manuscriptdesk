@@ -698,7 +698,10 @@ $(document).ready(function(){
                 }
                 
                 $('.firstHeading').append( maxMin );
-                                                                    
+                        
+                /**
+                 * This function restuctures the maximise and minimise css when clicking the maximise button
+                 */
                 $( '#maximise' ).click(function() {
                   
                     $("#mw-content-text").addClass("maximise");
@@ -711,6 +714,9 @@ $(document).ready(function(){
                     $("#maximise").css("top", "0px");                    
                 });
                 
+                /**
+                 * This function restructures the maximise and minimise css when clicking the maximise button
+                 */
                 $('#minimise').click(function() {
                   
                     $("#mw-content-text").removeClass("maximise");
@@ -721,6 +727,21 @@ $(document).ready(function(){
                     $("#maximise").css("top", "45px");              
                 });
                 
+                /**
+                 * This function performs javascript tag matching when submitting the form. <tag> and </tag> are matched. <tag/> is not matched. 
+                 * 
+                 * /<[a-zA-Z\d" =]+>/g
+                 * 
+                 * / and / are the regex delimiters. 
+                 * 
+                 * < and > means match the tags
+                 * 
+                 * [a-zA-Z\d"=]+ means match any charachter that is alphabetic lowercase, alphabetic upcercase, digit, " or =, in between the tags
+                 * 
+                 * + means, match the pattern in between [] once or more
+                 * 
+                 * /g means to a global match (as opposed to matching it only once)
+                 */
                 $('#editform').submit(function(event) {
                                                       
                   var wp_textbox1 = $('#wpTextbox1').val();
@@ -745,14 +766,14 @@ $(document).ready(function(){
                   if(number_opened_tags == number_closed_tags){            
                     $('.error').remove();
                     $('.editOptions').slideUp();
-                    
+                   
+                  //if the number of opened tags does not equal the number of closed tags, an error should be shown
                   }else{                
                     event.preventDefault();
                     $('.error').remove();
                     $('.editOptions').append('<p class="error">' + mw.msg('submit-error-message') + '</p>');
                     $('.error').fadeOut(5000);
-                  }
-               
+                  }             
                 });
             }
         } );
