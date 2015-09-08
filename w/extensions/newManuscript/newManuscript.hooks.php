@@ -120,9 +120,7 @@ class newManuscriptHooks {
     if(!$this->urlValid()){
       return true;   
     }
-    
-    $output->addModuleStyles('ext.zoomvieweredit');
-        
+                    
     $this->loadViewer($output);
 
     return true;
@@ -162,9 +160,7 @@ class newManuscriptHooks {
     $original_image_link = $this->getOriginalImageLink();
     
     $output->addHTML($original_image_link);
-    
-    $output->addModuleStyles('ext.zoomviewerview'); 
-            
+                            
     $this->loadViewer($output);
     
     return true;
@@ -324,6 +320,7 @@ class newManuscriptHooks {
   private function loadViewer(OutputPage $output ){
         
     $view_content = $this->formatIframeHTML();
+    $output->addModuleStyles('ext.zoomviewer'); 
     $output->addHTML($view_content);
     
     return true;
