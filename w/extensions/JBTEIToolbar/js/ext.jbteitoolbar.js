@@ -700,6 +700,7 @@ $(document).ready(function(){
                 $('.firstHeading').append( maxMin );
                                                     
                 $( '#maximise' ).click(function() {
+                  
                     $("#mw-content-text").addClass("maximise");
                     $("html, body").animate({ scrollTop: 0 }, "fast");
                     $("#minimise").css("position", "absolute");
@@ -710,6 +711,7 @@ $(document).ready(function(){
                     $("#maximise").css("top", "0px");                    
                 });
                 $( '#minimise' ).click(function() {
+                  
                     $("#mw-content-text").removeClass("maximise");
                     $("#minimise").css("position", "relative")
                     $("#minimise").css("top", "45px");              
