@@ -742,20 +742,18 @@ $(document).ready(function(){
                     var number_closed_tags = closed_tags.length; 
                   }
                   
-                  if(number_opened_tags == number_closed_tags && number_opened_tags != 0 && number_closed_tags != 0){            
+                  if(number_opened_tags == number_closed_tags){            
                     $('.error').remove();
-                    $('.editOptions').fadeOut(2000);
+                    $('.editOptions').slideUp();
                     
                   }else{                
                     event.preventDefault();
                     $('.error').remove();
-                    $('.editOptions').append('<p class="error">Just a test</p>');
+                    $('.editOptions').append('<p class="error">' + mw.msg('submit-error-message') + '</p>');
                     $('.error').fadeOut(5000);
                   }
                
                 });
-              
-                                
             }
         } );
     }

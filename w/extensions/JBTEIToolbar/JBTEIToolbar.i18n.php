@@ -81,6 +81,8 @@ $messages['en'] = array(
   'toolbar-peri-metamark'      => 'metamark',
   'toolbar-peri-restore'       => 'restored text',
   'toolbar-peri-supplied'      => 'supplied text',
+  
+  'submit-error-message'       => 'One or more tags are not well-formed. Please review your tags',
 
 
 );

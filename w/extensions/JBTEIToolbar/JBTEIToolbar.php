@@ -98,6 +98,8 @@ $wgResourceModules['ext.JBTEIToolbar' ] = array(
                      ,'toolbar-peri-metamark'
                      ,'toolbar-peri-restore'
                      ,'toolbar-peri-supplied'
+          
+                     ,'submit-error-message'
 
 									)
 );
@@ -110,6 +112,4 @@ $wgResourceModules['ext.JBTEIToolbarcss' ] = array(
 $JBTEIToolbarHooks 							 = new JBTEIToolbarHooks();
 
 $wgHooks['EditPage::showEditForm:initial'][] = array( $JBTEIToolbarHooks , 'editPageShowEditFormInitial' );
-
-
 
