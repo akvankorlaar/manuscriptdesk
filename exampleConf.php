@@ -29,6 +29,8 @@
 #CUSTOM CONFIGURATION SETTINGS
 ##############################################################
 
+#####Misc Settings#####
+
 //path to the extensions folder
 $wgExtensionAssetsPath = $IP . '/extensions/';
 
