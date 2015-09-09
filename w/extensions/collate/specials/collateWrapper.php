@@ -51,7 +51,7 @@ class collateWrapper{
         
      //Database query
     $res = $dbr->select(
-      'manuscripts', //from
+        'manuscripts', //from
       array(
         'manuscripts_title',//values
         'manuscripts_url',
@@ -90,7 +90,7 @@ class collateWrapper{
       }     
     }
     
-    //remove collections that have contain too many pages
+    //remove collections that contain too many pages. maximum_manuscripts - 1 is used, because otherwise no other checkbox can be selected
     foreach ($collection_urls as $collection_name => &$small_url_array){
       if (count($small_url_array['manuscripts_url']) > ($this->maximum_manuscripts-1)){
         unset($collection_urls[$collection_name]);
@@ -114,14 +114,14 @@ class collateWrapper{
         
     //Database query
     $res = $dbr->select(
-      'manuscripts', //from
+        'manuscripts', //from
       array(
         'manuscripts_title',//values
         'manuscripts_url',
         'manuscripts_lowercase_title',
          ),
       array(
-      'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions: the user should be the current user
+        'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions: the user should be the current user
       ),
       __METHOD__,
       array(
@@ -152,7 +152,7 @@ class collateWrapper{
         
     //Database query
     $res = $dbr->select(
-      'tempcollate', //from
+        'tempcollate', //from
       array(
         'tempcollate_user',//values
         'tempcollate_titles_array',
@@ -163,8 +163,8 @@ class collateWrapper{
         'tempcollate_collatex'
          ),
        array(
-      'tempcollate_user = ' . $dbr->addQuotes($user_name), //conditions
-      'tempcollate_time = ' . $dbr->addQuotes($time_identifier),   
+        'tempcollate_user = ' . $dbr->addQuotes($user_name), //conditions
+        'tempcollate_time = ' . $dbr->addQuotes($time_identifier),   
       ),
       __METHOD__ 
       );
@@ -198,19 +198,19 @@ class collateWrapper{
 
 		$dbw = wfGetDB(DB_MASTER);
     
-    $insert_values = array(
-      'tempcollate_user'                  => $this->user_name,  
-      'tempcollate_titles_array'          => $titles_array,
-      'tempcollate_new_url'               => $new_url,
-      'tempcollate_main_title'            => $main_title,
-      'tempcollate_main_title_lowercase'  => $main_title_lowercase,
-      'tempcollate_time'                  => $time,
-      'tempcollate_collatex'              => $collatex_output
-			);
+    $insert_values = 
     
     $dbw->insert(
         'tempcollate', //select table
-         $insert_values,
+       array( //insert values
+        'tempcollate_user'                  => $this->user_name,  
+        'tempcollate_titles_array'          => $titles_array,
+        'tempcollate_new_url'               => $new_url,
+        'tempcollate_main_title'            => $main_title,
+        'tempcollate_main_title_lowercase'  => $main_title_lowercase,
+        'tempcollate_time'                  => $time,
+        'tempcollate_collatex'              => $collatex_output
+			   ),
          __METHOD__ ,
         'IGNORE'
         );
@@ -237,17 +237,17 @@ class collateWrapper{
         
     //Database query
     $res = $dbr->select(
-      'tempcollate', //from
+        'tempcollate', //from
       array(
         'tempcollate_user',//values
         'tempcollate_time'
          ),
        array(
-      'tempcollate_user = ' . $dbr->addQuotes($user_name), //conditions
+        'tempcollate_user = ' . $dbr->addQuotes($user_name), //conditions
       ),
       __METHOD__,
        array(
-      'ORDER BY' => 'tempcollate_time',
+        'ORDER BY' => 'tempcollate_time',
       )
       );
       
@@ -259,7 +259,7 @@ class collateWrapper{
     
     foreach($time_array as $index=>$time){
       
-      if(intval($current_time) - intval($time) > ($this->hours_before_delete * 10000)){    
+      if($current_time - $time > ($this->hours_before_delete * 3600)){    
         $status = $this->deleteTempcollate($time);
         
         //deletion of an element failed, so something went wrong
@@ -310,10 +310,8 @@ class collateWrapper{
    */
   public function storeCollations($new_url, $main_title, $main_title_lowercase, $titles_array, $collatex_output){
       
-    $user_name = $this->user_name; 
-      
+    $user_name = $this->user_name;    
     $date = date("d-m-Y H:i:s"); 
-    
     $main_title_lowercase = strtolower($main_title);
     
     $dbw = wfGetDB(DB_MASTER);
@@ -326,7 +324,8 @@ class collateWrapper{
       'collations_main_title_lowercase' => $main_title_lowercase,
       'collations_titles_array'         => $titles_array,
       'collations_collatex'             => $collatex_output
-       ),__METHOD__,
+       ),
+        __METHOD__,
        'IGNORE' );
     if ($dbw->affectedRows()){
       //insert succeeded

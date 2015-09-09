@@ -176,18 +176,16 @@ class newManuscriptHooks {
     $page_title_with_namespace = $this->page_title_with_namespace; 
     
     $dbr = wfGetDB(DB_SLAVE);
-    
-    $conds = array(
-       'manuscripts_url = ' . $dbr->addQuotes($page_title_with_namespace),
-     ); 
-    
+        
      //Database query
     $res = $dbr->select(
-      'manuscripts', //from
+        'manuscripts', //from
       array(
-        'manuscripts_collection',
+        'manuscripts_collection',//values
       ),
-      $conds, //conditions
+      array(
+       'manuscripts_url = ' . $dbr->addQuotes($page_title_with_namespace),//conditions
+      ), 
       __METHOD__,
       array(
       'ORDER BY' => 'manuscripts_collection',

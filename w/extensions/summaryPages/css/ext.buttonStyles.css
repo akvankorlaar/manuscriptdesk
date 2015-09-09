@@ -21,30 +21,30 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-#button{
+#button {
   width: 30em;  
   height: 1.5em;
   cursor: pointer;
 }
 
-#button_active{
+#button_active {
   width: 30em;  
   height: 1.5em;
   cursor: pointer;
   font-weight: bold; 
 }
 
-#initial_button{
+#initial_button {
   cursor: pointer;
   position: relative;
   top: 10px; 
 }
 
-#letter_button{
+#letter_button {
   cursor: pointer;
 }
 
-#active_button{
+#active_button {
   cursor: pointer;
   font-size:30px;
 }

@@ -48,12 +48,12 @@ class newManuscriptWrapper{
     
      //Database query
     $res = $dbr->select(
-     'manuscripts', //from
+       'manuscripts', //from
      array(
        'manuscripts_collection',//values
         ),
      array(
-     'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
+       'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
      ),
      __METHOD__,
      array(
@@ -87,14 +87,14 @@ class newManuscriptWrapper{
         
       //Database query
     $res = $dbr->select(
-      'manuscripts', //from
+        'manuscripts', //from
       array(
         'manuscripts_url',//values
          ),
       array(
-      'manuscripts_user = ' . $dbr->addQuotes($this->user_name), //conditions
-      'manuscripts_collection = ' . $dbr->addQuotes($posted_collection),
-      ),
+        'manuscripts_user = ' . $dbr->addQuotes($this->user_name), //conditions
+        'manuscripts_collection = ' . $dbr->addQuotes($posted_collection),
+        ),
       __METHOD__,
       array(
         'ORDER BY' => 'manuscripts_lowercase_title',
@@ -125,6 +125,7 @@ class newManuscriptWrapper{
     $lowercase_collection = strtolower($collection);
     
     $dbw = wfGetDB(DB_MASTER);
+    
     $dbw->insert('manuscripts', //select table
       array( //insert values
       'manuscripts_id'                   => null,

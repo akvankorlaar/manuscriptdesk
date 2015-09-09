@@ -61,6 +61,7 @@ $messages['en'] = array(
   'collate-contains'                  => 'Contains:',
   'collate-hover'                     => 'Collate the selected texts.',
   'collate-submit'                    => 'Collate',
+  'collate-newpage'                   => 'You can edit this page to add additional information. The table will still be displayed.',
   'collatehooks-nopermission'         => 'New collations can only be created on the Special:BeginCollate page',
   'collatehooks-nodeletepermission'   => 'You are not allowed to delete this page',
   'collatehooks-move'                 => 'You are not allowed to move collation pages',

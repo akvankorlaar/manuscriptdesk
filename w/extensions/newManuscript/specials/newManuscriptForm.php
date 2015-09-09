@@ -20,6 +20,8 @@
  * @subpackage Extensions
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
+ * 
+ * Some of the functions have been obtained from includes/specials/SpecialUpload.php, and altered for the purpose of this extension
  */
 
 class newManuscriptForm extends HTMLForm {
@@ -40,8 +42,8 @@ class newManuscriptForm extends HTMLForm {
     global $wgNewManuscriptOptions;
         
     $this->max_upload_size = $wgNewManuscriptOptions['max_upload_size'];
-    $this->collections_message = $collections_message; 
     $this->allowed_file_extensions =  $wgNewManuscriptOptions['allowed_file_extensions'];
+    $this->collections_message = $collections_message; 
     
     $descriptor = $this->getSourceSection();
 

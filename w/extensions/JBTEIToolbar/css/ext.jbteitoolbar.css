@@ -21,48 +21,50 @@
  * @copyright 2013 Richard Davis
  
  * Re-organises the editor to the correct layout after it has loaded
- * so that it can accomadate the Zoom Viewer frame 
+ * so that it can accomadate the Zoom Viewer frame
+ * 
+ * Sept 2015: Made some small changes @Arent van Korlaar
  */
 
 .wikiEditor-ui {
-	width: 38%;
-	clear: none;
-	margin-bottom: 10px;
+  width: 38%;
+  clear: none;
+  margin-bottom: 10px;
 }
 
-.wikiEditor-ui-toolbar .group{
-	padding-right: 2px;
+.wikiEditor-ui-toolbar .group {
+  padding-right: 2px;
 }
 
-.wikiEditor-ui-toolbar .group img.tool{
-	padding: 1px; 
+.wikiEditor-ui-toolbar .group img.tool {
+  padding: 1px; 
 }
 
 #wpTextbox1{
-	height: 661px;
-	overflow: scroll; 
-	width: 38%;
-        float: left;
+  height: 661px;
+  overflow: scroll; 
+  width: 38%;
+  float: left;
 }
 
  // * Extend width to accomodate maximise/minimise buttons
  
 .toolbar,
 #toolbar {
-	width:99%;
+  width:99%;
 }
 
 .maximise{
-    background-color: white;
-    z-index:99;
-    width: 100%;
-    top:0px;
-    left:0px;
-    right:0px;
-    position: absolute;
+  background-color: white;
+  z-index:99;
+  width: 100%;
+  top:0px;
+  left:0px;
+  right:0px;
+  position: absolute;
 }
 
 #wpSummaryLabel{
-    display: block;
-    clear: left;
+  display: block;
+  clear: left;
 }

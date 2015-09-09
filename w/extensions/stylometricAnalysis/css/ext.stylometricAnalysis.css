@@ -21,7 +21,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-#stylometricanalysis-infobox{
+#stylometricanalysis-infobox {
 padding: 0.3em;
 float: right; 
 margin-left: 15px; 
@@ -34,40 +34,40 @@ line-height: 1.5em;
 width: 28em;  
 }
 
-#stylometricanalysis-infobox th{
+#stylometricanalysis-infobox th {
   background: #283d88; 
   padding: 0.3em; 
   font-size: 1.1em;  
   color: #FFF
 }
 
-#stylometricanalysis-td{
+#stylometricanalysis-td {
   background: #283d88; 
   padding: 0.3em; 
   color: #FFF;
 }
 
-#stylometricanalysis-contentwrapper{
+#stylometricanalysis-contentwrapper {
     overflow-y: auto;
     overflow-x: hidden; 
     position: relative;
     height: 100%;
 }
 
-#stylometricanalysis-collection{ 
+#stylometricanalysis-collection { 
   display: inline-block;
   height: 100%; 
   width: 30%; 
 }
 
-#stylometricanalysis-textarea{
+#stylometricanalysis-textarea {
   display: inline-block;
   height: 100%;
   width: 80%; 
   position: absolute;
 }
 
-#stylometricanalysis-submitbutton{
+#stylometricanalysis-submitbutton {
   width: 30em; 
   height: 1.5em; 
   cursor: pointer;
