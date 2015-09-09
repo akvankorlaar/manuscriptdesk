@@ -22,11 +22,9 @@
  
  * Re-organises the editor to the correct layout after it has loaded
  * so that it can accomadate the Zoom Viewer frame 
- *
- * Sept 2015: Small modifications @Arent van Korlaar
  */
 
-#zoomviewerframe{
+#zoomviewerframe {
   width: 60%;
   height: 660px;
   float: right; 

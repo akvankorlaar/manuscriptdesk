@@ -16,6 +16,10 @@
  * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
  * 
+ * Todo: The text in createNewWikiPage() should be placed in the i18n file
+ * 
+ * Todo: Remove unused variables in newManuscriptForm
+ * 
  * Todo: Try to create unit tests for the extensions. See: https://www.mediawiki.org/wiki/Manual:PHP_unit_testing/Writing_unit_tests_for_extensions , and check 
  * http://www.gossamer-threads.com/lists/wiki/mediawiki/520085 why the tests directory is missing for this version. Perhaps try to get them from github? 
  *   
@@ -102,8 +106,7 @@ class SpecialNewManuscript extends SpecialPage {
     
     $this->request = $request = $this->getRequest();
     $this->uploadbase_object = UploadBase::createFromRequest($request);
-    $this->upload_was_clicked = $request->wasPosted()
-			&& ( $request->getCheck('wpUpload'));
+    $this->upload_was_clicked = $request->wasPosted() && ($request->getCheck('wpUpload'));
     
     // If it was posted check for the token (no remote POST'ing with user credentials)
     $token = $request->getVal('wpEditToken');
@@ -185,7 +188,7 @@ class SpecialNewManuscript extends SpecialPage {
     $context = new DerivativeContext($this->getContext());
     
     $new_manuscript_wrapper = new newManuscriptWrapper($this->user_name);
-    //get the collections of the current user
+    //get the collections of the current user to display the user's current collections
     $collections_current_user = $new_manuscript_wrapper->getCollectionsCurrentUser();
     
     if(!empty($collections_current_user)){
@@ -210,13 +213,14 @@ class SpecialNewManuscript extends SpecialPage {
   
   /**
    * This function processes upload requests if the form was posted
-   * 
    */
   private function processUpload(){
     
     $posted_title = $this->posted_title;
     $uploadbase_object = $this->uploadbase_object;
     $collection = $this->posted_collection; 
+    $target_dir = $this->target_dir; 
+    $user_name = $this->user_name; 
     $collection_error = "";
         
     //check if the $posted_title is valid
@@ -229,8 +233,6 @@ class SpecialNewManuscript extends SpecialPage {
       $collection_error = $this->checkCollection($collection);
     }
     
-    $target_dir = $this->target_dir; 
-    $user_name = $this->user_name; 
     $target_dir = $target_dir . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $posted_title;
    
     $title_object = $uploadbase_object->getTitle();

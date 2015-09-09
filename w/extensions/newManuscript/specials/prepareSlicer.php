@@ -38,6 +38,7 @@ class prepareSlicer {
   private $perl_path; 
   private $user_export_path;
   private $full_export_path; 
+  private $zoomimagedir_check_before_delete;
   
   /**
    * class constructor
@@ -53,15 +54,15 @@ class prepareSlicer {
     $this->import_path = $import_path;
     
     $document_root = $wgWebsiteRoot; 
-    $this->export_path = $document_root . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['zoomimages_root_dir'];
-        
+    $this->export_path = $document_root . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['zoomimages_root_dir'];        
     $this->slicer_path = $document_root . $wgNewManuscriptOptions['slicer_path'];
-    
     $this->perl_path = $wgNewManuscriptOptions['perl_path']; 
+    $this->zoomimagedir_check_before_delete = false; //default value
   }
   
   /**
-   * 
+   * This function first checks if the paths are valid, and then processes the request
+   *  
    * @return type $status is a notification whether slicing and saving the new file was succesfull. 
    */
   public function execute(){
@@ -72,7 +73,8 @@ class prepareSlicer {
       return $status_paths;       
     }  
     
-    $status_slicer = $this->process($this->import_path);   
+    $status_slicer = $this->process($this->import_path); 
+    
     return $status_slicer;  
   }
   
@@ -104,15 +106,15 @@ class prepareSlicer {
       return 'slicer-error-importpath';
     }
     
-    elseif(!file_exists($user_export_path)){
+    if(!file_exists($user_export_path)){
       return 'slicer-error-exportpath';
     }
     
-    elseif(file_exists($full_export_path)){
+    if(file_exists($full_export_path)){
       return 'slicer-error-upload';
     }
     
-    elseif(!file_exists($slicer_path)){
+    if(!file_exists($slicer_path)){
       return 'slicer-error-slicerpath';     
     }
     
@@ -148,10 +150,10 @@ class prepareSlicer {
     $perl_output = str_replace( "        1 file(s) moved.\r\n",'',$perl_output);
 
     if(strpos(strtolower($perl_output), 'error' ) !== false || !file_exists($this->full_export_path)){
-      return 'slicer-error-execute'; 
-    }else{
-      return true; 
+      return 'slicer-error-execute';   
     }
+    
+    return true;    
 	}
   
   /**
@@ -160,7 +162,6 @@ class prepareSlicer {
   public function deleteExportFiles(){
         
     $zoom_images_file = $this->full_export_path; 
-    
     $slice_directory = $this->user_export_path . DIRECTORY_SEPARATOR . 'slice';
     
     //check if the temporary directory 'slice' exists. If it does, it should be deleted. 
@@ -175,8 +176,10 @@ class prepareSlicer {
       return false; 
     }
     
+    $this->zoomimagedir_check_before_delete = true; 
+    
     return $this->deleteAllFiles($zoom_images_file);
-    }
+  }
     
   /**
    * The function recursively deleted all directories and files contained in $zoom_images_file
@@ -186,50 +189,26 @@ class prepareSlicer {
    */
   private function deleteAllFiles($zoom_images_file){
     
-    //last check
-    $zoom_images_file_without_slashes = $this->removeAllSlashes($zoom_images_file);
-    $full_export_path_without_slashes = $this->removeAllSlashes($this->full_export_path);
-    
-    if(substr($zoom_images_file_without_slashes,0,strlen($full_export_path_without_slashes)) !== $full_export_path_without_slashes){
-      return false; 
-    }
+    if($this->zoomimagedir_check_before_delete){
        
-    //start deleting files
-    if (is_dir($zoom_images_file) === true){
-      $files = array_diff(scandir($zoom_images_file), array('.', '..'));
+      //start deleting files
+      if (is_dir($zoom_images_file) === true){      
+        $files = array_diff(scandir($zoom_images_file), array('.', '..'));
 
-      foreach ($files as $file){
-        //recursive call
-        $this->deleteAllFiles(realpath($zoom_images_file) . DIRECTORY_SEPARATOR . $file);
-      }
+        foreach ($files as $file){
+          //recursive call
+          $this->deleteAllFiles(realpath($zoom_images_file) . DIRECTORY_SEPARATOR . $file);
+        }
 
-      return rmdir($zoom_images_file);
-    }
-
-    else if (is_file($zoom_images_file) === true){
+        return rmdir($zoom_images_file);
+        
+      }elseif (is_file($zoom_images_file) === true){
         return unlink($zoom_images_file);
+      }
     }
-
-    return false;   
+    
+    return false;
   }  
- 
-  /**
-   * This function removes all slashes "/" and "\"
-   * 
-   * @param type $file_path
-   * @return type
-   */
-  private function removeAllSlashes($file_path){
-    
-    //remove "\"
-    $file_path = stripslashes($file_path); 
-    //remove "/"
-    $file_path = str_replace("/","",$file_path);
-    
-    $file_path = trim($file_path);
-    
-    return $file_path; 
-  }
 }
 
   

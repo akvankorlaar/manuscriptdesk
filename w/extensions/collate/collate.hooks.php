@@ -44,42 +44,42 @@ class collateHooks {
    */
   public function onMediaWikiPerformAction( $output, $article, $title, $user, $request, $wiki ){
 
-   if($wiki->getAction($request) !== 'view' ){
+    if($wiki->getAction($request) !== 'view' ){
       return true; 
-   }   
+    }   
 
-   $namespace = $title->getNamespace();     
+    $namespace = $title->getNamespace();     
 
-   if($namespace !== NS_COLLATIONS){
-    //this is not a collation page.
-    return true; 
-   }
+    if($namespace !== NS_COLLATIONS){
+      //this is not a collation page.
+      return true; 
+    }
 
-   $page_title_with_namespace = $title->getPrefixedUrl();    
+    $page_title_with_namespace = $title->getPrefixedUrl();    
 
-   $status = $this->getCollations($page_title_with_namespace);
+    $status = $this->getCollations($page_title_with_namespace);
 
-   //something went wrong when retrieving the values from the database 
-   if(!$status){
-     return true; 
-   }
+    //something went wrong when retrieving the values from the database 
+    if(!$status){
+      return true; 
+    }
 
-   list($user_name, $date, $titles_array, $collatex_output) = $status; 
+    list($user_name, $date, $titles_array, $collatex_output) = $status; 
 
-   $titles_array = json_decode($titles_array);
+    $titles_array = json_decode($titles_array);
 
-   $collate = new collate();
+    $collate = new collate();
 
-   $html_output = $collate->renderTable($titles_array, $collatex_output, $user_name, $date);
+    $html_output = $collate->renderTable($titles_array, $collatex_output, $user_name, $date);
 
-   //something went wrong when rendering the table
-   if(!$html_output){
-     return true; 
-   }
+    //something went wrong when rendering the table
+    if(!$html_output){
+      return true; 
+    }
 
-  $output->addHTML($html_output);
+    $output->addHTML($html_output);
   
-  return true; 
+    return true; 
   }
 
 /**
@@ -92,10 +92,6 @@ class collateHooks {
 
     $dbr = wfGetDB(DB_SLAVE);
 
-    $conds =  array(
-      'collations_url = ' . $dbr->addQuotes($url),  
-      ); 
-
     //Database query
     $res = $dbr->select(
       'collations', //from
@@ -106,7 +102,9 @@ class collateHooks {
         'collations_titles_array',
         'collations_collatex'
          ),
-      $conds, //conditions
+      array(
+      'collations_url = ' . $dbr->addQuotes($url), //conditions  
+      ),
       __METHOD__ 
       );
 

@@ -325,9 +325,9 @@ class SpecialBeginCollate extends SpecialPage {
     
     $article = Article::newFromTitle($title_object, $context);
        
-     //make a new page
+    //make a new page
     $editor_object = new EditPage($article);
-    $content_new = new wikitextcontent('<!--You can edit this page to add additional information. The table will still be displayed.-->');
+    $content_new = new wikitextcontent('<!--' . $this->msg('collate-newpage') . '-->');
     $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97,
                         false, null, $editor_object->contentFormat);
     
@@ -344,8 +344,9 @@ class SpecialBeginCollate extends SpecialPage {
    */
   private function constructTitles(){
     
+    $full_manuscripts_url = $this->full_manuscripts_url; 
     $posted_hidden_collection_titles = array();
-    
+        
     if (isset($this->collection_hidden_array)){
       //hidden fields are always sent, and so the correct posted collection titles need to be identified
       foreach($this->collection_hidden_array as $key => $value){
@@ -363,12 +364,12 @@ class SpecialBeginCollate extends SpecialPage {
       }
     }
     
+    //merge these two arrays if collections were also checked
     $titles_array = !empty($posted_hidden_collection_titles) ? array_merge($this->posted_titles_array,$posted_hidden_collection_titles) : $this->posted_titles_array; 
         
-    $full_manuscripts_url = $this->full_manuscripts_url; 
-
     foreach($titles_array as &$full_url){
 
+      //remove $full_manuscript_url from each url to get the title
       $full_url = trim(str_replace($full_manuscripts_url,'',$full_url));
     }
         
@@ -391,17 +392,20 @@ class SpecialBeginCollate extends SpecialPage {
       
       $title_object = Title::newFromText($file_url);
 
+      //if the page does not exist, return false
       if(!$title_object->exists()){
         return false; 
       }
 
+      //get the text
       $single_page_text = $this->getSinglePageText($title_object);
 
+      //add the text to the array
       $texts[] = $single_page_text; 
     }
   
     if($this->collection_array){
-      //collect all single pages of a collection and merge them together
+      //for collections, collect all single pages of a collection and merge them together
       foreach($this->collection_array as $collection_name => $url_array){
 
         $all_texts_for_one_collection = "";
@@ -421,7 +425,7 @@ class SpecialBeginCollate extends SpecialPage {
           $all_texts_for_one_collection .= $single_page_text; 
         }  
 
-        //add the combined texts to $texts
+        //add the combined texts of one collection to $texts
         $texts[] = $all_texts_for_one_collection; 
       }
     }
@@ -667,6 +671,7 @@ class SpecialBeginCollate extends SpecialPage {
       $a = 0;
       foreach($collection_urls as $collection_name=>$small_url_array){
       
+        //encode the array into json to be able to place it in the checkbox value
         $json_small_url_array = json_encode($small_url_array['manuscripts_url']);
         
         $manuscript_pages_within_collection = implode(', ',$small_url_array['manuscripts_title']);

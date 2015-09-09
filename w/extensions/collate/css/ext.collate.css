@@ -22,15 +22,15 @@
  */
 
 
-//pre overrides earlier mediawiki CSS, and is needed for correct table display.  
-pre{
+/*pre overrides earlier mediawiki CSS, and is needed for correct table display.*/  
+pre {
   border: none !important;
   padding: 0px !important;
   background-color: transparent !important; 
   height: 0px !important; 
 }
 
-#begincollate-infobox{
+#begincollate-infobox {
   padding: 0.3em;
   float: right; 
   margin-left: 15px; 
@@ -43,60 +43,60 @@ pre{
   width: 28em;  
 }
 
-#begincollate-infobox th{
+#begincollate-infobox th {
   background: #286819; 
   padding: 0.3em; 
   font-size: 1.1em;  
   color: #FFF
 }
 
-#begincollate-td{
+#begincollate-td {
   background: #286819; 
   padding: 0.3em; 
   color: #FFF;
 }
 
-.begincollate-form{
+.begincollate-form {
   overflow-y: auto;  
   position: relative;
   height: 100%;
 }
 
-#begincollate-manuscriptpages{
+#begincollate-manuscriptpages {
   display: inline-block;
   height: 100%; 
   width: 30%; 
 }
 
-#begincollate-collections{
+#begincollate-collections {
   display: inline-block;
   height: 100%;
   width: 30%; 
   position: absolute;
 }
 
-#begincollate-submitbutton{
+#begincollate-submitbutton {
   width: 30em; 
   height: 1.5em; 
   cursor: default; 
   position: fixed; 
 }
 
-#javascript-error{
+#javascript-error {
   font-size: larger;
   color: #cc0000;
 }
 
-#begincollate-loaderdiv{
+#begincollate-loaderdiv {
   display: none;
 }
 
-.begincollate-form-two{
+.begincollate-form-two {
   position: relative;
   display: inline-block;
 }
 
-.begincollate-submitbutton-two{
+.begincollate-submitbutton-two {
   width: 30em; 
   height: 1.5em; 
   cursor: pointer;

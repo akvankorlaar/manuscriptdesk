@@ -38,7 +38,6 @@ class textConverter{
 
     $this->url = $wgCollationOptions['collatex_url'];
     $this->headers = $wgCollationOptions['collatex_headers'];
-
   }
 
   /**
@@ -50,10 +49,9 @@ class textConverter{
    */
   public function convertJson($text_array){  
 
-    //convert to json
-    $length_text_array = count($text_array);
     $content = array();
     $alphabet = range('A','Z');
+    $length_text_array = count($text_array);
     
     //first make an array of the appropriate format
     for($i=0;$i<$length_text_array;$i++){
@@ -61,7 +59,7 @@ class textConverter{
       $content["witnesses"][$i]["content"]=$text_array[$i];
     }
 
-    //then encode the array to json
+    //then convert the array to json
     $content = json_encode($content);
 
     return $content; 
