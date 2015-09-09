@@ -102,13 +102,13 @@ class SpecialBeginCollate extends SpecialPage {
       
       }elseif($checkbox_without_numbers === 'collection_hidden'){
         $this->collection_hidden_array[$checkbox] = $this->validateInput($request->getText($checkbox));
-                
-      }elseif($checkbox_without_numbers === 'save_current_table'){
-        $this->save_table = true;
         
       }elseif($checkbox_without_numbers === 'time'){
         $this->time_identifier = $this->validateInput($request->getText('time'));
-        
+                
+      }elseif($checkbox_without_numbers === 'save_current_table'){
+        $this->save_table = true;
+       
       }elseif($checkbox_without_numbers === 'redirect_to_start'){
         $this->redirect_to_start = true; 
         break; 
@@ -234,14 +234,14 @@ class SpecialBeginCollate extends SpecialPage {
       return $this->showError('collate-error-collatex');
     }
     
-    //construct all the titles, used by the table
+    //construct all the titles, used to display the page titles and collection titles in the table
     $titles_array = $this->constructTitles();
     
     //construct an URL for the new page
     list($main_title, $new_url) = $this->makeURL($titles_array);
     
-    //time format: daymonthHourminutesseconds
-    $time = date('dmHis');
+    //time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are. 
+    $time = idate('U');
     
     $status = $this->prepareTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
         
@@ -259,12 +259,14 @@ class SpecialBeginCollate extends SpecialPage {
     
     $collate_wrapper = new collateWrapper($this->user_name);
      
+    //delete old entries in the 'tempcollate' table
     $status = $collate_wrapper->clearTempcollate($time);
     
     if(!$status){
       return false;
     }
         
+    //store new values in the 'tempcollate' table
     $status = $collate_wrapper->storeTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
     
     if(!$status){

@@ -1,6 +1,5 @@
 /**
-
-* Copyright (C) 2013 Richard Davis
+ * Copyright (C) 2013 Richard Davis
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License Version 2, as
@@ -265,8 +264,6 @@ var addExtraButtonsToClassicToolBar = function(){
     });
 
 }
-
-
 
 /*
  * BP 2013
@@ -715,7 +712,7 @@ $(document).ready(function(){
                 });
                 
                 /**
-                 * This function restructures the maximise and minimise css when clicking the maximise button
+                 * This function restructures the maximise and minimise css when clicking the minimise button
                  */
                 $('#minimise').click(function() {
                   
@@ -736,11 +733,13 @@ $(document).ready(function(){
                  * 
                  * < and > means match the tags
                  * 
-                 * [a-zA-Z\d"=]+ means match any charachter that is alphabetic lowercase, alphabetic upcercase, digit, " or =, in between the tags
+                 * [] are match group delimiters
+                 * 
+                 * [a-zA-Z\d"=]+ means match any charachter that is alphabetic lowercase, alphabetic upcercase, digit, " or =
                  * 
                  * + means, match the pattern in between [] once or more
                  * 
-                 * /g means to a global match (as opposed to matching it only once)
+                 * g means to a global match (as opposed to matching it only once)
                  */
                 $('#editform').submit(function(event) {
                                                       

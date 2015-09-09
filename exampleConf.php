@@ -50,7 +50,7 @@ $wgArticleUrl = "/md/";
 
 // Notes from Transcribe Bentham Developers: BP Enabled by default. We need to switch this off because the bentham modern template is not HTML 5
 // HTML Tidy will complain that script tags do not contain a 'type' attribute Html->inlineScript()
-$wgHtml5 	= false; 
+$wgHtml5  = false; 
 
 $wgExternalLinkTarget  = '_blank'; 
 
@@ -254,7 +254,7 @@ $wgHiddenPrefs[] = 'cols';
 //do not allow users to change the editing toolbar
 $wgHiddenPrefs[] = 'usebetatoolbar';
 
-#####Personl Settings#####
+#####Personal Settings#####
 
 //website root. This is used to locate the zoomImages and initialUpload directories. The full path to the website root must be specified here. 
 $wgWebsiteRoot = 'path/to/website/root';

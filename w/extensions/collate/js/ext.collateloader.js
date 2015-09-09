@@ -67,6 +67,7 @@
       var total_checked = normal_checked+collection_checked;    
       var total_pages = normal_checked+collection_pages; 
                               
+      //enable the submit button if at least min_number_pages are checked, but the pages within these checkboxes does not exceed max_number_pages                            
       if(total_checked >= min_number_pages && total_pages <= max_number_pages){
         $("#begincollate-submitbutton").removeAttr("disabled");
         $("#begincollate-submitbutton").css("cursor", "pointer");        

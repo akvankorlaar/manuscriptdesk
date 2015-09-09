@@ -259,7 +259,7 @@ class collateWrapper{
     
     foreach($time_array as $index=>$time){
       
-      if(intval($current_time) - intval($time) > ($this->hours_before_delete * 10000)){    
+      if($current_time - $time > ($this->hours_before_delete * 3600)){    
         $status = $this->deleteTempcollate($time);
         
         //deletion of an element failed, so something went wrong

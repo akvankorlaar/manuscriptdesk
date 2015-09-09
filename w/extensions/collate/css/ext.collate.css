@@ -21,27 +21,26 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-/**
- * pre overrides earlier mediawiki CSS, and is needed for correct table display. 
- */
+
+//pre overrides earlier mediawiki CSS, and is needed for correct table display.  
 pre{
-border: none !important;
-padding: 0px !important;
-background-color: transparent !important; 
-height: 0px !important; 
+  border: none !important;
+  padding: 0px !important;
+  background-color: transparent !important; 
+  height: 0px !important; 
 }
 
 #begincollate-infobox{
-padding: 0.3em;
-float: right; 
-margin-left: 15px; 
-margin-bottom: 8px; 
-border: 1px solid #aa8899; 
-background: #e1e9e1; 
-text-align: center; 
-font-size: 95%; 
-line-height: 1.5em; 
-width: 28em;  
+  padding: 0.3em;
+  float: right; 
+  margin-left: 15px; 
+  margin-bottom: 8px; 
+  border: 1px solid #aa8899; 
+  background: #e1e9e1; 
+  text-align: center; 
+  font-size: 95%; 
+  line-height: 1.5em; 
+  width: 28em;  
 }
 
 #begincollate-infobox th{
@@ -58,9 +57,9 @@ width: 28em;
 }
 
 .begincollate-form{
-    overflow-y: auto;  
-    position: relative;
-    height: 100%;
+  overflow-y: auto;  
+  position: relative;
+  height: 100%;
 }
 
 #begincollate-manuscriptpages{
@@ -84,8 +83,8 @@ width: 28em;
 }
 
 #javascript-error{
-   font-size: larger;
-   color: #cc0000;
+  font-size: larger;
+  color: #cc0000;
 }
 
 #begincollate-loaderdiv{
