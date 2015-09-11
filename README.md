@@ -29,3 +29,6 @@ The MediaWiki website is also the main source for information on, for example, [
 [database access](https://www.mediawiki.org/wiki/Manual:Database_access), [user rights](https://www.mediawiki.org/wiki/Manual:User_rights), and
 specific classes such as the [User class](https://www.mediawiki.org/wiki/Manual:User.php).
 
+##License##
+
+The Manuscript Desk is open-sourced software licensed under the [GNU license](http://www.gnu.org/licenses/gpl-3.0.en.html). 
