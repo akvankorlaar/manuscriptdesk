@@ -12,6 +12,15 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
+ * Todo: Add a button on a page with a collection that can take you to the next page of that collection
+ * 
+ * Todo: Change the collection system: Instead of showing all the collections and their pages, only show collection links. When following this link, you should
+ * see all the pages in the collection and metadata of the collection if availble
+ * 
+ * Todo: Create the option to have the same metadata as other pages in the collection
+ * 
+ * Todo: When clicking 'My Manuscript Pages', or 'My Collations', show an alphabetical list that users can click
+ * 
  * Todo: Perhaps instead of splitting the URL into $user_fromurl and $file_fromurl, don't split it, and construct the path to zoomimages using just the page title
  * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
