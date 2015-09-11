@@ -307,8 +307,7 @@ class SpecialUserPage extends SpecialPage {
         $url = isset($array['collations_url']) ? $array['collations_url'] : '';
         $date = isset($array['collations_date']) ? $array['collations_date'] : '';
         $title = isset($array['collations_main_title']) ? $array['collations_main_title'] : '';
-
-        
+       
         $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . $date; 
       }
       
@@ -316,25 +315,23 @@ class SpecialUserPage extends SpecialPage {
       
     }elseif($this->view_collections){
          
-      $wiki_text = "";
+      $html = "";   
+      $html .= "<form class='summarypage-form' id='userpage-collection' target='Special:UserPage' method='post'>";    
+      $html .= "<br><br>";
       
-      foreach($title_array as $key=>$array){
-
-        $collection = isset($array['manuscripts_collection']) ? $array['manuscripts_collection'] : '';
-        $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
-        $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
-        $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
+      foreach($title_array as $key=>$collection_name){
         
-        if(in_array($collection, $displayed_collections)){
-          $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . $date;
+        if(!in_array($collection_name, $displayed_collections)){
           
-        }else{
-          $wiki_text .= '<br><br>' . "'''" . $collection . ':' . "'''" . '<br><br>' . '[[' . $url . '|' . $title .']] <br>' . $created_message . $date;
-          $displayed_collections[] = $collection; 
+          $html .= "<input type='submit' class='userpage-collectionlist' name='singlecollection' value='" . $collection_name . "'>";
+          $html .= "<br>";
+          $displayed_collections[] = $collection_name; 
         }         
       }
       
-     return $out->addWikiText($wiki_text);
+      $html .= "</form>";
+      
+     return $out->addHTML($html);
     }
   }
   

@@ -352,9 +352,14 @@ class SpecialNewManuscript extends SpecialPage {
     
     $new_manuscript_wrapper = new newManuscriptWrapper();
     
+    if($collection !== "none"){
+      //store information about the collection in the 'collections' table. Only inserts values if collection does not already exist  
+      $new_manuscript_wrapper->storeCollections($collection, $user_name);
+    }
+    
     //store information about the new uploaded manuscript page in the 'manuscripts' table
-    $status = $new_manuscript_wrapper->writeToDB($posted_title, $collection, $user_name,$new_page_url);
-
+    $status = $new_manuscript_wrapper->storeManuscripts($posted_title, $collection, $user_name,$new_page_url);
+   
     if(!$status){
       //delete all exported files if writing to the database failed, and show an error
       $prepare_slicer->deleteExportFiles(); 
@@ -364,7 +369,7 @@ class SpecialNewManuscript extends SpecialPage {
     
     //if no errors, and slice succesfull, redirect to the new page
     return $this->getOutput()->redirect($local_url);
-    }
+  }
     
  /**
   * This function checks if posted title is empty, contains invalid charachters, is too long, or already exists in the database.

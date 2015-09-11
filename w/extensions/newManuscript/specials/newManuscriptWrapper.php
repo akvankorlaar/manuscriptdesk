@@ -116,7 +116,7 @@ class newManuscriptWrapper{
    * @param type $new_page_url
    * @return boolean
    */
-  public function writeToDB($posted_title, $collection, $user_name,$new_page_url){
+  public function storeManuscripts($posted_title, $collection, $user_name,$new_page_url){
       
     $date = date("d-m-Y H:i:s");  
     $date2 = date('YmdHis');
@@ -147,5 +147,26 @@ class newManuscriptWrapper{
     //return error
       return false;      
     }
+  }
+  
+  /**
+   * This function insert data into the collections table
+   * 
+   * @param type $collection_title
+   * @param type $user_name    
+   * @return boolean
+   */
+  public function storeCollections($collection_name, $user_name){
+      
+    $dbw = wfGetDB(DB_MASTER);
+    
+    $dbw->insert('collections', //select table
+      array( //insert values
+      'collections_title'                => $collection_name,
+      'collections_user'                 => $user_name,
+       ),__METHOD__,
+       'IGNORE' ); //ensures that duplicate $collection_name is ignored
+    
+      return true;
   }
 }

@@ -448,11 +448,8 @@ class summaryPageWrapper{
     
      //Database query
     $res = $dbr->select(
-      'manuscripts', //from
+        'manuscripts', //from
       array(
-        'manuscripts_title',//values
-        'manuscripts_url',
-        'manuscripts_date',
         'manuscripts_collection',
          ),
        array(
@@ -461,11 +458,11 @@ class summaryPageWrapper{
         'manuscripts_collection != ' . $dbr->addQuotes("none"),
         ),
       __METHOD__,
-      array(
+       array(
         'ORDER BY' => 'manuscripts_collection',
         'LIMIT' => $this->max_on_page+1,
         'OFFSET' => $this->offset, 
-      )
+         )
       );
         
     if ($res->numRows() > 0){
@@ -475,12 +472,7 @@ class summaryPageWrapper{
         //add titles to the title array as long as it is not bigger than max_on_page
         if (count($title_array) < $this->max_on_page){
           
-          $title_array[] = array(
-          'manuscripts_title' => $s->manuscripts_title,
-          'manuscripts_url' => $s->manuscripts_url,
-          'manuscripts_date' => $s->manuscripts_date,
-          'manuscripts_collection' => $s->manuscripts_collection,  
-        );
+          $title_array[] = $s->manuscripts_collection;
 
         //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
         }else{
