@@ -41,7 +41,7 @@ class SpecialUserPage extends SpecialPage {
   private $user_name; 
   private $view_manuscripts;
   private $view_collations;
-  private $view_collections; 
+  private $view_collections;
   private $sysop;
   private $primary_disk;
   private $id_manuscripts;
@@ -112,7 +112,12 @@ class SpecialUserPage extends SpecialPage {
       }elseif($value === 'singlecollection'){
         $this->selected_collection = $this->validateInput($request->getText($value));
         $this->button_name = 'singlecollection';
-        break; 
+        break;
+        
+      }elseif($value === 'selectedcollection'){
+        $this->selected_collection = $this->validateInput($request->getText($value));
+        $this->button_name = 'editmetadata';
+        break;
            
       //get offset, if it is available. The offset specifies at which place in the database the query should begin relative to the start  
       }elseif ($value === 'offset'){
@@ -200,9 +205,10 @@ class SpecialUserPage extends SpecialPage {
       return $this->showSingleCollection($title_array);
     }
     
-    //if edit meta data
-    //return $single_collection_view->editMetadata()
-    
+    if($button_name === 'editmetadata'){
+      return $this->showEditMetadata();
+    }
+      
     if($button_name === 'viewmanuscripts' || $button_name === 'viewcollations' || $button_name === 'viewcollections'){
       $summary_page_wrapper = new summaryPageWrapper($button_name, $this->max_on_page, $this->offset, $user_name);
       list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
@@ -221,6 +227,37 @@ class SpecialUserPage extends SpecialPage {
     $html .= "</h3>";
     
     return $html; 
+  }
+  
+  /**
+   * 
+   */
+  private function showEditMetadata(){
+    
+    $out = $this->getOutput(); 
+    $user_name = $this->user_name;
+    $article_url = $this->article_url;
+    $selected_collection = $this->selected_collection;
+    
+    $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+
+    $manuscripts_message = $this->msg('userpage-mymanuscripts');
+    $collations_message = $this->msg('userpage-mycollations');
+    $collections_message = $this->msg('userpage-mycollections');
+
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
+    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
+    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
+    $html .= '</form>';
+    $html .= "<br>";  
+    $html .= "<h2>Editing metadata for " . $selected_collection . "</h2>";
+    
+    $html .='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    
+    $html .= '</form>';
+
+    $out->addHTML($html);
   }
   
   /**
@@ -259,6 +296,7 @@ class SpecialUserPage extends SpecialPage {
     $html .= $meta_table->renderTable();
     $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
     $html .= "<input type='submit' class='button-transparent' name='editmetadata' value='Edit Metadata'>";
+    $html .= "<input type='hidden' name='selectedcollection' value='" . $selected_collection . "'>";
     $html .= "</form>";
     
     $html .= "<h3>Pages</h3>"; 
