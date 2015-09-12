@@ -257,12 +257,19 @@ class SpecialUserPage extends SpecialPage {
     $meta_table = new metaTable(); 
     
     $html .= $meta_table->renderTable();
-    $html .= "<form id='userpage-editmetadata' action='Special:UserPage' method='post'>";
+    $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
     $html .= "<input type='submit' class='button-transparent' name='editmetadata' value='Edit Metadata'>";
     $html .= "</form>";
     
     $html .= "<h3>Pages</h3>"; 
     $html .= "This collection contains" . " " . count($title_array) . " " . "single manuscript page(s).";
+    $html .= "<br>";
+    
+    //redirect to Special:NewManuscript, and automatically have the current collection selected
+    $html .= "<form id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
+    $html .= "<input type='submit' class='button-transparent' name='addnewpage' title='Add a new page to this collection' value='Add New Page'>";
+    $html .= "<input type='hidden' name='selectedcollection' value='" . $selected_collection . "'>";
+    $html .= "</form>";   
     $html .= "<br>";
 
     foreach($title_array as $key=>$array){

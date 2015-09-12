@@ -12,10 +12,12 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
- * Todo: Add a button on a page with a collection that can take you to the next page of that collection
+ * Todo: Add a button on a page with a collection that can take you to the next page of that collection. Perhaps assign every manuscript page a unique long number
+ * (made of for example the user name and the date of creation for the collection), so that the next page can be found by doing current page + 1
  * 
- * Todo: Change the collection system: Instead of showing all the collections and their pages, only show collection links. When following this link, you should
- * see all the pages in the collection and metadata of the collection if availble
+ * Todo: Make it possible to edit collection metadata
+ * 
+ * Todo: Make a new page called 'new collection'
  * 
  * Todo: Create the option to have the same metadata as other pages in the collection
  * 
