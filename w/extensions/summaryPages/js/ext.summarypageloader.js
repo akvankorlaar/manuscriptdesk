@@ -33,6 +33,7 @@
      $('p').hide();
      $('#previous-link').hide();
      $('#next-link').hide();
+     $('#userpage-table').hide();
    });
          
   /**

@@ -364,13 +364,17 @@ class SpecialUserPage extends SpecialPage {
       $html.= "</form>";
     }
         
-    $out->addHTML($html);
-    
     $created_message = $this->msg('userpage-created');
+    $html .= "<br>";
         
     if($this->view_manuscripts){
-    
-      $wiki_text = "";
+          
+      $html .= "<table id='userpage-table' style='width: 100%;'>";
+      $html .= "<tr>";
+      $html .= "<td>" . "<b>Title</b>" . "</td>";
+      $html .= "<td>" . "<b>Date</b>" . "</td>";
+      $html .= "<td>" . "<b>Collection</b>" . "</td>";
+      $html .= "</tr>";
       
       foreach($title_array as $key=>$array){
 
@@ -379,54 +383,67 @@ class SpecialUserPage extends SpecialPage {
         $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
         $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
         
-        if($collection === "" || $collection === "none"){
-          $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . $date; 
-        }else{
-          $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] (' . $collection . ')<br>' . $created_message . $date;  
-        }
-      }   
+        $html .= "<tr>";
+        $html .= "<td>Name: <a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
+          htmlspecialchars($title) . "</a></td>";
+        $html .= "<td>$date</td>";
+        $html .= "<td>$collection</td>";
+        $html .= "</tr>";      
+      }
       
-      return $out->addWikiText($wiki_text);
+      $html .= "</table>";
+    }   
+            
+    if($this->view_collations){
       
-    }elseif($this->view_collations){
-      
-      $wiki_text = "";
-      
+      $html .= "<table id='userpage-table' style='width: 100%;'>";
+      $html .= "<tr>";
+      $html .= "<td>" . "<b>Title</b>" . "</td>";
+      $html .= "<td>" . "<b>Date</b>" . "</td>";
+      $html .= "</tr>";
+           
       foreach($title_array as $key=>$array){
 
         $url = isset($array['collations_url']) ? $array['collations_url'] : '';
         $date = isset($array['collations_date']) ? $array['collations_date'] : '';
         $title = isset($array['collations_main_title']) ? $array['collations_main_title'] : '';
-       
-        $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . $date; 
-      }
+        
+        $html .= "<tr>";
+        $html .= "<td>Name: <a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
+          htmlspecialchars($title) . "</a></td>";
+        $html .= "<td>" . $date . "</td>"; 
+        $html .= "</tr>";
+      }    
       
-      return $out->addWikiText($wiki_text);   
+      $html .= "</table>";
     }
     
     if($this->view_collections){
          
-      $html = "";   
-      $html .= "<form class='summarypage-form' id='userpage-collection' target='Special:UserPage' method='post'>";
-      $html .= "<br><br>";
+      $html .= "<form class='summarypage-form' id='userpage-collection' target='Special:UserPage' method='post' style='width: 100%';>";
+      $html .= "<table id='userpage-table' style='width: 100%;'>";
+      $html .= "<tr>";
+      $html .= "<td>" . "<b>Title</b>" . "</td>";
+      $html .= "<td>" . "<b>Date</b>" . "</td>";
+      $html .= "</tr>";
       
       foreach($title_array as $key=>$array){
         
         $collections_title = isset($array['collections_title']) ? $array['collections_title'] : '';
         $collections_date = isset($array['collections_date']) ? $array['collections_date'] : '';
         
-        $html .= "<p>";
-        $html .= "<input type='submit' class='userpage-collectionlist' name='singlecollection' value='" . $collections_title . "'>";
-        $html .= "<br>";
-        $html .= "Created on" . $collections_date;
-        $html .= "</p>"; 
+        $html .= "<tr>";
+        $html .= "<td><input type='submit' class='userpage-collectionlist' name='singlecollection' value='" . $collections_title . "'></td>";
+        $html .= "<td>" . $collections_date . "</td>";
+        $html .= "</tr>";
      }
      
+     $html .= "</table>";
      $html .= "<input type='hidden' name='viewcollections' value=''>";      
-     $html .= "</form>";
-      
-     return $out->addHTML($html);
+     $html .= "</form>"; 
     }
+    
+    return $out->addHTML($html); 
   }
   
   /**
