@@ -116,11 +116,9 @@ class newManuscriptWrapper{
    * @param type $new_page_url
    * @return boolean
    */
-  public function storeManuscripts($posted_title, $collection, $user_name,$new_page_url){
+  public function storeManuscripts($posted_title, $collection, $user_name,$new_page_url, $date){
       
-    $date = date("d-m-Y H:i:s");  
     $date2 = date('YmdHis');
-
     $lowercase_title = strtolower($posted_title);
     $lowercase_collection = strtolower($collection);
     
@@ -156,7 +154,7 @@ class newManuscriptWrapper{
    * @param type $user_name    
    * @return boolean
    */
-  public function storeCollections($collection_name, $user_name){
+  public function storeCollections($collection_name, $user_name, $date){
       
     $dbw = wfGetDB(DB_MASTER);
     
@@ -164,6 +162,7 @@ class newManuscriptWrapper{
       array( //insert values
       'collections_title'                => $collection_name,
       'collections_user'                 => $user_name,
+      'collections_date'                 => $date,  
        ),__METHOD__,
        'IGNORE' ); //ensures that duplicate $collection_name is ignored
     

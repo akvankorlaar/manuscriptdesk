@@ -47,8 +47,9 @@ class SpecialUserPage extends SpecialPage {
   private $id_manuscripts;
   private $id_collations;
   private $id_collections; 
+  private $selected_collection;
   
-   //class constructor 
+  //class constructor 
   public function __construct(){
     
     global $wgNewManuscriptOptions, $wgPrimaryDisk, $wgArticleUrl; 
@@ -106,8 +107,13 @@ class SpecialUserPage extends SpecialPage {
       }elseif($value === 'viewcollections'){
         $this->view_collections = true; 
         $this->id_collections = 'button_active';
-        $this->button_name = $value;   
+        $this->button_name = $value;  
         
+      }elseif($value === 'singlecollection'){
+        $this->selected_collection = $this->validateInput($request->getText($value));
+        $this->button_name = 'singlecollection';
+        break; 
+           
       //get offset, if it is available. The offset specifies at which place in the database the query should begin relative to the start  
       }elseif ($value === 'offset'){
         $string = $request->getText($value);      
@@ -122,7 +128,7 @@ class SpecialUserPage extends SpecialPage {
     }
     
     //if there is no button, there was no correct request
-    if(!isset($this->button_name)){
+    if(!isset($this->button_name) || $this->selected_collection === false){
       return false;
     }  
     
@@ -131,6 +137,26 @@ class SpecialUserPage extends SpecialPage {
     }
     
     return true; 
+  }
+  
+  /**
+   * This function validates input sent by the client
+   * 
+   * @param type $input
+   */
+  private function validateInput($input){
+    
+    //see if one or more of these sepcial charachters match
+    if(preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $input)){
+      return false; 
+    }
+    
+    //check for empty variables or unusually long string lengths
+    if($input === null || strlen($input) > 500){
+      return false; 
+    }
+    
+    return $input; 
   }
   
   /**
@@ -165,17 +191,23 @@ class SpecialUserPage extends SpecialPage {
    */
   private function processRequest(){
     
-    if($this->view_manuscripts){
-      $summary_page_wrapper = new summaryPageWrapper('UserPageManuscriptPages', $this->max_on_page, $this->offset, $this->user_name);
-    }elseif($this->view_collations){
-      $summary_page_wrapper = new summaryPageWrapper('UserPageCollations', $this->max_on_page, $this->offset, $this->user_name);
-    }elseif($this->view_collections){
-      $summary_page_wrapper = new summaryPageWrapper('UserPageCollections', $this->max_on_page, $this->offset, $this->user_name);
-    }
-              
-    list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
+    $button_name = $this->button_name;
+    $user_name = $this->user_name;
     
-    $this->showPage($title_array);          
+    if($button_name === 'singlecollection'){             
+      $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
+      $title_array = $summary_page_wrapper->retrieveFromDatabase(); 
+      return $this->showSingleCollection($title_array);
+    }
+    
+    //if edit meta data
+    //return $single_collection_view->editMetadata()
+    
+    if($button_name === 'viewmanuscripts' || $button_name === 'viewcollations' || $button_name === 'viewcollections'){
+      $summary_page_wrapper = new summaryPageWrapper($button_name, $this->max_on_page, $this->offset, $user_name);
+      list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
+      return $this->showPage($title_array);          
+    } 
   }
   
   /**
@@ -190,7 +222,69 @@ class SpecialUserPage extends SpecialPage {
     
     return $html; 
   }
+  
+  /**
+   * 
+   * @param type $title_array
+   * @return type
+   */
+  private function showSingleCollection($title_array){
     
+    $out = $this->getOutput(); 
+    $user_name = $this->user_name;
+    $article_url = $this->article_url;
+    $selected_collection = $this->selected_collection;
+    
+    $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+
+    $manuscripts_message = $this->msg('userpage-mymanuscripts');
+    $collations_message = $this->msg('userpage-mycollations');
+    $collections_message = $this->msg('userpage-mycollections');
+
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
+    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
+    $html .= "<input type='submit' name='viewcollections' id='button_active' value='$collections_message'>";   
+    $html .= '</form>';
+    
+    $html .= "<h2>" . $selected_collection . "</h2>";
+    $html .= "<br>";
+    $html .= "This collection contains" . " " . count($title_array) . " " . "single manuscript page(s)";
+    $html .= "<br><br>";
+    
+    $html .= "<div id='userpage-metadatawrap'>"; 
+    $html .= "<h3>Metadata for this collection</h3>";
+    $html .= "<br>";
+    
+    $html .= "<form id='userpage-editmetadata' action='Special:UserPage' method='post'>";
+    $html .= "<input type='submit' name='editmetadata' value='Edit Metadata'>";
+    $html .= "</form>";
+    
+    $meta_table = new metaTable();    
+    $html .= $meta_table->renderTable();
+    
+    $html .= "</div>";
+    
+    $html .= "<div id='userpage-pageswrap'>";
+    $html .= "<h3>Pages</h3>";
+
+    foreach($title_array as $key=>$array){
+
+      $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
+      $manuscripts_title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : ''; 
+      $manuscripts_date = isset($array['manuscripts_date']) ? $array['manuscripts_date'] : ''; 
+            
+      $html .= "Name: <a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" . 
+          htmlspecialchars($manuscripts_title) . "</a>";
+      $html .= " ";
+      $html .= "<b>Creation Date:</b>" . $manuscripts_date;
+    }
+    
+    $html .= "</div>";
+   
+    return $out->addHTML($html);
+  }
+   
   /**
    * This function shows the page after a request has been processed
    * 
@@ -198,10 +292,8 @@ class SpecialUserPage extends SpecialPage {
    */
   private function showPage($title_array){
     
-    $out = $this->getOutput();
-    
+    $out = $this->getOutput();   
     $article_url = $this->article_url; 
-    
     $user_name = $this->user_name; 
 
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
@@ -219,6 +311,8 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<input type='submit' name='viewcollations' id='$id_collations' value='$collations_message'>"; 
     $html .= "<input type='submit' name='viewcollections' id='$id_collections' value='$collections_message'>";   
     $html .= '</form>';
+    
+    $html .= $this->addSummaryPageLoader();
         
     if(empty($title_array)){
       
@@ -269,15 +363,11 @@ class SpecialUserPage extends SpecialPage {
       
       $html.= "</form>";
     }
-    
-    $html .= $this->addSummaryPageLoader();
-    
+        
     $out->addHTML($html);
     
     $created_message = $this->msg('userpage-created');
-    
-    $displayed_collections = array();
-    
+        
     if($this->view_manuscripts){
     
       $wiki_text = "";
@@ -311,25 +401,29 @@ class SpecialUserPage extends SpecialPage {
         $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . $date; 
       }
       
-      return $out->addWikiText($wiki_text); 
-      
-    }elseif($this->view_collections){
+      return $out->addWikiText($wiki_text);   
+    }
+    
+    if($this->view_collections){
          
       $html = "";   
-      $html .= "<form class='summarypage-form' id='userpage-collection' target='Special:UserPage' method='post'>";    
+      $html .= "<form class='summarypage-form' id='userpage-collection' target='Special:UserPage' method='post'>";
       $html .= "<br><br>";
       
-      foreach($title_array as $key=>$collection_name){
+      foreach($title_array as $key=>$array){
         
-        if(!in_array($collection_name, $displayed_collections)){
-          
-          $html .= "<input type='submit' class='userpage-collectionlist' name='singlecollection' value='" . $collection_name . "'>";
-          $html .= "<br>";
-          $displayed_collections[] = $collection_name; 
-        }         
-      }
-      
-      $html .= "</form>";
+        $collections_title = isset($array['collections_title']) ? $array['collections_title'] : '';
+        $collections_date = isset($array['collections_date']) ? $array['collections_date'] : '';
+        
+        $html .= "<p>";
+        $html .= "<input type='submit' class='userpage-collectionlist' name='singlecollection' value='" . $collections_title . "'>";
+        $html .= "<br>";
+        $html .= "Created on" . $collections_date;
+        $html .= "</p>"; 
+     }
+     
+     $html .= "<input type='hidden' name='viewcollections' value=''>";      
+     $html .= "</form>";
       
      return $out->addHTML($html);
     }

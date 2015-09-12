@@ -352,13 +352,15 @@ class SpecialNewManuscript extends SpecialPage {
     
     $new_manuscript_wrapper = new newManuscriptWrapper();
     
+    $date = date("d-m-Y H:i:s");  
+    
     if($collection !== "none"){
       //store information about the collection in the 'collections' table. Only inserts values if collection does not already exist  
-      $new_manuscript_wrapper->storeCollections($collection, $user_name);
+      $new_manuscript_wrapper->storeCollections($collection, $user_name, $date);
     }
     
     //store information about the new uploaded manuscript page in the 'manuscripts' table
-    $status = $new_manuscript_wrapper->storeManuscripts($posted_title, $collection, $user_name,$new_page_url);
+    $status = $new_manuscript_wrapper->storeManuscripts($posted_title, $collection, $user_name,$new_page_url, $date);
    
     if(!$status){
       //delete all exported files if writing to the database failed, and show an error

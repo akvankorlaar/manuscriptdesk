@@ -24,24 +24,26 @@
 
 class summaryPageWrapper{
   
-  private $page_name; 
+  private $request_context; 
   private $max_on_page;
   private $offset; 
   private $user_name; 
   private $button_name; 
   private $next_page_possible; 
   private $next_letter_alphabet; 
+  private $selected_collection;
   
   //class constructor
-  public function __construct($page_name, $max_on_page = 0, $offset = 0,$user_name = "", $button_name = "", $next_letter_alphabet = ""){
+  public function __construct($request_context, $max_on_page = 0, $offset = 0,$user_name = "", $button_name = "", $next_letter_alphabet = "", $selected_collection = ""){
     
-    $this->page_name = $page_name;
+    $this->request_context = $request_context;
     $this->max_on_page = $max_on_page;
     $this->offset = $offset;
     $this->user_name = $user_name; 
     $this->button_name = $button_name; 
     $this->next_page_possible = false; //default value
     $this->next_letter_alphabet = $next_letter_alphabet; 
+    $this->selected_collection = $selected_collection;
   }
   
   /**
@@ -53,7 +55,7 @@ class summaryPageWrapper{
    */
   public function retrieveFromDatabase(){
     
-    switch($this->page_name){
+    switch($this->request_context){
       
       case 'AllCollations':
         return $this->retrieveAllCollations();
@@ -67,15 +69,18 @@ class summaryPageWrapper{
       case 'RecentManuscriptPages':
         return $this->retrieveRecentManuscriptPages();
         break;
-      case 'UserPageManuscriptPages':
+      case 'viewmanuscripts':
         return $this->retrieveUserPageManuscriptPages();
         break;  
-      case 'UserPageCollations':
+      case 'viewcollations':
         return $this->retrieveUserPageCollations();
         break;
-      case 'UserPageCollections':
+      case 'viewcollections':
         return $this->retrieveUserPageCollections();
-        break;   
+        break; 
+      case 'singlecollection':
+        return $this->retrieveSingleCollection();
+        break;
     }
   }
                  
@@ -448,18 +453,19 @@ class summaryPageWrapper{
     
      //Database query
     $res = $dbr->select(
-        'manuscripts', //from
+        'collections', //from
       array(
-        'manuscripts_collection',
+        'collections_title',
+        'collections_date',
          ),
        array(
-        'manuscripts_user = ' . $dbr->addQuotes($user_name),
-        'manuscripts_collection != ' . $dbr->addQuotes(""),
-        'manuscripts_collection != ' . $dbr->addQuotes("none"),
+        'collections_user = ' . $dbr->addQuotes($user_name),
+        'collections_title != ' . $dbr->addQuotes(""),
+        'collections_title != ' . $dbr->addQuotes("none"),
         ),
       __METHOD__,
        array(
-        'ORDER BY' => 'manuscripts_collection',
+        'ORDER BY' => 'collections_title',
         'LIMIT' => $this->max_on_page+1,
         'OFFSET' => $this->offset, 
          )
@@ -472,7 +478,10 @@ class summaryPageWrapper{
         //add titles to the title array as long as it is not bigger than max_on_page
         if (count($title_array) < $this->max_on_page){
           
-          $title_array[] = $s->manuscripts_collection;
+          $title_array[] = array(
+            'collections_title' => $s->collections_title,
+            'collections_date'  => $s->collections_date,
+            );
 
         //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
         }else{
@@ -484,5 +493,51 @@ class summaryPageWrapper{
     }
    
     return array($title_array, $next_offset, $this->next_page_possible);  
+  }
+  
+  /**
+   * 
+   */
+  private function retrieveSingleCollection(){
+    
+    $user_name = $this->user_name;
+    $selected_collection = $this->selected_collection; 
+    $dbr = wfGetDB(DB_SLAVE);
+    $title_array = array();
+    
+    //Database query
+    $res = $dbr->select(
+        'manuscripts', //from
+      array(
+        'manuscripts_title',//values
+        'manuscripts_url',
+        'manuscripts_date',
+        'manuscripts_collection',
+        'manuscripts_lowercase_title',
+         ),
+      array(
+        'manuscripts_user = ' . $dbr->addQuotes($user_name),
+        'manuscripts_collection = ' . $dbr->addQuotes($selected_collection),
+      ),
+      __METHOD__,
+      array(
+        'ORDER BY' => 'manuscripts_lowercase_title',
+      )
+      );
+        
+    if ($res->numRows() > 0){
+      //while there are still titles in this query
+      while ($s = $res->fetchObject()){
+                  
+        $title_array[] = array(
+          'manuscripts_title' => $s->manuscripts_title,
+          'manuscripts_url' => $s->manuscripts_url,
+          'manuscripts_date' => $s->manuscripts_date,  
+        );
+        
+      }     
+    }
+   
+    return $title_array;
   }
 }
