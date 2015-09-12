@@ -31,9 +31,10 @@
    $('.summarypage-form').submit(function() {
      $('#summarypage-loaderdiv').show(); 
      $('p').hide();
+     $('br').hide();
      $('#previous-link').hide();
      $('#next-link').hide();
-     $('#userpage-table').hide();
+     $('#userpage-table').hide();     
    });
          
   /**

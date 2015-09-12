@@ -256,13 +256,12 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<h3>Metadata for this collection</h3>";
     $html .= "<br>";
     
+    $meta_table = new metaTable(); 
+    
+    $html .= $meta_table->renderTable();
     $html .= "<form id='userpage-editmetadata' action='Special:UserPage' method='post'>";
     $html .= "<input type='submit' name='editmetadata' value='Edit Metadata'>";
     $html .= "</form>";
-    
-    $meta_table = new metaTable();    
-    $html .= $meta_table->renderTable();
-    
     $html .= "</div>";
     
     $html .= "<div id='userpage-pageswrap'>";
@@ -315,19 +314,20 @@ class SpecialUserPage extends SpecialPage {
     $html .= $this->addSummaryPageLoader();
         
     if(empty($title_array)){
-      
-      $out->addHTML($html);
-      
+           
       if($this->view_manuscripts){
-    
-        return $out->addWikiText($this->msg('userpage-nomanuscripts'));
-      }elseif($this->view_collations){
-        
-        return $out->addWikiText($this->msg('userpage-nocollations'));
-      }elseif($this->view_collections){
-        
-        return $out->addWikiText($this->msg('userpage-nocollections'));
+        $message = $this->msg('userpage-nomanuscripts');
       }
+      
+      if($this->view_collations){       
+        $message = $this->msg('userpage-nocollations');
+      }
+      
+      if($this->view_collections){       
+        $message = $this->msg('userpage-nocollections');
+      }
+      
+      return $out->addHTML($html . $message);
     }
     
     if($this->previous_page_possible){
@@ -337,12 +337,10 @@ class SpecialUserPage extends SpecialPage {
       $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
       $previous_message = $this->msg('allmanuscriptpages-previous');
       
-      $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:UserPage" method="post">';
-       
+      $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:UserPage" method="post">';      
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
-      $html .= "<input type='submit' name = 'redirect_page_back' id='button' title='$previous_message_hover'  value='$previous_message'>";
-      
+      $html .= "<input type='submit' name = 'redirect_page_back' id='button' title='$previous_message_hover' value='$previous_message'>";      
       $html.= "</form>";
     }
     
@@ -355,12 +353,10 @@ class SpecialUserPage extends SpecialPage {
       $next_message_hover = $this->msg('allmanuscriptpages-nexthover');    
       $next_message = $this->msg('allmanuscriptpages-next');
       
-      $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:UserPage" method="post">';
-            
+      $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:UserPage" method="post">';           
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .="<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
-      $html .= "<input type='submit' name = 'redirect_page_forward' id='button' title='$next_message_hover' value='$next_message'>";
-      
+      $html .= "<input type='submit' name = 'redirect_page_forward' id='button' title='$next_message_hover' value='$next_message'>";     
       $html.= "</form>";
     }
         
@@ -384,7 +380,7 @@ class SpecialUserPage extends SpecialPage {
         $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
         
         $html .= "<tr>";
-        $html .= "<td>Name: <a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
+        $html .= "<td><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
           htmlspecialchars($title) . "</a></td>";
         $html .= "<td>$date</td>";
         $html .= "<td>$collection</td>";
@@ -409,7 +405,7 @@ class SpecialUserPage extends SpecialPage {
         $title = isset($array['collations_main_title']) ? $array['collations_main_title'] : '';
         
         $html .= "<tr>";
-        $html .= "<td>Name: <a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
+        $html .= "<td><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
           htmlspecialchars($title) . "</a></td>";
         $html .= "<td>" . $date . "</td>"; 
         $html .= "</tr>";
