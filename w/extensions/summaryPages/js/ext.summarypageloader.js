@@ -34,7 +34,8 @@
      $('br').hide();
      $('#previous-link').hide();
      $('#next-link').hide();
-     $('#userpage-table').hide();     
+     $('#userpage-table').hide();
+     $('#userpage-singlecollectionwrap').hide();
    });
          
   /**

@@ -96,17 +96,17 @@ class SpecialUserPage extends SpecialPage {
       //get the posted button      
       if($value === 'viewmanuscripts'){
         $this->view_manuscripts = true; 
-        $this->id_manuscripts = 'button_active';
+        $this->id_manuscripts = 'button-active';
         $this->button_name = $value; 
         
       }elseif($value === 'viewcollations'){
         $this->view_collations = true; 
-        $this->id_collations = 'button_active';
+        $this->id_collations = 'button-active';
         $this->button_name = $value;   
         
       }elseif($value === 'viewcollections'){
         $this->view_collections = true; 
-        $this->id_collections = 'button_active';
+        $this->id_collections = 'button-active';
         $this->button_name = $value;  
         
       }elseif($value === 'singlecollection'){
@@ -244,41 +244,47 @@ class SpecialUserPage extends SpecialPage {
     $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
     $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
     $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='button_active' value='$collections_message'>";   
+    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
     $html .= '</form>';
     
-    $html .= "<h2>" . $selected_collection . "</h2>";
-    $html .= "<br>";
-    $html .= "This collection contains" . " " . count($title_array) . " " . "single manuscript page(s)";
-    $html .= "<br><br>";
+    $html .= $this->addSummaryPageLoader();
     
-    $html .= "<div id='userpage-metadatawrap'>"; 
-    $html .= "<h3>Metadata for this collection</h3>";
-    $html .= "<br>";
+    $html .= "<div id='userpage-singlecollectionwrap'>"; 
+    $html .= "<h2>" . $selected_collection . "</h2>";
+    $html .= "<br>";    
+    $html .= "<h3>Metadata</h3>";
     
     $meta_table = new metaTable(); 
     
     $html .= $meta_table->renderTable();
     $html .= "<form id='userpage-editmetadata' action='Special:UserPage' method='post'>";
-    $html .= "<input type='submit' name='editmetadata' value='Edit Metadata'>";
+    $html .= "<input type='submit' class='button-transparent' name='editmetadata' value='Edit Metadata'>";
     $html .= "</form>";
-    $html .= "</div>";
     
-    $html .= "<div id='userpage-pageswrap'>";
-    $html .= "<h3>Pages</h3>";
+    $html .= "<h3>Pages</h3>"; 
+    $html .= "This collection contains" . " " . count($title_array) . " " . "single manuscript page(s).";
+    $html .= "<br>";
 
     foreach($title_array as $key=>$array){
 
       $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
       $manuscripts_title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : ''; 
-      $manuscripts_date = isset($array['manuscripts_date']) ? $array['manuscripts_date'] : ''; 
+      $manuscripts_date = isset($array['manuscripts_date']) ? $array['manuscripts_date'] : '';
+      
+      $html .= "<table id='userpage-table' style='width: 100%;'>";
+      $html .= "<tr>";
+      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
+      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+      $html .= "</tr>";
             
-      $html .= "Name: <a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" . 
-          htmlspecialchars($manuscripts_title) . "</a>";
-      $html .= " ";
-      $html .= "<b>Creation Date:</b>" . $manuscripts_date;
+      $html .= "<tr>";
+      $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" . 
+          htmlspecialchars($manuscripts_title) . "</a></td>";
+      $html .= "<td>" . htmlspecialchars($manuscripts_date) . "</td>";
+      $html .= "</tr>";
     }
     
+    $html .= "</table>";
     $html .= "</div>";
    
     return $out->addHTML($html);
@@ -340,7 +346,7 @@ class SpecialUserPage extends SpecialPage {
       $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:UserPage" method="post">';      
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
-      $html .= "<input type='submit' name = 'redirect_page_back' id='button' title='$previous_message_hover' value='$previous_message'>";      
+      $html .= "<input type='submit' name = 'redirect_page_back' class='button-transparent' title='$previous_message_hover' value='$previous_message'>";      
       $html.= "</form>";
     }
     
@@ -356,7 +362,7 @@ class SpecialUserPage extends SpecialPage {
       $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:UserPage" method="post">';           
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .="<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
-      $html .= "<input type='submit' name = 'redirect_page_forward' id='button' title='$next_message_hover' value='$next_message'>";     
+      $html .= "<input type='submit' name = 'redirect_page_forward' class='button-transparent' title='$next_message_hover' value='$next_message'>";     
       $html.= "</form>";
     }
         
@@ -368,7 +374,7 @@ class SpecialUserPage extends SpecialPage {
       $html .= "<table id='userpage-table' style='width: 100%;'>";
       $html .= "<tr>";
       $html .= "<td>" . "<b>Title</b>" . "</td>";
-      $html .= "<td>" . "<b>Date</b>" . "</td>";
+      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
       $html .= "<td>" . "<b>Collection</b>" . "</td>";
       $html .= "</tr>";
       
@@ -382,7 +388,7 @@ class SpecialUserPage extends SpecialPage {
         $html .= "<tr>";
         $html .= "<td><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
           htmlspecialchars($title) . "</a></td>";
-        $html .= "<td>$date</td>";
+        $html .= "<td>" . htmlspecialchars($date) . "</td>";
         $html .= "<td>$collection</td>";
         $html .= "</tr>";      
       }
@@ -394,8 +400,8 @@ class SpecialUserPage extends SpecialPage {
       
       $html .= "<table id='userpage-table' style='width: 100%;'>";
       $html .= "<tr>";
-      $html .= "<td>" . "<b>Title</b>" . "</td>";
-      $html .= "<td>" . "<b>Date</b>" . "</td>";
+      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
+      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
       $html .= "</tr>";
            
       foreach($title_array as $key=>$array){
@@ -405,9 +411,9 @@ class SpecialUserPage extends SpecialPage {
         $title = isset($array['collations_main_title']) ? $array['collations_main_title'] : '';
         
         $html .= "<tr>";
-        $html .= "<td><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
+        $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
           htmlspecialchars($title) . "</a></td>";
-        $html .= "<td>" . $date . "</td>"; 
+        $html .= "<td>" . htmlspecialchars($date) . "</td>"; 
         $html .= "</tr>";
       }    
       
@@ -419,8 +425,8 @@ class SpecialUserPage extends SpecialPage {
       $html .= "<form class='summarypage-form' id='userpage-collection' target='Special:UserPage' method='post' style='width: 100%';>";
       $html .= "<table id='userpage-table' style='width: 100%;'>";
       $html .= "<tr>";
-      $html .= "<td>" . "<b>Title</b>" . "</td>";
-      $html .= "<td>" . "<b>Date</b>" . "</td>";
+      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
+      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
       $html .= "</tr>";
       
       foreach($title_array as $key=>$array){
@@ -429,8 +435,8 @@ class SpecialUserPage extends SpecialPage {
         $collections_date = isset($array['collections_date']) ? $array['collections_date'] : '';
         
         $html .= "<tr>";
-        $html .= "<td><input type='submit' class='userpage-collectionlist' name='singlecollection' value='" . $collections_title . "'></td>";
-        $html .= "<td>" . $collections_date . "</td>";
+        $html .= "<td class='td-long'><input type='submit' class='userpage-collectionlist' name='singlecollection' value='" . htmlspecialchars($collections_title) . "'></td>";
+        $html .= "<td>" . htmlspecialchars($collections_date) . "</td>";
         $html .= "</tr>";
      }
      
