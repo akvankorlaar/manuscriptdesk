@@ -151,13 +151,8 @@ class SpecialUserPage extends SpecialPage {
    */
   private function validateInput($input){
     
-    //see if one or more of these sepcial charachters match
-    if(preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $input)){
-      return false; 
-    }
-    
     //check for empty variables or unusually long string lengths
-    if($input === null || strlen($input) > 500){
+    if(!ctype_alnum($input) || $input === null || strlen($input) > 500){
       return false; 
     }
     
@@ -250,15 +245,55 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
     $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
     $html .= '</form>';
-    $html .= "<br>";  
+    $html .= "<br>";
+    
+    $html .= $this->addSummaryPageLoader();
+    
     $html .= "<h2>Editing metadata for " . $selected_collection . "</h2>";
+    $html .= "Every field is optional";
+    $html .= "<br><br>";
     
-    $html .='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    
-    $html .= '</form>';
-
     $out->addHTML($html);
+    
+    //https://www.mediawiki.org/wiki/HTMLForm/tutorial2
+    
+    $descriptor = array();
+    
+    $descriptor['textfield1'] = array(
+        'label' => 'Collection Title', 
+        'class' => 'HTMLTextField' # What's the input type
+         );
+    
+    $descriptor['textfield2'] = array(
+        'label' => 'Author Name', 
+        'class' => 'HTMLTextField' # What's the input type
+         );
+    
+    $descriptor['textfield3'] = array(
+        'label' => 'Published in year', 
+        'class' => 'HTMLTextField' # What's the input type
+         );
+   
+    $htmlForm = new HTMLForm($descriptor, $this->getContext());
+    $htmlForm->setSubmitText('Submit Edit');
+    $htmlForm->setSubmitCallback( array( 'SpecialUserPage', 'processInput' ) );  
+    $htmlForm->show(); 
   }
+  
+  /**
+   * 
+   * @param type $formData
+   * @return string|boolean
+   */
+static function processInput( $formData ) {
+  
+        if ( $formData['simpletextfield'] == 'next' ) {
+                return true; #if returned true, the form won't display again. 
+        } elseif ($formData['simpletextfield'] == 'again' ) {
+                return false; #if returned false, the form will be redisplayed. 
+        }
+        return 'Try again'; #if returned a string, it will be displayed as an error message with the form
+}
   
   /**
    * 
@@ -284,32 +319,33 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
     $html .= '</form>';
     
+    $html .= "<div id='userpage-singlecollectionwrap'>"; 
+    
+    $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
+    $html .= "<input type='submit' class='button-transparent' name='editmetadata' value='Edit Metadata'>";
+    $html .= "<input type='hidden' name='selectedcollection' value='" . $selected_collection . "'>";
+    $html .= "</form>";
+    
+    //redirect to Special:NewManuscript, and automatically have the current collection selected
+    $html .= "<form id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
+    $html .= "<input type='submit' class='button-transparent' name='addnewpage' title='Add a new page to this collection' value='Add New Page'>";
+    $html .= "<input type='hidden' name='selectedcollection' value='" . $selected_collection . "'>";
+    $html .= "</form>"; 
+    
     $html .= $this->addSummaryPageLoader();
     
-    $html .= "<div id='userpage-singlecollectionwrap'>"; 
-    $html .= "<h2>" . $selected_collection . "</h2>";
+    $html .= "<h2 style='text-align: center;'>Collection: " . $selected_collection . "</h2>";
     $html .= "<br>";    
     $html .= "<h3>Metadata</h3>";
     
     $meta_table = new metaTable(); 
     
     $html .= $meta_table->renderTable();
-    $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
-    $html .= "<input type='submit' class='button-transparent' name='editmetadata' value='Edit Metadata'>";
-    $html .= "<input type='hidden' name='selectedcollection' value='" . $selected_collection . "'>";
-    $html .= "</form>";
-    
+
     $html .= "<h3>Pages</h3>"; 
     $html .= "This collection contains" . " " . count($title_array) . " " . "single manuscript page(s).";
     $html .= "<br>";
     
-    //redirect to Special:NewManuscript, and automatically have the current collection selected
-    $html .= "<form id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
-    $html .= "<input type='submit' class='button-transparent' name='addnewpage' title='Add a new page to this collection' value='Add New Page'>";
-    $html .= "<input type='hidden' name='selectedcollection' value='" . $selected_collection . "'>";
-    $html .= "</form>";   
-    $html .= "<br>";
-
     foreach($title_array as $key=>$array){
 
       $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
@@ -467,7 +503,7 @@ class SpecialUserPage extends SpecialPage {
     
     if($this->view_collections){
          
-      $html .= "<form class='summarypage-form' id='userpage-collection' target='Special:UserPage' method='post' style='width: 100%';>";
+      $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
       $html .= "<table id='userpage-table' style='width: 100%;'>";
       $html .= "<tr>";
       $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
@@ -486,7 +522,7 @@ class SpecialUserPage extends SpecialPage {
      }
      
      $html .= "</table>";
-     $html .= "<input type='hidden' name='viewcollections' value=''>";      
+     $html .= "<input type='hidden' name='viewcollections' value='viewcollections'>";      
      $html .= "</form>"; 
     }
     

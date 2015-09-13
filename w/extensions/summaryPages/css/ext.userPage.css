@@ -26,13 +26,14 @@
   width: 30em;  
   height: 1.5em;
   cursor: pointer;
+  background-color: #F2FCFF;
 }
 
 #button-active {
   width: 30em;  
   height: 1.5em;
   cursor: pointer;
-  font-weight: bold; 
+  background-color: white; 
 }
 
 #active_button {
