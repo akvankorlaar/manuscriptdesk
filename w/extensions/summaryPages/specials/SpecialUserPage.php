@@ -31,6 +31,7 @@ class SpecialUserPage extends SpecialPage {
  */
   
   public $article_url; 
+  public $max_length; 
     
   private $button_name; //value of the button the user clicked on 
   private $max_on_page; //maximum manuscripts shown on a page
@@ -48,6 +49,7 @@ class SpecialUserPage extends SpecialPage {
   private $id_collations;
   private $id_collections; 
   private $selected_collection;
+  private $token_is_ok; 
   
   //class constructor 
   public function __construct(){
@@ -64,6 +66,8 @@ class SpecialUserPage extends SpecialPage {
     $this->view_manuscripts = false;//default value
     $this->view_collations = false; //default value
     $this->view_collections = false;//default value
+    
+    $this->token_is_ok = null;//default value
                     
     $this->offset = 0;//default value
     
@@ -74,6 +78,7 @@ class SpecialUserPage extends SpecialPage {
     $this->id_manuscripts = 'button';
     $this->id_collations = 'button';
     $this->id_collections = 'button';
+    $this->max_length = 50;
     
     parent::__construct('UserPage');
   }
@@ -107,8 +112,13 @@ class SpecialUserPage extends SpecialPage {
       }elseif($value === 'viewcollections'){
         $this->view_collections = true; 
         $this->id_collections = 'button-active';
-        $this->button_name = $value;  
+        $this->button_name = $value;
         
+      }elseif($value === 'wpEditToken'){
+        $token = $request->getText($value);
+        $this->token_is_ok = $this->getUser()->matchEditToken($token);
+        $this->button_name = 'submitedit';
+      
       }elseif($value === 'singlecollection'){
         $this->selected_collection = $this->validateInput($request->getText($value));
         $this->button_name = 'singlecollection';
@@ -133,7 +143,7 @@ class SpecialUserPage extends SpecialPage {
     }
     
     //if there is no button, there was no correct request
-    if(!isset($this->button_name) || $this->selected_collection === false){
+    if(!isset($this->button_name) || $this->token_is_ok === false || $this->selected_collection === false){
       return false;
     }  
     
@@ -200,7 +210,7 @@ class SpecialUserPage extends SpecialPage {
       return $this->showSingleCollection($title_array);
     }
     
-    if($button_name === 'editmetadata'){
+    if($button_name === 'editmetadata' || $button_name === 'submitedit'){
       return $this->showEditMetadata();
     }
       
@@ -208,7 +218,7 @@ class SpecialUserPage extends SpecialPage {
       $summary_page_wrapper = new summaryPageWrapper($button_name, $this->max_on_page, $this->offset, $user_name);
       list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
       return $this->showPage($title_array);          
-    } 
+    }   
   }
   
   /**
@@ -250,50 +260,118 @@ class SpecialUserPage extends SpecialPage {
     $html .= $this->addSummaryPageLoader();
     
     $html .= "<h2>Editing metadata for " . $selected_collection . "</h2>";
-    $html .= "Every field is optional";
+    $html .= "Every field is optional.";
     $html .= "<br><br>";
     
     $out->addHTML($html);
     
     //https://www.mediawiki.org/wiki/HTMLForm/tutorial2
     
+    $max_length = $this->max_length;   
     $descriptor = array();
     
     $descriptor['textfield1'] = array(
+      //change to label-message for i18n support
         'label' => 'Collection Title', 
-        'class' => 'HTMLTextField' # What's the input type
+        'class' => 'HTMLTextField',
+        'maxlength' => $max_length,
          );
     
     $descriptor['textfield2'] = array(
         'label' => 'Author Name', 
-        'class' => 'HTMLTextField' # What's the input type
+        'class' => 'HTMLTextField',
+        'maxlength' => $max_length,
          );
     
     $descriptor['textfield3'] = array(
         'label' => 'Published in year', 
-        'class' => 'HTMLTextField' # What's the input type
+        'class' => 'HTMLTextField',
+        'maxlength' => $max_length,
          );
-   
+
+    $descriptor['textfield4'] = array(
+        'label' => 'Number of Pages', 
+        'class' => 'HTMLTextField',
+        'maxlength' => $max_length,
+         );
+     
+    $descriptor['textfield5'] = array(
+      'label' => 'Marginal Summary Numbering', 
+      'class' => 'HTMLTextField',
+      'maxlength' => $max_length,
+       );
+
+    $descriptor['textfield6'] = array(
+       'label' => 'Category', 
+       'class' => 'HTMLTextField',
+       'maxlength' => $max_length,
+       );
+
+    $descriptor['textfield7'] = array(
+       'label' => 'Penner', 
+       'class' => 'HTMLTextField',
+       'maxlength' => $max_length,
+       );
+        
+    $descriptor['textfield8'] = array(
+      'label' => 'Produced in Year', 
+      'class' => 'HTMLTextField',
+      'maxlength' => $max_length,
+     );
+
+    $descriptor['textfield9'] = array(
+      'label' => 'Producer', 
+      'class' => 'HTMLTextField',
+      'maxlength' => $max_length,
+     );
+
+    $descriptor['textfield10'] = array(
+      'label' => 'ID Number', 
+      'class' => 'HTMLTextField',
+      'maxlength' => $max_length,
+     );
+
+     $descriptor['textfield11'] = array(
+       'type' => 'textarea',
+       'label' => 'Notes',
+       'rows' => 10,
+       'cols' => 20,
+       'maxlength'=> ($max_length * 10),
+     );
+               
     $htmlForm = new HTMLForm($descriptor, $this->getContext());
     $htmlForm->setSubmitText('Submit Edit');
-    $htmlForm->setSubmitCallback( array( 'SpecialUserPage', 'processInput' ) );  
+    $htmlForm->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
     $htmlForm->show(); 
   }
   
-  /**
-   * 
-   * @param type $formData
-   * @return string|boolean
-   */
-static function processInput( $formData ) {
-  
-        if ( $formData['simpletextfield'] == 'next' ) {
-                return true; #if returned true, the form won't display again. 
-        } elseif ($formData['simpletextfield'] == 'again' ) {
-                return false; #if returned false, the form will be redisplayed. 
+    /**
+     * 
+     * @param type $formData
+     * @return string|boolean
+     */
+  static function processInput($form_data){
+
+    $max_length = 50; 
+
+    foreach($form_data as $index=>$textfield){
+
+      if(!empty($textfield)){
+        if($index !== 'textfield11'){
+          if(!ctype_alnum($textfield) || strlen($textfield) > $max_length){
+            return "You can only use letters or numbers for the input.";
+          }
+
+        }else{
+          if(!ctype_alnum($textfield) || strlen($textfield) > ($max_length*10)){
+            return "You can only use letters or numbers for the input.";
+          }  
         }
-        return 'Try again'; #if returned a string, it will be displayed as an error message with the form
-}
+      }
+    }
+
+    return 'Try again'; #if returned a string, it will be displayed as an error message with the form
+  }
   
   /**
    * 
