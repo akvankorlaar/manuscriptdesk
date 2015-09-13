@@ -540,4 +540,58 @@ class summaryPageWrapper{
    
     return $title_array;
   }
+  
+  /**
+   * This function inserts data into the 'collections' table 
+   */
+  public function insertCollections($form_data){
+    
+    global $wgUser; 
+    
+    $user_name = $wgUser->getName();   
+    $selected_collection = isset($form_data['selected_collection']) ? $form_data['selected_collection'] : '';
+    
+    $meta_title =     isset($form_data['textfield1']) ? $form_data['textfield1'] : '';
+    $meta_name =      isset($form_data['textfield2']) ? $form_data['textfield2'] : '';
+    $meta_year =      isset($form_data['textfield3']) ? $form_data['textfield3'] : '';
+    $meta_pages =     isset($form_data['textfield4']) ? $form_data['textfield4'] : '';
+    $meta_numbering = isset($form_data['textfield5']) ? $form_data['textfield5'] : '';
+    $meta_category =  isset($form_data['textfield6']) ? $form_data['textfield6'] : '';
+    $meta_penner =    isset($form_data['textfield7']) ? $form_data['textfield7'] : '';
+    $meta_produced =  isset($form_data['textfield8']) ? $form_data['textfield8'] : '';
+    $meta_producer =  isset($form_data['textfield9']) ? $form_data['textfield9'] : '';
+    $meta_id =        isset($form_data['textfield10']) ? $form_data['textfield10'] : '';
+    $meta_notes =     isset($form_data['textfield11']) ? $form_data['textfield11'] : '';
+    
+    $dbw = wfGetDB(DB_MASTER);
+    
+    $dbw->update('collections', //select table
+      array( //update values
+      'collections_metatitle'      => $meta_title,
+      'collections_metaname'       => $meta_name,
+      'collections_metayear'       => $meta_year,
+      'collections_metapages'      => $meta_pages,
+      'collections_metanumbering'  => $meta_numbering,
+      'collections_metacategory'   => $meta_category,
+      'collections_metapenner'     => $meta_penner, 
+      'collections_metaproduced'   => $meta_produced,  
+      'collections_metaproducer'   => $meta_producer,
+      'collections_metaid'         => $meta_id,
+      'collections_metanotes'      => $meta_notes,
+       ),
+        array(
+      'collections_user  = ' . $dbw->addQuotes($user_name),//conditions
+      'collections_title = ' . $dbw->addQuotes($selected_collection),
+        ), //conditions
+        __METHOD__,
+       'IGNORE' );
+    
+    if ($dbw->affectedRows()){
+    //insert succeeded
+      return true;     
+    }else{
+    //return error
+      return false;      
+    }   
+  }
 }

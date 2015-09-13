@@ -49,6 +49,7 @@ class SpecialUserPage extends SpecialPage {
   private $id_collations;
   private $id_collections; 
   private $selected_collection;
+  private $textfield_array;
   private $token_is_ok; 
   
   //class constructor 
@@ -80,6 +81,8 @@ class SpecialUserPage extends SpecialPage {
     $this->id_collections = 'button';
     $this->max_length = 50;
     
+    $this->textfield_array = array();
+    
     parent::__construct('UserPage');
   }
   
@@ -97,7 +100,9 @@ class SpecialUserPage extends SpecialPage {
     $posted_names = $request->getValueNames();    
      
     //identify the button pressed, and assign $posted_names to values
-    foreach($posted_names as $key=>$value){
+    foreach($posted_names as $key=>$original_value){
+      
+      $value = trim(str_replace(range(0,9),'',$original_value));
       //get the posted button      
       if($value === 'viewmanuscripts'){
         $this->view_manuscripts = true; 
@@ -118,6 +123,9 @@ class SpecialUserPage extends SpecialPage {
         $token = $request->getText($value);
         $this->token_is_ok = $this->getUser()->matchEditToken($token);
         $this->button_name = 'submitedit';
+        
+      }elseif($value === 'textfield'){
+        $this->textfield_array[$original_value] = $this->$request->getText($original_value);
       
       }elseif($value === 'singlecollection'){
         $this->selected_collection = $this->validateInput($request->getText($value));
@@ -210,8 +218,12 @@ class SpecialUserPage extends SpecialPage {
       return $this->showSingleCollection($title_array);
     }
     
-    if($button_name === 'editmetadata' || $button_name === 'submitedit'){
+    if($button_name === 'editmetadata'){
       return $this->showEditMetadata();
+    }
+    
+    if($button_name === 'submitedit'){
+      return $this->processEdit();
     }
       
     if($button_name === 'viewmanuscripts' || $button_name === 'viewcollations' || $button_name === 'viewcollections'){
@@ -219,6 +231,42 @@ class SpecialUserPage extends SpecialPage {
       list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
       return $this->showPage($title_array);          
     }   
+  }
+  
+  /**
+   * 
+   * @return string
+   */
+  private function processEdit(){
+    
+    $max_length = $this->max_length; 
+    $textfield_array = $this->textfield_array;
+
+    foreach($textfield_array as $index=>$textfield){
+
+      if(!empty($textfield)){
+        if($index !== 'textfield11'){
+          if(!ctype_alnum($textfield) || strlen($textfield) > $max_length){
+            return "You can only use letters or numbers for the input.";
+          }
+
+        }else{
+          if(!ctype_alnum($textfield) || strlen($textfield) > ($max_length*10)){
+            return "You can only use letters or numbers for the input.";
+          }  
+        }
+      }
+    }
+    
+    $summary_page_wrapper = new summaryPageWrapper('submitedit');
+    $status = $summary_page_wrapper->insertCollections($form_data);
+    
+    if($status === false){
+      return 'There was an error when inserting data into the database';
+    }
+        
+//    $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
+//    $title_array = $summary_page_wrapper->retrieveFromDatabase();
   }
   
   /**
@@ -334,43 +382,26 @@ class SpecialUserPage extends SpecialPage {
      $descriptor['textfield11'] = array(
        'type' => 'textarea',
        'label' => 'Notes',
-       'rows' => 10,
+       'rows' => 20,
        'cols' => 20,
        'maxlength'=> ($max_length * 10),
      );
                
-    $htmlForm = new HTMLForm($descriptor, $this->getContext());
-    $htmlForm->setSubmitText('Submit Edit');
-    $htmlForm->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
-    $htmlForm->show(); 
+    $html_form = new HTMLForm($descriptor, $this->getContext());
+    $html_form->setSubmitText('Submit Edit');
+    $html_form->addHiddenField('selected_collection', $this->selected_collection);
+    $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
+    $html_form->show(); 
   }
   
     /**
+     * Callback function. Makes sure the page is redisplayed in case there was an error. 
      * 
      * @param type $formData
      * @return string|boolean
      */
-  static function processInput($form_data){
-
-    $max_length = 50; 
-
-    foreach($form_data as $index=>$textfield){
-
-      if(!empty($textfield)){
-        if($index !== 'textfield11'){
-          if(!ctype_alnum($textfield) || strlen($textfield) > $max_length){
-            return "You can only use letters or numbers for the input.";
-          }
-
-        }else{
-          if(!ctype_alnum($textfield) || strlen($textfield) > ($max_length*10)){
-            return "You can only use letters or numbers for the input.";
-          }  
-        }
-      }
-    }
-
-    return 'Try again'; #if returned a string, it will be displayed as an error message with the form
+  static function processInput($form_data){ 
+    return false; 
   }
   
   /**
