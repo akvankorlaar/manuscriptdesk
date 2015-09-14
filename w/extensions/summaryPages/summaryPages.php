@@ -59,7 +59,7 @@ $wgAutoloadClasses['SpecialAllCollections'] = $dir . '/specials/SpecialAllCollec
 $wgAutoloadClasses['SpecialRecentManuscriptPages'] = $dir . '/specials/SpecialRecentManuscriptPages.php';
 $wgAutoloadClasses['SpecialAllCollations'] = $dir . '/specials/SpecialAllCollations.php';
 $wgAutoloadClasses['baseSummaryPage'] = $dir . '/specials/baseSummaryPage.php';
-$wgAutoloadClasses['metaTable'] = $dir . '/specials/metaTable.php';
+$wgAutoloadClasses['collectionMetaTable'] = $dir . '/specials/collectionMetaTable.php';
 $wgAutoloadClasses['summaryPageWrapper'] = $dir . '/specials/summaryPageWrapper.php';
 
 $wgSpecialPages['UserPage'] = 'SpecialUserPage';

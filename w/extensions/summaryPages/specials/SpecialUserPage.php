@@ -217,8 +217,8 @@ class SpecialUserPage extends SpecialPage {
     
     if($button_name === 'singlecollection'){             
       $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
-      $title_array = $summary_page_wrapper->retrieveFromDatabase(); 
-      return $this->showSingleCollection($title_array);
+      $single_collection_data = $summary_page_wrapper->retrieveFromDatabase(); 
+      return $this->showSingleCollection($single_collection_data);
     }
     
     if($button_name === 'editmetadata'){
@@ -248,7 +248,7 @@ class SpecialUserPage extends SpecialPage {
     foreach($textfield_array as $index=>$textfield){
 
       if(!empty($textfield)){
-        if($index !== 'wptextfield11'){
+        if($index !== 'wptextfield14'){
           if(!ctype_alnum($textfield) || strlen($textfield) > $max_length){
             return $this->showEditMetadata('You can only use letters or numbers for the input');
           }
@@ -268,8 +268,8 @@ class SpecialUserPage extends SpecialPage {
       return $this->showEditMetadata('There was an error when inserting data into the database');
     }
         
-    $title_array = $summary_page_wrapper->retrieveFromDatabase();
-    return $this->showSingleCollection($title_array);
+    $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
+    return $this->showSingleCollection($single_collection_data);
   }
   
   /**
@@ -349,44 +349,62 @@ class SpecialUserPage extends SpecialPage {
         'class' => 'HTMLTextField',
         'maxlength' => $max_length,
          );
-     
-    $descriptor['textfield5'] = array(
-      'label' => 'Marginal Summary Numbering', 
-      'class' => 'HTMLTextField',
-      'maxlength' => $max_length,
-       );
 
-    $descriptor['textfield6'] = array(
+    $descriptor['textfield5'] = array(
        'label' => 'Category', 
        'class' => 'HTMLTextField',
        'maxlength' => $max_length,
        );
-
-    $descriptor['textfield7'] = array(
-       'label' => 'Penner', 
-       'class' => 'HTMLTextField',
-       'maxlength' => $max_length,
-       );
         
-    $descriptor['textfield8'] = array(
+    $descriptor['textfield6'] = array(
       'label' => 'Produced in Year', 
       'class' => 'HTMLTextField',
       'maxlength' => $max_length,
      );
 
-    $descriptor['textfield9'] = array(
+    $descriptor['textfield7'] = array(
       'label' => 'Producer', 
       'class' => 'HTMLTextField',
       'maxlength' => $max_length,
      );
+        
+     $descriptor['textfield8'] = array(
+      'label' => 'Editors', 
+      'class' => 'HTMLTextField',
+      'maxlength' => $max_length,
+     );
+            
+     $descriptor['textfield9'] = array(
+      'label' => 'Journal', 
+      'class' => 'HTMLTextField',
+      'maxlength' => $max_length,
+     );
+                
+     $descriptor['textfield10'] = array(
+      'label' => 'Journal Number', 
+      'class' => 'HTMLTextField',
+      'maxlength' => $max_length,
+     );
+     
+     $descriptor['textfield11'] = array(
+      'label' => 'Translators', 
+      'class' => 'HTMLTextField',
+      'maxlength' => $max_length,
+     );
+         
+     $descriptor['textfield12'] = array(
+      'label' => 'Web(source)', 
+      'class' => 'HTMLTextField',
+      'maxlength' => $max_length,
+     );
 
-    $descriptor['textfield10'] = array(
+    $descriptor['textfield13'] = array(
       'label' => 'ID Number', 
       'class' => 'HTMLTextField',
       'maxlength' => $max_length,
      );
 
-     $descriptor['textfield11'] = array(
+     $descriptor['textfield14'] = array(
        'type' => 'textarea',
        'label' => 'Notes',
        'rows' => 20,
@@ -413,15 +431,16 @@ class SpecialUserPage extends SpecialPage {
   
   /**
    * 
-   * @param type $title_array
+   * @param type $pages_within_collection
    * @return type
    */
-  private function showSingleCollection($title_array){
+  private function showSingleCollection($single_collection_data){
     
     $out = $this->getOutput(); 
     $user_name = $this->user_name;
     $article_url = $this->article_url;
     $selected_collection = $this->selected_collection;
+    list($meta_data, $pages_within_collection) = $single_collection_data; 
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
@@ -454,15 +473,15 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<br>";    
     $html .= "<h3>Metadata</h3>";
     
-    $meta_table = new metaTable(); 
+    $collection_meta_table = new collectionMetaTable(); 
     
-    $html .= $meta_table->renderTable();
+    $html .= $collection_meta_table->renderTable($meta_data);
 
     $html .= "<h3>Pages</h3>"; 
-    $html .= "This collection contains" . " " . count($title_array) . " " . "single manuscript page(s).";
+    $html .= "This collection contains" . " " . count($pages_within_collection) . " " . "single manuscript page(s).";
     $html .= "<br>";
     
-    foreach($title_array as $key=>$array){
+    foreach($pages_within_collection as $key=>$array){
 
       $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
       $manuscripts_title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : ''; 

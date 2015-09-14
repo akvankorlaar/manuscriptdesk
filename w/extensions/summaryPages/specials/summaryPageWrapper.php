@@ -504,8 +504,60 @@ class summaryPageWrapper{
     $user_name = $this->user_name;
     $selected_collection = $this->selected_collection; 
     $dbr = wfGetDB(DB_SLAVE);
-    $title_array = array();
+    $meta_data = array();
+    $pages_within_collection = array();
     
+        //Database query
+    $res = $dbr->select(
+      'collections', //from
+      array( //values
+      'collections_metatitle',
+      'collections_metaauthor',
+      'collections_metayear' ,      
+      'collections_metapages' ,    
+      'collections_metacategory',   
+      'collections_metaproduced',     
+      'collections_metaproducer', 
+      'collections_metaeditors',
+      'collections_metajournal',
+      'collections_metajournalnumber',
+      'collections_metatranslators',  
+      'collections_metawebsource',
+      'collections_metaid',        
+      'collections_metanotes',     
+         ),
+      array(
+      'collections_user = ' . $dbr->addQuotes($user_name),
+      'collections_title = ' . $dbr->addQuotes($selected_collection),
+      ),
+      __METHOD__,
+      array(
+        'ORDER BY' => 'collections_title',
+      )
+      );
+        
+    //there should only be one result
+    if ($res->numRows() === 1){
+      //while there are still titles in this query
+      while ($s = $res->fetchObject()){
+                  
+         $meta_data ['collections_metatitle']         = $s->collections_metatitle;
+         $meta_data ['collections_metaauthor']        = $s->collections_metaauthor;
+         $meta_data ['collections_metayear']          = $s->collections_metayear;
+         $meta_data ['collections_metapages']         = $s->collections_metapages;
+         $meta_data ['collections_metacategory']      = $s->collections_metacategory;
+         $meta_data ['collections_metaproduced']      = $s->collections_metaproduced;
+         $meta_data ['collections_metaproducer']      = $s->collections_metaproducer;
+         $meta_data ['collections_metaeditors']       = $s->collections_metaeditors;
+         $meta_data ['collections_metajournal']       = $s->collections_metajournal;
+         $meta_data ['collections_metajournalnumber'] = $s->collections_metajournalnumber;
+         $meta_data ['collections_metatranslators']   = $s->collections_metatranslators;
+         $meta_data ['collections_metawebsource']     = $s->collections_metawebsource;
+         $meta_data ['collections_metaid']            = $s->collections_metaid;
+         $meta_data ['collections_metanotes']         = $s->collections_metanotes;       
+      }     
+    }
+     
     //Database query
     $res = $dbr->select(
         'manuscripts', //from
@@ -513,7 +565,6 @@ class summaryPageWrapper{
         'manuscripts_title',//values
         'manuscripts_url',
         'manuscripts_date',
-        'manuscripts_collection',
         'manuscripts_lowercase_title',
          ),
       array(
@@ -530,16 +581,15 @@ class summaryPageWrapper{
       //while there are still titles in this query
       while ($s = $res->fetchObject()){
                   
-        $title_array[] = array(
+        $pages_within_collection[] = array(
           'manuscripts_title' => $s->manuscripts_title,
           'manuscripts_url' => $s->manuscripts_url,
           'manuscripts_date' => $s->manuscripts_date,  
-        );
-        
+        );      
       }     
     }
-   
-    return $title_array;
+    
+    return array($meta_data, $pages_within_collection);
   }
   
   /**
@@ -550,33 +600,39 @@ class summaryPageWrapper{
     $user_name = $this->user_name;
     $selected_collection = $this->selected_collection;
     
-    $meta_title =     isset($form_data['wptextfield1']) ? $form_data['wptextfield1'] : '';
-    $meta_name =      isset($form_data['wptextfield2']) ? $form_data['wptextfield2'] : '';
-    $meta_year =      isset($form_data['wptextfield3']) ? $form_data['wptextfield3'] : '';
-    $meta_pages =     isset($form_data['wptextfield4']) ? $form_data['wptextfield4'] : '';
-    $meta_numbering = isset($form_data['wptextfield5']) ? $form_data['wptextfield5'] : '';
-    $meta_category =  isset($form_data['wptextfield6']) ? $form_data['wptextfield6'] : '';
-    $meta_penner =    isset($form_data['wptextfield7']) ? $form_data['wptextfield7'] : '';
-    $meta_produced =  isset($form_data['wptextfield8']) ? $form_data['wptextfield8'] : '';
-    $meta_producer =  isset($form_data['wptextfield9']) ? $form_data['wptextfield9'] : '';
-    $meta_id =        isset($form_data['wptextfield10']) ? $form_data['wptextfield10'] : '';
-    $meta_notes =     isset($form_data['wptextfield11']) ? $form_data['wptextfield11'] : '';
+    $metatitle =         isset($form_data['wptextfield1']) ? $form_data['wptextfield1'] : '';
+    $metaauthor =        isset($form_data['wptextfield2']) ? $form_data['wptextfield2'] : '';
+    $metayear =          isset($form_data['wptextfield3']) ? $form_data['wptextfield3'] : '';
+    $metapages =         isset($form_data['wptextfield4']) ? $form_data['wptextfield4'] : '';
+    $metacategory =      isset($form_data['wptextfield5']) ? $form_data['wptextfield6'] : '';
+    $metaproduced =      isset($form_data['wptextfield6']) ? $form_data['wptextfield8'] : '';
+    $metaproducer =      isset($form_data['wptextfield7']) ? $form_data['wptextfield9'] : '';
+    $metaeditors =       isset($form_data['wptextfield8']) ? $form_data['wptextfield8'] : '';
+    $metajournal =       isset($form_data['wptextfield9']) ? $form_data['wptextfield9'] : '';
+    $metajournalnumber = isset($form_data['wptextfield10']) ? $form_data['wptextfield10'] : '';
+    $metatranslators =   isset($form_data['wptextfield11']) ? $form_data['wptextfield11'] : '';
+    $metawebsource =     isset($form_data['wptextfield12']) ? $form_data['wptextfield12'] : '';
+    $metaid =            isset($form_data['wptextfield13']) ? $form_data['wptextfield13'] : '';
+    $metanotes =         isset($form_data['wptextfield14']) ? $form_data['wptextfield14'] : '';
     
     $dbw = wfGetDB(DB_MASTER);
     
     $dbw->update('collections', //select table
       array( //update values
-      'collections_metatitle'      => $meta_title,
-      'collections_metaname'       => $meta_name,
-      'collections_metayear'       => $meta_year,
-      'collections_metapages'      => $meta_pages,
-      'collections_metanumbering'  => $meta_numbering,
-      'collections_metacategory'   => $meta_category,
-      'collections_metapenner'     => $meta_penner, 
-      'collections_metaproduced'   => $meta_produced,  
-      'collections_metaproducer'   => $meta_producer,
-      'collections_metaid'         => $meta_id,
-      'collections_metanotes'      => $meta_notes,
+      'collections_metatitle'         => $metatitle,
+      'collections_metaauthor'        => $metaauthor,
+      'collections_metayear'          => $metayear,
+      'collections_metapages'         => $metapages,
+      'collections_metacategory'      => $metacategory,
+      'collections_metaproduced'      => $metaproduced,  
+      'collections_metaproducer'      => $metaproducer,
+      'collections_metaeditors'       => $metaeditors,
+      'collections_metajournal'       => $metajournal,
+      'collections_metajournalnumber' => $metajournalnumber,
+      'collections_metatranslators'   => $metatranslators,
+      'collections_metawebsource'     => $metawebsource,   
+      'collections_metaid'            => $metaid,
+      'collections_metanotes'         => $metanotes,
        ),
         array(
       'collections_user  = ' . $dbw->addQuotes($user_name),//conditions
