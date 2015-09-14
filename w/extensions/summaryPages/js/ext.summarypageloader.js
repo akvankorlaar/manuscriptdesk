@@ -28,7 +28,7 @@
    /**
     * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
     */
-   $('.summarypage-form').submit(function() {
+   function showLoader() {
      $('#summarypage-loaderdiv').show(); 
      $('p').hide();
      $('br').hide();
@@ -36,7 +36,13 @@
      $('#next-link').hide();
      $('#userpage-table').hide();
      $('#userpage-singlecollectionwrap').hide();
-   });
+     $('.visualClear').hide();
+   };
+   
+   $('.summarypage-form').submit(showLoader);
+   $('#userpage-editmetadata').submit(showLoader);
+   $('#userpage-addnewpage').submit(showLoader);
+   $('.visualClear').submit(showLoader);
          
   /**
    * This function sets the interval when calling the loader() function

@@ -81,6 +81,8 @@ class summaryPageWrapper{
       case 'singlecollection':
       case 'submitedit':
         return $this->retrieveSingleCollection();
+      case 'editmetadata':
+        return $this->retrieveMetadata();
         break;
     }
   }
@@ -590,6 +592,68 @@ class summaryPageWrapper{
     }
     
     return array($meta_data, $pages_within_collection);
+  }
+  
+  /**
+   * 
+   */
+  private function retrieveMetadata(){
+    
+    $user_name = $this->user_name;
+    $selected_collection = $this->selected_collection; 
+    $dbr = wfGetDB(DB_SLAVE);
+    $meta_data = array();
+    
+    //Database query
+    $res = $dbr->select(
+      'collections', //from
+      array( //values
+      'collections_metatitle',
+      'collections_metaauthor',
+      'collections_metayear' ,      
+      'collections_metapages' ,    
+      'collections_metacategory',   
+      'collections_metaproduced',     
+      'collections_metaproducer', 
+      'collections_metaeditors',
+      'collections_metajournal',
+      'collections_metajournalnumber',
+      'collections_metatranslators',  
+      'collections_metawebsource',
+      'collections_metaid',        
+      'collections_metanotes',     
+         ),
+      array(
+      'collections_user = ' . $dbr->addQuotes($user_name),
+      'collections_title = ' . $dbr->addQuotes($selected_collection),
+      ),
+      __METHOD__,
+      array(
+        'ORDER BY' => 'collections_title',
+      )
+      );
+        
+    //there should only be one result
+    if ($res->numRows() === 1){
+      $s = $res->fetchObject();
+                  
+      $meta_data ['collections_metatitle']         = $s->collections_metatitle;
+      $meta_data ['collections_metaauthor']        = $s->collections_metaauthor;
+      $meta_data ['collections_metayear']          = $s->collections_metayear;
+      $meta_data ['collections_metapages']         = $s->collections_metapages;
+      $meta_data ['collections_metacategory']      = $s->collections_metacategory;
+      $meta_data ['collections_metaproduced']      = $s->collections_metaproduced;
+      $meta_data ['collections_metaproducer']      = $s->collections_metaproducer;
+      $meta_data ['collections_metaeditors']       = $s->collections_metaeditors;
+      $meta_data ['collections_metajournal']       = $s->collections_metajournal;
+      $meta_data ['collections_metajournalnumber'] = $s->collections_metajournalnumber;
+      $meta_data ['collections_metatranslators']   = $s->collections_metatranslators;
+      $meta_data ['collections_metawebsource']     = $s->collections_metawebsource;
+      $meta_data ['collections_metaid']            = $s->collections_metaid;
+      $meta_data ['collections_metanotes']         = $s->collections_metanotes;           
+    }
+    
+    return $meta_data; 
   }
   
   /**

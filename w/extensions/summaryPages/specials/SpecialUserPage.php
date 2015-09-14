@@ -222,7 +222,9 @@ class SpecialUserPage extends SpecialPage {
     }
     
     if($button_name === 'editmetadata'){
-      return $this->showEditMetadata();
+      $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
+      $meta_data = $summary_page_wrapper->retrieveFromDatabase();
+      return $this->showEditMetadata($meta_data, ''); 
     }
     
     if($button_name === 'submitedit'){
@@ -250,25 +252,21 @@ class SpecialUserPage extends SpecialPage {
       if(!empty($textfield)){
         if($index !== 'wptextfield14'){
           if(!ctype_alnum($textfield) || strlen($textfield) > $max_length){
-            return $this->showEditMetadata('You can only use letters or numbers for the input');
+            return $this->showEditMetadata(array(), 'You can only use letters or numbers for the input');
           }
 
         }else{
           if(!ctype_alnum($textfield) || strlen($textfield) > ($max_length*10)){
-            return $this->showEditMetadata('You can only use letters or numbers for the input.');
+            return $this->showEditMetadata(array(), 'You can only use letters or numbers for the input.');
           }  
         }
       }
     }
     
     $summary_page_wrapper = new summaryPageWrapper('submitedit',0,0,$this->user_name,"","", $this->selected_collection);
-    $status = $summary_page_wrapper->insertCollections($textfield_array);
-    
-    if($status === false){
-      return $this->showEditMetadata('There was an error when inserting data into the database');
-    }
-        
+    $status = $summary_page_wrapper->insertCollections($textfield_array);           
     $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
+    
     return $this->showSingleCollection($single_collection_data);
   }
   
@@ -288,7 +286,22 @@ class SpecialUserPage extends SpecialPage {
   /**
    * 
    */
-  private function showEditMetadata($error = ''){
+  private function showEditMetadata($meta_data = array(), $error = ''){
+    
+    $metatitle =         isset($meta_data['collections_metatitle']) ? $meta_data['collections_metatitle'] : '';
+    $metaauthor =        isset($meta_data['collections_metaauthor']) ? $meta_data['collections_metaauthor'] : '';
+    $metayear =          isset($meta_data['collections_metayear']) ? $meta_data['collections_metayear'] :'';
+    $metapages =         isset($meta_data['collections_metapages']) ? $meta_data['collections_metapages'] : '';
+    $metacategory =      isset($meta_data['collections_metacategory']) ? $meta_data['collections_metacategory'] : '';
+    $metaproduced =      isset($meta_data['collections_metaproduced']) ? $meta_data['collections_metaproduced'] : '';
+    $metaproducer =      isset($meta_data['collections_metaproducer']) ? $meta_data['collections_metaproducer'] : '';
+    $metaeditors =       isset($meta_data['collections_metaeditors']) ? $meta_data['collections_metaeditors'] : '';
+    $metajournal =       isset($meta_data['collections_metajournal']) ? $meta_data['collections_metajournal'] : '';
+    $metajournalnumber = isset($meta_data['collections_metajournalnumber']) ? $meta_data['collections_metajournalnumber'] : '';
+    $metatranslators =   isset($meta_data['collections_metatranslators']) ? $meta_data['collections_metatranslators'] : '';
+    $metawebsource =     isset($meta_data['collections_metawebsource']) ? $meta_data['collections_metawebsource'] : '';
+    $metaid =            isset($meta_data['collections_metaid']) ? $meta_data['collections_metaid'] : '';
+    $metanotes =         isset($meta_data['collections_metanotes']) ? $meta_data['collections_metanotes'] : '';
     
     $out = $this->getOutput(); 
     $user_name = $this->user_name;
@@ -309,7 +322,8 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<br>";
     
     $html .= $this->addSummaryPageLoader();
-    
+        
+    $html .= "<div id='userpage-singlecollectionwrap'>"; 
     $html .= "<h2>Editing metadata for " . $selected_collection . "</h2>";
     $html .= "Every field is optional.";
     $html .= "<br><br>";
@@ -317,6 +331,8 @@ class SpecialUserPage extends SpecialPage {
     if(!empty($error)){
       $html .= "<div class='error'>" . $error . "</div>";  
     }
+    
+    $html .= "</div>";
     
     $out->addHTML($html);
     
@@ -329,84 +345,98 @@ class SpecialUserPage extends SpecialPage {
       //change to label-message for i18n support
         'label' => 'Collection Title', 
         'class' => 'HTMLTextField',
+        'default' => $metatitle,
         'maxlength' => $max_length,
          );
     
     $descriptor['textfield2'] = array(
         'label' => 'Author Name', 
         'class' => 'HTMLTextField',
+        'default' => $metaauthor,
         'maxlength' => $max_length,
          );
     
     $descriptor['textfield3'] = array(
         'label' => 'Published in year', 
         'class' => 'HTMLTextField',
+        'default' => $metayear,
         'maxlength' => $max_length,
          );
 
     $descriptor['textfield4'] = array(
         'label' => 'Number of Pages', 
         'class' => 'HTMLTextField',
+        'default' => $metapages,
         'maxlength' => $max_length,
          );
 
     $descriptor['textfield5'] = array(
        'label' => 'Category', 
        'class' => 'HTMLTextField',
+       'default' => $metacategory,
        'maxlength' => $max_length,
        );
         
     $descriptor['textfield6'] = array(
       'label' => 'Produced in Year', 
       'class' => 'HTMLTextField',
+      'default' => $metaproduced,
       'maxlength' => $max_length,
      );
 
     $descriptor['textfield7'] = array(
       'label' => 'Producer', 
       'class' => 'HTMLTextField',
+      'default' => $metaproducer,
       'maxlength' => $max_length,
      );
         
      $descriptor['textfield8'] = array(
       'label' => 'Editors', 
       'class' => 'HTMLTextField',
+      'default' => $metaeditors,
       'maxlength' => $max_length,
      );
             
      $descriptor['textfield9'] = array(
       'label' => 'Journal', 
       'class' => 'HTMLTextField',
+      'default' => $metajournal,
       'maxlength' => $max_length,
      );
                 
      $descriptor['textfield10'] = array(
       'label' => 'Journal Number', 
       'class' => 'HTMLTextField',
+      'default' => $metajournalnumber,
       'maxlength' => $max_length,
      );
      
      $descriptor['textfield11'] = array(
       'label' => 'Translators', 
       'class' => 'HTMLTextField',
+      'default' => $metatranslators,
       'maxlength' => $max_length,
      );
          
      $descriptor['textfield12'] = array(
       'label' => 'Web(source)', 
       'class' => 'HTMLTextField',
+      'default' => $metawebsource,
       'maxlength' => $max_length,
      );
 
     $descriptor['textfield13'] = array(
       'label' => 'ID Number', 
       'class' => 'HTMLTextField',
+      'default' => $metaid,
       'maxlength' => $max_length,
      );
 
      $descriptor['textfield14'] = array(
        'type' => 'textarea',
        'label' => 'Notes',
+       'default' => $metanotes,
        'rows' => 20,
        'cols' => 20,
        'maxlength'=> ($max_length * 10),
@@ -416,8 +446,10 @@ class SpecialUserPage extends SpecialPage {
     $html_form->setSubmitText('Submit Edit');
     $html_form->addHiddenField('edit_selectedcollection', $this->selected_collection);
     $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
-    $html_form->show(); 
+    $html_form->show();
   }
+  
+  
   
     /**
      * Callback function. Makes sure the page is redisplayed in case there was an error. 
@@ -454,6 +486,8 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
     $html .= '</form>';
     
+    $html .= $this->addSummaryPageLoader();
+    
     $html .= "<div id='userpage-singlecollectionwrap'>"; 
     
     $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
@@ -466,9 +500,7 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<input type='submit' class='button-transparent' name='addnewpage' title='Add a new page to this collection' value='Add New Page'>";
     $html .= "<input type='hidden' name='selectedcollection' value='" . $selected_collection . "'>";
     $html .= "</form>"; 
-    
-    $html .= $this->addSummaryPageLoader();
-    
+        
     $html .= "<h2 style='text-align: center;'>Collection: " . $selected_collection . "</h2>";
     $html .= "<br>";    
     $html .= "<h3>Metadata</h3>";
