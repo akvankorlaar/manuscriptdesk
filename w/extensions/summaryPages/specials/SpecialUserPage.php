@@ -586,26 +586,24 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<br>";
         
     if($this->view_manuscripts){
-          
+      
+      $html .= "<p>Below are all your uploaded manuscript pages that are not part of a collection.</p>";        
       $html .= "<table id='userpage-table' style='width: 100%;'>";
       $html .= "<tr>";
-      $html .= "<td>" . "<b>Title</b>" . "</td>";
+      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
       $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
-      $html .= "<td>" . "<b>Collection</b>" . "</td>";
       $html .= "</tr>";
       
       foreach($title_array as $key=>$array){
 
-        $collection = isset($array['manuscripts_collection']) ? $array['manuscripts_collection'] : '';
         $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
         $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
         $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
         
         $html .= "<tr>";
-        $html .= "<td><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
+        $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
           htmlspecialchars($title) . "</a></td>";
         $html .= "<td>" . htmlspecialchars($date) . "</td>";
-        $html .= "<td>$collection</td>";
         $html .= "</tr>";      
       }
       

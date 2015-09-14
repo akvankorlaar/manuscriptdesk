@@ -341,11 +341,12 @@ class summaryPageWrapper{
         'manuscripts_title',//values
         'manuscripts_url',
         'manuscripts_date',
-        'manuscripts_collection',
         'manuscripts_lowercase_title',
          ),
       array(
-        'manuscripts_user = ' . $dbr->addQuotes($user_name),  
+        'manuscripts_user = ' . $dbr->addQuotes($user_name),
+        //only select manuscript pages that do not have a collection
+        'manuscripts_collection = ' . $dbr->addQuotes('none'),
       ),
       __METHOD__,
       array(
@@ -366,7 +367,6 @@ class summaryPageWrapper{
           'manuscripts_title' => $s->manuscripts_title,
           'manuscripts_url' => $s->manuscripts_url,
           'manuscripts_date' => $s->manuscripts_date,
-          'manuscripts_collection' => $s->manuscripts_collection,
         );
 
         //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
