@@ -35,15 +35,17 @@ class newManuscriptForm extends HTMLForm {
   
   private $collections_message; 
   private $allowed_file_extensions; 
+  private $selected_collection; 
  
   //class constructor
-  public function __construct(IContextSource $context = null, $collections_message) {
+  public function __construct(IContextSource $context = null, $collections_message, $selected_collection) {
     
     global $wgNewManuscriptOptions;
         
     $this->max_upload_size = $wgNewManuscriptOptions['max_upload_size'];
     $this->allowed_file_extensions =  $wgNewManuscriptOptions['allowed_file_extensions'];
     $this->collections_message = $collections_message; 
+    $this->selected_collection = isset($selected_collection) ? $selected_collection : ''; 
     
     $descriptor = $this->getSourceSection();
 
@@ -103,7 +105,8 @@ class newManuscriptForm extends HTMLForm {
     
     $descriptor['collection_field'] = array(
       'section' => 'title',
-      'label' => 'Collection:', 
+      'label' => 'Collection:',
+      'default' => $this->selected_collection, 
       'class' => 'HTMLTextField', 
       'maxlength'=> 50,
     );

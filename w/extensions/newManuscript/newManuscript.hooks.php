@@ -694,7 +694,7 @@ class newManuscriptHooks {
       $out->addModuleStyles('ext.newmanuscriptcss');
       $out->addModules('ext.newmanuscriptloader');
     }
-      
+          
     return true; 
   }
   

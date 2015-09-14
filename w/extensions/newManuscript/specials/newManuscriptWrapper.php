@@ -166,6 +166,13 @@ class newManuscriptWrapper{
        ),__METHOD__,
        'IGNORE' ); //ensures that duplicate $collection_name is ignored
     
+     if ($dbw->affectedRows()){
+      //collection did not exist yet
       return true;
+      
+    }else{
+    //collection already exists
+      return false;      
+    }
   }
 }

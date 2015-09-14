@@ -26,8 +26,6 @@ class SpecialUserPage extends SpecialPage {
   
 /**
  * SpecialuserPage. Organises all content created by a user
- * 
- * Possible problems: Displaying the page may become slow. If this happens, try using $out->addHTML instead of $out->addWikiText 
  */
   
   public $article_url; 
@@ -161,7 +159,7 @@ class SpecialUserPage extends SpecialPage {
     if($this->offset >= $this->max_on_page){
       $this->previous_page_possible = true; 
     }
-    
+           
     return true; 
   }
   
@@ -498,7 +496,7 @@ class SpecialUserPage extends SpecialPage {
     //redirect to Special:NewManuscript, and automatically have the current collection selected
     $html .= "<form id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
     $html .= "<input type='submit' class='button-transparent' name='addnewpage' title='Add a new page to this collection' value='Add New Page'>";
-    $html .= "<input type='hidden' name='selectedcollection' value='" . $selected_collection . "'>";
+    $html .= "<input type='hidden' name='selected_collection' value='" . $selected_collection . "'>";
     $html .= "</form>"; 
         
     $html .= "<h2 style='text-align: center;'>Collection: " . $selected_collection . "</h2>";
