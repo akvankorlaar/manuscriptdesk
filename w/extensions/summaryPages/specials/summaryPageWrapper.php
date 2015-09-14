@@ -79,6 +79,7 @@ class summaryPageWrapper{
         return $this->retrieveUserPageCollections();
         break; 
       case 'singlecollection':
+      case 'submitedit':
         return $this->retrieveSingleCollection();
         break;
     }
@@ -545,23 +546,21 @@ class summaryPageWrapper{
    * This function inserts data into the 'collections' table 
    */
   public function insertCollections($form_data){
+        
+    $user_name = $this->user_name;
+    $selected_collection = $this->selected_collection;
     
-    global $wgUser; 
-    
-    $user_name = $wgUser->getName();   
-    $selected_collection = isset($form_data['selected_collection']) ? $form_data['selected_collection'] : '';
-    
-    $meta_title =     isset($form_data['textfield1']) ? $form_data['textfield1'] : '';
-    $meta_name =      isset($form_data['textfield2']) ? $form_data['textfield2'] : '';
-    $meta_year =      isset($form_data['textfield3']) ? $form_data['textfield3'] : '';
-    $meta_pages =     isset($form_data['textfield4']) ? $form_data['textfield4'] : '';
-    $meta_numbering = isset($form_data['textfield5']) ? $form_data['textfield5'] : '';
-    $meta_category =  isset($form_data['textfield6']) ? $form_data['textfield6'] : '';
-    $meta_penner =    isset($form_data['textfield7']) ? $form_data['textfield7'] : '';
-    $meta_produced =  isset($form_data['textfield8']) ? $form_data['textfield8'] : '';
-    $meta_producer =  isset($form_data['textfield9']) ? $form_data['textfield9'] : '';
-    $meta_id =        isset($form_data['textfield10']) ? $form_data['textfield10'] : '';
-    $meta_notes =     isset($form_data['textfield11']) ? $form_data['textfield11'] : '';
+    $meta_title =     isset($form_data['wptextfield1']) ? $form_data['wptextfield1'] : '';
+    $meta_name =      isset($form_data['wptextfield2']) ? $form_data['wptextfield2'] : '';
+    $meta_year =      isset($form_data['wptextfield3']) ? $form_data['wptextfield3'] : '';
+    $meta_pages =     isset($form_data['wptextfield4']) ? $form_data['wptextfield4'] : '';
+    $meta_numbering = isset($form_data['wptextfield5']) ? $form_data['wptextfield5'] : '';
+    $meta_category =  isset($form_data['wptextfield6']) ? $form_data['wptextfield6'] : '';
+    $meta_penner =    isset($form_data['wptextfield7']) ? $form_data['wptextfield7'] : '';
+    $meta_produced =  isset($form_data['wptextfield8']) ? $form_data['wptextfield8'] : '';
+    $meta_producer =  isset($form_data['wptextfield9']) ? $form_data['wptextfield9'] : '';
+    $meta_id =        isset($form_data['wptextfield10']) ? $form_data['wptextfield10'] : '';
+    $meta_notes =     isset($form_data['wptextfield11']) ? $form_data['wptextfield11'] : '';
     
     $dbw = wfGetDB(DB_MASTER);
     

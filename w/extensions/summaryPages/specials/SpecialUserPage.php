@@ -124,9 +124,12 @@ class SpecialUserPage extends SpecialPage {
         $this->token_is_ok = $this->getUser()->matchEditToken($token);
         $this->button_name = 'submitedit';
         
-      }elseif($value === 'textfield'){
-        $this->textfield_array[$original_value] = $this->$request->getText($original_value);
-      
+      }elseif($value === 'wptextfield'){
+        $this->textfield_array[$original_value] = $request->getText($original_value);
+        
+      }elseif($value === 'edit_selectedcollection'){
+        $this->selected_collection = $request->getText($value);
+        
       }elseif($value === 'singlecollection'){
         $this->selected_collection = $this->validateInput($request->getText($value));
         $this->button_name = 'singlecollection';
@@ -245,28 +248,28 @@ class SpecialUserPage extends SpecialPage {
     foreach($textfield_array as $index=>$textfield){
 
       if(!empty($textfield)){
-        if($index !== 'textfield11'){
+        if($index !== 'wptextfield11'){
           if(!ctype_alnum($textfield) || strlen($textfield) > $max_length){
-            return "You can only use letters or numbers for the input.";
+            return $this->showEditMetadata('You can only use letters or numbers for the input');
           }
 
         }else{
           if(!ctype_alnum($textfield) || strlen($textfield) > ($max_length*10)){
-            return "You can only use letters or numbers for the input.";
+            return $this->showEditMetadata('You can only use letters or numbers for the input.');
           }  
         }
       }
     }
     
-    $summary_page_wrapper = new summaryPageWrapper('submitedit');
-    $status = $summary_page_wrapper->insertCollections($form_data);
+    $summary_page_wrapper = new summaryPageWrapper('submitedit',0,0,$this->user_name,"","", $this->selected_collection);
+    $status = $summary_page_wrapper->insertCollections($textfield_array);
     
     if($status === false){
-      return 'There was an error when inserting data into the database';
+      return $this->showEditMetadata('There was an error when inserting data into the database');
     }
         
-//    $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
-//    $title_array = $summary_page_wrapper->retrieveFromDatabase();
+    $title_array = $summary_page_wrapper->retrieveFromDatabase();
+    return $this->showSingleCollection($title_array);
   }
   
   /**
@@ -285,7 +288,7 @@ class SpecialUserPage extends SpecialPage {
   /**
    * 
    */
-  private function showEditMetadata(){
+  private function showEditMetadata($error = ''){
     
     $out = $this->getOutput(); 
     $user_name = $this->user_name;
@@ -310,6 +313,10 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<h2>Editing metadata for " . $selected_collection . "</h2>";
     $html .= "Every field is optional.";
     $html .= "<br><br>";
+      
+    if(!empty($error)){
+      $html .= "<div class='error'>" . $error . "</div>";  
+    }
     
     $out->addHTML($html);
     
@@ -389,7 +396,7 @@ class SpecialUserPage extends SpecialPage {
                
     $html_form = new HTMLForm($descriptor, $this->getContext());
     $html_form->setSubmitText('Submit Edit');
-    $html_form->addHiddenField('selected_collection', $this->selected_collection);
+    $html_form->addHiddenField('edit_selectedcollection', $this->selected_collection);
     $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
     $html_form->show(); 
   }
