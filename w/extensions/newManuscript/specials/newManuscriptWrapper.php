@@ -74,17 +74,15 @@ class newManuscriptWrapper{
   }
   
   /**
-   * This functions checks if the collection already reached the maximum allowed manuscript pages
+   * This functions checks if the collection already reached the maximum allowed manuscript pages, or if it already exists
    * 
    * @param type $posted_collection
    * @return string
    */
-  public function checkNumberOfPagesPostedCollection($posted_collection){
+  public function checkTables($posted_collection){
     
     $dbr = wfGetDB(DB_SLAVE);
- 
-    $conds = 
-        
+         
       //Database query
     $res = $dbr->select(
         'manuscripts', //from
@@ -103,6 +101,26 @@ class newManuscriptWrapper{
         
     if ($res->numRows() > $this->maximum_pages_per_collection){
       return 'newmanuscript-error-collectionmaxreached';
+    }
+        
+        //Database query
+    $res = $dbr->select(
+      'collections', //from
+      array( //values
+      'collections_title',
+         ),
+      array(
+      'collections_title = ' . $dbr->addQuotes($posted_collection),
+      ),
+      __METHOD__,
+      array(
+      'ORDER BY' => 'collections_title',
+      )
+      );
+        
+    //if it already exists, return an error
+    if ($res->numRows() >= 1){
+     return 'newmanuscript-error-collectionexists';
     }
    
     return ""; 

@@ -82,6 +82,7 @@ class summaryPageWrapper{
       case 'submitedit':
         return $this->retrieveSingleCollection();
       case 'editmetadata':
+      case 'getmetadata' :  
         return $this->retrieveMetadata();
         break;
     }
@@ -604,6 +605,18 @@ class summaryPageWrapper{
     $dbr = wfGetDB(DB_SLAVE);
     $meta_data = array();
     
+    if(!empty($user_name)){
+      $conditions = array(
+      'collections_user = ' . $dbr->addQuotes($user_name),
+      'collections_title = ' . $dbr->addQuotes($selected_collection),
+      );  
+      
+    }else{
+      $conditions = array(
+      'collections_title = ' . $dbr->addQuotes($selected_collection),
+      );   
+    }
+    
     //Database query
     $res = $dbr->select(
       'collections', //from
@@ -623,10 +636,7 @@ class summaryPageWrapper{
       'collections_metaid',        
       'collections_metanotes',     
          ),
-      array(
-      'collections_user = ' . $dbr->addQuotes($user_name),
-      'collections_title = ' . $dbr->addQuotes($selected_collection),
-      ),
+        $conditions,
       __METHOD__,
       array(
         'ORDER BY' => 'collections_title',

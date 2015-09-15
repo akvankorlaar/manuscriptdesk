@@ -16,7 +16,11 @@
  * 
  * Todo: Check if it is possible to restructure the collatex javascript 
  * 
+ * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form)
+ * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
+ * 
+ * Todo: Before echoing to the browser, htmlspecialchars on every variable retrieved from database
  * 
  * Todo: Add a button on a page with a collection that can take you to the next page of that collection. Perhaps assign every manuscript page a unique long number
  * (made of for example the user name and the date of creation for the collection), so that the next page can be found by doing current page + 1
@@ -358,7 +362,7 @@ class SpecialNewManuscript extends SpecialPage {
     }
     
     //create a new wikipage
-    $wikipage_status = $this->createNewWikiPage();
+    $wikipage_status = $this->createNewWikiPage($collection);
     
     if($wikipage_status !== true){
        //something went wrong when creating a new wikipage, so delete all export files, if they exist
@@ -449,7 +453,7 @@ class SpecialNewManuscript extends SpecialPage {
     }else{
       $new_manuscript_wrapper = new newManuscriptWrapper($this->user_name, $this->maximum_pages_per_collection);
       
-      $collection_error = $new_manuscript_wrapper->checkNumberOfPagesPostedCollection($posted_collection);
+      $collection_error = $new_manuscript_wrapper->checkTables($posted_collection);
     }
     
     return $collection_error;    
@@ -458,8 +462,12 @@ class SpecialNewManuscript extends SpecialPage {
   /**
    * This function makes a new wikipage, and auto loads wiki text needed for the metatable.
    */
-  private function createNewWikiPage(){
+  private function createNewWikiPage($collection){
         
+    if($collection === 'none'){
+      $collection = ''; 
+    }
+    
     $title_object = $this->new_page_title_object;  
     $context = $this->getContext();  
     $article = Article::newFromTitle($title_object, $context);
@@ -469,30 +477,10 @@ class SpecialNewManuscript extends SpecialPage {
         
     $wiki_text = "
     This page has not been transcribed yet. 
-
-
-
-<!-- only edit metatable values below this line -->
+    
+<!-- please do not edit below this line -->
     $open_tag
-    title=
-    author=
-    date= 
-    original_image_name= 
-    image_number= 
-    page_number= 
-    info_in_main_headings_field= 
-    marginal_summary_numbering=
-    category=
-    number_of_pages=
-    recto_verso=
-    penner=
-    watermarks=
-    marginals=
-    paper_producer=
-    corrections=
-    produced_in_year=
-    notes_public=
-    id_number=
+    $collection_name
     $close_tag";
     
     $editor_object = new EditPage($article); 

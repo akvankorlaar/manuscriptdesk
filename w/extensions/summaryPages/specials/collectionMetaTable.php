@@ -37,20 +37,24 @@ class collectionMetaTable{
    */
   public function renderTable($meta_data){
     
-    $metatitle = $meta_data['collections_metatitle'];
-    $metaauthor = $meta_data['collections_metaauthor'];
-    $metayear = $meta_data['collections_metayear'];
-    $metapages = $meta_data['collections_metapages'];
-    $metacategory = $meta_data['collections_metacategory'];
-    $metaproduced = $meta_data['collections_metaproduced'];    
-    $metaproducer = $meta_data['collections_metaproducer'];
-    $metaid = $meta_data['collections_metaid'];
-    $metaeditors = $meta_data['collections_metaeditors'];
-    $metajournal = $meta_data['collections_metajournal'];
-    $metajournalnumber = $meta_data['collections_metajournalnumber'];
-    $metatranslators = $meta_data['collections_metatranslators'];
-    $metawebsource = $meta_data['collections_metawebsource'];
-    $metanotes = $meta_data['collections_metanotes'];
+    foreach($meta_data as $index => &$variable){
+      $variable = htmlspecialchars($variable);
+    }
+    
+    $metatitle =         isset($meta_data['collections_metatitle']) ? $meta_data['collections_metatitle'] : '';
+    $metaauthor =        isset($meta_data['collections_metaauthor']) ? $meta_data['collections_metaauthor'] : '';
+    $metayear =          isset($meta_data['collections_metayear']) ? $meta_data['collections_metayear'] :'';
+    $metapages =         isset($meta_data['collections_metapages']) ? $meta_data['collections_metapages'] : '';
+    $metacategory =      isset($meta_data['collections_metacategory']) ? $meta_data['collections_metacategory'] : '';
+    $metaproduced =      isset($meta_data['collections_metaproduced']) ? $meta_data['collections_metaproduced'] : '';
+    $metaproducer =      isset($meta_data['collections_metaproducer']) ? $meta_data['collections_metaproducer'] : '';
+    $metaeditors =       isset($meta_data['collections_metaeditors']) ? $meta_data['collections_metaeditors'] : '';
+    $metajournal =       isset($meta_data['collections_metajournal']) ? $meta_data['collections_metajournal'] : '';
+    $metajournalnumber = isset($meta_data['collections_metajournalnumber']) ? $meta_data['collections_metajournalnumber'] : '';
+    $metatranslators =   isset($meta_data['collections_metatranslators']) ? $meta_data['collections_metatranslators'] : '';
+    $metawebsource =     isset($meta_data['collections_metawebsource']) ? $meta_data['collections_metawebsource'] : '';
+    $metaid =            isset($meta_data['collections_metaid']) ? $meta_data['collections_metaid'] : '';
+    $metanotes =         isset($meta_data['collections_metanotes']) ? $meta_data['collections_metanotes'] : '';
     
      $html_table = " 
     <table id='metatable' align='center'>

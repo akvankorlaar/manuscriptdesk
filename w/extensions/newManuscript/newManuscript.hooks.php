@@ -73,6 +73,7 @@ class newManuscriptHooks {
   private $zoomimage_check_before_delete;
   private $original_image_check_before_delete;
   private $max_charachters_manuscript; 
+  private $collection;
    
  /**
   * Assign globals to properties
@@ -120,8 +121,10 @@ class newManuscriptHooks {
     if(!$this->urlValid()){
       return true;   
     }
-                    
-    $this->loadViewer($output);
+    
+    $html = $this->formatIframeHTML(); 
+    $output->addHTML($html);                
+    $output->addModuleStyles('ext.zoomviewer'); 
 
     return true;
   }
@@ -150,19 +153,21 @@ class newManuscriptHooks {
     if(!$this->urlValid()){
       return true;    
     }
-      
+    
+    $html = "";    
     $collection = $this->getCollection();
     
     if($collection !== null){
-      $output->addHTML('<h2>' . $collection . '</h2><br>');
+      $html .= '<h2>' . $collection . '</h2><br>';
+      $this->collection = $collection;
     }
+       
+    $html .= $this->getOriginalImageLink();                            
+    $html .= $this->formatIframeHTML();     
+    $output->addHTML($html);
+    
+    $output->addModuleStyles('ext.zoomviewer'); 
         
-    $original_image_link = $this->getOriginalImageLink();
-    
-    $output->addHTML($original_image_link);
-                            
-    $this->loadViewer($output);
-    
     return true;
   }
   
@@ -310,21 +315,6 @@ class newManuscriptHooks {
   }
   
   /**
-   * Adds the iframe HTML to the page. This HTML will be used by the zoomviewer so that it can load the correct image
-   * 
-   * @param $output OutputPage
-   * @return bool 
-   */
-  private function loadViewer(OutputPage $output ){
-        
-    $view_content = $this->formatIframeHTML();
-    $output->addModuleStyles('ext.zoomviewer'); 
-    $output->addHTML($view_content);
-    
-    return true;
-  }
-  
-  /**
    * Generates the HTML for the iframe
    * 
    * @return string
@@ -417,12 +407,17 @@ class newManuscriptHooks {
    * This function makes a new meta table object, extracts
    * the options in the tags, and renders the table
    */
-  public static function render($input, $args, Parser $parser){
+  public static function render($collection_name, $args, Parser $parser){
     
-    $meta_table = new metaTable();
-    $meta_table->extractOptions($parser->replaceVariables($input));
+    $meta_data = array();
     
-    return $meta_table->renderTable($input);
+    if(ctype_alnum($collection_name) && $collection_name !== '' && strlen($collection_name) <= 50) {
+      $summary_page_wrapper = new summaryPageWrapper('getmetadata',0,0,'','','', $collection_name);
+      $meta_data = $summary_page_wrapper->retrieveFromDatabase($collection_name); 
+    }
+      
+    $collection_meta_table = new collectionMetaTable();   
+    return $collection_meta_table->renderTable($meta_data);
   }
   
   /**
