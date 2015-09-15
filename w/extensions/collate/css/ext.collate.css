@@ -21,7 +21,6 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-
 /*pre overrides earlier mediawiki CSS, and is needed for correct table display.*/  
 pre {
   border: none !important;
@@ -30,56 +29,56 @@ pre {
   height: 0px !important; 
 }
 
-#begincollate-infobox {
-  padding: 0.3em;
-  float: right; 
-  margin-left: 15px; 
-  margin-bottom: 8px; 
-  border: 1px solid #aa8899; 
-  background: #e1e9e1; 
-  text-align: center; 
-  font-size: 95%; 
-  line-height: 1.5em; 
-  width: 28em;  
+.begincollate-table td {
+  width: 20%;
 }
 
-#begincollate-infobox th {
-  background: #286819; 
-  padding: 0.3em; 
-  font-size: 1.1em;  
-  color: #FFF
-}
-
-#begincollate-td {
-  background: #286819; 
-  padding: 0.3em; 
-  color: #FFF;
+.begincollate-table {
+  width: 100%;
 }
 
 .begincollate-form {
   overflow-y: auto;  
   position: relative;
-  height: 100%;
+  width: 100%;
 }
 
-#begincollate-manuscriptpages {
-  display: inline-block;
-  height: 100%; 
-  width: 30%; 
-}
-
-#begincollate-collections {
-  display: inline-block;
-  height: 100%;
-  width: 30%; 
-  position: absolute;
+.begincollate-span {
+  font-size: 85%;
 }
 
 #begincollate-submitbutton {
   width: 30em; 
   height: 1.5em; 
   cursor: default; 
-  position: fixed; 
+  position: relative; 
+  background-color: #F2FCFF;
+}
+
+#begincollate-infobox {
+  padding: 0.3em;
+  float: right; 
+  width: 500px;
+  margin-bottom: 8px; 
+  margin-left: 15px; 
+  border: 1px solid #aa8899; 
+  background: #fff; 
+  text-align: center;
+  font-size: 95%; 
+  line-height: 1.5em; 
+}
+
+#begincollate-infobox th {
+  background: #F2FCFF; 
+  color: #black;
+  padding: 0.3em; 
+  font-size: 1.1em;  
+}
+
+#begincollate-infobox-td {
+  background: #F2FCFF; 
+  padding: 0.3em; 
+  color: black;
 }
 
 #javascript-error {

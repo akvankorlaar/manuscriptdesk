@@ -621,7 +621,7 @@ class SpecialBeginCollate extends SpecialPage {
     $html .= "<tr><th>$about_message</th></tr>";
     $html .= "<tr><td>$version_message</td></tr>";
     $html .= "<tr><td>$software_message <a href= 'http://collatex.net' target='_blank'> Collatex Tools 1.5</a>.</td></tr>";
-    $html .= "<tr><td id='begincollate-td'><small>$lastedit_message</small></td></tr>";
+    $html .= "<tr><td id='begincollate-infobox-td'><small>$lastedit_message</small></td></tr>";
     $html .= "</table>";
     
     $html .= "<p>" . $this->msg('collate-instruction1') . "</p>";
@@ -641,67 +641,75 @@ class SpecialBeginCollate extends SpecialPage {
     
     $manuscript_message = $this->msg('collate-manuscriptpages');
     
-    $html .= "<form class='begincollate-form' action='" . $article_url . "Special:BeginCollate' method='post'>";
-    
-    $html .= "<div id='begincollate-manuscriptpages'>";
+    $html .= "<form class='begincollate-form' action='" . $article_url . "Special:BeginCollate' method='post'>";    
     $html .= "<h3>$manuscript_message</h3>";
-    $html .= "<ul>";
+    $html .= "<table class='begincollate-table'>";
     
     //display a checkbox for each manuscript uploaded by this user
+    $a = 0;
+    $html .= "<tr>";
     foreach($url_array as $index=>$url){
+      
+      if(($a % 4) === 0){    
+        $html .= "</tr>";
+        $html .= "<tr>";    
+      }
       
       //get corresponding title
       $title_name = $title_array[$index];
       
-      $html .="<li><input type='checkbox' class='begincollate-checkbox' name='text$index' value='$url'>$title_name</li>";
+      $html .= "<td>";
+      $html .="<input type='checkbox' class='begincollate-checkbox' name='text$index' value='$url'>$title_name";
+      $html .= "</td>";
+      $a+=1;
     }
     
-    $html .= "</ul>";   
-    $html .= "</div>";
+    $html .= "</tr>";    
+    $html .= "</table>"; 
        
     //if there are manuscript collections
     if(!empty($collection_urls)){
       
-      $collection_message = $this->msg('collate-collections');
-            
-      $html .= "<div id='begincollate-collections'>";
+      $collection_message = $this->msg('collate-collections');           
       $html .= "<h3>$collection_message</h3>";
-      $html .= "<ul>";
+      $html .= "<table class=begincollate-table>";
 
       $a = 0;
+      $html .= "<tr>";
       foreach($collection_urls as $collection_name=>$small_url_array){
+        
+        if(($a % 4) === 0){  
+          $html .= "</tr>";
+          $html .= "<tr>";    
+        }
       
         //encode the array into json to be able to place it in the checkbox value
-        $json_small_url_array = json_encode($small_url_array['manuscripts_url']);
-        
-        $manuscript_pages_within_collection = implode(', ',$small_url_array['manuscripts_title']);
-        
+        $json_small_url_array = json_encode($small_url_array['manuscripts_url']);       
+        $manuscript_pages_within_collection = implode(', ',$small_url_array['manuscripts_title']);   
         $collection_text = $this->msg('collate-contains') . $manuscript_pages_within_collection . '.';
                 
         //add a checkbox for the collection
-        $html .="<li>";
+        $html .="<td>";
         $html .="<input type='checkbox' class='begincollate-checkbox-col' name='collection$a' value='$json_small_url_array'>$collection_name";
         $html .="<input type='hidden' name='collection_hidden$a' value='$collection_name'>"; 
         $html .= "<br>";
-        $html .= $collection_text; 
-        $html .="</li>";
-        $html .="<br>";
+        $html .= "<span class='begincollate-span'>" . $collection_text . "</span>"; 
+        $html .="</td>";
         $a = ++$a; 
       }
       
-      $html .= "</ul>";
+      $html .= "</tr>";
+      $html .= "</table>";
     }
   
-    $html .= "</div>";
     $html .= "<br><br>"; 
     
     $submit_hover_message = $this->msg('collate-hover');
     $submit_message = $this->msg('collate-submit');
     
-    $html .= "<input type='submit' disabled id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message></form>";
-    
-    $html .= "<br>";
-    
+    $html .= "<input type='submit' disabled id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message>";   
+    $html .="</form>";   
+    $html .= "<br>";   
     $html .= $this->AddBeginCollateLoader();
         
     $out->addHTML($html);  
