@@ -471,17 +471,13 @@ class SpecialNewManuscript extends SpecialPage {
     $title_object = $this->new_page_title_object;  
     $context = $this->getContext();  
     $article = Article::newFromTitle($title_object, $context);
-      
-    $open_tag = '<metatable>';
-    $close_tag = '</metatable>';
-        
+              
     $wiki_text = "
     This page has not been transcribed yet. 
     
-<!-- please do not edit below this line -->
-    $open_tag
-    $collection_name
-    $close_tag";
+<!-- please do not edit below this line -->";
+    
+    $wiki_text .= '<metatable>' . $collection . '</metatable>';
     
     $editor_object = new EditPage($article); 
     $content_new = new wikitextcontent($wiki_text);

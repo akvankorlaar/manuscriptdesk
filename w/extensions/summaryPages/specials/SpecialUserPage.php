@@ -254,8 +254,8 @@ class SpecialUserPage extends SpecialPage {
           }
 
         }else{
-          if(!ctype_alnum($textfield) || strlen($textfield) > ($max_length*10)){
-            return $this->showEditMetadata(array(), 'You can only use letters or numbers for the input.');
+          if(!preg_match("/^[A-Za-z0-9 ,.';!?]+$/",$textfield) || strlen($textfield) > ($max_length*10)){
+            return $this->showEditMetadata(array(), "'You can only use letters or numbers for the input");
           }  
         }
       }

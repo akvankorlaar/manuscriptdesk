@@ -399,7 +399,8 @@ class newManuscriptHooks {
   public static function register(Parser &$parser){
     
     // Register the hook with the parser
-    $parser->setHook('metatable', array('newManuscriptHooks', 'render'));
+    $parser->setHook('metatable', array('newManuscriptHooks', 'renderMetaTable'));
+    $parser->setHook('pagemetatable', array('newManuscriptHooks', 'renderPageMetaTable'));
     return true;
   }
   
@@ -407,7 +408,7 @@ class newManuscriptHooks {
    * This function makes a new meta table object, extracts
    * the options in the tags, and renders the table
    */
-  public static function render($collection_name, $args, Parser $parser){
+  public static function renderMetaTable($collection_name, $args, Parser $parser){
     
     $meta_data = array();
     
@@ -418,6 +419,18 @@ class newManuscriptHooks {
       
     $collection_meta_table = new collectionMetaTable();   
     return $collection_meta_table->renderTable($meta_data);
+  }
+  
+  /**
+   * This function makes a new meta table object, extracts
+   * the options in the tags, and renders the table
+   */
+  public static function renderPageMetaTable($input, $args, Parser $parser){
+      
+    $page_meta_table = new pageMetaTable();
+    $page_meta_table->extractOptions($input);
+    
+    return $page_meta_table->renderTable($input);    
   }
   
   /**
