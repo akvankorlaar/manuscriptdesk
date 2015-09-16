@@ -296,6 +296,10 @@ class SpecialUserPage extends SpecialPage {
    */
   private function showEditMetadata($meta_data = array(), $error = ''){
     
+    foreach($meta_data as $index => &$variable){
+      $variable = htmlspecialchars($variable);
+    }
+    
     $metatitle =         isset($meta_data['collections_metatitle']) ? $meta_data['collections_metatitle'] : '';
     $metaauthor =        isset($meta_data['collections_metaauthor']) ? $meta_data['collections_metaauthor'] : '';
     $metayear =          isset($meta_data['collections_metayear']) ? $meta_data['collections_metayear'] :'';

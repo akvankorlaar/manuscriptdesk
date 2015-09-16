@@ -66,3 +66,31 @@ table#metatable td {
 h2 {
   margin-bottom: 0em;
 }
+
+.button-transparent {
+  background: #F2FCFF;
+  border: none; 
+  padding: 0;
+  font: inherit;
+  color: #black; 
+  cursor: pointer;
+  font-weight: bold; 
+}
+
+.button-transparent:hover {
+  text-decoration: underline; 
+}
+
+.link-transparent {
+  background: #F2FCFF;
+  font-weight: bold;
+  color: black;
+}
+
+a:visited {
+  color: black!important;
+}
+
+#link-wrap td{
+  width: 40%;
+}

@@ -100,7 +100,7 @@ class newManuscriptHooks {
     
     $this->zoomimage_check_before_delete = false;
     $this->original_image_check_before_delete = false;
-    
+        
     $this->view = false;
     
     return true;
@@ -162,8 +162,20 @@ class newManuscriptHooks {
     if($collection !== null){
       $html .= '<h2>' . $collection . '</h2><br>';
     }
-       
-    $html .= $this->getOriginalImageLink();                            
+    
+
+    $html .= "<table id='link-wrap'>";
+    $html .= "<tr>";
+    
+    $html .= $this->getOriginalImageLink();
+    
+    if($collection !== null){
+      $html .= $this->getLinkToEditCollection($collection);
+    }
+    
+    $html .= "</tr>";
+    $html .= "</table>";
+      
     $html .= $this->formatIframeHTML();
     $output->addHTML($html);   
     $output->addModuleStyles('ext.zoomviewer'); 
@@ -171,6 +183,26 @@ class newManuscriptHooks {
     $this->view = true; 
         
     return true;
+  }
+  
+  /**
+   * 
+   */
+  private function getLinkToEditCollection($collection){
+    
+    global $wgArticleUrl;
+    
+    $article_url = $wgArticleUrl; 
+    $page_title_with_namespace = $this->page_title_with_namespace;
+    
+    $html = "";
+    $html .= '<form class="manuscriptpage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    $html .= "<input type='hidden' name='linkcollection' value='" . $collection . "'>";
+    $html .= "<input type='hidden' name='linkback' value='" . $page_title_with_namespace . "'>";
+    $html .= "<td><input class='button-transparent' type='submit' name='editlink' value='Edit Collection Metadata'></td>";
+    $html .= "</form>";
+    
+    return $html;
   }
   
   /**
@@ -240,7 +272,7 @@ class newManuscriptHooks {
     
     $link_original_image_path = $partial_original_image_path . $image_file; 
     
-    return "<a href='$link_original_image_path' target='_blank'>" . $this->getMessage('newmanuscripthooks-originalimage') . "</a>";   
+    return "<td><a class='link-transparent' href='$link_original_image_path' target='_blank'>" . $this->getMessage('newmanuscripthooks-originalimage') . "</a></td>";   
   }
   
   /**
@@ -699,6 +731,7 @@ class newManuscriptHooks {
       //add css for the metatable and the zoomviewer
       $out->addModuleStyles('ext.metatable');
        
+      //meta table has to rendered here, because in this way it will be appended after the text html, and not before
       if($this->view){
         $collection = $this->getCollection($page_title_with_namespace);
         $html = $this->renderMetaTable($collection);
@@ -712,7 +745,7 @@ class newManuscriptHooks {
           
     return true; 
   }
-  
+
   /**
    * This function retrieves the message from the i18n file for String $identifier
    * 
