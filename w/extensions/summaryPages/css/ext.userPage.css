@@ -104,18 +104,20 @@ td {
 
 table#metatable { 
   width:100%; 
-  font-size: 100%;  
+  font-size: 100%;
 }
 
 table#metatable th { 
   vertical-align: top;
   text-align: right;
   background-color: #f7f7f7; 
+  width: 25%;
 }
 
 table#metatable td { 
   vertical-align: top;
-  border-bottom: none;
+  width: 25%;
+  border-bottom: none; 
 }
 
 h2 {

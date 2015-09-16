@@ -87,7 +87,7 @@ class pageMetaTable{
       }
       
       list($name, $value) = explode('=', $line, 2);
-      $value = preg_replace('/[^A-Za-z0-9 ]/', '', $value);
+      $value = preg_replace('/[^A-Za-z0-9 :]/', '', $value);
       $name = preg_replace('/[^A-Za-z0-9 ]/', '', $name);
       $values[strtolower(trim($name))] = $value;     
     }

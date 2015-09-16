@@ -10,15 +10,13 @@
  * 
  * Todo: Create a form button on a manuscript page called 'edit collection metadata'. This only shows in case the page is part of a collection
  * 
- * Todo: Modify the newManuscript hooks so that the metadata automatically loads on each page belonging to one collection
- * 
- * Todo: Make it possible to add page-specific metadata, by for example, making users add information in between tags
- * 
  * Todo: Check if it is possible to restructure the collatex javascript 
  * 
  * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form)
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
+ * 
+ * Todo: Find out how to disable 'discussion' pages in NS_MANUSCRIPTS
  * 
  * Todo: Before echoing to the browser, htmlspecialchars on every variable retrieved from database
  * 
@@ -30,8 +28,6 @@
  * Todo: Perhaps instead of splitting the URL into $user_fromurl and $file_fromurl, don't split it, and construct the path to zoomimages using just the page title
  * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
- * 
- * Todo: The text in createNewWikiPage() should be placed in the i18n file
  * 
  * Todo: Remove unused variables in newManuscriptForm
  * 

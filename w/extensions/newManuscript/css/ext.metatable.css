@@ -49,7 +49,6 @@ table#page-metatable td {
 table#metatable { 
   width:100%; 
   font-size: 100%;
-  z-index: -99;
 }
 
 table#metatable th { 

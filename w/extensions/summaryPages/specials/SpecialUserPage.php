@@ -521,18 +521,18 @@ class SpecialUserPage extends SpecialPage {
     $html .= "This collection contains" . " " . count($pages_within_collection) . " " . "single manuscript page(s).";
     $html .= "<br>";
     
+    $html .= "<table id='userpage-table' style='width: 100%;'>";
+    $html .= "<tr>";
+    $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
+    $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "</tr>";
+    
     foreach($pages_within_collection as $key=>$array){
 
       $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
       $manuscripts_title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : ''; 
       $manuscripts_date = isset($array['manuscripts_date']) ? $array['manuscripts_date'] : '';
       
-      $html .= "<table id='userpage-table' style='width: 100%;'>";
-      $html .= "<tr>";
-      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
-      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
-      $html .= "</tr>";
-            
       $html .= "<tr>";
       $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" . 
           htmlspecialchars($manuscripts_title) . "</a></td>";
