@@ -249,13 +249,23 @@ class SpecialUserPage extends SpecialPage {
 
       if(!empty($textfield)){
         if($index !== 'wptextfield14'){
-          if(!ctype_alnum($textfield) || strlen($textfield) > $max_length){
-            return $this->showEditMetadata(array(), 'You can only use letters or numbers for the input');
-          }
+          if(strlen($textfield) > $max_length){
+            return $this->showEditMetadata(array(), "You can only use a maximum of " . $max_length . "charachters for the notes");
+          }elseif(!preg_match("/^[A-Za-z0-9]+$/",$textfield)){  
+            return $this->showEditMetadata(array(), "You can only use letters or numbers for the input");
+          }  
 
+        //in case the textfield is the 'notes' textfield  
         }else{
-          if(!preg_match("/^[A-Za-z0-9 ,.';!?]+$/",$textfield) || strlen($textfield) > ($max_length*10)){
-            return $this->showEditMetadata(array(), "'You can only use letters or numbers for the input");
+          
+          $length_textfield = strlen($textfield);
+          $max_charachters_notes = $max_length*20; 
+          
+          if($length_textfield > $max_charachters_notes){
+            return $this->showEditMetadata(array(), "You can only use a maximum of " . $max_charachters_notes . " charachters for the notes. "
+                . "You have currently used " . $length_textfield . " charachters");
+          }elseif(!preg_match("/^[A-Za-z0-9,.;!?\s]+$/",$textfield)){  
+            return $this->showEditMetadata(array(), "You can only use letters, numbers, or these charachters: '.,!?' for the notes");
           }  
         }
       }

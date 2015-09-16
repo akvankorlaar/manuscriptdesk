@@ -59,8 +59,8 @@ class pageMetaTable{
         $html .= "<tr>";
       }
       
-      $html .= "<th style='width:25%;'>" . $index . "</th>";
-      $html .= "<td style = 'width:25%;'>" . $value . "</td>";        
+      $html .= "<th>" . $index . "</th>";
+      $html .= "<td>" . $value . "</td>";        
       $a+=1;   
     }
     

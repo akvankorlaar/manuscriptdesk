@@ -22,6 +22,8 @@
  * 
  * Todo: Before echoing to the browser, htmlspecialchars on every variable retrieved from database
  * 
+ * Todo: Check if the databasewrapper performs mysql_real_escape_string before inserting data ino the database
+ * 
  * Todo: Add a button on a page with a collection that can take you to the next page of that collection. Perhaps assign every manuscript page a unique long number
  * (made of for example the user name and the date of creation for the collection), so that the next page can be found by doing current page + 1
  * 
@@ -471,14 +473,9 @@ class SpecialNewManuscript extends SpecialPage {
     $title_object = $this->new_page_title_object;  
     $context = $this->getContext();  
     $article = Article::newFromTitle($title_object, $context);
-              
-    $wiki_text = "
-    This page has not been transcribed yet. 
-    
-<!-- please do not edit below this line -->";
-    
-    $wiki_text .= '<metatable>' . $collection . '</metatable>';
-    
+             
+    $wiki_text = "This page has not been transcribed yet.";
+            
     $editor_object = new EditPage($article); 
     $content_new = new wikitextcontent($wiki_text);
     //see includes/EditPage.php of an example on how this function is used

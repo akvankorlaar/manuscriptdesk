@@ -64,16 +64,16 @@ class collectionMetaTable{
           </th>
       </tr>
        <tr>
-          <th style='width:25%;'>
+          <th>
           Author Name:
           </th>
-          <td style = 'width:25%;'>
+          <td>
           $metaauthor
           </td>
-          <th style ='width:25%;'>
+          <th>
           Published in Year:
           </th>
-          <td style ='width:25%;'>
+          <td>
           $metayear
           </td>
       </tr>
@@ -148,18 +148,11 @@ class collectionMetaTable{
           </td>
       </tr>
        </tr>
-           <tr>
-          <th>
-          Notes:
-          </th>
-          <td>
+        <tr>
+          <th colspan='4' style='text-align: center; background-color: #f7f7f7;'>
           $metanotes
-          </td>
-      </tr>
-       <tr>
-          <td colspan='4' style='text-align: center; background-color: #def;'>         
-          </td>
-      </tr>
+          </th>
+       </tr>
     </table>
   ";
      

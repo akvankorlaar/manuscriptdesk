@@ -73,7 +73,7 @@ class newManuscriptHooks {
   private $zoomimage_check_before_delete;
   private $original_image_check_before_delete;
   private $max_charachters_manuscript; 
-  private $collection;
+  private $view;
    
  /**
   * Assign globals to properties
@@ -99,7 +99,9 @@ class newManuscriptHooks {
     $this->max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
     
     $this->zoomimage_check_before_delete = false;
-    $this->original_image_check_before_delete = false; 
+    $this->original_image_check_before_delete = false;
+    
+    $this->view = false;
     
     return true;
   }
@@ -159,14 +161,14 @@ class newManuscriptHooks {
     
     if($collection !== null){
       $html .= '<h2>' . $collection . '</h2><br>';
-      $this->collection = $collection;
     }
        
     $html .= $this->getOriginalImageLink();                            
-    $html .= $this->formatIframeHTML();     
-    $output->addHTML($html);
-    
+    $html .= $this->formatIframeHTML();
+    $output->addHTML($html);   
     $output->addModuleStyles('ext.zoomviewer'); 
+    
+    $this->view = true; 
         
     return true;
   }
@@ -176,9 +178,9 @@ class newManuscriptHooks {
    * 
    * @return type
    */
-  private function getCollection(){
+  private function getCollection($page_title_with_namespace = null){
     
-    $page_title_with_namespace = $this->page_title_with_namespace; 
+    $page_title_with_namespace = isset($page_title_with_namespace) ? $page_title_with_namespace : $this->page_title_with_namespace; 
     
     $dbr = wfGetDB(DB_SLAVE);
         
@@ -399,26 +401,8 @@ class newManuscriptHooks {
   public static function register(Parser &$parser){
     
     // Register the hook with the parser
-    $parser->setHook('metatable', array('newManuscriptHooks', 'renderMetaTable'));
     $parser->setHook('pagemetatable', array('newManuscriptHooks', 'renderPageMetaTable'));
     return true;
-  }
-  
-  /**
-   * This function makes a new meta table object, extracts
-   * the options in the tags, and renders the table
-   */
-  public static function renderMetaTable($collection_name, $args, Parser $parser){
-    
-    $meta_data = array();
-    
-    if(ctype_alnum($collection_name) && $collection_name !== '' && strlen($collection_name) <= 50) {
-      $summary_page_wrapper = new summaryPageWrapper('getmetadata',0,0,'','','', $collection_name);
-      $meta_data = $summary_page_wrapper->retrieveFromDatabase($collection_name); 
-    }
-      
-    $collection_meta_table = new collectionMetaTable();   
-    return $collection_meta_table->renderTable($meta_data);
   }
   
   /**
@@ -431,6 +415,23 @@ class newManuscriptHooks {
     $page_meta_table->extractOptions($input);
     
     return $page_meta_table->renderTable($input);    
+  }
+  
+  /**
+   * This function makes a new meta table object, extracts
+   * the options in the tags, and renders the table
+   */
+  private function renderMetaTable($collection_name){
+        
+    if(!isset($collection_name)){
+      return; 
+    }
+    
+    $summary_page_wrapper = new summaryPageWrapper('getmetadata',0,0,'','','', $collection_name);
+    $meta_data = $summary_page_wrapper->retrieveFromDatabase($collection_name); 
+      
+    $collection_meta_table = new collectionMetaTable();   
+    return $collection_meta_table->renderTable($meta_data);
   }
   
   /**
@@ -692,13 +693,19 @@ class newManuscriptHooks {
     $title_object = $out->getTitle();
     
     //mPrefixedText is the page title with the namespace
-    $page_title = $title_object->mPrefixedText; 
-
+    $page_title_with_namespace = $title_object->mPrefixedText; 
+    
     if($title_object->getNamespace() === NS_MANUSCRIPTS){
       //add css for the metatable and the zoomviewer
       $out->addModuleStyles('ext.metatable');
-      
-    }elseif($page_title === 'Special:NewManuscript'){
+       
+      if($this->view){
+        $collection = $this->getCollection($page_title_with_namespace);
+        $html = $this->renderMetaTable($collection);
+        $out->addHTML($html);
+      }
+           
+    }elseif($page_title_with_namespace === 'Special:NewManuscript'){
       $out->addModuleStyles('ext.newmanuscriptcss');
       $out->addModules('ext.newmanuscriptloader');
     }
