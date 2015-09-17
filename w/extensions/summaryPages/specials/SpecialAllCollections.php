@@ -42,8 +42,7 @@ class SpecialAllCollections extends baseSummaryPage {
    */
   protected function showPage($title_array){
     
-    $out = $this->getOutput(); 
-    
+    $out = $this->getOutput();  
     $article_url = $this->article_url; 
     
     $out->setPageTitle($this->msg('allcollections'));

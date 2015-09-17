@@ -156,6 +156,9 @@ class newManuscriptHooks {
       return true;    
     }
     
+    $user_name = $user->getName();
+    $user_fromurl = $this->user_fromurl; 
+    
     $html = "";    
     $collection = $this->getCollection();
     
@@ -163,13 +166,12 @@ class newManuscriptHooks {
       $html .= '<h2>' . $collection . '</h2><br>';
     }
     
-
     $html .= "<table id='link-wrap'>";
     $html .= "<tr>";
     
     $html .= $this->getOriginalImageLink();
-    
-    if($collection !== null){
+       
+    if($collection !== null && $user_name === $user_fromurl){
       $html .= $this->getLinkToEditCollection($collection);
     }
     

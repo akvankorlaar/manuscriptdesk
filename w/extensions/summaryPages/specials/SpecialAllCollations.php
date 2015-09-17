@@ -41,8 +41,7 @@ class SpecialAllCollations extends baseSummaryPage {
    */
   protected function showPage($title_array){
     
-    $out = $this->getOutput(); 
-    
+    $out = $this->getOutput();    
     $article_url = $this->article_url; 
     
     $out->setPageTitle($this->msg('allcollations'));
@@ -57,9 +56,9 @@ class SpecialAllCollations extends baseSummaryPage {
       $name = $lowercase_alphabet[$key]; 
 
       if($this->button_name === $name){
-        $html .= "<input type='submit' name='$name' id='active_button' value='$value'>";
+        $html .= "<input type='submit' name='$name' class='letter-button-active' value='$value'>";
       }else{
-        $html .= "<input type='submit' name='$name' id='letter_button' value='$value'>";
+        $html .= "<input type='submit' name='$name' class='letter-button' value='$value'>";
       }
     }
 
@@ -80,7 +79,7 @@ class SpecialAllCollations extends baseSummaryPage {
              
     if($this->previous_page_possible){
       
-      $previous_hover_message = $this->msg('allcollations-previoushover');
+      $previous_message_hover = $this->msg('allcollations-previoushover');
       $previous_message = $this->msg('allcollations-previous');
       
       $previous_offset = ($this->offset)-($this->max_on_page); 
@@ -89,7 +88,7 @@ class SpecialAllCollations extends baseSummaryPage {
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
-      $html .= "<input type='submit' name = 'redirect_page_back' id='button' title='$previous_hover_message'  value='$previous_message'>";
+      $html .= "<input type='submit' class='button-transparent' name = 'redirect_page_back' id='button' title='$previous_message_hover'  value='$previous_message'>";
       
       $html.= "</form>";
     }
@@ -100,36 +99,46 @@ class SpecialAllCollations extends baseSummaryPage {
         $html.='<br>';
       }
       
-      $next_hover_message = $this->msg('allcollations-nexthover');
+      $next_message_hover = $this->msg('allcollations-nexthover');
       $next_message = $this->msg('allcollations-next');
       
       $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:AllCollations" method="post">';
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .=("<input type='hidden' name='$this->button_name' value='$this->button_name'>"); 
-      $html .= "<input type='submit' name = 'redirect_page_forward' id='button' title='$next_hover_message' value='$next_message'>";
+      $html .= "<input type='submit' class='button-transparent' name='redirect_page_forward' id='button' title='$next_message_hover' value='$next_message'>";
       
       $html.= "</form>";
     }
     
     $html .= $this->addSummaryPageLoader();
-        
-    $out->addHTML($html);
     
-    $created_message = $this->msg('allcollations-created');  
-    $on_message = $this->msg('allcollations-on');
-    
+    $html .= "<table id='userpage-table' style='width: 100%;'>";
+    $html .= "<tr>";
+    $html .= "<td class='td-three'>" . "<b>Title</b>" . "</td>";
+    $html .= "<td class='td-trhee'>" . "<b>User</b>" . "</td>";
+    $html .= "<td class='td-three'>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "</tr>";
+      
     foreach($title_array as $key=>$array){
-      
-      $user = isset($array['collations_user']) ? $array['collations_user'] : ''; 
-      $url = isset($array['collations_url']) ? $array['collations_url'] : '';
-      $date = isset($array['collations_date']) ? $array['collations_date'] : '';
+
       $title = isset($array['collations_main_title']) ? $array['collations_main_title'] : '';
-      
-      $out->addWikiText('[[' . $url . '|' . $title . ']]<br>' . $created_message . ' ' . $user . '<br> ' . $on_message . ' ' . $date);  
+      $url = isset($array['collations_url']) ? $array['collations_url'] : '';
+      $user = isset($array['collations_user']) ? $array['collations_user'] : '';
+      $date = isset($array['collations_date']) ? $array['collations_date'] : '';
+        
+      $html .= "<tr>";
+      $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
+          htmlspecialchars($title) . "</a></td>";
+      $html .= "<td class='td-three'>" . htmlspecialchars($user) . "</td>";
+      $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
+      $html .= "</tr>";      
     }
-    
-    return true; 
+      
+    $html .= "</table>";
+        
+    $out->addModuleStyles('ext.userPage');
+    return $out->addHTML($html);
   }
   
   /**
@@ -137,8 +146,7 @@ class SpecialAllCollations extends baseSummaryPage {
    */
   protected function showDefaultPage(){
       
-    $out = $this->getOutput();
-    
+    $out = $this->getOutput();   
     $article_url = $this->article_url; 
     
     $out->setPageTitle($this->msg('allcollations'));    
@@ -151,7 +159,7 @@ class SpecialAllCollations extends baseSummaryPage {
     
     foreach($uppercase_alphabet as $key=>$value){
       $name = $lowercase_alphabet[$key]; 
-      $html .="<input type='submit' name='$name' id='initial_button' value='$value'>";
+      $html .="<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
     } 
     
     $html .= '</form><br>';

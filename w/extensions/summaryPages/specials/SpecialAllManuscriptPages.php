@@ -79,10 +79,10 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
     
     if($this->previous_page_possible){
       
-      $previous_offset = ($this->offset)-($this->max_on_page); 
-      
       $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
       $previous_message = $this->msg('allmanuscriptpages-previous');
+      
+      $previous_offset = ($this->offset)-($this->max_on_page); 
       
       $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
        
@@ -106,7 +106,7 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
-      $html .= "<input type='submit' class='button-transparent' name ='redirect_page_forward' title='$next_message_hover' value='$next_message'>";
+      $html .= "<input type='submit' class='button-transparent' name='redirect_page_forward' title='$next_message_hover' value='$next_message'>";
       
       $html.= "</form>";
     }
@@ -146,8 +146,7 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
    */
   protected function showDefaultPage(){
       
-    $out = $this->getOutput();
-    
+    $out = $this->getOutput();  
     $article_url = $this->article_url; 
         
     $out->setPageTitle($this->msg('allmanuscriptpages'));    

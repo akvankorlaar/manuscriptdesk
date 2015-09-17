@@ -8,15 +8,13 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
- * Todo: Create a form button on a manuscript page called 'edit collection metadata'. This only shows in case the page is part of a collection
+ * Todo: In some cases mPrefixedText does not work on the summary pages. Find out why
  * 
  * Todo: Check if it is possible to restructure the collatex javascript 
  * 
  * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form)
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
- * 
- * Todo: Find out how to disable 'discussion' pages in NS_MANUSCRIPTS
  * 
  * Todo: Before echoing to the browser, htmlspecialchars on every variable retrieved from database
  * 

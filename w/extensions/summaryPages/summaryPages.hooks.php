@@ -34,7 +34,7 @@ class summaryPagesHooks {
 
     $title_object = $out->getTitle();
     $page_title = $title_object->mPrefixedText; 
-
+    
     if($page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections'|| $page_title === 'Special:AllManuscriptPages' || $page_title === 'Special:AllCollations'){
       
       $out->addModuleStyles("ext.userPage");
