@@ -8,15 +8,24 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
+ * Todo: In some cases mPrefixedText does not work on the summary pages. Find out why
+ * 
  * Todo: Check if it is possible to restructure the collatex javascript 
  * 
+ * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form)
+ * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
+ * 
+ * Todo: Before echoing to the browser, htmlspecialchars on every variable retrieved from database
+ * 
+ * Todo: Check if the databasewrapper performs mysql_real_escape_string before inserting data ino the database
+ * 
+ * Todo: Add a button on a page with a collection that can take you to the next page of that collection. Perhaps assign every manuscript page a unique long number
+ * (made of for example the user name and the date of creation for the collection), so that the next page can be found by doing current page + 1
  * 
  * Todo: Perhaps instead of splitting the URL into $user_fromurl and $file_fromurl, don't split it, and construct the path to zoomimages using just the page title
  * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
- * 
- * Todo: The text in createNewWikiPage() should be placed in the i18n file
  * 
  * Todo: Remove unused variables in newManuscriptForm
  * 
@@ -79,6 +88,7 @@ class SpecialNewManuscript extends SpecialPage {
   private $manuscripts_namespace_url; 
   private $new_page_title_object; 
   private $zoomimages_root_dir; 
+  private $selected_collection; 
   
   //class constructor
   public function __construct(){
@@ -95,7 +105,7 @@ class SpecialNewManuscript extends SpecialPage {
     
     $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
     $this->zoomimages_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
-    
+        
     parent::__construct('NewManuscript');
   }
   
@@ -113,7 +123,23 @@ class SpecialNewManuscript extends SpecialPage {
     $this->token_is_ok = $this->getUser()->matchEditToken($token);
     $this->posted_title = $request->getText('wptitle_field');
     $this->posted_collection = $request->getText('wpcollection_field');
-    $this->user_name = $user_object->getName();
+    $this->user_name = $user_object->getName();        
+    $this->selected_collection = $this->validateInput($request->getText('selected_collection'));  
+  }
+  
+  /**
+   * This function validates input sent by the client
+   * 
+   * @param type $input
+   */
+  private function validateInput($input){
+    
+    //check for empty variables or unusually long string lengths
+    if(!ctype_alnum($input) || $input === null || strlen($input) > 500){
+      return false; 
+    }
+    
+    return $input; 
   }
   
   /**
@@ -200,7 +226,7 @@ class SpecialNewManuscript extends SpecialPage {
       $collections_message = "";
     }
 
-    $new_manuscript_form = new newManuscriptForm($context, $collections_message);
+    $new_manuscript_form = new newManuscriptForm($context, $collections_message, $this->selected_collection);
         
     //Add upload error message. 
     $new_manuscript_form->addPreText($message);
@@ -332,30 +358,35 @@ class SpecialNewManuscript extends SpecialPage {
     }
     
     //create a new wikipage
-    $wikipage_status = $this->createNewWikiPage();
+    $wikipage_status = $this->createNewWikiPage($collection);
     
     if($wikipage_status !== true){
        //something went wrong when creating a new wikipage, so delete all export files, if they exist
-      $prepare_slicer->deleteExportFiles(); 
-      
+      $prepare_slicer->deleteExportFiles();      
       return $this->showUploadError($this->msg($wikipage_status));
     }
     
     $new_manuscript_wrapper = new newManuscriptWrapper();
     
+    $date = date("d-m-Y H:i:s");  
+    
+    if($collection !== "none"){
+      //store information about the collection in the 'collections' table. Only inserts values if collection does not already exist  
+      $collectionstable_status = $new_manuscript_wrapper->storeCollections($collection, $user_name, $date);
+    }
+    
     //store information about the new uploaded manuscript page in the 'manuscripts' table
-    $status = $new_manuscript_wrapper->writeToDB($posted_title, $collection, $user_name,$new_page_url);
-
-    if(!$status){
+    $manuscriptstable_status = $new_manuscript_wrapper->storeManuscripts($posted_title, $collection, $user_name,$new_page_url, $date);
+   
+    if(!$manuscriptstable_status){
       //delete all exported files if writing to the database failed, and show an error
       $prepare_slicer->deleteExportFiles(); 
-
       return $this->showUploadError($this->msg('newmanuscript-error-database'));
     }
     
-    //if no errors, and slice succesfull, redirect to the new page
+    //redirect to the new page
     return $this->getOutput()->redirect($local_url);
-    }
+  }
     
  /**
   * This function checks if posted title is empty, contains invalid charachters, is too long, or already exists in the database.
@@ -418,7 +449,7 @@ class SpecialNewManuscript extends SpecialPage {
     }else{
       $new_manuscript_wrapper = new newManuscriptWrapper($this->user_name, $this->maximum_pages_per_collection);
       
-      $collection_error = $new_manuscript_wrapper->checkNumberOfPagesPostedCollection($posted_collection);
+      $collection_error = $new_manuscript_wrapper->checkTables($posted_collection);
     }
     
     return $collection_error;    
@@ -427,43 +458,18 @@ class SpecialNewManuscript extends SpecialPage {
   /**
    * This function makes a new wikipage, and auto loads wiki text needed for the metatable.
    */
-  private function createNewWikiPage(){
+  private function createNewWikiPage($collection){
         
+    if($collection === 'none'){
+      $collection = ''; 
+    }
+    
     $title_object = $this->new_page_title_object;  
     $context = $this->getContext();  
     $article = Article::newFromTitle($title_object, $context);
-      
-    $open_tag = '<metatable>';
-    $close_tag = '</metatable>';
-        
-    $wiki_text = "
-    This page has not been transcribed yet. 
-
-
-
-<!-- only edit metatable values below this line -->
-    $open_tag
-    title=
-    author=
-    date= 
-    original_image_name= 
-    image_number= 
-    page_number= 
-    info_in_main_headings_field= 
-    marginal_summary_numbering=
-    category=
-    number_of_pages=
-    recto_verso=
-    penner=
-    watermarks=
-    marginals=
-    paper_producer=
-    corrections=
-    produced_in_year=
-    notes_public=
-    id_number=
-    $close_tag";
-    
+             
+    $wiki_text = "This page has not been transcribed yet.";
+            
     $editor_object = new EditPage($article); 
     $content_new = new wikitextcontent($wiki_text);
     //see includes/EditPage.php of an example on how this function is used
@@ -520,5 +526,5 @@ class SpecialNewManuscript extends SpecialPage {
   */ 
   static function showUploadError2($form_data){
       return false; 
-    }
+  }
 }

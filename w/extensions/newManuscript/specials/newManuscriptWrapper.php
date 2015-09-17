@@ -74,17 +74,15 @@ class newManuscriptWrapper{
   }
   
   /**
-   * This functions checks if the collection already reached the maximum allowed manuscript pages
+   * This functions checks if the collection already reached the maximum allowed manuscript pages, or if it already exists
    * 
    * @param type $posted_collection
    * @return string
    */
-  public function checkNumberOfPagesPostedCollection($posted_collection){
+  public function checkTables($posted_collection){
     
     $dbr = wfGetDB(DB_SLAVE);
- 
-    $conds = 
-        
+         
       //Database query
     $res = $dbr->select(
         'manuscripts', //from
@@ -104,6 +102,26 @@ class newManuscriptWrapper{
     if ($res->numRows() > $this->maximum_pages_per_collection){
       return 'newmanuscript-error-collectionmaxreached';
     }
+        
+        //Database query
+    $res = $dbr->select(
+      'collections', //from
+      array( //values
+      'collections_title',
+         ),
+      array(
+      'collections_title = ' . $dbr->addQuotes($posted_collection),
+      ),
+      __METHOD__,
+      array(
+      'ORDER BY' => 'collections_title',
+      )
+      );
+        
+    //if it already exists, return an error
+    if ($res->numRows() >= 1){
+     return 'newmanuscript-error-collectionexists';
+    }
    
     return ""; 
   }
@@ -116,11 +134,9 @@ class newManuscriptWrapper{
    * @param type $new_page_url
    * @return boolean
    */
-  public function writeToDB($posted_title, $collection, $user_name,$new_page_url){
+  public function storeManuscripts($posted_title, $collection, $user_name,$new_page_url, $date){
       
-    $date = date("d-m-Y H:i:s");  
     $date2 = date('YmdHis');
-
     $lowercase_title = strtolower($posted_title);
     $lowercase_collection = strtolower($collection);
     
@@ -145,6 +161,38 @@ class newManuscriptWrapper{
       
     }else{
     //return error
+      return false;      
+    }
+  }
+  
+  /**
+   * This function insert data into the collections table
+   * 
+   * @param type $collection_title
+   * @param type $user_name    
+   * @return boolean
+   */
+  public function storeCollections($collection_name, $user_name, $date){
+      
+    $dbw = wfGetDB(DB_MASTER);
+    
+    $collections_title_lowercase = strtolower($collection_name);
+    
+    $dbw->insert('collections', //select table
+      array( //insert values
+      'collections_title'                => $collection_name,
+      'collections_title_lowercase'      => $collections_title_lowercase,
+      'collections_user'                 => $user_name,
+      'collections_date'                 => $date,  
+       ),__METHOD__,
+       'IGNORE' ); //ensures that duplicate $collection_name is ignored
+    
+     if ($dbw->affectedRows()){
+      //collection did not exist yet
+      return true;
+      
+    }else{
+    //collection already exists
       return false;      
     }
   }

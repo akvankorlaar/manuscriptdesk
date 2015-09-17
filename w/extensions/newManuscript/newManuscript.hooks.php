@@ -73,6 +73,7 @@ class newManuscriptHooks {
   private $zoomimage_check_before_delete;
   private $original_image_check_before_delete;
   private $max_charachters_manuscript; 
+  private $view;
    
  /**
   * Assign globals to properties
@@ -98,7 +99,9 @@ class newManuscriptHooks {
     $this->max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
     
     $this->zoomimage_check_before_delete = false;
-    $this->original_image_check_before_delete = false; 
+    $this->original_image_check_before_delete = false;
+        
+    $this->view = false;
     
     return true;
   }
@@ -120,8 +123,10 @@ class newManuscriptHooks {
     if(!$this->urlValid()){
       return true;   
     }
-                    
-    $this->loadViewer($output);
+    
+    $html = $this->formatIframeHTML(); 
+    $output->addHTML($html);                
+    $output->addModuleStyles('ext.zoomviewer'); 
 
     return true;
   }
@@ -150,20 +155,56 @@ class newManuscriptHooks {
     if(!$this->urlValid()){
       return true;    
     }
-      
+    
+    $user_name = $user->getName();
+    $user_fromurl = $this->user_fromurl; 
+    
+    $html = "";    
     $collection = $this->getCollection();
     
     if($collection !== null){
-      $output->addHTML('<h2>' . $collection . '</h2><br>');
+      $html .= '<h2>' . $collection . '</h2><br>';
     }
+    
+    $html .= "<table id='link-wrap'>";
+    $html .= "<tr>";
+    
+    $html .= $this->getOriginalImageLink();
+       
+    if($collection !== null && $user_name === $user_fromurl){
+      $html .= $this->getLinkToEditCollection($collection);
+    }
+    
+    $html .= "</tr>";
+    $html .= "</table>";
+      
+    $html .= $this->formatIframeHTML();
+    $output->addHTML($html);   
+    $output->addModuleStyles('ext.zoomviewer'); 
+    
+    $this->view = true; 
         
-    $original_image_link = $this->getOriginalImageLink();
-    
-    $output->addHTML($original_image_link);
-                            
-    $this->loadViewer($output);
-    
     return true;
+  }
+  
+  /**
+   * 
+   */
+  private function getLinkToEditCollection($collection){
+    
+    global $wgArticleUrl;
+    
+    $article_url = $wgArticleUrl; 
+    $page_title_with_namespace = $this->page_title_with_namespace;
+    
+    $html = "";
+    $html .= '<form class="manuscriptpage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    $html .= "<input type='hidden' name='linkcollection' value='" . $collection . "'>";
+    $html .= "<input type='hidden' name='linkback' value='" . $page_title_with_namespace . "'>";
+    $html .= "<td><input class='button-transparent' type='submit' name='editlink' value='Edit Collection Metadata'></td>";
+    $html .= "</form>";
+    
+    return $html;
   }
   
   /**
@@ -171,9 +212,9 @@ class newManuscriptHooks {
    * 
    * @return type
    */
-  private function getCollection(){
+  private function getCollection($page_title_with_namespace = null){
     
-    $page_title_with_namespace = $this->page_title_with_namespace; 
+    $page_title_with_namespace = isset($page_title_with_namespace) ? $page_title_with_namespace : $this->page_title_with_namespace; 
     
     $dbr = wfGetDB(DB_SLAVE);
         
@@ -233,7 +274,7 @@ class newManuscriptHooks {
     
     $link_original_image_path = $partial_original_image_path . $image_file; 
     
-    return "<a href='$link_original_image_path' target='_blank'>" . $this->getMessage('newmanuscripthooks-originalimage') . "</a>";   
+    return "<td><a class='link-transparent' href='$link_original_image_path' target='_blank'>" . $this->getMessage('newmanuscripthooks-originalimage') . "</a></td>";   
   }
   
   /**
@@ -307,21 +348,6 @@ class newManuscriptHooks {
     $this->filename_fromurl = $filename_fromurl; 
     
     return true;    
-  }
-  
-  /**
-   * Adds the iframe HTML to the page. This HTML will be used by the zoomviewer so that it can load the correct image
-   * 
-   * @param $output OutputPage
-   * @return bool 
-   */
-  private function loadViewer(OutputPage $output ){
-        
-    $view_content = $this->formatIframeHTML();
-    $output->addModuleStyles('ext.zoomviewer'); 
-    $output->addHTML($view_content);
-    
-    return true;
   }
   
   /**
@@ -409,7 +435,7 @@ class newManuscriptHooks {
   public static function register(Parser &$parser){
     
     // Register the hook with the parser
-    $parser->setHook('metatable', array('newManuscriptHooks', 'render'));
+    $parser->setHook('pagemetatable', array('newManuscriptHooks', 'renderPageMetaTable'));
     return true;
   }
   
@@ -417,12 +443,29 @@ class newManuscriptHooks {
    * This function makes a new meta table object, extracts
    * the options in the tags, and renders the table
    */
-  public static function render($input, $args, Parser $parser){
+  public static function renderPageMetaTable($input, $args, Parser $parser){
+      
+    $page_meta_table = new pageMetaTable();
+    $page_meta_table->extractOptions($input);
     
-    $meta_table = new metaTable();
-    $meta_table->extractOptions($parser->replaceVariables($input));
+    return $page_meta_table->renderTable($input);    
+  }
+  
+  /**
+   * This function makes a new meta table object, extracts
+   * the options in the tags, and renders the table
+   */
+  private function renderMetaTable($collection_name){
+        
+    if(!isset($collection_name)){
+      return; 
+    }
     
-    return $meta_table->renderTable($input);
+    $summary_page_wrapper = new summaryPageWrapper('getmetadata',0,0,'','','', $collection_name);
+    $meta_data = $summary_page_wrapper->retrieveFromDatabase($collection_name); 
+      
+    $collection_meta_table = new collectionMetaTable();   
+    return $collection_meta_table->renderTable($meta_data);
   }
   
   /**
@@ -684,20 +727,27 @@ class newManuscriptHooks {
     $title_object = $out->getTitle();
     
     //mPrefixedText is the page title with the namespace
-    $page_title = $title_object->mPrefixedText; 
-
+    $page_title_with_namespace = $title_object->mPrefixedText; 
+    
     if($title_object->getNamespace() === NS_MANUSCRIPTS){
       //add css for the metatable and the zoomviewer
       $out->addModuleStyles('ext.metatable');
-      
-    }elseif($page_title === 'Special:NewManuscript'){
+       
+      //meta table has to rendered here, because in this way it will be appended after the text html, and not before
+      if($this->view){
+        $collection = $this->getCollection($page_title_with_namespace);
+        $html = $this->renderMetaTable($collection);
+        $out->addHTML($html);
+      }
+           
+    }elseif($page_title_with_namespace === 'Special:NewManuscript'){
       $out->addModuleStyles('ext.newmanuscriptcss');
       $out->addModules('ext.newmanuscriptloader');
     }
-      
+          
     return true; 
   }
-  
+
   /**
    * This function retrieves the message from the i18n file for String $identifier
    * 

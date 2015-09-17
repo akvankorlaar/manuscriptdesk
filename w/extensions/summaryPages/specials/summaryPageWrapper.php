@@ -24,24 +24,26 @@
 
 class summaryPageWrapper{
   
-  private $page_name; 
+  private $request_context; 
   private $max_on_page;
   private $offset; 
   private $user_name; 
   private $button_name; 
   private $next_page_possible; 
   private $next_letter_alphabet; 
+  private $selected_collection;
   
   //class constructor
-  public function __construct($page_name, $max_on_page = 0, $offset = 0,$user_name = "", $button_name = "", $next_letter_alphabet = ""){
+  public function __construct($request_context, $max_on_page = 0, $offset = 0,$user_name = "", $button_name = "", $next_letter_alphabet = "", $selected_collection = ""){
     
-    $this->page_name = $page_name;
+    $this->request_context = $request_context;
     $this->max_on_page = $max_on_page;
     $this->offset = $offset;
     $this->user_name = $user_name; 
     $this->button_name = $button_name; 
     $this->next_page_possible = false; //default value
     $this->next_letter_alphabet = $next_letter_alphabet; 
+    $this->selected_collection = $selected_collection;
   }
   
   /**
@@ -53,7 +55,7 @@ class summaryPageWrapper{
    */
   public function retrieveFromDatabase(){
     
-    switch($this->page_name){
+    switch($this->request_context){
       
       case 'AllCollations':
         return $this->retrieveAllCollations();
@@ -67,15 +69,22 @@ class summaryPageWrapper{
       case 'RecentManuscriptPages':
         return $this->retrieveRecentManuscriptPages();
         break;
-      case 'UserPageManuscriptPages':
+      case 'viewmanuscripts':
         return $this->retrieveUserPageManuscriptPages();
         break;  
-      case 'UserPageCollations':
+      case 'viewcollations':
         return $this->retrieveUserPageCollations();
         break;
-      case 'UserPageCollections':
+      case 'viewcollections':
         return $this->retrieveUserPageCollections();
-        break;   
+        break; 
+      case 'singlecollection':
+      case 'submitedit':
+        return $this->retrieveSingleCollection();
+      case 'editmetadata':
+      case 'getmetadata' :  
+        return $this->retrieveMetadata();
+        break;
     }
   }
                  
@@ -155,23 +164,21 @@ class summaryPageWrapper{
     
     //Database query
     $res = $dbr->select(
-      'manuscripts', //from
+        'collections', //from
       array(
-        'manuscripts_title', //values
-        'manuscripts_user',
-        'manuscripts_url',
-        'manuscripts_date',
-        'manuscripts_collection',
-        'manuscripts_lowercase_collection',
+        'collections_title',//values
+        'collections_title_lowercase',
+        'collections_user',
+        'collections_date',        
         ), 
       array(
-        'manuscripts_lowercase_collection >= ' . $dbr->addQuotes($button_name),
-        'manuscripts_lowercase_collection < '  . $dbr->addQuotes($next_letter_alphabet),
-        'manuscripts_lowercase_collection != ' . $dbr->addQuotes("none"),
+        'collections_title_lowercase >= ' . $dbr->addQuotes($button_name),
+        'collections_title_lowercase < '  . $dbr->addQuotes($next_letter_alphabet),
+        'collections_title_lowercase != ' . $dbr->addQuotes("none"),
        ),
       __METHOD__,
       array(
-        'ORDER BY' => 'manuscripts_collection',
+        'ORDER BY' => 'collections_title_lowercase',
         'LIMIT' => $this->max_on_page+1,
         'OFFSET' => $this->offset, 
       )
@@ -185,11 +192,9 @@ class summaryPageWrapper{
         if (count($title_array) < $this->max_on_page){
           
           $title_array[] = array(
-          'manuscripts_title' => $s->manuscripts_title,
-          'manuscripts_user' => $s->manuscripts_user,
-          'manuscripts_url' => $s->manuscripts_url,
-          'manuscripts_date' => $s->manuscripts_date,
-          'manuscripts_collection' => $s->manuscripts_collection,
+          'collections_title' => $s->collections_title,
+          'collections_user' => $s->collections_user,
+          'collections_date' => $s->collections_date,
         );
 
         //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
@@ -221,20 +226,21 @@ class summaryPageWrapper{
     $res = $dbr->select(
       'manuscripts', //from
       array(
-        'manuscripts_title', //values
-        'manuscripts_user',
-        'manuscripts_url',
-        'manuscripts_date',
-        'manuscripts_lowercase_title',
+      'manuscripts_title', //values
+      'manuscripts_user',
+      'manuscripts_url',
+      'manuscripts_date',
+      'manuscripts_lowercase_title',
         ), 
       array(
-    'manuscripts_lowercase_title >= ' . $dbr->addQuotes($button_name),
-    'manuscripts_lowercase_title < ' . $dbr->addQuotes($next_letter_alphabet), 
+      'manuscripts_lowercase_title >= ' . $dbr->addQuotes($button_name),
+      'manuscripts_lowercase_title < ' . $dbr->addQuotes($next_letter_alphabet),
+      //only get manuscript pages that are not part of a collection
+      'manuscripts_collection =' . $dbr->addQuotes('none'),  
      ),
     __METHOD__,
       array(
         'ORDER BY' => 'manuscripts_lowercase_title',
-        //'USE INDEX' => 'name_title', //can this still be used?
         'LIMIT' => $this->max_on_page+1,
         'OFFSET' => $this->offset, 
       )
@@ -335,11 +341,12 @@ class summaryPageWrapper{
         'manuscripts_title',//values
         'manuscripts_url',
         'manuscripts_date',
-        'manuscripts_collection',
         'manuscripts_lowercase_title',
          ),
       array(
-        'manuscripts_user = ' . $dbr->addQuotes($user_name),  
+        'manuscripts_user = ' . $dbr->addQuotes($user_name),
+        //only select manuscript pages that do not have a collection
+        'manuscripts_collection = ' . $dbr->addQuotes('none'),
       ),
       __METHOD__,
       array(
@@ -360,7 +367,6 @@ class summaryPageWrapper{
           'manuscripts_title' => $s->manuscripts_title,
           'manuscripts_url' => $s->manuscripts_url,
           'manuscripts_date' => $s->manuscripts_date,
-          'manuscripts_collection' => $s->manuscripts_collection,
         );
 
         //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
@@ -448,24 +454,22 @@ class summaryPageWrapper{
     
      //Database query
     $res = $dbr->select(
-      'manuscripts', //from
+        'collections', //from
       array(
-        'manuscripts_title',//values
-        'manuscripts_url',
-        'manuscripts_date',
-        'manuscripts_collection',
+        'collections_title',
+        'collections_date',
          ),
        array(
-        'manuscripts_user = ' . $dbr->addQuotes($user_name),
-        'manuscripts_collection != ' . $dbr->addQuotes(""),
-        'manuscripts_collection != ' . $dbr->addQuotes("none"),
+        'collections_user = ' . $dbr->addQuotes($user_name),
+        'collections_title != ' . $dbr->addQuotes(""),
+        'collections_title != ' . $dbr->addQuotes("none"),
         ),
       __METHOD__,
-      array(
-        'ORDER BY' => 'manuscripts_collection',
+       array(
+        'ORDER BY' => 'collections_title',
         'LIMIT' => $this->max_on_page+1,
         'OFFSET' => $this->offset, 
-      )
+         )
       );
         
     if ($res->numRows() > 0){
@@ -476,11 +480,9 @@ class summaryPageWrapper{
         if (count($title_array) < $this->max_on_page){
           
           $title_array[] = array(
-          'manuscripts_title' => $s->manuscripts_title,
-          'manuscripts_url' => $s->manuscripts_url,
-          'manuscripts_date' => $s->manuscripts_date,
-          'manuscripts_collection' => $s->manuscripts_collection,  
-        );
+            'collections_title' => $s->collections_title,
+            'collections_date'  => $s->collections_date,
+            );
 
         //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
         }else{
@@ -492,5 +494,227 @@ class summaryPageWrapper{
     }
    
     return array($title_array, $next_offset, $this->next_page_possible);  
+  }
+  
+  /**
+   * 
+   */
+  private function retrieveSingleCollection(){
+    
+    $selected_collection = $this->selected_collection; 
+    $dbr = wfGetDB(DB_SLAVE);
+    $meta_data = array();
+    $pages_within_collection = array();
+    
+        //Database query
+    $res = $dbr->select(
+      'collections', //from
+      array( //values
+      'collections_metatitle',
+      'collections_metaauthor',
+      'collections_metayear' ,      
+      'collections_metapages' ,    
+      'collections_metacategory',   
+      'collections_metaproduced',     
+      'collections_metaproducer', 
+      'collections_metaeditors',
+      'collections_metajournal',
+      'collections_metajournalnumber',
+      'collections_metatranslators',  
+      'collections_metawebsource',
+      'collections_metaid',        
+      'collections_metanotes',     
+         ),
+      array(
+      'collections_title = ' . $dbr->addQuotes($selected_collection),
+      ),
+      __METHOD__,
+      array(
+        'ORDER BY' => 'collections_title',
+      )
+      );
+        
+    //there should only be one result
+    if ($res->numRows() === 1){
+      //while there are still titles in this query
+      while ($s = $res->fetchObject()){
+                  
+         $meta_data ['collections_metatitle']         = $s->collections_metatitle;
+         $meta_data ['collections_metaauthor']        = $s->collections_metaauthor;
+         $meta_data ['collections_metayear']          = $s->collections_metayear;
+         $meta_data ['collections_metapages']         = $s->collections_metapages;
+         $meta_data ['collections_metacategory']      = $s->collections_metacategory;
+         $meta_data ['collections_metaproduced']      = $s->collections_metaproduced;
+         $meta_data ['collections_metaproducer']      = $s->collections_metaproducer;
+         $meta_data ['collections_metaeditors']       = $s->collections_metaeditors;
+         $meta_data ['collections_metajournal']       = $s->collections_metajournal;
+         $meta_data ['collections_metajournalnumber'] = $s->collections_metajournalnumber;
+         $meta_data ['collections_metatranslators']   = $s->collections_metatranslators;
+         $meta_data ['collections_metawebsource']     = $s->collections_metawebsource;
+         $meta_data ['collections_metaid']            = $s->collections_metaid;
+         $meta_data ['collections_metanotes']         = $s->collections_metanotes;       
+      }     
+    }
+     
+    //Database query
+    $res = $dbr->select(
+        'manuscripts', //from
+      array(
+        'manuscripts_title',//values
+        'manuscripts_url',
+        'manuscripts_date',
+        'manuscripts_lowercase_title',
+         ),
+      array(
+        'manuscripts_collection = ' . $dbr->addQuotes($selected_collection),
+      ),
+      __METHOD__,
+      array(
+        'ORDER BY' => 'manuscripts_lowercase_title',
+      )
+      );
+        
+    if ($res->numRows() > 0){
+      //while there are still titles in this query
+      while ($s = $res->fetchObject()){
+                  
+        $pages_within_collection[] = array(
+          'manuscripts_title' => $s->manuscripts_title,
+          'manuscripts_url' => $s->manuscripts_url,
+          'manuscripts_date' => $s->manuscripts_date,  
+        );      
+      }     
+    }
+    
+    return array($meta_data, $pages_within_collection);
+  }
+  
+  /**
+   * 
+   */
+  private function retrieveMetadata(){
+    
+    $user_name = $this->user_name;
+    $selected_collection = $this->selected_collection; 
+    $dbr = wfGetDB(DB_SLAVE);
+    $meta_data = array();
+    
+    if(!empty($user_name)){
+      $conditions = array(
+      'collections_user = ' . $dbr->addQuotes($user_name),
+      'collections_title = ' . $dbr->addQuotes($selected_collection),
+      );  
+      
+    }else{
+      $conditions = array(
+      'collections_title = ' . $dbr->addQuotes($selected_collection),
+      );   
+    }
+    
+    //Database query
+    $res = $dbr->select(
+      'collections', //from
+      array( //values
+      'collections_metatitle',
+      'collections_metaauthor',
+      'collections_metayear' ,      
+      'collections_metapages' ,    
+      'collections_metacategory',   
+      'collections_metaproduced',     
+      'collections_metaproducer', 
+      'collections_metaeditors',
+      'collections_metajournal',
+      'collections_metajournalnumber',
+      'collections_metatranslators',  
+      'collections_metawebsource',
+      'collections_metaid',        
+      'collections_metanotes',     
+         ),
+        $conditions,
+      __METHOD__,
+      array(
+        'ORDER BY' => 'collections_title',
+      )
+      );
+        
+    //there should only be one result
+    if ($res->numRows() === 1){
+      $s = $res->fetchObject();
+                  
+      $meta_data ['collections_metatitle']         = $s->collections_metatitle;
+      $meta_data ['collections_metaauthor']        = $s->collections_metaauthor;
+      $meta_data ['collections_metayear']          = $s->collections_metayear;
+      $meta_data ['collections_metapages']         = $s->collections_metapages;
+      $meta_data ['collections_metacategory']      = $s->collections_metacategory;
+      $meta_data ['collections_metaproduced']      = $s->collections_metaproduced;
+      $meta_data ['collections_metaproducer']      = $s->collections_metaproducer;
+      $meta_data ['collections_metaeditors']       = $s->collections_metaeditors;
+      $meta_data ['collections_metajournal']       = $s->collections_metajournal;
+      $meta_data ['collections_metajournalnumber'] = $s->collections_metajournalnumber;
+      $meta_data ['collections_metatranslators']   = $s->collections_metatranslators;
+      $meta_data ['collections_metawebsource']     = $s->collections_metawebsource;
+      $meta_data ['collections_metaid']            = $s->collections_metaid;
+      $meta_data ['collections_metanotes']         = $s->collections_metanotes;           
+    }
+    
+    return $meta_data; 
+  }
+  
+  /**
+   * This function inserts data into the 'collections' table 
+   */
+  public function insertCollections($form_data){
+        
+    $user_name = $this->user_name;
+    $selected_collection = $this->selected_collection;
+    
+    $metatitle =         isset($form_data['wptextfield1']) ? $form_data['wptextfield1'] : '';
+    $metaauthor =        isset($form_data['wptextfield2']) ? $form_data['wptextfield2'] : '';
+    $metayear =          isset($form_data['wptextfield3']) ? $form_data['wptextfield3'] : '';
+    $metapages =         isset($form_data['wptextfield4']) ? $form_data['wptextfield4'] : '';
+    $metacategory =      isset($form_data['wptextfield5']) ? $form_data['wptextfield6'] : '';
+    $metaproduced =      isset($form_data['wptextfield6']) ? $form_data['wptextfield8'] : '';
+    $metaproducer =      isset($form_data['wptextfield7']) ? $form_data['wptextfield9'] : '';
+    $metaeditors =       isset($form_data['wptextfield8']) ? $form_data['wptextfield8'] : '';
+    $metajournal =       isset($form_data['wptextfield9']) ? $form_data['wptextfield9'] : '';
+    $metajournalnumber = isset($form_data['wptextfield10']) ? $form_data['wptextfield10'] : '';
+    $metatranslators =   isset($form_data['wptextfield11']) ? $form_data['wptextfield11'] : '';
+    $metawebsource =     isset($form_data['wptextfield12']) ? $form_data['wptextfield12'] : '';
+    $metaid =            isset($form_data['wptextfield13']) ? $form_data['wptextfield13'] : '';
+    $metanotes =         isset($form_data['wptextfield14']) ? $form_data['wptextfield14'] : '';
+    
+    $dbw = wfGetDB(DB_MASTER);
+    
+    $dbw->update('collections', //select table
+      array( //update values
+      'collections_metatitle'         => $metatitle,
+      'collections_metaauthor'        => $metaauthor,
+      'collections_metayear'          => $metayear,
+      'collections_metapages'         => $metapages,
+      'collections_metacategory'      => $metacategory,
+      'collections_metaproduced'      => $metaproduced,  
+      'collections_metaproducer'      => $metaproducer,
+      'collections_metaeditors'       => $metaeditors,
+      'collections_metajournal'       => $metajournal,
+      'collections_metajournalnumber' => $metajournalnumber,
+      'collections_metatranslators'   => $metatranslators,
+      'collections_metawebsource'     => $metawebsource,   
+      'collections_metaid'            => $metaid,
+      'collections_metanotes'         => $metanotes,
+       ),
+        array(
+      'collections_user  = ' . $dbw->addQuotes($user_name),//conditions
+      'collections_title = ' . $dbw->addQuotes($selected_collection),
+        ), //conditions
+        __METHOD__,
+       'IGNORE' );
+    
+    if ($dbw->affectedRows()){
+    //insert succeeded
+      return true;     
+    }else{
+    //return error
+      return false;      
+    }   
   }
 }

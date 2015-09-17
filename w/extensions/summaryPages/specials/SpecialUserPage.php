@@ -26,11 +26,10 @@ class SpecialUserPage extends SpecialPage {
   
 /**
  * SpecialuserPage. Organises all content created by a user
- * 
- * Possible problems: Displaying the page may become slow. If this happens, try using $out->addHTML instead of $out->addWikiText 
  */
   
   public $article_url; 
+  public $max_length; 
     
   private $button_name; //value of the button the user clicked on 
   private $max_on_page; //maximum manuscripts shown on a page
@@ -41,14 +40,18 @@ class SpecialUserPage extends SpecialPage {
   private $user_name; 
   private $view_manuscripts;
   private $view_collations;
-  private $view_collections; 
+  private $view_collections;
   private $sysop;
   private $primary_disk;
   private $id_manuscripts;
   private $id_collations;
   private $id_collections; 
+  private $selected_collection;
+  private $textfield_array;
+  private $token_is_ok; 
+  private $linkback;
   
-   //class constructor 
+  //class constructor 
   public function __construct(){
     
     global $wgNewManuscriptOptions, $wgPrimaryDisk, $wgArticleUrl; 
@@ -63,6 +66,8 @@ class SpecialUserPage extends SpecialPage {
     $this->view_manuscripts = false;//default value
     $this->view_collations = false; //default value
     $this->view_collections = false;//default value
+    
+    $this->token_is_ok = null;//default value
                     
     $this->offset = 0;//default value
     
@@ -73,6 +78,11 @@ class SpecialUserPage extends SpecialPage {
     $this->id_manuscripts = 'button';
     $this->id_collations = 'button';
     $this->id_collections = 'button';
+    $this->max_length = 50;
+    
+    $this->textfield_array = array();
+    
+    $this->linkback = null; //default value
     
     parent::__construct('UserPage');
   }
@@ -91,23 +101,53 @@ class SpecialUserPage extends SpecialPage {
     $posted_names = $request->getValueNames();    
      
     //identify the button pressed, and assign $posted_names to values
-    foreach($posted_names as $key=>$value){
+    foreach($posted_names as $key=>$original_value){
+      
+      $value = trim(str_replace(range(0,9),'',$original_value));
       //get the posted button      
       if($value === 'viewmanuscripts'){
         $this->view_manuscripts = true; 
-        $this->id_manuscripts = 'button_active';
+        $this->id_manuscripts = 'button-active';
         $this->button_name = $value; 
         
       }elseif($value === 'viewcollations'){
         $this->view_collations = true; 
-        $this->id_collations = 'button_active';
+        $this->id_collations = 'button-active';
         $this->button_name = $value;   
         
       }elseif($value === 'viewcollections'){
         $this->view_collections = true; 
-        $this->id_collections = 'button_active';
-        $this->button_name = $value;   
+        $this->id_collections = 'button-active';
+        $this->button_name = $value;
         
+      }elseif($value === 'wpEditToken'){
+        $token = $request->getText($value);
+        $this->token_is_ok = $this->getUser()->matchEditToken($token);
+        $this->button_name = 'submitedit';
+        
+      }elseif($value === 'wptextfield'){
+        $this->textfield_array[$original_value] = $request->getText($original_value);
+        
+      }elseif($value === 'edit_selectedcollection'){
+        $this->selected_collection = $this->validateInput($request->getText($value));
+        
+      }elseif($value === 'linkcollection'){
+        $this->selected_collection = $this->validateInput($request->getText($value));
+        $this->button_name = 'editmetadata'; 
+        
+      }elseif($value === 'linkback'){
+        $this->linkback = $this->validateLink($request->getText($value));
+        
+      }elseif($value === 'singlecollection'){
+        $this->selected_collection = $this->validateInput($request->getText($value));
+        $this->button_name = 'singlecollection';
+        break;
+        
+      }elseif($value === 'selectedcollection'){
+        $this->selected_collection = $this->validateInput($request->getText($value));
+        $this->button_name = 'editmetadata';
+        break;
+           
       //get offset, if it is available. The offset specifies at which place in the database the query should begin relative to the start  
       }elseif ($value === 'offset'){
         $string = $request->getText($value);      
@@ -122,16 +162,45 @@ class SpecialUserPage extends SpecialPage {
     }
     
     //if there is no button, there was no correct request
-    if(!isset($this->button_name)){
+    if(!isset($this->button_name) || $this->token_is_ok === false || $this->selected_collection === false || $this->linkback === false){
       return false;
     }  
     
     if($this->offset >= $this->max_on_page){
       $this->previous_page_possible = true; 
     }
-    
+           
     return true; 
   }
+  
+  /**
+   * This function validates input sent by the client
+   * 
+   * @param type $input
+   */
+  private function validateInput($input){
+    
+    //check for empty variables or unusually long string lengths
+    if(!ctype_alnum($input) || $input === null || strlen($input) > 500){
+      return false; 
+    }
+    
+    return $input; 
+  }
+  
+  /**
+   * 
+   */
+  private function validateLink($link){
+    
+    //allowed charachters: alphanumeric, : and /
+    if(!preg_match("/^[A-Za-z0-9:\/]+$/",$link) || strlen($link) > 500){  
+      return false;
+    }
+    
+    return $link; 
+  }
+  
   
   /**
    * This function calls processRequest() if a request was posted, or calls showDefaultPage() if no request was posted
@@ -165,17 +234,116 @@ class SpecialUserPage extends SpecialPage {
    */
   private function processRequest(){
     
-    if($this->view_manuscripts){
-      $summary_page_wrapper = new summaryPageWrapper('UserPageManuscriptPages', $this->max_on_page, $this->offset, $this->user_name);
-    }elseif($this->view_collations){
-      $summary_page_wrapper = new summaryPageWrapper('UserPageCollations', $this->max_on_page, $this->offset, $this->user_name);
-    }elseif($this->view_collections){
-      $summary_page_wrapper = new summaryPageWrapper('UserPageCollections', $this->max_on_page, $this->offset, $this->user_name);
-    }
-              
-    list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
+    $button_name = $this->button_name;
+    $user_name = $this->user_name;
     
-    $this->showPage($title_array);          
+    if($button_name === 'singlecollection'){             
+      $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
+      $single_collection_data = $summary_page_wrapper->retrieveFromDatabase(); 
+      return $this->showSingleCollection($single_collection_data);
+    }
+    
+    if($button_name === 'editmetadata'){
+      $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
+      $meta_data = $summary_page_wrapper->retrieveFromDatabase();
+      return $this->showEditMetadata($meta_data, ''); 
+    }
+    
+    if($button_name === 'submitedit'){
+      return $this->processEdit();
+    }
+      
+    if($button_name === 'viewmanuscripts' || $button_name === 'viewcollations' || $button_name === 'viewcollections'){
+      $summary_page_wrapper = new summaryPageWrapper($button_name, $this->max_on_page, $this->offset, $user_name);
+      list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
+      return $this->showPage($title_array);          
+    }   
+  }
+  
+  /**
+   * 
+   * @return string
+   */
+  private function processEdit(){
+    
+    $max_length = $this->max_length; 
+    $textfield_array = $this->textfield_array;
+
+    foreach($textfield_array as $index=>$textfield){
+
+      if(!empty($textfield)){
+        if($index !== 'wptextfield14'){
+          if(strlen($textfield) > $max_length){
+            return $this->showEditMetadata(array(), "You can only use a maximum of " . $max_length . "charachters for the notes");
+          }elseif(!preg_match("/^[A-Za-z0-9]+$/",$textfield)){  
+            return $this->showEditMetadata(array(), "You can only use letters or numbers for the input");
+          }  
+
+        //in case the textfield is the 'notes' textfield  
+        }else{
+          
+          $length_textfield = strlen($textfield);
+          $max_charachters_notes = $max_length*20; 
+          
+          if($length_textfield > $max_charachters_notes){
+            return $this->showEditMetadata(array(), "You can only use a maximum of " . $max_charachters_notes . " charachters for the notes. "
+                . "You have currently used " . $length_textfield . " charachters");
+          }elseif(!preg_match("/^[A-Za-z0-9,.;!?\s]+$/",$textfield)){  
+            return $this->showEditMetadata(array(), "You can only use letters, numbers, or these charachters: '.,!?' for the notes");
+          }  
+        }
+      }
+    }
+    
+    $summary_page_wrapper = new summaryPageWrapper('submitedit',0,0,$this->user_name,"","", $this->selected_collection);
+    $status = $summary_page_wrapper->insertCollections($textfield_array);           
+    $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
+    
+    if(isset($this->linkback)){
+      return $this->prepareRedirect();
+    }
+    
+    return $this->showSingleCollection($single_collection_data);
+  }
+  
+  /**
+   * 
+   * @return boolean
+   */
+  private function prepareRedirect(){
+    
+    $linkback = $this->linkback; 
+    $article_url = $this->article_url;
+    $user_name = $this->user_name; 
+    $out = $this->getOutput();
+    $html = "";
+    
+    $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+
+    $manuscripts_message = $this->msg('userpage-mymanuscripts');
+    $collations_message = $this->msg('userpage-mycollations');
+    $collections_message = $this->msg('userpage-mycollections');
+    
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
+    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
+    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
+    $html .= '</form>';
+    
+    $html .= $this->addSummaryPageLoader();
+    
+    $html .= "<div id='userpage-singlecollectionwrap'>";
+    
+    $html .= "<p>Your collection metadata has been edited. Note that it is possible that you do not see results of this edit on the page immediately, because in some cases
+      your browser caches the pages.</p>"; 
+    
+    $html .= "<form id='userpage-linkback' action='" . $article_url . $linkback . "' method='post'>";
+    $html .= "<input type='submit' class='button-transparent' name='linkback' title='Go back to the Manuscript Page' value='Go back to " . $linkback . "'>";
+    $html .= "</form>"; 
+      
+    $html .= "</div>";
+            
+    return $out->addHTML($html);
   }
   
   /**
@@ -190,7 +358,275 @@ class SpecialUserPage extends SpecialPage {
     
     return $html; 
   }
+  
+  /**
+   * 
+   */
+  private function showEditMetadata($meta_data = array(), $error = ''){
     
+    foreach($meta_data as $index => &$variable){
+      $variable = htmlspecialchars($variable);
+    }
+    
+    $metatitle =         isset($meta_data['collections_metatitle']) ? $meta_data['collections_metatitle'] : '';
+    $metaauthor =        isset($meta_data['collections_metaauthor']) ? $meta_data['collections_metaauthor'] : '';
+    $metayear =          isset($meta_data['collections_metayear']) ? $meta_data['collections_metayear'] :'';
+    $metapages =         isset($meta_data['collections_metapages']) ? $meta_data['collections_metapages'] : '';
+    $metacategory =      isset($meta_data['collections_metacategory']) ? $meta_data['collections_metacategory'] : '';
+    $metaproduced =      isset($meta_data['collections_metaproduced']) ? $meta_data['collections_metaproduced'] : '';
+    $metaproducer =      isset($meta_data['collections_metaproducer']) ? $meta_data['collections_metaproducer'] : '';
+    $metaeditors =       isset($meta_data['collections_metaeditors']) ? $meta_data['collections_metaeditors'] : '';
+    $metajournal =       isset($meta_data['collections_metajournal']) ? $meta_data['collections_metajournal'] : '';
+    $metajournalnumber = isset($meta_data['collections_metajournalnumber']) ? $meta_data['collections_metajournalnumber'] : '';
+    $metatranslators =   isset($meta_data['collections_metatranslators']) ? $meta_data['collections_metatranslators'] : '';
+    $metawebsource =     isset($meta_data['collections_metawebsource']) ? $meta_data['collections_metawebsource'] : '';
+    $metaid =            isset($meta_data['collections_metaid']) ? $meta_data['collections_metaid'] : '';
+    $metanotes =         isset($meta_data['collections_metanotes']) ? $meta_data['collections_metanotes'] : '';
+    
+    $out = $this->getOutput(); 
+    $user_name = $this->user_name;
+    $article_url = $this->article_url;
+    $selected_collection = $this->selected_collection;
+    
+    $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+
+    $manuscripts_message = $this->msg('userpage-mymanuscripts');
+    $collations_message = $this->msg('userpage-mycollations');
+    $collections_message = $this->msg('userpage-mycollections');
+
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
+    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
+    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
+    $html .= '</form>';
+    $html .= "<br>";
+    
+    $html .= $this->addSummaryPageLoader();
+        
+    $html .= "<div id='userpage-singlecollectionwrap'>"; 
+    $html .= "<h2>Editing metadata for " . $selected_collection . "</h2>";
+    $html .= "Every field is optional.";
+    $html .= "<br><br>";
+      
+    if(!empty($error)){
+      $html .= "<div class='error'>" . $error . "</div>";  
+    }
+    
+    $html .= "</div>";
+    
+    $out->addHTML($html);
+    
+    //https://www.mediawiki.org/wiki/HTMLForm/tutorial2
+    
+    $max_length = $this->max_length;   
+    $descriptor = array();
+    
+    $descriptor['textfield1'] = array(
+      //change to label-message for i18n support
+        'label' => 'Collection Title', 
+        'class' => 'HTMLTextField',
+        'default' => $metatitle,
+        'maxlength' => $max_length,
+         );
+    
+    $descriptor['textfield2'] = array(
+        'label' => 'Author Name', 
+        'class' => 'HTMLTextField',
+        'default' => $metaauthor,
+        'maxlength' => $max_length,
+         );
+    
+    $descriptor['textfield3'] = array(
+        'label' => 'Published in year', 
+        'class' => 'HTMLTextField',
+        'default' => $metayear,
+        'maxlength' => $max_length,
+         );
+
+    $descriptor['textfield4'] = array(
+        'label' => 'Number of Pages', 
+        'class' => 'HTMLTextField',
+        'default' => $metapages,
+        'maxlength' => $max_length,
+         );
+
+    $descriptor['textfield5'] = array(
+       'label' => 'Category', 
+       'class' => 'HTMLTextField',
+       'default' => $metacategory,
+       'maxlength' => $max_length,
+       );
+        
+    $descriptor['textfield6'] = array(
+      'label' => 'Produced in Year', 
+      'class' => 'HTMLTextField',
+      'default' => $metaproduced,
+      'maxlength' => $max_length,
+     );
+
+    $descriptor['textfield7'] = array(
+      'label' => 'Producer', 
+      'class' => 'HTMLTextField',
+      'default' => $metaproducer,
+      'maxlength' => $max_length,
+     );
+        
+     $descriptor['textfield8'] = array(
+      'label' => 'Editors', 
+      'class' => 'HTMLTextField',
+      'default' => $metaeditors,
+      'maxlength' => $max_length,
+     );
+            
+     $descriptor['textfield9'] = array(
+      'label' => 'Journal', 
+      'class' => 'HTMLTextField',
+      'default' => $metajournal,
+      'maxlength' => $max_length,
+     );
+                
+     $descriptor['textfield10'] = array(
+      'label' => 'Journal Number', 
+      'class' => 'HTMLTextField',
+      'default' => $metajournalnumber,
+      'maxlength' => $max_length,
+     );
+     
+     $descriptor['textfield11'] = array(
+      'label' => 'Translators', 
+      'class' => 'HTMLTextField',
+      'default' => $metatranslators,
+      'maxlength' => $max_length,
+     );
+         
+     $descriptor['textfield12'] = array(
+      'label' => 'Web(source)', 
+      'class' => 'HTMLTextField',
+      'default' => $metawebsource,
+      'maxlength' => $max_length,
+     );
+
+    $descriptor['textfield13'] = array(
+      'label' => 'ID Number', 
+      'class' => 'HTMLTextField',
+      'default' => $metaid,
+      'maxlength' => $max_length,
+     );
+
+     $descriptor['textfield14'] = array(
+       'type' => 'textarea',
+       'label' => 'Notes',
+       'default' => $metanotes,
+       'rows' => 20,
+       'cols' => 20,
+       'maxlength'=> ($max_length * 10),
+     );
+     
+     if(isset($this->linkback)){
+       
+     $descriptor['hidden'] = array(
+       'type' => 'hidden',
+       'name' => 'linkback',
+       'default' => $this->linkback, 
+        );
+     }
+               
+    $html_form = new HTMLForm($descriptor, $this->getContext());
+    $html_form->setSubmitText('Submit Edit');
+    $html_form->addHiddenField('edit_selectedcollection', $this->selected_collection);
+    $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
+    $html_form->show();
+  }
+  
+  
+  
+    /**
+     * Callback function. Makes sure the page is redisplayed in case there was an error. 
+     * 
+     * @param type $formData
+     * @return string|boolean
+     */
+  static function processInput($form_data){ 
+    return false; 
+  }
+  
+  /**
+   * 
+   * @param type $pages_within_collection
+   * @return type
+   */
+  private function showSingleCollection($single_collection_data){
+    
+    $out = $this->getOutput(); 
+    $user_name = $this->user_name;
+    $article_url = $this->article_url;
+    $selected_collection = $this->selected_collection;
+    list($meta_data, $pages_within_collection) = $single_collection_data; 
+    
+    $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+
+    $manuscripts_message = $this->msg('userpage-mymanuscripts');
+    $collations_message = $this->msg('userpage-mycollations');
+    $collections_message = $this->msg('userpage-mycollections');
+
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
+    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
+    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
+    $html .= '</form>';
+    
+    $html .= $this->addSummaryPageLoader();
+    
+    $html .= "<div id='userpage-singlecollectionwrap'>"; 
+    
+    $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
+    $html .= "<input type='submit' class='button-transparent' name='editmetadata' value='Edit Metadata'>";
+    $html .= "<input type='hidden' name='selectedcollection' value='" . $selected_collection . "'>";
+    $html .= "</form>";
+    
+    //redirect to Special:NewManuscript, and automatically have the current collection selected
+    $html .= "<form id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
+    $html .= "<input type='submit' class='button-transparent' name='addnewpage' title='Add a new page to this collection' value='Add New Page'>";
+    $html .= "<input type='hidden' name='selected_collection' value='" . $selected_collection . "'>";
+    $html .= "</form>"; 
+        
+    $html .= "<h2 style='text-align: center;'>Collection: " . $selected_collection . "</h2>";
+    $html .= "<br>";    
+    $html .= "<h3>Metadata</h3>";
+    
+    $collection_meta_table = new collectionMetaTable(); 
+    
+    $html .= $collection_meta_table->renderTable($meta_data);
+
+    $html .= "<h3>Pages</h3>"; 
+    $html .= "This collection contains" . " " . count($pages_within_collection) . " " . "single manuscript page(s).";
+    $html .= "<br>";
+    
+    $html .= "<table id='userpage-table' style='width: 100%;'>";
+    $html .= "<tr>";
+    $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
+    $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "</tr>";
+    
+    foreach($pages_within_collection as $key=>$array){
+
+      $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
+      $manuscripts_title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : ''; 
+      $manuscripts_date = isset($array['manuscripts_date']) ? $array['manuscripts_date'] : '';
+      
+      $html .= "<tr>";
+      $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" . 
+          htmlspecialchars($manuscripts_title) . "</a></td>";
+      $html .= "<td>" . htmlspecialchars($manuscripts_date) . "</td>";
+      $html .= "</tr>";
+    }
+    
+    $html .= "</table>";
+    $html .= "</div>";
+   
+    return $out->addHTML($html);
+  }
+   
   /**
    * This function shows the page after a request has been processed
    * 
@@ -198,10 +634,8 @@ class SpecialUserPage extends SpecialPage {
    */
   private function showPage($title_array){
     
-    $out = $this->getOutput();
-    
+    $out = $this->getOutput();   
     $article_url = $this->article_url; 
-    
     $user_name = $this->user_name; 
 
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
@@ -219,21 +653,24 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<input type='submit' name='viewcollations' id='$id_collations' value='$collations_message'>"; 
     $html .= "<input type='submit' name='viewcollections' id='$id_collections' value='$collections_message'>";   
     $html .= '</form>';
+    
+    $html .= $this->addSummaryPageLoader();
         
     if(empty($title_array)){
-      
-      $out->addHTML($html);
-      
+           
       if($this->view_manuscripts){
-    
-        return $out->addWikiText($this->msg('userpage-nomanuscripts'));
-      }elseif($this->view_collations){
-        
-        return $out->addWikiText($this->msg('userpage-nocollations'));
-      }elseif($this->view_collections){
-        
-        return $out->addWikiText($this->msg('userpage-nocollections'));
+        $message = $this->msg('userpage-nomanuscripts');
       }
+      
+      if($this->view_collations){       
+        $message = $this->msg('userpage-nocollations');
+      }
+      
+      if($this->view_collections){       
+        $message = $this->msg('userpage-nocollections');
+      }
+      
+      return $out->addHTML($html . $message);
     }
     
     if($this->previous_page_possible){
@@ -243,12 +680,10 @@ class SpecialUserPage extends SpecialPage {
       $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
       $previous_message = $this->msg('allmanuscriptpages-previous');
       
-      $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:UserPage" method="post">';
-       
+      $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:UserPage" method="post">';      
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
-      $html .= "<input type='submit' name = 'redirect_page_back' id='button' title='$previous_message_hover'  value='$previous_message'>";
-      
+      $html .= "<input type='submit' name = 'redirect_page_back' class='button-transparent' title='$previous_message_hover' value='$previous_message'>";      
       $html.= "</form>";
     }
     
@@ -261,81 +696,91 @@ class SpecialUserPage extends SpecialPage {
       $next_message_hover = $this->msg('allmanuscriptpages-nexthover');    
       $next_message = $this->msg('allmanuscriptpages-next');
       
-      $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:UserPage" method="post">';
-            
+      $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:UserPage" method="post">';           
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .="<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
-      $html .= "<input type='submit' name = 'redirect_page_forward' id='button' title='$next_message_hover' value='$next_message'>";
-      
+      $html .= "<input type='submit' name = 'redirect_page_forward' class='button-transparent' title='$next_message_hover' value='$next_message'>";     
       $html.= "</form>";
     }
-    
-    $html .= $this->addSummaryPageLoader();
-    
-    $out->addHTML($html);
-    
+        
     $created_message = $this->msg('userpage-created');
-    
-    $displayed_collections = array();
-    
+    $html .= "<br>";
+        
     if($this->view_manuscripts){
-    
-      $wiki_text = "";
+      
+      $html .= "<p>Below are all your uploaded manuscript pages that are not part of a collection.</p>";        
+      $html .= "<table id='userpage-table' style='width: 100%;'>";
+      $html .= "<tr>";
+      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
+      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+      $html .= "</tr>";
       
       foreach($title_array as $key=>$array){
 
-        $collection = isset($array['manuscripts_collection']) ? $array['manuscripts_collection'] : '';
         $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
         $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
         $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
         
-        if($collection === "" || $collection === "none"){
-          $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . $date; 
-        }else{
-          $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] (' . $collection . ')<br>' . $created_message . $date;  
-        }
-      }   
+        $html .= "<tr>";
+        $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
+          htmlspecialchars($title) . "</a></td>";
+        $html .= "<td>" . htmlspecialchars($date) . "</td>";
+        $html .= "</tr>";      
+      }
       
-      return $out->addWikiText($wiki_text);
+      $html .= "</table>";
+    }   
+            
+    if($this->view_collations){
       
-    }elseif($this->view_collations){
-      
-      $wiki_text = "";
-      
+      $html .= "<table id='userpage-table' style='width: 100%;'>";
+      $html .= "<tr>";
+      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
+      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+      $html .= "</tr>";
+           
       foreach($title_array as $key=>$array){
 
         $url = isset($array['collations_url']) ? $array['collations_url'] : '';
         $date = isset($array['collations_date']) ? $array['collations_date'] : '';
         $title = isset($array['collations_main_title']) ? $array['collations_main_title'] : '';
-
         
-        $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . $date; 
-      }
+        $html .= "<tr>";
+        $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
+          htmlspecialchars($title) . "</a></td>";
+        $html .= "<td>" . htmlspecialchars($date) . "</td>"; 
+        $html .= "</tr>";
+      }    
       
-      return $out->addWikiText($wiki_text); 
-      
-    }elseif($this->view_collections){
+      $html .= "</table>";
+    }
+    
+    if($this->view_collections){
          
-      $wiki_text = "";
+      $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
+      $html .= "<table id='userpage-table' style='width: 100%;'>";
+      $html .= "<tr>";
+      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
+      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+      $html .= "</tr>";
       
       foreach($title_array as $key=>$array){
-
-        $collection = isset($array['manuscripts_collection']) ? $array['manuscripts_collection'] : '';
-        $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
-        $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
-        $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
         
-        if(in_array($collection, $displayed_collections)){
-          $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . $date;
-          
-        }else{
-          $wiki_text .= '<br><br>' . "'''" . $collection . ':' . "'''" . '<br><br>' . '[[' . $url . '|' . $title .']] <br>' . $created_message . $date;
-          $displayed_collections[] = $collection; 
-        }         
-      }
-      
-     return $out->addWikiText($wiki_text);
+        $collections_title = isset($array['collections_title']) ? $array['collections_title'] : '';
+        $collections_date = isset($array['collections_date']) ? $array['collections_date'] : '';
+        
+        $html .= "<tr>";
+        $html .= "<td class='td-long'><input type='submit' class='userpage-collectionlist' name='singlecollection' value='" . htmlspecialchars($collections_title) . "'></td>";
+        $html .= "<td>" . htmlspecialchars($collections_date) . "</td>";
+        $html .= "</tr>";
+     }
+     
+     $html .= "</table>";
+     $html .= "<input type='hidden' name='viewcollections' value='viewcollections'>";      
+     $html .= "</form>"; 
     }
+    
+    return $out->addHTML($html); 
   }
   
   /**

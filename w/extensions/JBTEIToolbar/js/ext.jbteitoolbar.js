@@ -290,7 +290,7 @@ var addExtraButtons = function() {
         $('.wikiEditor-ui-top').insertBefore('#editform')
         $('.wikiEditor-ui').insertAfter('.wikiEditor-ui-top');
         $('#wpTextbox1').insertBefore('#zoomviewerframe');
-                     
+                             
 	$( '#wpTextbox1' ).wikiEditor( 'removeFromToolbar', {
         'section': 'advanced'
 	});

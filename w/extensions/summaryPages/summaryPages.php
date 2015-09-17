@@ -59,6 +59,7 @@ $wgAutoloadClasses['SpecialAllCollections'] = $dir . '/specials/SpecialAllCollec
 $wgAutoloadClasses['SpecialRecentManuscriptPages'] = $dir . '/specials/SpecialRecentManuscriptPages.php';
 $wgAutoloadClasses['SpecialAllCollations'] = $dir . '/specials/SpecialAllCollations.php';
 $wgAutoloadClasses['baseSummaryPage'] = $dir . '/specials/baseSummaryPage.php';
+$wgAutoloadClasses['collectionMetaTable'] = $dir . '/specials/collectionMetaTable.php';
 $wgAutoloadClasses['summaryPageWrapper'] = $dir . '/specials/summaryPageWrapper.php';
 
 $wgSpecialPages['UserPage'] = 'SpecialUserPage';
@@ -68,9 +69,9 @@ $wgSpecialPages['RecentManuscriptPages'] = 'SpecialRecentManuscriptPages';
 $wgSpecialPages['AllCollations'] = 'SpecialAllCollations';
 
 //Extra file loaded later 
-$wgResourceModules['ext.buttonStyles'] = array(
+$wgResourceModules['ext.userPage'] = array(
   	'localBasePath' => dirname( __FILE__ ) . '/css',  
-		'styles'  => '/ext.buttonStyles.css',
+		'styles'  => '/ext.userPage.css',
 );
 
 $wgResourceModules['ext.summarypageloader' ] = array(

@@ -21,6 +21,74 @@
  * @copyright 2015 Arent van Korlaar
  */
 
+/*button styles */
+#button {
+  width: 30em;  
+  height: 1.5em;
+  cursor: pointer;
+  background-color: #F2FCFF;
+}
+
+.mw-htmlform-submit {
+  width: 30em;  
+  height: 1.5em;
+  cursor: pointer;
+  background-color: #F2FCFF;
+}
+
+#button-active {
+  width: 30em;  
+  height: 1.5em;
+  cursor: pointer;
+  background-color: white; 
+}
+
+.letter-button-active {
+  cursor: pointer;
+  background-color: #F2FCFF;
+  font-size:30px;
+}
+
+.letter-button {
+  cursor: pointer;
+  background-color: #F2FCFF;
+}
+
+.letter-button-initial {
+  cursor: pointer;
+  position: relative;
+  background-color: #F2FCFF;
+  top: 10px; 
+}
+
+.button-transparent {
+  background: #F2FCFF;
+  border: none; 
+  padding: 0;
+  font: inherit;
+  color: #black; 
+  cursor: pointer;
+  font-weight: bold; 
+}
+
+.button-transparent:hover {
+  text-decoration: underline; 
+}
+
+.userpage-collectionlist {
+  background: none;
+  border: none; 
+  padding: 0;
+  font: inherit;
+  color: #2E5663; 
+  cursor: pointer;
+}
+  
+.userpage-collectionlist:hover {
+  text-decoration: underline; 
+}
+
+/*table styles */
 /*pre overrides earlier mediawiki CSS, and is needed for correct table display.*/  
 pre {
   border: none !important;
@@ -29,21 +97,20 @@ pre {
   font-family: sans-serif, Georgia, Serif;
 }
 
-table#page-metatable { 
-  width:100%; 
-  font-size: 100%;
+td {
+  border-bottom: 1px solid #D3D3D3;
 }
 
-table#page-metatable th { 
-  vertical-align: top;
-  text-align: right;
-  background-color: #f7f7f7; 
-  width: 25%;
+.td-long {
+  width: 50%;
 }
 
-table#page-metatable td { 
-  vertical-align: top; 
-  width: 25%;
+.td-three {
+  width: 33%;
+}
+
+.td-four {
+  width: 20%;
 }
 
 table#metatable { 
@@ -61,36 +128,10 @@ table#metatable th {
 table#metatable td { 
   vertical-align: top;
   width: 25%;
+  border-bottom: none; 
 }
 
 h2 {
   margin-bottom: 0em;
 }
 
-.button-transparent {
-  background: #F2FCFF;
-  border: none; 
-  padding: 0;
-  font: inherit;
-  color: #black; 
-  cursor: pointer;
-  font-weight: bold; 
-}
-
-.button-transparent:hover {
-  text-decoration: underline; 
-}
-
-.link-transparent {
-  background: #F2FCFF;
-  font-weight: bold;
-  color: black;
-}
-
-#link-wrap td {
-  width: 40%;
-}
-
-#mw_content {
-  border-bottom: none!important;
-}

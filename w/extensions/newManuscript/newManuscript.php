@@ -49,7 +49,7 @@ $dir = __DIR__ . '/';
 
 //Auto load classes 
 $wgAutoloadClasses['newManuscriptHooks']    = $dir . '/newManuscript.hooks.php';
-$wgAutoloadClasses['metaTable'] = $dir . '/newManuscript.classes.php';
+$wgAutoloadClasses['pageMetaTable'] = $dir . 'specials/pageMetaTable.php';
 $wgAutoloadClasses['newManuscriptForm'] = $dir . 'specials/newManuscriptForm.php';
 $wgAutoloadClasses['prepareSlicer'] = $dir . 'specials/prepareSlicer.php';
 $wgAutoloadClasses['newManuscriptWrapper'] = $dir . 'specials/newManuscriptWrapper.php';
