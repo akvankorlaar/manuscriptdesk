@@ -57,9 +57,9 @@ class SpecialAllCollections extends baseSummaryPage {
       $name = $lowercase_alphabet[$key]; 
 
       if($this->button_name === $name){
-        $html .= "<input type='submit' name='$name' id='active_button' value='$value'>";
+        $html .= "<input type='submit' name='$name' class='letter-button-active' value='$value'>";
       }else{
-        $html .= "<input type='submit' name='$name' id='letter_button' value='$value'>";
+        $html .= "<input type='submit' name='$name' class='letter-button' value='$value'>";
       }
     }
 
@@ -80,16 +80,16 @@ class SpecialAllCollections extends baseSummaryPage {
     
     if($this->previous_page_possible){
       
-      $previous_offset = ($this->offset)-($this->max_on_page); 
-      
       $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
       $previous_message = $this->msg('allmanuscriptpages-previous');
       
+      $previous_offset = ($this->offset)-($this->max_on_page); 
+         
       $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:AllCollections" method="post">';
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
-      $html .= "<input type='submit' id = 'button' name = 'redirect_page_back' id='button' title='$previous_message_hover'  value='$previous_message'>";
+      $html .= "<input type='submit' class='button-transparent' name='redirect_page_back' title='$previous_message_hover'  value='$previous_message'>";
       
       $html.= "</form>";
     }
@@ -107,41 +107,41 @@ class SpecialAllCollections extends baseSummaryPage {
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
-      $html .= "<input type='submit' id = 'button' name = 'redirect_page_forward' id='button' title='$next_message_hover' value='$next_message'>";
+      $html .= "<input type='submit' class='button-transparent' name = 'redirect_page_forward' title='$next_message_hover' value='$next_message'>";
       
       $html.= "</form>";
     }
     
     $html .= $this->addSummaryPageLoader();
-        
-    $out->addHTML($html);
-    
-    $created_message = $this->msg('allmanuscriptpages-created');
-    $on_message = $this->msg('allmanuscriptpages-on');
-    
-    $displayed_collections = array();
-    $wiki_text = "";
-    
+            
+    $html .= "<form id='allcollections-post' action='Special:AllCollections' method='post'>";
+    $html .= "<table id='userpage-table' style='width: 100%;'>";
+    $html .= "<tr>";
+    $html .= "<td class='td-three'>" . "<b>Collection Title</b>" . "</td>";
+    $html .= "<td class='td-trhee'>" . "<b>User</b>" . "</td>";
+    $html .= "<td class='td-three'>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "</tr>";
+      
     foreach($title_array as $key=>$array){
-      
-      $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
-      $user = isset($array['manuscripts_user']) ? $array['manuscripts_user'] : '';
-      $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
-      $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
-      $collection = isset($array['manuscripts_collection']) ? $array['manuscripts_collection'] : '';
-      
-      if(in_array($collection, $displayed_collections)){
-          $wiki_text .= '<br><br>[[' . $url . '|' . $title .']] <br>' . $created_message . ' ' . $user .  '<br> ' . $on_message . $date;
-          
-      }else{
-          $wiki_text .= '<br><br>' . "'''" . $collection . ':' . "'''" . '<br><br>' . '[[' . $url . '|' . $title .']] <br>' . $created_message . ' ' . $user .  '<br> ' . $on_message . $date;
-          $displayed_collections[] = $collection; 
-      }             
+
+      $title = isset($array['collections_title']) ? $array['collections_title'] : '';
+      $user = isset($array['collections_user']) ? $array['collections_user'] : '';
+      $date = isset($array['collections_date']) ? $array['collections_date'] : '';
+        
+      $html .= "<tr>";
+      $html .= "<td class='td-three'>";
+      $html .= "<input type='submit' class='button-transparent' name='viewsinglecollection' value='" . htmlspecialchars($title) . "'>";
+      $html .= "</td>";
+      $html .= "<td class='td-three'>" . htmlspecialchars($user) . "</td>";
+      $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
+      $html .= "</tr>";      
     }
-    
-    $out->addWikiText($wiki_text);      
-    
-    return true; 
+      
+    $html .= "</table>";
+    $html .= "</form>";
+        
+    $out->addModuleStyles('ext.userPage');
+    return $out->addHTML($html);  
   }
   
   /**
@@ -149,8 +149,7 @@ class SpecialAllCollections extends baseSummaryPage {
    */
   protected function showDefaultPage(){
       
-    $out = $this->getOutput();
-    
+    $out = $this->getOutput();   
     $article_url = $this->article_url; 
         
     $out->setPageTitle($this->msg('allcollections'));    
@@ -163,7 +162,7 @@ class SpecialAllCollections extends baseSummaryPage {
     
     foreach($uppercase_alphabet as $key=>$value){
       $name = $lowercase_alphabet[$key]; 
-      $html .="<input type='submit' name='$name' id='initial_button' value='$value'>";
+      $html .="<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
     } 
     
     $html .= '</form><br>';
@@ -175,5 +174,3 @@ class SpecialAllCollections extends baseSummaryPage {
     return $out->addHTML($html);
   }
 }
-
-

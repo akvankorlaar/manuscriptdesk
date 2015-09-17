@@ -176,9 +176,12 @@ class newManuscriptWrapper{
       
     $dbw = wfGetDB(DB_MASTER);
     
+    $collections_title_lowercase = strtolower($collection_name);
+    
     $dbw->insert('collections', //select table
       array( //insert values
       'collections_title'                => $collection_name,
+      'collections_title_lowercase'      => $collections_title_lowercase,
       'collections_user'                 => $user_name,
       'collections_date'                 => $date,  
        ),__METHOD__,

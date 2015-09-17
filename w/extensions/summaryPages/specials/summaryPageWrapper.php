@@ -164,23 +164,21 @@ class summaryPageWrapper{
     
     //Database query
     $res = $dbr->select(
-      'manuscripts', //from
+        'collections', //from
       array(
-        'manuscripts_title', //values
-        'manuscripts_user',
-        'manuscripts_url',
-        'manuscripts_date',
-        'manuscripts_collection',
-        'manuscripts_lowercase_collection',
+        'collections_title',//values
+        'collections_title_lowercase',
+        'collections_user',
+        'collections_date',        
         ), 
       array(
-        'manuscripts_lowercase_collection >= ' . $dbr->addQuotes($button_name),
-        'manuscripts_lowercase_collection < '  . $dbr->addQuotes($next_letter_alphabet),
-        'manuscripts_lowercase_collection != ' . $dbr->addQuotes("none"),
+        'collections_title_lowercase >= ' . $dbr->addQuotes($button_name),
+        'collections_title_lowercase < '  . $dbr->addQuotes($next_letter_alphabet),
+        'collections_title_lowercase != ' . $dbr->addQuotes("none"),
        ),
       __METHOD__,
       array(
-        'ORDER BY' => 'manuscripts_collection',
+        'ORDER BY' => 'collections_title_lowercase',
         'LIMIT' => $this->max_on_page+1,
         'OFFSET' => $this->offset, 
       )
@@ -194,11 +192,9 @@ class summaryPageWrapper{
         if (count($title_array) < $this->max_on_page){
           
           $title_array[] = array(
-          'manuscripts_title' => $s->manuscripts_title,
-          'manuscripts_user' => $s->manuscripts_user,
-          'manuscripts_url' => $s->manuscripts_url,
-          'manuscripts_date' => $s->manuscripts_date,
-          'manuscripts_collection' => $s->manuscripts_collection,
+          'collections_title' => $s->collections_title,
+          'collections_user' => $s->collections_user,
+          'collections_date' => $s->collections_date,
         );
 
         //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page

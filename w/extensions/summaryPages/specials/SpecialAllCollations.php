@@ -88,7 +88,7 @@ class SpecialAllCollations extends baseSummaryPage {
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
-      $html .= "<input type='submit' class='button-transparent' name = 'redirect_page_back' id='button' title='$previous_message_hover'  value='$previous_message'>";
+      $html .= "<input type='submit' class='button-transparent' name = 'redirect_page_back' title='$previous_message_hover'  value='$previous_message'>";
       
       $html.= "</form>";
     }
@@ -106,7 +106,7 @@ class SpecialAllCollations extends baseSummaryPage {
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .=("<input type='hidden' name='$this->button_name' value='$this->button_name'>"); 
-      $html .= "<input type='submit' class='button-transparent' name='redirect_page_forward' id='button' title='$next_message_hover' value='$next_message'>";
+      $html .= "<input type='submit' class='button-transparent' name='redirect_page_forward' title='$next_message_hover' value='$next_message'>";
       
       $html.= "</form>";
     }
