@@ -49,6 +49,7 @@ class SpecialUserPage extends SpecialPage {
   private $selected_collection;
   private $textfield_array;
   private $token_is_ok; 
+  private $linkback;
   
   //class constructor 
   public function __construct(){
@@ -80,6 +81,8 @@ class SpecialUserPage extends SpecialPage {
     $this->max_length = 50;
     
     $this->textfield_array = array();
+    
+    $this->linkback = null; //default value
     
     parent::__construct('UserPage');
   }
@@ -126,7 +129,14 @@ class SpecialUserPage extends SpecialPage {
         $this->textfield_array[$original_value] = $request->getText($original_value);
         
       }elseif($value === 'edit_selectedcollection'){
-        $this->selected_collection = $request->getText($value);
+        $this->selected_collection = $this->validateInput($request->getText($value));
+        
+      }elseif($value === 'linkcollection'){
+        $this->selected_collection = $this->validateInput($request->getText($value));
+        $this->button_name = 'editmetadata'; 
+        
+      }elseif($value === 'linkback'){
+        $this->linkback = $this->validateLink($request->getText($value));
         
       }elseif($value === 'singlecollection'){
         $this->selected_collection = $this->validateInput($request->getText($value));
@@ -152,7 +162,7 @@ class SpecialUserPage extends SpecialPage {
     }
     
     //if there is no button, there was no correct request
-    if(!isset($this->button_name) || $this->token_is_ok === false || $this->selected_collection === false){
+    if(!isset($this->button_name) || $this->token_is_ok === false || $this->selected_collection === false || $this->linkback === false){
       return false;
     }  
     
@@ -177,6 +187,20 @@ class SpecialUserPage extends SpecialPage {
     
     return $input; 
   }
+  
+  /**
+   * 
+   */
+  private function validateLink($link){
+    
+    //allowed charachters: alphanumeric, : and /
+    if(!preg_match("/^[A-Za-z0-9:\/]+$/",$link) || strlen($link) > 500){  
+      return false;
+    }
+    
+    return $link; 
+  }
+  
   
   /**
    * This function calls processRequest() if a request was posted, or calls showDefaultPage() if no request was posted
@@ -275,7 +299,51 @@ class SpecialUserPage extends SpecialPage {
     $status = $summary_page_wrapper->insertCollections($textfield_array);           
     $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
     
+    if(isset($this->linkback)){
+      return $this->prepareRedirect();
+    }
+    
     return $this->showSingleCollection($single_collection_data);
+  }
+  
+  /**
+   * 
+   * @return boolean
+   */
+  private function prepareRedirect(){
+    
+    $linkback = $this->linkback; 
+    $article_url = $this->article_url;
+    $user_name = $this->user_name; 
+    $out = $this->getOutput();
+    $html = "";
+    
+    $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+
+    $manuscripts_message = $this->msg('userpage-mymanuscripts');
+    $collations_message = $this->msg('userpage-mycollations');
+    $collections_message = $this->msg('userpage-mycollections');
+    
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
+    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
+    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
+    $html .= '</form>';
+    
+    $html .= $this->addSummaryPageLoader();
+    
+    $html .= "<div id='userpage-singlecollectionwrap'>";
+    
+    $html .= "<p>Your collection metadata has been edited. Note that it is possible that you do not see results of this edit on the page immediately, because in some cases
+      your browser caches the pages.</p>"; 
+    
+    $html .= "<form id='userpage-linkback' action='" . $article_url . $linkback . "' method='post'>";
+    $html .= "<input type='submit' class='button-transparent' name='linkback' title='Go back to the Manuscript Page' value='Go back to " . $linkback . "'>";
+    $html .= "</form>"; 
+      
+    $html .= "</div>";
+            
+    return $out->addHTML($html);
   }
   
   /**
@@ -453,6 +521,15 @@ class SpecialUserPage extends SpecialPage {
        'cols' => 20,
        'maxlength'=> ($max_length * 10),
      );
+     
+     if(isset($this->linkback)){
+       
+     $descriptor['hidden'] = array(
+       'type' => 'hidden',
+       'name' => 'linkback',
+       'default' => $this->linkback, 
+        );
+     }
                
     $html_form = new HTMLForm($descriptor, $this->getContext());
     $html_form->setSubmitText('Submit Edit');
