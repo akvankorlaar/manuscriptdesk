@@ -42,6 +42,7 @@ class baseSummaryPage extends SpecialPage {
   protected $is_number; 
   protected $offset; 
   protected $next_offset; 
+  protected $selected_collection;
   
    //class constructor 
   public function __construct($page_name){
@@ -93,6 +94,10 @@ class baseSummaryPage extends SpecialPage {
       if(in_array($value,$lowercase_alphabet)){
         $this->button_name = strval($value);
         
+      }elseif ($value === 'singlecollection'){
+        $this->selected_collection = $this->validateInput($request->getText($value));
+        $this->button_name = 'singlecollection';
+        
       //get offset, if it is available. The offset specifies at which place in the database the query should begin relative to the start 
       }elseif ($value === 'offset'){
         $string = $request->getText($value);      
@@ -123,6 +128,21 @@ class baseSummaryPage extends SpecialPage {
   }
   
   /**
+   * This function validates input sent by the client
+   * 
+   * @param type $input
+   */
+  private function validateInput($input){
+    
+    //check for empty variables or unusually long string lengths
+    if(!ctype_alnum($input) || $input === null || strlen($input) > 500){
+      return false; 
+    }
+    
+    return $input; 
+  }
+  
+  /**
    * This function calls processRequest() if a request was posted, or calls showDefaultPage() if no request was posted
    */
   public function execute(){
@@ -145,11 +165,17 @@ class baseSummaryPage extends SpecialPage {
     //get the next letter of the alphabet
     $next_letter_alphabet = $this->getNextLetter();
     
-    //intiialize the database wrapper
-    $summary_page_wrapper = new summaryPageWrapper($this->page_name, $this->max_on_page, $this->offset,"", $this->button_name, $next_letter_alphabet);
+    if($this->button_name !== 'singlecollection'){   
+      //intiialize the database wrapper
+      $summary_page_wrapper = new summaryPageWrapper($this->page_name, $this->max_on_page, $this->offset,"", $this->button_name, $next_letter_alphabet);
     
-    //retrieve data from the database wrapper
-    list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
+      //retrieve data from the database wrapper
+      list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
+    }else{    
+      $summary_page_wrapper = new summaryPageWrapper('singlecollection', 0, 0,"","","", $this->selected_collection);
+      $single_collection_data = $summary_page_wrapper->retrieveFromDatabase(); 
+      return $this->showSingleCollectionData($single_collection_data);
+    }
         
     //show the page
     $this->showPage($title_array);          

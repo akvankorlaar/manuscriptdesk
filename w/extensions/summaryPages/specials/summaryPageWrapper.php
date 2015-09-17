@@ -501,7 +501,6 @@ class summaryPageWrapper{
    */
   private function retrieveSingleCollection(){
     
-    $user_name = $this->user_name;
     $selected_collection = $this->selected_collection; 
     $dbr = wfGetDB(DB_SLAVE);
     $meta_data = array();
@@ -527,7 +526,6 @@ class summaryPageWrapper{
       'collections_metanotes',     
          ),
       array(
-      'collections_user = ' . $dbr->addQuotes($user_name),
       'collections_title = ' . $dbr->addQuotes($selected_collection),
       ),
       __METHOD__,
@@ -568,7 +566,6 @@ class summaryPageWrapper{
         'manuscripts_lowercase_title',
          ),
       array(
-        'manuscripts_user = ' . $dbr->addQuotes($user_name),
         'manuscripts_collection = ' . $dbr->addQuotes($selected_collection),
       ),
       __METHOD__,

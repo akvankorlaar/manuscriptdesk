@@ -114,7 +114,7 @@ class SpecialAllCollections extends baseSummaryPage {
     
     $html .= $this->addSummaryPageLoader();
             
-    $html .= "<form id='allcollections-post' action='Special:AllCollections' method='post'>";
+    $html .= "<form id='allcollections-post' action='" . $article_url . "Special:AllCollections' method='post'>";
     $html .= "<table id='userpage-table' style='width: 100%;'>";
     $html .= "<tr>";
     $html .= "<td class='td-three'>" . "<b>Collection Title</b>" . "</td>";
@@ -130,7 +130,7 @@ class SpecialAllCollections extends baseSummaryPage {
         
       $html .= "<tr>";
       $html .= "<td class='td-three'>";
-      $html .= "<input type='submit' class='button-transparent' name='viewsinglecollection' value='" . htmlspecialchars($title) . "'>";
+      $html .= "<input type='submit' class='button-transparent' name='singlecollection' value='" . htmlspecialchars($title) . "'>";
       $html .= "</td>";
       $html .= "<td class='td-three'>" . htmlspecialchars($user) . "</td>";
       $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
@@ -142,6 +142,72 @@ class SpecialAllCollections extends baseSummaryPage {
         
     $out->addModuleStyles('ext.userPage');
     return $out->addHTML($html);  
+  }
+  
+  /**
+   * 
+   * @param type $single_collection_data
+   */
+  protected function showSingleCollectionData($single_collection_data){
+    
+    $out = $this->getOutput();   
+    $article_url = $this->article_url;
+    $selected_collection = $this->selected_collection;
+    list($meta_data, $pages_within_collection) = $single_collection_data; 
+        
+    $out->setPageTitle($this->msg('allcollections'));    
+    
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollections" method="post">';
+
+    //make a list of buttons that have as value a letter of the alphabet
+    $uppercase_alphabet = $this->uppercase_alphabet;  
+    $lowercase_alphabet = $this->lowercase_alphabet; 
+    
+    foreach($uppercase_alphabet as $key=>$value){
+      $name = $lowercase_alphabet[$key]; 
+      $html .="<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
+    } 
+    
+    $html .= '</form><br>';
+  
+    $html .= $this->addSummaryPageLoader();
+        
+    $html .= "<h2 style='text-align: center;'>Collection: " . $selected_collection . "</h2>";
+    $html .= "<br>";    
+    $html .= "<h3>Metadata</h3>";
+    
+    $collection_meta_table = new collectionMetaTable(); 
+    
+    $html .= $collection_meta_table->renderTable($meta_data);
+
+    $html .= "<h3>Pages</h3>"; 
+    $html .= "This collection contains" . " " . count($pages_within_collection) . " " . "single manuscript page(s).";
+    $html .= "<br>";
+    
+    $html .= "<table id='userpage-table' style='width: 100%;'>";
+    $html .= "<tr>";
+    $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
+    $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "</tr>";
+    
+    foreach($pages_within_collection as $key=>$array){
+
+      $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
+      $manuscripts_title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : ''; 
+      $manuscripts_date = isset($array['manuscripts_date']) ? $array['manuscripts_date'] : '';
+      
+      $html .= "<tr>";
+      $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" . 
+          htmlspecialchars($manuscripts_title) . "</a></td>";
+      $html .= "<td>" . htmlspecialchars($manuscripts_date) . "</td>";
+      $html .= "</tr>";
+    }
+    
+    $html .= "</table>";
+    $html .= "</div>";
+    
+    $out->addModuleStyles('ext.userPage');   
+    return $out->addHTML($html);
   }
   
   /**
