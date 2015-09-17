@@ -169,7 +169,7 @@ class SpecialAllCollections extends baseSummaryPage {
     } 
     
     $html .= '</form><br>';
-  
+      
     $html .= $this->addSummaryPageLoader();
         
     $html .= "<h2 style='text-align: center;'>Collection: " . $selected_collection . "</h2>";

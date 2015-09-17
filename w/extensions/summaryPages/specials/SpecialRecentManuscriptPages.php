@@ -37,8 +37,7 @@ class SpecialRecentManuscriptPages extends SpecialPage {
     
     global $wgNewManuscriptOptions, $wgArticleUrl; 
     
-    $this->article_url = $wgArticleUrl; 
-    
+    $this->article_url = $wgArticleUrl;   
     $this->max_on_page = $wgNewManuscriptOptions['max_recent'];
     
     parent::__construct('RecentManuscriptPages');
@@ -63,33 +62,47 @@ class SpecialRecentManuscriptPages extends SpecialPage {
    */
   private function showPage($title_array){
     
-    $out = $this->getOutput(); 
+    $out = $this->getOutput();
+    $article_url = $this->article_url; 
         
     $out->setPageTitle($this->msg('recentmanuscriptpages'));
      
     if(empty($title_array)){
       return $out->addWikiText($this->msg('recentmanuscriptpages-nomanuscripts'));
     }
-            
-    $created_message = $this->msg('allmanuscriptpages-created');
-    $on_message = $this->msg('allmanuscriptpages-on');
     
-    $wiki_text = "";
+    $html = "";
+    $html .= $this->msg('recentmanuscriptpages-information');
     
-    $wiki_text .= ($this->msg('recentmanuscriptpages-information'));
-    
-    foreach($title_array as $key=>$array){
+    $html .= "<table id='userpage-table' style='width: 100%;'>";
+    $html .= "<tr>";
+    $html .= "<td class='td-four'>" . "<b>Title</b>" . "</td>";
+    $html .= "<td class='td-four'>" . "<b>User</b>" . "</td>";
+    $html .= "<td class='td-four'>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "<td class='td-four'>" . "<b>Collection</b>" . "</td>";
+    $html .= "</tr>";
       
+    foreach($title_array as $key=>$array){
+
       $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
       $user = isset($array['manuscripts_user']) ? $array['manuscripts_user'] : '';
       $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
-      $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
       $collection = isset($array['manuscripts_collection']) ? $array['manuscripts_collection'] : '';
-                  
-      $wiki_text .= '<br><br>[[' . $url . '|' . $title . ']] (' . $collection . ')<br>' . $created_message . ' ' . $user .  '<br> ' . $on_message . ' ' . $date;      
-    }
+      $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
         
-    return $out->addWikiText($wiki_text);
+      $html .= "<tr>";
+      $html .= "<td class='td-four'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" . 
+          htmlspecialchars($title) . "</a></td>";
+      $html .= "<td class='td-four'>" . htmlspecialchars($user) . "</td>";
+      $html .= "<td class='td-four'>" . htmlspecialchars($collection) . "</td>";
+      $html .= "<td class='td-four'>" . htmlspecialchars($date) . "</td>";
+      $html .= "</tr>";      
+    }
+      
+    $html .= "</table>";
+        
+    $out->addModuleStyles('ext.userPage');
+    return $out->addHTML($html);
   }
 }
 

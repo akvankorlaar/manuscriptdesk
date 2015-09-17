@@ -109,6 +109,10 @@ td {
   width: 33%;
 }
 
+.td-four {
+  width: 20%;
+}
+
 table#metatable { 
   width:100%; 
   font-size: 100%;

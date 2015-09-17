@@ -116,7 +116,7 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
     $html .= "<table id='userpage-table' style='width: 100%;'>";
     $html .= "<tr>";
     $html .= "<td class='td-three'>" . "<b>Title</b>" . "</td>";
-    $html .= "<td class='td-trhee'>" . "<b>User</b>" . "</td>";
+    $html .= "<td class='td-three'>" . "<b>User</b>" . "</td>";
     $html .= "<td class='td-three'>" . "<b>Creation Date</b>" . "</td>";
     $html .= "</tr>";
       
