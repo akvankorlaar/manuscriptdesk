@@ -87,10 +87,10 @@ h2 {
   color: black;
 }
 
-a:visited {
-  color: black!important;
+#link-wrap td {
+  width: 40%;
 }
 
-#link-wrap td{
-  width: 40%;
+#mw_content {
+  border-bottom: none!important;
 }

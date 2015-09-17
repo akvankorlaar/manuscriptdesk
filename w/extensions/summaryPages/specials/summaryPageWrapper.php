@@ -230,20 +230,21 @@ class summaryPageWrapper{
     $res = $dbr->select(
       'manuscripts', //from
       array(
-        'manuscripts_title', //values
-        'manuscripts_user',
-        'manuscripts_url',
-        'manuscripts_date',
-        'manuscripts_lowercase_title',
+      'manuscripts_title', //values
+      'manuscripts_user',
+      'manuscripts_url',
+      'manuscripts_date',
+      'manuscripts_lowercase_title',
         ), 
       array(
-    'manuscripts_lowercase_title >= ' . $dbr->addQuotes($button_name),
-    'manuscripts_lowercase_title < ' . $dbr->addQuotes($next_letter_alphabet), 
+      'manuscripts_lowercase_title >= ' . $dbr->addQuotes($button_name),
+      'manuscripts_lowercase_title < ' . $dbr->addQuotes($next_letter_alphabet),
+      //only get manuscript pages that are not part of a collection
+      'manuscripts_collection =' . $dbr->addQuotes('none'),  
      ),
     __METHOD__,
       array(
         'ORDER BY' => 'manuscripts_lowercase_title',
-        //'USE INDEX' => 'name_title', //can this still be used?
         'LIMIT' => $this->max_on_page+1,
         'OFFSET' => $this->offset, 
       )

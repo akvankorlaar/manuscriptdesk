@@ -43,19 +43,22 @@
   background-color: white; 
 }
 
-#active_button {
+.letter-button-active {
   cursor: pointer;
+  background-color: #F2FCFF;
   font-size:30px;
 }
 
-#initial_button {
+.letter-button {
   cursor: pointer;
-  position: relative;
-  top: 10px; 
+  background-color: #F2FCFF;
 }
 
-#letter_button {
+.letter-button-initial {
   cursor: pointer;
+  position: relative;
+  background-color: #F2FCFF;
+  top: 10px; 
 }
 
 .button-transparent {
@@ -100,6 +103,10 @@ td {
 
 .td-long {
   width: 50%;
+}
+
+.td-three {
+  width: 33%;
 }
 
 table#metatable { 
