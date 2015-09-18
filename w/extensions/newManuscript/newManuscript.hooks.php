@@ -239,7 +239,7 @@ class newManuscriptHooks {
       $collection_name = $res->fetchObject()->manuscripts_collection; 
       
       if(!empty($collection_name) && $collection_name !== 'none'){
-        return $collection_name; 
+        return htmlspecialchars($collection_name); 
       }
     }                
            

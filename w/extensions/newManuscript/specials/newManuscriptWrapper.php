@@ -74,7 +74,7 @@ class newManuscriptWrapper{
   }
   
   /**
-   * This functions checks if the collection already reached the maximum allowed manuscript pages, or if it already exists
+   * This functions checks if the collection already reached the maximum allowed manuscript pages, or if the current user is the creator of the collection
    * 
    * @param type $posted_collection
    * @return string
@@ -108,6 +108,7 @@ class newManuscriptWrapper{
       'collections', //from
       array( //values
       'collections_title',
+      'collections_user',  
          ),
       array(
       'collections_title = ' . $dbr->addQuotes($posted_collection),
@@ -119,8 +120,11 @@ class newManuscriptWrapper{
       );
         
     //if it already exists, return an error
-    if ($res->numRows() >= 1){
-     return 'newmanuscript-error-collectionexists';
+    if ($res->numRows() === 1){
+      $s = $res->fetchObject();
+      $collections_user = $s->collections_user;
+      if($collections_user !== $this->user_name)
+     return 'newmanuscript-error-notcollectionsuser';
     }
    
     return ""; 

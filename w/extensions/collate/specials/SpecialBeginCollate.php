@@ -456,8 +456,8 @@ class SpecialBeginCollate extends SpecialPage {
             
     //filter out the following tags, and all text in between the tags
     
-    //metatable tag
-    $raw_text = preg_replace('/<metatable>[^<]+<\/metatable>/i', '', $raw_text);
+    //pagemetatable tag
+    $raw_text = preg_replace('/<pagemetatable>[^<]+<\/pagemetatable>/i', '', $raw_text);
     
     //del tag
     $raw_text = preg_replace('/<del>[^<]+<\/del>/i', '', $raw_text);
@@ -659,7 +659,7 @@ class SpecialBeginCollate extends SpecialPage {
       $title_name = $title_array[$index];
       
       $html .= "<td>";
-      $html .="<input type='checkbox' class='begincollate-checkbox' name='text$index' value='$url'>$title_name";
+      $html .="<input type='checkbox' class='begincollate-checkbox' name='text$index' value='" . htmlspecialchars($url) . "'>" . htmlspecialchars($title_name);
       $html .= "</td>";
       $a+=1;
     }
@@ -690,8 +690,8 @@ class SpecialBeginCollate extends SpecialPage {
                 
         //add a checkbox for the collection
         $html .="<td>";
-        $html .="<input type='checkbox' class='begincollate-checkbox-col' name='collection$a' value='$json_small_url_array'>$collection_name";
-        $html .="<input type='hidden' name='collection_hidden$a' value='$collection_name'>"; 
+        $html .="<input type='checkbox' class='begincollate-checkbox-col' name='collection$a' value='$json_small_url_array'>" . htmlspecialchars($collection_name);
+        $html .="<input type='hidden' name='collection_hidden$a' value='" . htmlspecialchars($collection_name) . "'>"; 
         $html .= "<br>";
         $html .= "<span class='begincollate-span'>" . $collection_text . "</span>"; 
         $html .="</td>";

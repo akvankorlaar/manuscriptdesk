@@ -261,6 +261,13 @@ class SpecialUserPage extends SpecialPage {
   }
   
   /**
+   * This function processes the edit form once it has been posted
+   * 
+   * /^[A-Za-z0-9\s]+$/
+   * 
+   * / = delimiter
+   * ^ and $ = anchors. Start and end of line
+   * /s = match spaces
    * 
    * @return string
    */
@@ -275,7 +282,7 @@ class SpecialUserPage extends SpecialPage {
         if($index !== 'wptextfield14'){
           if(strlen($textfield) > $max_length){
             return $this->showEditMetadata(array(), "You can only use a maximum of " . $max_length . "charachters for the notes");
-          }elseif(!preg_match("/^[A-Za-z0-9]+$/",$textfield)){  
+          }elseif(!preg_match("/^[A-Za-z0-9\s]+$/",$textfield)){  
             return $this->showEditMetadata(array(), "You can only use letters or numbers for the input");
           }  
 
@@ -307,6 +314,7 @@ class SpecialUserPage extends SpecialPage {
   }
   
   /**
+   * This function shows a confirmation of the edit after submission of the form, in case the user has reached the page via the link on a manuscript page
    * 
    * @return boolean
    */
@@ -360,7 +368,9 @@ class SpecialUserPage extends SpecialPage {
   }
   
   /**
+   * This function constructs the edit form for editing metadata.
    * 
+   * See https://www.mediawiki.org/wiki/HTMLForm/tutorial for information on the MediaWiki form builder
    */
   private function showEditMetadata($meta_data = array(), $error = ''){
     
@@ -415,9 +425,7 @@ class SpecialUserPage extends SpecialPage {
     $html .= "</div>";
     
     $out->addHTML($html);
-    
-    //https://www.mediawiki.org/wiki/HTMLForm/tutorial2
-    
+        
     $max_length = $this->max_length;   
     $descriptor = array();
     
@@ -538,8 +546,6 @@ class SpecialUserPage extends SpecialPage {
     $html_form->show();
   }
   
-  
-  
     /**
      * Callback function. Makes sure the page is redisplayed in case there was an error. 
      * 
@@ -551,6 +557,7 @@ class SpecialUserPage extends SpecialPage {
   }
   
   /**
+   * This function displays a single collection (metadata and information on the pages) to the user
    * 
    * @param type $pages_within_collection
    * @return type

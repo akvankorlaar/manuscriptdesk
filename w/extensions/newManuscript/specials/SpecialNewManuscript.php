@@ -16,7 +16,7 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
- * Todo: Before echoing to the browser, htmlspecialchars on every variable retrieved from database
+ * Todo: Before echoing to the browser, htmlspecialchars on every variable retrieved from database. Check how to do this for $json_small_url_array in Special:BeginCollate
  * 
  * Todo: Check if the databasewrapper performs mysql_real_escape_string before inserting data ino the database
  * 
@@ -216,6 +216,10 @@ class SpecialNewManuscript extends SpecialPage {
     $new_manuscript_wrapper = new newManuscriptWrapper($this->user_name);
     //get the collections of the current user to display the user's current collections
     $collections_current_user = $new_manuscript_wrapper->getCollectionsCurrentUser();
+    
+    foreach($collections_current_user as $index=> &$value){
+      $value = htmlspecialchars($value);
+    }
     
     if(!empty($collections_current_user)){
       $collections_string = implode(', ', $collections_current_user);
