@@ -123,8 +123,10 @@ class newManuscriptWrapper{
     if ($res->numRows() === 1){
       $s = $res->fetchObject();
       $collections_user = $s->collections_user;
-      if($collections_user !== $this->user_name)
-     return 'newmanuscript-error-notcollectionsuser';
+      
+      if($collections_user !== $this->user_name){
+        return 'newmanuscript-error-notcollectionsuser';
+      }
     }
    
     return ""; 
