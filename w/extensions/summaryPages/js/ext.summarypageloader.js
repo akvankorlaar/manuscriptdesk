@@ -39,13 +39,14 @@
      $('.visualClear').hide();
    };
    
+   //call function showLoader on submit
    $('.summarypage-form').submit(showLoader);
    $('#userpage-editmetadata').submit(showLoader);
    $('#userpage-addnewpage').submit(showLoader);
    $('.visualClear').submit(showLoader);
          
   /**
-   * This function sets the interval when calling the loader() function
+   * This function sets the interval when calling the loader() function (the speed at which the dots change)
    */       
    $(document).ready(function(){
     setInterval (loader, 600);
