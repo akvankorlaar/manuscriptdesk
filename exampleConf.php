@@ -50,7 +50,7 @@ $wgArticleUrl = "/md/";
 
 // Notes from Transcribe Bentham Developers: BP Enabled by default. We need to switch this off because the bentham modern template is not HTML 5
 // HTML Tidy will complain that script tags do not contain a 'type' attribute Html->inlineScript()
-$wgHtml5  = false; 
+$wgHtml5 = false; 
 
 $wgExternalLinkTarget  = '_blank'; 
 
@@ -69,18 +69,18 @@ require_once( $wgLocalStylePath . 'CbpTranscriptionEnhanced/CbpTranscriptionEnha
 
 //define new namespaces for manuscripts and collations
 define("NS_MANUSCRIPTS",3100);
-define("NS_MANUSCRIPTS_TALK",3101);
+//define("NS_MANUSCRIPTS_TALK",3101);
 
 define("NS_COLLATIONS",3200);
-define("NS_COLLATIONS_TALK",3201);
+//define("NS_COLLATIONS_TALK",3201);
 
 $wgExtraNamespaces[NS_MANUSCRIPTS]      = 'Manuscripts';
-$wgExtraNamespaces[NS_MANUSCRIPTS_TALK] = 'Manuscripts_talk';
+//$wgExtraNamespaces[NS_MANUSCRIPTS_TALK] = 'Manuscripts_talk';
 //permission "editmanuscripts" required to edit the Manuscripts namespace
 $wgNamespaceProtection[NS_MANUSCRIPTS]  = array( 'editmanuscripts'); 
 
 $wgExtraNamespaces[NS_COLLATIONS]      = 'Collations';
-$wgExtraNamespaces[NS_COLLATIONS_TALK] = 'Collations_talk';
+//$wgExtraNamespaces[NS_COLLATIONS_TALK] = 'Collations_talk';
 //permission "editcollations" required to edit the Collations namespace
 $wgNamespaceProtection[NS_COLLATIONS]  = array( 'editcollations');
 
@@ -103,9 +103,9 @@ $wgNamespacesToBeSearchedDefault = array(
   NS_CATEGORY         => false,
   NS_CATEGORY_TALK    => false,
   NS_MANUSCRIPTS      => true,
-  NS_MANUSCRIPTS_TALK => false,
+ // NS_MANUSCRIPTS_TALK => false,
   NS_COLLATIONS       => true,
-  NS_COLLATIONS_TALK  => false,
+ // NS_COLLATIONS_TALK  => false,
 );
 
 $wgNamespaceProtection[ NS_HELP ] 	 = array( 'edithelp' );
