@@ -168,8 +168,8 @@ class SpecialBeginCollate extends SpecialPage {
     $out = $this->getOutput();
     $user_object = $this->getUser();    
     
-    if(!in_array('ManuscriptEditors',$user_object->getGroups())){
-      return $out->addWikiText('collate-nopermission');
+    if(!in_array('ManuscriptEditors',$user_object->getGroups())){           
+      return $out->addHTML($this->msg('collate-nopermission'));      
     }
       
     $user_name = $user_object->getName();
@@ -490,13 +490,19 @@ class SpecialBeginCollate extends SpecialPage {
    * @return type
    */
   private function prepareDefaultPage($out){
-    
-    $collate_wrapper = new collateWrapper($this->user_name, $this->maximum_manuscripts);
-    
+        
+    $collate_wrapper = new collateWrapper($this->user_name, $this->maximum_manuscripts);   
     list($url_array,$title_array) = $collate_wrapper->getManuscriptTitles();
 
     if(count($url_array) < $this->minimum_manuscripts){
-      return $out->addWikiText($this->msg('collate-fewuploads'));
+      
+      $article_url = $this->article_url;
+      
+      $html = "";
+      $html .= $this->msg('collate-fewuploads');    
+      $html .= "<p><a class='begincollate-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new manuscript page</a></p>";
+      
+      return $out->addHTML($html);
     }
     
     $collection_urls = $collate_wrapper->checkForManuscriptCollections(); 

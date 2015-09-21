@@ -12,6 +12,8 @@
  * 
  * Todo: Check if it is possible to restructure the collatex javascript 
  * 
+ * Todo: In case a user does not have the appropriate permission or has not created any manuscript pages/collations, change the output notification to $out->addHTML(). 
+ * 
  * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form)
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
@@ -153,7 +155,7 @@ class SpecialNewManuscript extends SpecialPage {
     $user_object = $out->getUser();
     
     if(!in_array('ManuscriptEditors',$user_object->getGroups())){
-      return $out->addWikiMsg('newmanuscript-nopermission');
+      return $out->addHTML($this->msg('newmanuscript-nopermission'));
     }
 
     $this->loadRequest($user_object);
@@ -170,7 +172,7 @@ class SpecialNewManuscript extends SpecialPage {
     
     //If the user has already uploaded the maximum amount of allowed manuscript pages, do not display the form
     if($max_uploads_reached){
-      return $out->addWikiMsg('newmanuscript-maxreached'); 
+      return $out->addHTML($this->msg('newmanuscript-maxreached')); 
     }
     
     $this->addNewmanuscriptLoader();

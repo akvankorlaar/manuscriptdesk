@@ -34,8 +34,8 @@ $messages = array();
 
 $messages['en'] = array(
   'begincollate'                      => 'Collate Manuscript Pages',
-  'collate-nopermission'              => 'You do not have permission to access the functionality of this page',
-  'collate-fewuploads'                => 'You need to upload at least 2 manuscripts to be able to collate manuscripts. You can go to Special:newManuscript create a new manuscript page.',
+  'collate-nopermission'              => 'You do not have permission to access the functionality of this page.',
+  'collate-fewuploads'                => 'You need to upload at least 2 manuscripts to be able to collate manuscripts.',
   'collate-error-fewtexts'            => 'You should submit at least 2 manuscript pages in order to be able to collate something.',
   'collate-error-manytexts'           => 'You can only collate up to 5 single manuscript pages (single pages in collections are also counted).',
   'collate-error-collatex'            => 'Collatex Server is not running or not properly configured. To resolve this, start up collatex, or reconfigure the collatex URL in localsettings.php.',
