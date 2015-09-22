@@ -14,18 +14,10 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
- * Todo: Before echoing to the browser, htmlspecialchars on every variable retrieved from database. Check how to do this for $json_small_url_array in Special:BeginCollate
- * 
- * Todo: Check if the databasewrapper performs mysql_real_escape_string before inserting data ino the database
- * 
  * Todo: Add a button on a page with a collection that can take you to the next page of that collection. Perhaps assign every manuscript page a unique long number
  * (made of for example the user name and the date of creation for the collection), so that the next page can be found by doing current page + 1
  * 
- * Todo: Perhaps instead of splitting the URL into $user_fromurl and $file_fromurl, don't split it, and construct the path to zoomimages using just the page title
- * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
- * 
- * Todo: Remove unused variables in newManuscriptForm
  * 
  * Todo: Try to create unit tests for the extensions. See: https://www.mediawiki.org/wiki/Manual:PHP_unit_testing/Writing_unit_tests_for_extensions , and check 
  * http://www.gossamer-threads.com/lists/wiki/mediawiki/520085 why the tests directory is missing for this version. Perhaps try to get them from github? 
