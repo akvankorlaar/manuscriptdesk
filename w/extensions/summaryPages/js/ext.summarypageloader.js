@@ -36,6 +36,7 @@
      $('#next-link').hide();
      $('#userpage-table').hide();
      $('#userpage-singlecollectionwrap').hide();
+     $('#userpage-messagewrap').hide();
      $('.visualClear').hide();
    };
    

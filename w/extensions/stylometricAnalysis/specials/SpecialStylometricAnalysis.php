@@ -136,7 +136,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $user_object = $this->getUser();    
     
     if(!in_array('ManuscriptEditors',$user_object->getGroups())){
-      return $out->addWikiText('stylometricanalysis-nopermission');
+      return $out->addHTML($this->msg('stylometricanalysis-nopermission'));
     }
       
     $user_name = $user_object->getName();
@@ -199,7 +199,14 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     //check if the total number of collections is less than the minimum
     if(count($collection_urls) < $this->minimum_collections){
-      return $out->addWikiText($this->msg('stylometricanalysis-fewcollections'));
+                
+      $article_url = $this->article_url;
+      
+      $html = "";
+      $html .= $this->msg('stylometricanalysis-fewcollections');    
+      $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
+      
+      return $out->addHTML($html);     
     }
    
     return $this->showDefaultPage($collection_urls, $out);    

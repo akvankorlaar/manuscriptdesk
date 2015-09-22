@@ -211,7 +211,7 @@ class SpecialUserPage extends SpecialPage {
     $user_object = $this->getUser();
         
     if(!in_array('ManuscriptEditors',$user_object->getGroups())){
-      return $out->addWikiText($this->msg('newmanuscript-nopermission'));
+      return $out->addHTML($this->msg('newmanuscript-nopermission'));
     }
     
     if(in_array('sysop',$user_object->getGroups())){
@@ -664,20 +664,27 @@ class SpecialUserPage extends SpecialPage {
     $html .= $this->addSummaryPageLoader();
         
     if(empty($title_array)){
+      
+      $html .= "<div id='userpage-messagewrap'>";
            
       if($this->view_manuscripts){
-        $message = $this->msg('userpage-nomanuscripts');
+        $html .= "<p>" . $this->msg('userpage-nomanuscripts') . "</p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new manuscript page</a></p>";
       }
       
       if($this->view_collations){       
-        $message = $this->msg('userpage-nocollations');
+        $html .= "<p>" . $this->msg('userpage-nocollations') . "</p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:BeginCollate'>Create a new collation</a></p>";
       }
       
       if($this->view_collections){       
-        $message = $this->msg('userpage-nocollections');
+        $html .= "<p>" . $this->msg('userpage-nocollections') . "</p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
       }
       
-      return $out->addHTML($html . $message);
+      $html .= "</div>";
+      
+      return $out->addHTML($html);
     }
     
     if($this->previous_page_possible){

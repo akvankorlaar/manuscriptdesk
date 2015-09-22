@@ -32,8 +32,8 @@ class summaryPagesHooks {
    */
   public function onBeforePageDisplay(OutputPage &$out, Skin &$ski ){
 
-    $title_object = $out->getTitle();
-    $page_title = $title_object->mPrefixedText; 
+    $title_object = $out->getTitle();    
+    $page_title = $title_object->getPrefixedURL();
     
     if($page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections'|| $page_title === 'Special:AllManuscriptPages' || $page_title === 'Special:AllCollations'){
       

@@ -8,8 +8,6 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
- * Todo: In some cases mPrefixedText does not work on the summary pages. Find out why
- * 
  * Todo: Check if it is possible to restructure the collatex javascript 
  * 
  * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form)
@@ -153,7 +151,7 @@ class SpecialNewManuscript extends SpecialPage {
     $user_object = $out->getUser();
     
     if(!in_array('ManuscriptEditors',$user_object->getGroups())){
-      return $out->addWikiMsg('newmanuscript-nopermission');
+      return $out->addHTML($this->msg('newmanuscript-nopermission'));
     }
 
     $this->loadRequest($user_object);
@@ -170,7 +168,7 @@ class SpecialNewManuscript extends SpecialPage {
     
     //If the user has already uploaded the maximum amount of allowed manuscript pages, do not display the form
     if($max_uploads_reached){
-      return $out->addWikiMsg('newmanuscript-maxreached'); 
+      return $out->addHTML($this->msg('newmanuscript-maxreached')); 
     }
     
     $this->addNewmanuscriptLoader();
@@ -224,7 +222,7 @@ class SpecialNewManuscript extends SpecialPage {
     if(!empty($collections_current_user)){
       $collections_string = implode(', ', $collections_current_user);
       
-      $collections_message = $this->msg('newmanuscript-collections') . $collections_string;
+      $collections_message = $this->msg('newmanuscript-collections') . htmlspecialchars($collections_string);
       
     }else{
       $collections_message = "";

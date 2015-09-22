@@ -71,6 +71,10 @@
   font-weight: bold; 
 }
 
+.userpage-transparent {
+  background-color: #F2FCFF;
+}
+
 .button-transparent:hover {
   text-decoration: underline; 
 }

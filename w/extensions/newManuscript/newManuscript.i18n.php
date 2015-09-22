@@ -57,7 +57,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 $messages = array();
 
 $messages['en'] = array(  
-  'newmanuscript-nopermission'                    => 'You do not have permission to access the functionality of this page',
+  'newmanuscript-nopermission'                    => 'You do not have permission to access the functionality of this page.',
   'newmanuscript-maxreached'                      => 'You have already uploaded the maximum amount of manuscript pages, and so you cannot upload more manucript pages unless you delete some of your earlier uploads',
   'newmanuscript-error-nofile'                    => 'Error: No file entered',
   'newmanuscript-error-noimage'                   => 'Error: File is not an image',

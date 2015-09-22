@@ -105,7 +105,7 @@ class SpecialAllCollations extends baseSummaryPage {
       $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:AllCollations" method="post">';
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
-      $html .=("<input type='hidden' name='$this->button_name' value='$this->button_name'>"); 
+      $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
       $html .= "<input type='submit' class='button-transparent' name='redirect_page_forward' title='$next_message_hover' value='$next_message'>";
       
       $html.= "</form>";
@@ -136,8 +136,7 @@ class SpecialAllCollations extends baseSummaryPage {
     }
       
     $html .= "</table>";
-        
-    $out->addModuleStyles('ext.userPage');
+    
     return $out->addHTML($html);
   }
   
