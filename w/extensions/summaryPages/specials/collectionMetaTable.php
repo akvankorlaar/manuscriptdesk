@@ -41,6 +41,7 @@ class collectionMetaTable{
       $variable = htmlspecialchars($variable);
     }
     
+    //get the data
     $metatitle =         isset($meta_data['collections_metatitle']) ? $meta_data['collections_metatitle'] : '';
     $metaauthor =        isset($meta_data['collections_metaauthor']) ? $meta_data['collections_metaauthor'] : '';
     $metayear =          isset($meta_data['collections_metayear']) ? $meta_data['collections_metayear'] :'';
@@ -56,22 +57,38 @@ class collectionMetaTable{
     $metaid =            isset($meta_data['collections_metaid']) ? $meta_data['collections_metaid'] : '';
     $metanotes =         isset($meta_data['collections_metanotes']) ? $meta_data['collections_metanotes'] : '';
     
+    //get the messages
+    $metadata_title = $this->getMessage('metadata-title');
+    $metadata_name = $this->getMessage('metadata-name');
+    $metadata_year = $this->getMessage('metadata-year');
+    $metadata_pages = $this->getMessage('metadata-pages');
+    $metadata_category = $this->getMessage('metadata-category');
+    $metadata_produced = $this->getMessage('metadata-produced');
+    $metadata_producer = $this->getMessage('metadata-producer');
+    $metadata_editors = $this->getMessage('metadata-editors');
+    $metadata_journal = $this->getMessage('metadata-journal');
+    $metadata_journalnumber = $this->getMessage('metadata-journalnumber');
+    $metadata_translators = $this->getMessage('metadata-translators');
+    $metadata_websource = $this->getMessage('metadata-websource');
+    $metadata_id = $this->getMessage('metadata-id');
+       
+    //construct the table
      $html_table = " 
     <table id='metatable' align='center'>
       <tr>
           <th style ='text-align: center;' colspan='4'>
-              Collection Title: $metatitle
+              $metadata_title: $metatitle
           </th>
       </tr>
        <tr>
           <th>
-          Author Name:
+          $metadata_name:
           </th>
           <td>
           $metaauthor
           </td>
           <th>
-          Published in Year:
+          $metadata_year:
           </th>
           <td>
           $metayear
@@ -79,13 +96,13 @@ class collectionMetaTable{
       </tr>
        <tr>
           <th>
-          Number of Pages:
+          $metadata_pages:
           </th>
           <td>
           $metapages
           </td>
           <th>
-          Category:
+          $metadata_category:
           </th>
           <td>
           $metacategory
@@ -93,13 +110,13 @@ class collectionMetaTable{
       </tr>
        <tr>
           <th>
-          Produced in Year:
+          $metadata_produced:
           </th>
           <td>
           $metaproduced
           </td>
           <th>
-          Producer:
+          $metadata_producer:
           </th>
           <td>
           $metaproducer
@@ -107,13 +124,13 @@ class collectionMetaTable{
       </tr>
        <tr>
           <th>
-          ID Number:
+          $metadata_id:
           </th>
           <td>
           $metaid
           </td>
           <th>
-          Editors:
+          $metadata_editors:
           </th>
           <td>
           $metaeditors
@@ -121,13 +138,13 @@ class collectionMetaTable{
       </tr>
         <tr>
           <th>
-          Journal:
+          $metadata_journal:
           </th>
           <td>
           $metajournal
           </td>
           <th>
-          Journal Number:
+          $metadata_journalnumber:
           </th>
           <td>
           $metajournalnumber
@@ -135,13 +152,13 @@ class collectionMetaTable{
       </tr>
            <tr>
           <th>
-          Translators:
+          $metadata_translators:
           </th>
           <td>
           $metatranslators
           </td>
           <th>
-          (Web)source:
+          $metadata_websource:
           </th>
           <td>
           $metawebsource
@@ -157,5 +174,15 @@ class collectionMetaTable{
   ";
      
    return $html_table; 
+  }
+  
+  /**
+   * This function retrieves the message from the i18n file for String $identifier
+   * 
+   * @param type $identifier
+   * @return type
+   */
+  public function getMessage($identifier){
+    return wfMessage($identifier)->text();
   }
 }
