@@ -86,8 +86,8 @@ class newManuscriptHooks {
     $this->manuscript_url_count_size = $wgNewManuscriptOptions['url_count_size'];
     $this->images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
     $this->original_images_dir = $wgNewManuscriptOptions['original_images_dir'];
-    $this->page_title = strip_tags($wgOut->getTitle()->mTextform);
-    $this->page_title_with_namespace = strip_tags($wgOut->getTitle()->mPrefixedText);
+    $this->page_title = strip_tags($wgOut->getTitle()->getPartialURL());
+    $this->page_title_with_namespace = strip_tags($wgOut->getTitle()->getPrefixedURL());
     $this->namespace = $wgOut->getTitle()->getNamespace();
     $this->document_root = $wgWebsiteRoot; 
     
@@ -163,7 +163,7 @@ class newManuscriptHooks {
     $collection = $this->getCollection();
     
     if($collection !== null){
-      $html .= '<h2>' . $collection . '</h2><br>';
+      $html .= '<h2>' . htmlspecialchars($collection) . '</h2><br>';
     }
     
     $html .= "<table id='link-wrap'>";
@@ -188,7 +188,7 @@ class newManuscriptHooks {
   }
   
   /**
-   * 
+   * This function gets the link to edit the current collection
    */
   private function getLinkToEditCollection($collection){
     

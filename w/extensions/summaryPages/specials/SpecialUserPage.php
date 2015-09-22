@@ -669,14 +669,17 @@ class SpecialUserPage extends SpecialPage {
            
       if($this->view_manuscripts){
         $html .= "<p>" . $this->msg('userpage-nomanuscripts') . "</p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new manuscript page</a></p>";
       }
       
       if($this->view_collations){       
-        $html .= "<p>" . $this->msg('userpage-nocollations') . "</p>"; 
+        $html .= "<p>" . $this->msg('userpage-nocollations') . "</p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:BeginCollate'>Create a new collation</a></p>";
       }
       
       if($this->view_collections){       
         $html .= "<p>" . $this->msg('userpage-nocollections') . "</p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
       }
       
       $html .= "</div>";

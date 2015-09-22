@@ -42,7 +42,7 @@ class collateHooks {
    * @param type $request
    * @param type $wiki
    */
-  public function onMediaWikiPerformAction( $output, $article, $title, $user, $request, $wiki ){
+  public function onMediaWikiPerformAction($output, $article, $title, $user, $request, $wiki){
 
     if($wiki->getAction($request) !== 'view' ){
       return true; 
@@ -207,8 +207,8 @@ class collateHooks {
       return true; 
     }
     
-    $page_title = $title_object->mTextform;    
-           
+    $page_title = $title_object->getPartialURL();  
+               
     $page_title_array = explode("/", $page_title);
     $user_fromurl = isset($page_title_array[0]) ? $page_title_array[0] : null; 
     $user_name = $user->getName();  
@@ -220,7 +220,7 @@ class collateHooks {
         return false; 
     }
     
-    $this->deleteDatabaseEntry($title_object->mPrefixedText); 
+    $this->deleteDatabaseEntry($title_object->getPrefixedURL()); 
     
     return true; 
   }
@@ -235,8 +235,10 @@ class collateHooks {
     $dbw->delete( 
       'collations', //from
       array( 
-      'collations_url' => $page_title_with_namespace), //conditions
-      __METHOD__ );
+      'collations_url' => $page_title_with_namespace //conditions
+        ), 
+      __METHOD__ 
+        );
     
     if ($dbw->affectedRows()){
       //something was deleted from the manuscripts table  
@@ -255,7 +257,7 @@ class collateHooks {
    */
   public function onBeforePageDisplay(OutputPage &$out, Skin &$ski ){
 
-    $page_title_with_namespace = $out->getTitle()->mPrefixedText;
+    $page_title_with_namespace = $out->getTitle()->getPrefixedURL();
     $namespace = $out->getTitle()->getNamespace();
     
     if($namespace === NS_COLLATIONS || $page_title_with_namespace === 'Special:BeginCollate'){

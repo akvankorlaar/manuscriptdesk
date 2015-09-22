@@ -140,7 +140,9 @@ class SpecialAllCollections extends baseSummaryPage {
     $html .= "</table>";
     $html .= "</form>";
         
+    //this has to be added explicitly and not in the hook because somehow mPrefixedText does not work in this case
     $out->addModuleStyles('ext.userPage');
+    
     return $out->addHTML($html);  
   }
   
@@ -205,8 +207,7 @@ class SpecialAllCollections extends baseSummaryPage {
     
     $html .= "</table>";
     $html .= "</div>";
-    
-    $out->addModuleStyles('ext.userPage');   
+      
     return $out->addHTML($html);
   }
   

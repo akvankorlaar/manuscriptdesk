@@ -40,8 +40,10 @@ class collate {
     $html = "";
     
     if($user_name && $date){
-      $html .= "This page has been created by: " . $user_name . "<br> Date: " . $date . "<br> ";
+      $html .= "This page has been created by: " . htmlspecialchars($user_name) . "<br> Date: " . htmlspecialchars($date) . "<br> ";
     }
+    
+    $collatex_output = preg_replace('/[<>]/', '', $collatex_output);
     
     //import the javascript and the css
     $html .= "
@@ -57,9 +59,7 @@ class collate {
    
     foreach($titles_array as $key=>$title){
       $html .=
-      "<tr>
-       <th>$title</th>
-       </tr>";
+      "<tr><th>" . htmlspecialchars($title) . "</th></tr>";
     }
     
     $html .= "         

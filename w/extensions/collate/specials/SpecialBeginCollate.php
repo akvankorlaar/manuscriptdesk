@@ -688,10 +688,16 @@ class SpecialBeginCollate extends SpecialPage {
           $html .= "</tr>";
           $html .= "<tr>";    
         }
+        
+        $manuscripts_urls = $small_url_array['manuscripts_url'];
+        
+        foreach($manuscripts_urls as $index=>&$url){
+          $url = htmlspecialchars($url);
+        }
       
         //encode the array into json to be able to place it in the checkbox value
-        $json_small_url_array = json_encode($small_url_array['manuscripts_url']);       
-        $manuscript_pages_within_collection = implode(', ',$small_url_array['manuscripts_title']);   
+        $json_small_url_array = json_encode($manuscripts_urls);       
+        $manuscript_pages_within_collection = htmlspecialchars(implode(', ',$small_url_array['manuscripts_title']));   
         $collection_text = $this->msg('collate-contains') . $manuscript_pages_within_collection . '.';
                 
         //add a checkbox for the collection

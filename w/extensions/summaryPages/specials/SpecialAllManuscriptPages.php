@@ -136,8 +136,7 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
     }
       
     $html .= "</table>";
-        
-    $out->addModuleStyles('ext.userPage');
+    
     return $out->addHTML($html);
   }
   
