@@ -64,14 +64,14 @@ class collateWrapper{
      ),
       __METHOD__,
       array(
-      'ORDER BY' => 'manuscripts_lowercase_title',
+      'ORDER BY' => 'manuscripts_lowercase_collection',
       )
     );
         
-    if ($res->numRows() > 0){
+    if ($res->numRows() > 0){      
       //while there are still titles in this query
       while ($s = $res->fetchObject()){
-                    
+                            
         //check if the current collection has been added
         if(!isset($collection_urls[$s->manuscripts_collection])){
           $collection_urls[$s->manuscripts_collection] = array(

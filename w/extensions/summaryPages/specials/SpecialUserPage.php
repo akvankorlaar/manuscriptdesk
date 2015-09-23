@@ -281,9 +281,13 @@ class SpecialUserPage extends SpecialPage {
       if(!empty($textfield)){
         if($index !== 'wptextfield14'){
           if(strlen($textfield) > $max_length){
-            return $this->showEditMetadata(array(), "You can only use a maximum of " . $max_length . "charachters for the notes");
-          }elseif(!preg_match("/^[A-Za-z0-9\s]+$/",$textfield)){  
-            return $this->showEditMetadata(array(), "You can only use letters or numbers for the input");
+            
+            
+            return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " ". $max_length . " " . $this->msg('userpage-error-editmax2'));
+          }elseif(!preg_match("/^[A-Za-z0-9\s]+$/",$textfield)){ 
+            
+            
+            return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric'));
           }  
 
         //in case the textfield is the 'notes' textfield  
@@ -293,10 +297,9 @@ class SpecialUserPage extends SpecialPage {
           $max_charachters_notes = $max_length*20; 
           
           if($length_textfield > $max_charachters_notes){
-            return $this->showEditMetadata(array(), "You can only use a maximum of " . $max_charachters_notes . " charachters for the notes. "
-                . "You have currently used " . $length_textfield . " charachters");
+            return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " " . $max_charachters_notes . " " . $this->msg('userpage-error-editmax3') . " ". $length_textfield . " " . $this->msg('userpage-error-editmax4'));
           }elseif(!preg_match("/^[A-Za-z0-9,.;!?\s]+$/",$textfield)){  
-            return $this->showEditMetadata(array(), "You can only use letters, numbers, or these charachters: '.,!?' for the notes");
+            return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric2'));
           }  
         }
       }
@@ -342,11 +345,10 @@ class SpecialUserPage extends SpecialPage {
     
     $html .= "<div id='userpage-singlecollectionwrap'>";
     
-    $html .= "<p>Your collection metadata has been edited. Note that it is possible that you do not see results of this edit on the page immediately, because in some cases
-      your browser caches the pages.</p>"; 
+    $html .= "<p>" . $this->msg('userpage-editcomplete') . "</p>"; 
     
     $html .= "<form id='userpage-linkback' action='" . $article_url . $linkback . "' method='post'>";
-    $html .= "<input type='submit' class='button-transparent' name='linkback' title='Go back to the Manuscript Page' value='Go back to " . $linkback . "'>";
+    $html .= "<input type='submit' class='button-transparent' name='linkback' title='" . $this->msg('userpage-linkback1') . "' value='" . $this->msg('userpage-linkback2') . $linkback . "'>";
     $html .= "</form>"; 
       
     $html .= "</div>";
@@ -414,8 +416,8 @@ class SpecialUserPage extends SpecialPage {
     $html .= $this->addSummaryPageLoader();
         
     $html .= "<div id='userpage-singlecollectionwrap'>"; 
-    $html .= "<h2>Editing metadata for " . $selected_collection . "</h2>";
-    $html .= "Every field is optional.";
+    $html .= "<h2>" . $this->msg('userpage-editmetadata') . " ". $selected_collection . "</h2>";
+    $html .= $this->msg('userpage-optional');
     $html .= "<br><br>";
       
     if(!empty($error)){
@@ -431,91 +433,91 @@ class SpecialUserPage extends SpecialPage {
     
     $descriptor['textfield1'] = array(
       //change to label-message for i18n support
-        'label' => 'Collection Title', 
+        'label-message' => 'metadata-title', 
         'class' => 'HTMLTextField',
         'default' => $metatitle,
         'maxlength' => $max_length,
          );
     
     $descriptor['textfield2'] = array(
-        'label' => 'Author Name', 
+        'label-message' => 'metadata-name', 
         'class' => 'HTMLTextField',
         'default' => $metaauthor,
         'maxlength' => $max_length,
          );
     
     $descriptor['textfield3'] = array(
-        'label' => 'Published in year', 
+        'label-message' => 'metadata-year', 
         'class' => 'HTMLTextField',
         'default' => $metayear,
         'maxlength' => $max_length,
          );
 
     $descriptor['textfield4'] = array(
-        'label' => 'Number of Pages', 
+        'label-message' => 'metadata-pages', 
         'class' => 'HTMLTextField',
         'default' => $metapages,
         'maxlength' => $max_length,
          );
 
     $descriptor['textfield5'] = array(
-       'label' => 'Category', 
+       'label-message' => 'metadata-category', 
        'class' => 'HTMLTextField',
        'default' => $metacategory,
        'maxlength' => $max_length,
        );
         
     $descriptor['textfield6'] = array(
-      'label' => 'Produced in Year', 
+      'label-message' => 'metadata-produced', 
       'class' => 'HTMLTextField',
       'default' => $metaproduced,
       'maxlength' => $max_length,
      );
 
     $descriptor['textfield7'] = array(
-      'label' => 'Producer', 
+      'label-message' => 'metadata-producer', 
       'class' => 'HTMLTextField',
       'default' => $metaproducer,
       'maxlength' => $max_length,
      );
         
      $descriptor['textfield8'] = array(
-      'label' => 'Editors', 
+      'label-message' => 'metadata-editors', 
       'class' => 'HTMLTextField',
       'default' => $metaeditors,
       'maxlength' => $max_length,
      );
             
      $descriptor['textfield9'] = array(
-      'label' => 'Journal', 
+      'label-message' => 'metadata-journal', 
       'class' => 'HTMLTextField',
       'default' => $metajournal,
       'maxlength' => $max_length,
      );
                 
      $descriptor['textfield10'] = array(
-      'label' => 'Journal Number', 
+      'label-message' => 'metadata-journalnumber', 
       'class' => 'HTMLTextField',
       'default' => $metajournalnumber,
       'maxlength' => $max_length,
      );
      
      $descriptor['textfield11'] = array(
-      'label' => 'Translators', 
+      'label-message' => 'metadata-translators', 
       'class' => 'HTMLTextField',
       'default' => $metatranslators,
       'maxlength' => $max_length,
      );
          
      $descriptor['textfield12'] = array(
-      'label' => 'Web(source)', 
+      'label-message' => 'metadata-websource', 
       'class' => 'HTMLTextField',
       'default' => $metawebsource,
       'maxlength' => $max_length,
      );
 
     $descriptor['textfield13'] = array(
-      'label' => 'ID Number', 
+      'label-message' => 'metadata-id', 
       'class' => 'HTMLTextField',
       'default' => $metaid,
       'maxlength' => $max_length,
@@ -523,7 +525,7 @@ class SpecialUserPage extends SpecialPage {
 
      $descriptor['textfield14'] = array(
        'type' => 'textarea',
-       'label' => 'Notes',
+       'labelmessage' => 'metadata-notes',
        'default' => $metanotes,
        'rows' => 20,
        'cols' => 20,
@@ -540,7 +542,7 @@ class SpecialUserPage extends SpecialPage {
      }
                
     $html_form = new HTMLForm($descriptor, $this->getContext());
-    $html_form->setSubmitText('Submit Edit');
+    $html_form->setSubmitText($this->msg('metadata-submit'));
     $html_form->addHiddenField('edit_selectedcollection', $this->selected_collection);
     $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
     $html_form->show();
@@ -587,32 +589,32 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<div id='userpage-singlecollectionwrap'>"; 
     
     $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
-    $html .= "<input type='submit' class='button-transparent' name='editmetadata' value='Edit Metadata'>";
+    $html .= "<input type='submit' class='button-transparent' name='editmetadata' value='" . $this->msg('userpage-editmetadatabutton') . "'>";
     $html .= "<input type='hidden' name='selectedcollection' value='" . $selected_collection . "'>";
     $html .= "</form>";
     
     //redirect to Special:NewManuscript, and automatically have the current collection selected
     $html .= "<form id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
-    $html .= "<input type='submit' class='button-transparent' name='addnewpage' title='Add a new page to this collection' value='Add New Page'>";
+    $html .= "<input type='submit' class='button-transparent' name='addnewpage' title='" . $this->msg('userpage-newcollection') . "' value='Add New Page'>";
     $html .= "<input type='hidden' name='selected_collection' value='" . $selected_collection . "'>";
     $html .= "</form>"; 
         
     $html .= "<h2 style='text-align: center;'>Collection: " . $selected_collection . "</h2>";
     $html .= "<br>";    
-    $html .= "<h3>Metadata</h3>";
+    $html .= "<h3>" . $this->msg('userpage-metadata') . "</h3>";
     
     $collection_meta_table = new collectionMetaTable(); 
     
     $html .= $collection_meta_table->renderTable($meta_data);
 
     $html .= "<h3>Pages</h3>"; 
-    $html .= "This collection contains" . " " . count($pages_within_collection) . " " . "single manuscript page(s).";
+    $html .= $this->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $this->msg('userpage-contains2');
     $html .= "<br>";
     
     $html .= "<table id='userpage-table' style='width: 100%;'>";
     $html .= "<tr>";
-    $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
-    $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "<td class='td-long'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
+    $html .= "<td><b>" . $this->msg('userpage-creationdate') . "</b></td>";
     $html .= "</tr>";
     
     foreach($pages_within_collection as $key=>$array){
@@ -669,17 +671,17 @@ class SpecialUserPage extends SpecialPage {
            
       if($this->view_manuscripts){
         $html .= "<p>" . $this->msg('userpage-nomanuscripts') . "</p>";
-        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new manuscript page</a></p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $this->msg('userpage-newmanuscriptpage') . "</a></p>";
       }
       
       if($this->view_collations){       
         $html .= "<p>" . $this->msg('userpage-nocollations') . "</p>";
-        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:BeginCollate'>Create a new collation</a></p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:BeginCollate'>" . $this->msg('userpage-newcollation') . "</a></p>";
       }
       
       if($this->view_collections){       
         $html .= "<p>" . $this->msg('userpage-nocollections') . "</p>";
-        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $this->msg('userpage-newcollection') . "</a></p>";
       }
       
       $html .= "</div>";
@@ -722,11 +724,11 @@ class SpecialUserPage extends SpecialPage {
         
     if($this->view_manuscripts){
       
-      $html .= "<p>Below are all your uploaded manuscript pages that are not part of a collection.</p>";        
+      $html .= "<p>" . $this->msg('userpage-manuscriptinstr') . "</p>";        
       $html .= "<table id='userpage-table' style='width: 100%;'>";
       $html .= "<tr>";
-      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
-      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+      $html .= "<td class='td-long'><b>" . $this->msg('userpage-tabletitle') . "</b></td>";
+      $html .= "<td><b>" . $this->msg('userpage-creationdate') . "</b></td>";
       $html .= "</tr>";
       
       foreach($title_array as $key=>$array){
@@ -749,8 +751,8 @@ class SpecialUserPage extends SpecialPage {
       
       $html .= "<table id='userpage-table' style='width: 100%;'>";
       $html .= "<tr>";
-      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
-      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+      $html .= "<td class='td-long'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
+      $html .= "<td><b>" . $this->msg('userpage-creationdate') . "</b></td>";
       $html .= "</tr>";
            
       foreach($title_array as $key=>$array){
@@ -774,8 +776,8 @@ class SpecialUserPage extends SpecialPage {
       $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
       $html .= "<table id='userpage-table' style='width: 100%;'>";
       $html .= "<tr>";
-      $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
-      $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+      $html .= "<td class='td-long'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
+      $html .= "<td><b>" . $this->msg('userpage-creationdate') . "</b></td>";
       $html .= "</tr>";
       
       foreach($title_array as $key=>$array){
@@ -803,9 +805,7 @@ class SpecialUserPage extends SpecialPage {
   private function showDefaultPage(){
       
     $out = $this->getOutput();
-    
-    $article_url = $this->article_url; 
-    
+    $article_url = $this->article_url;    
     $user_name = $this->user_name; 
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);

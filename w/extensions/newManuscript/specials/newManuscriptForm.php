@@ -121,7 +121,6 @@ class newManuscriptForm extends HTMLForm {
         $this->getContext()->getLanguage()->formatSize($this->max_upload_size))->parse() .
       $this->msg('word-separator' )->escaped() .
       $this->msg('upload_source_file' )->escaped(),
-      'checked' => true,
     );
     
     $descriptor['Extensions'] = array(
@@ -185,9 +184,6 @@ class newManuscriptForm extends HTMLForm {
   }
 }
 
-/**
- * A form field that contains a radio box in the label
- */
 class UploadSourceFile extends HTMLTextField {  
 }
 
