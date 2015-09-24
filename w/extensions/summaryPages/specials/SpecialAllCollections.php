@@ -174,6 +174,8 @@ class SpecialAllCollections extends baseSummaryPage {
     $html .= '</form><br>';
       
     $html .= $this->addSummaryPageLoader();
+    
+    $html .= "<div id='userpage-singlecollectionwrap'>"; 
         
     $html .= "<h2 style='text-align: center;'>" . $this->msg('userpage-collection') . ": " . $selected_collection . "</h2>";
     $html .= "<br>";    
@@ -207,6 +209,8 @@ class SpecialAllCollections extends baseSummaryPage {
     }
     
     $html .= "</table>";
+    $html .= "</div>";
+    
     $html .= "</div>";
       
     return $out->addHTML($html);
