@@ -115,9 +115,9 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
     
     $html .= "<table id='userpage-table' style='width: 100%;'>";
     $html .= "<tr>";
-    $html .= "<td class='td-three'>" . "<b>Title</b>" . "</td>";
-    $html .= "<td class='td-three'>" . "<b>User</b>" . "</td>";
-    $html .= "<td class='td-three'>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
+    $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-user') . "</b>" . "</td>";
+    $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-creationdate') . "</b>" . "</td>";
     $html .= "</tr>";
       
     foreach($title_array as $key=>$array){

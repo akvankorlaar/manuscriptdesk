@@ -35,7 +35,8 @@ class summaryPagesHooks {
     $title_object = $out->getTitle();    
     $page_title = $title_object->getPrefixedURL();
     
-    if($page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections'|| $page_title === 'Special:AllManuscriptPages' || $page_title === 'Special:AllCollations'){
+    if($page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections'|| $page_title === 'Special:AllManuscriptPages' || $page_title === 'Special:AllCollations'
+        || $page_title === 'Special:RecentManuscriptPages'){
       
       $out->addModuleStyles("ext.userPage");
       $out->addModules("ext.summarypageloader");

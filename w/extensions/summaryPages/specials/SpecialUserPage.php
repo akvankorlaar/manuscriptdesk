@@ -599,7 +599,7 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<input type='hidden' name='selected_collection' value='" . $selected_collection . "'>";
     $html .= "</form>"; 
         
-    $html .= "<h2 style='text-align: center;'>Collection: " . $selected_collection . "</h2>";
+    $html .= "<h2 style='text-align: center;'>" . $this->msg('userpage-collection') . ": " . $selected_collection . "</h2>";
     $html .= "<br>";    
     $html .= "<h3>" . $this->msg('userpage-metadata') . "</h3>";
     
