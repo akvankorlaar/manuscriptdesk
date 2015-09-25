@@ -117,9 +117,9 @@ class SpecialAllCollections extends baseSummaryPage {
     $html .= "<form id='allcollections-post' action='" . $article_url . "Special:AllCollections' method='post'>";
     $html .= "<table id='userpage-table' style='width: 100%;'>";
     $html .= "<tr>";
-    $html .= "<td class='td-three'>" . "<b>Collection Title</b>" . "</td>";
-    $html .= "<td class='td-three'>" . "<b>User</b>" . "</td>";
-    $html .= "<td class='td-three'>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-collection') . "</b>" . "</td>";
+    $html .= "<td class='td-trhee'>" . "<b>" . $this->msg('userpage-user') . "</b>" . "</td>";
+    $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-creationdate') . "</b>" . "</td>";
     $html .= "</tr>";
       
     foreach($title_array as $key=>$array){
@@ -147,7 +147,8 @@ class SpecialAllCollections extends baseSummaryPage {
   }
   
   /**
-   * 
+   * This function shows single collection data
+   *  
    * @param type $single_collection_data
    */
   protected function showSingleCollectionData($single_collection_data){
@@ -173,23 +174,25 @@ class SpecialAllCollections extends baseSummaryPage {
     $html .= '</form><br>';
       
     $html .= $this->addSummaryPageLoader();
+    
+    $html .= "<div id='userpage-singlecollectionwrap'>"; 
         
-    $html .= "<h2 style='text-align: center;'>Collection: " . $selected_collection . "</h2>";
+    $html .= "<h2 style='text-align: center;'>" . $this->msg('userpage-collection') . ": " . $selected_collection . "</h2>";
     $html .= "<br>";    
-    $html .= "<h3>Metadata</h3>";
+    $html .= "<h3>" . $this->msg('userpage-metadata') . "</h3>";
     
     $collection_meta_table = new collectionMetaTable(); 
     
     $html .= $collection_meta_table->renderTable($meta_data);
 
     $html .= "<h3>Pages</h3>"; 
-    $html .= "This collection contains" . " " . count($pages_within_collection) . " " . "single manuscript page(s).";
+    $html .= $this->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $this->msg('userpage-contains2');
     $html .= "<br>";
     
     $html .= "<table id='userpage-table' style='width: 100%;'>";
     $html .= "<tr>";
-    $html .= "<td class='td-long'>" . "<b>Title</b>" . "</td>";
-    $html .= "<td>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "<td class='td-long'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
+    $html .= "<td>" . "<b>" . $this->msg('userpage-creationdate') . "</b>" . "</td>";
     $html .= "</tr>";
     
     foreach($pages_within_collection as $key=>$array){
@@ -206,6 +209,8 @@ class SpecialAllCollections extends baseSummaryPage {
     }
     
     $html .= "</table>";
+    $html .= "</div>";
+    
     $html .= "</div>";
       
     return $out->addHTML($html);

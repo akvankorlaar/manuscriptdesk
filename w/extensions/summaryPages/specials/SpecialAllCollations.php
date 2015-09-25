@@ -79,8 +79,8 @@ class SpecialAllCollations extends baseSummaryPage {
              
     if($this->previous_page_possible){
       
-      $previous_message_hover = $this->msg('allcollations-previoushover');
-      $previous_message = $this->msg('allcollations-previous');
+      $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
+      $previous_message = $this->msg('allmanuscriptpages-previous');
       
       $previous_offset = ($this->offset)-($this->max_on_page); 
       
@@ -99,8 +99,8 @@ class SpecialAllCollations extends baseSummaryPage {
         $html.='<br>';
       }
       
-      $next_message_hover = $this->msg('allcollations-nexthover');
-      $next_message = $this->msg('allcollations-next');
+      $next_message_hover = $this->msg('allmanuscriptpages-nexthover');
+      $next_message = $this->msg('allmanuscriptpages-next');
       
       $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:AllCollations" method="post">';
             
@@ -115,9 +115,9 @@ class SpecialAllCollations extends baseSummaryPage {
     
     $html .= "<table id='userpage-table' style='width: 100%;'>";
     $html .= "<tr>";
-    $html .= "<td class='td-three'>" . "<b>Title</b>" . "</td>";
-    $html .= "<td class='td-trhee'>" . "<b>User</b>" . "</td>";
-    $html .= "<td class='td-three'>" . "<b>Creation Date</b>" . "</td>";
+    $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
+    $html .= "<td class='td-trhee'>" . "<b>" . $this->msg('userpage-user') . "</b>" . "</td>";
+    $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-creationdate') . "</b>" . "</td>";
     $html .= "</tr>";
       
     foreach($title_array as $key=>$array){

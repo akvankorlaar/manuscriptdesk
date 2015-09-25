@@ -76,10 +76,10 @@ class SpecialRecentManuscriptPages extends SpecialPage {
     
     $html .= "<table id='userpage-table' style='width: 100%;'>";
     $html .= "<tr>";
-    $html .= "<td class='td-four'>" . "<b>Title</b>" . "</td>";
-    $html .= "<td class='td-four'>" . "<b>User</b>" . "</td>";
-    $html .= "<td class='td-four'>" . "<b>Creation Date</b>" . "</td>";
-    $html .= "<td class='td-four'>" . "<b>Collection</b>" . "</td>";
+    $html .= "<td class='td-four'><b>" . $this->msg('userpage-tabletitle') . "</b></td>";
+    $html .= "<td class='td-four'><b>" . $this->msg('userpage-user') . "</b></td>";
+    $html .= "<td class='td-four'><b>" . $this->msg('userpage-creationdate') . "</b></td>";
+    $html .= "<td class='td-four'><b>" . $this->msg('userpage-collection') . "</b></td>";
     $html .= "</tr>";
       
     foreach($title_array as $key=>$array){
@@ -101,7 +101,6 @@ class SpecialRecentManuscriptPages extends SpecialPage {
       
     $html .= "</table>";
         
-    $out->addModuleStyles('ext.userPage');
     return $out->addHTML($html);
   }
 }

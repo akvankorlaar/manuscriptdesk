@@ -139,7 +139,7 @@ class collateWrapper{
       }     
     }
    
-  return array($url_array, $title_array);   
+    return array($url_array, $title_array);   
   }
   
   /**

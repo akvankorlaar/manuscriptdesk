@@ -8,7 +8,17 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
- * Todo: Check if it is possible to restructure the collatex javascript 
+ * Todo: Check if it is possible to restructure the collatex javascript
+ * 
+ * Todo: Also make it possible to validate text within tags 
+ * 
+ * Todo: Check out what the difference is between declaring a variable private/public or just as var 
+ * 
+ * Todo: Check out if and how AJAX can be used in the extensions
+ * 
+ * Todo: In the summarypages, place the alphabet bar html, or userpage bar html in a separate function
+ * 
+ * Todo: Check out how to fix the placement of the javascript loader for the summary pages
  * 
  * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form)
  * 
@@ -519,6 +529,6 @@ class SpecialNewManuscript extends SpecialPage {
   * @return boolean
   */ 
   static function showUploadError2($form_data){
-      return false; 
+    return false; 
   }
 }
