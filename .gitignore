@@ -5,10 +5,10 @@
 !.gitignore
 !.htaccess
 !README.md
-!CollateTable.sql
-!ManuscriptsTable.sql
-!TempcollateTable.sql 
-!CollectionsTable.sql
+!collationsTable.sql
+!manuscriptsTable.sql
+!tempcollateTable.sql 
+!collectionsTable.sql
 !exampleConf.php
 
 #first specify which folder you do not want ignored

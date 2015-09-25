@@ -12,6 +12,14 @@
  * 
  * Todo: Also make it possible to validate text within tags 
  * 
+ * Todo: Check out what the difference is between declaring a variable private/public or just as var 
+ * 
+ * Todo: Check out if and how AJAX can be used in the extensions
+ * 
+ * Todo: In the summarypages, place the alphabet bar html, or userpage bar html in a separate function
+ * 
+ * Todo: Check out how to fix the placement of the javascript loader for the summary pages
+ * 
  * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form)
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
