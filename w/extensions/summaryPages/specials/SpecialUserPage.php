@@ -200,8 +200,7 @@ class SpecialUserPage extends SpecialPage {
     
     return $link; 
   }
-  
-  
+    
   /**
    * This function calls processRequest() if a request was posted, or calls showDefaultPage() if no request was posted
    */
@@ -280,13 +279,9 @@ class SpecialUserPage extends SpecialPage {
 
       if(!empty($textfield)){
         if($index !== 'wptextfield14'){
-          if(strlen($textfield) > $max_length){
-            
-            
+          if(strlen($textfield) > $max_length){                  
             return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " ". $max_length . " " . $this->msg('userpage-error-editmax2'));
-          }elseif(!preg_match("/^[A-Za-z0-9\s]+$/",$textfield)){ 
-            
-            
+          }elseif(!preg_match("/^[A-Za-z0-9\s]+$/",$textfield)){              
             return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric'));
           }  
 
@@ -331,16 +326,8 @@ class SpecialUserPage extends SpecialPage {
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
-    $manuscripts_message = $this->msg('userpage-mymanuscripts');
-    $collations_message = $this->msg('userpage-mycollations');
-    $collections_message = $this->msg('userpage-mycollections');
-    
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
-    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
-    $html .= '</form>';
-    
+    $html = "";
+    $html .= $this->getMenuBar('edit');   
     $html .= $this->addSummaryPageLoader();
     
     $html .= "<div id='userpage-singlecollectionwrap'>";
@@ -355,20 +342,7 @@ class SpecialUserPage extends SpecialPage {
             
     return $out->addHTML($html);
   }
-  
-  /**
-   * This function adds html used for the summarypage loader (see ext.summarypageloader)
-   */
-  private function addSummaryPageLoader(){
-        
-    //shows after submit has been clicked
-    $html  = "<h3 id='summarypage-loaderdiv' style='display: none;'>Loading";
-    $html .= "<span id='summarypage-loaderspan'></span>";
-    $html .= "</h3>";
     
-    return $html; 
-  }
-  
   /**
    * This function constructs the edit form for editing metadata.
    * 
@@ -402,17 +376,8 @@ class SpecialUserPage extends SpecialPage {
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
-    $manuscripts_message = $this->msg('userpage-mymanuscripts');
-    $collations_message = $this->msg('userpage-mycollations');
-    $collections_message = $this->msg('userpage-mycollections');
-
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
-    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
-    $html .= '</form>';
-    $html .= "<br>";
-    
+    $html = "";
+    $html .= $this->getMenuBar('edit'); 
     $html .= $this->addSummaryPageLoader();
         
     $html .= "<div id='userpage-singlecollectionwrap'>"; 
@@ -574,16 +539,8 @@ class SpecialUserPage extends SpecialPage {
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
-    $manuscripts_message = $this->msg('userpage-mymanuscripts');
-    $collations_message = $this->msg('userpage-mycollations');
-    $collections_message = $this->msg('userpage-mycollections');
-
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
-    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
-    $html .= '</form>';
-    
+    $html = "";
+    $html .= $this->getMenuBar();
     $html .= $this->addSummaryPageLoader();
     
     $html .= "<div id='userpage-singlecollectionwrap'>"; 
@@ -635,6 +592,52 @@ class SpecialUserPage extends SpecialPage {
    
     return $out->addHTML($html);
   }
+  
+  /**
+   * This function adds html used for the summarypage loader (see ext.summarypageloader)
+   */
+  private function addSummaryPageLoader(){
+        
+    //shows after submit has been clicked
+    $html  = "<h3 id='summarypage-loaderdiv' style='display: none;'>Loading";
+    $html .= "<span id='summarypage-loaderspan'></span>";
+    $html .= "</h3>";
+    
+    return $html; 
+  }
+  
+  /**
+   * This function constructs the menu bar
+   * 
+   * @return string
+   */
+  private function getMenuBar($context = null){
+    
+    $article_url = $this->article_url; 
+            
+    $manuscripts_message = $this->msg('userpage-mymanuscripts');
+    $collations_message = $this->msg('userpage-mycollations');
+    $collections_message = $this->msg('userpage-mycollections');
+    
+    $id_manuscripts = isset($this->id_manuscripts) ? $this->id_manuscripts : 'button';
+    $id_collations = isset($this->id_collations) ? $this->id_collations : 'button';
+    
+    if(isset($this->id_collections) && $context === null){
+      $id_collections = $this->id_collections; 
+    }elseif($context === 'default'){
+      $id_collections = 'button'; 
+    }elseif($context === 'edit'){
+      $id_collections = 'button-active';    
+    }
+
+    $html =  '<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    $html .= "<input type='submit' name='viewmanuscripts' id='$id_manuscripts' value='$manuscripts_message'>"; 
+    $html .= "<input type='submit' name='viewcollations' id='$id_collations' value='$collations_message'>"; 
+    $html .= "<input type='submit' name='viewcollections' id='$id_collections' value='$collections_message'>";   
+    $html .= '</form>';
+    
+    return $html; 
+  }
    
   /**
    * This function shows the page after a request has been processed
@@ -649,20 +652,8 @@ class SpecialUserPage extends SpecialPage {
 
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
         
-    $manuscripts_message = $this->msg('userpage-mymanuscripts');
-    $collations_message = $this->msg('userpage-mycollations');
-    $collections_message = $this->msg('userpage-mycollections');
-    
-    $id_manuscripts = $this->id_manuscripts;
-    $id_collations = $this->id_collations;
-    $id_collections = $this->id_collections; 
-
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='submit' name='viewmanuscripts' id='$id_manuscripts' value='$manuscripts_message'>"; 
-    $html .= "<input type='submit' name='viewcollations' id='$id_collations' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='$id_collections' value='$collections_message'>";   
-    $html .= '</form>';
-    
+    $html = "";
+    $html .= $this->getMenuBar();   
     $html .= $this->addSummaryPageLoader();
         
     if(empty($title_array)){
@@ -810,16 +801,8 @@ class SpecialUserPage extends SpecialPage {
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
     
-    $manuscripts_message = $this->msg('userpage-mymanuscripts');
-    $collations_message = $this->msg('userpage-mycollations');
-    $collections_message = $this->msg('userpage-mycollections');
-
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
-    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='button' value='$collections_message'>";   
-    $html .= '</form>';
-    
+    $html = "";
+    $html .= $this->getMenuBar('default');
     $html .= $this->addSummaryPageLoader();
         
     //if the current user is a sysop, display how much space is still left on the disk
@@ -833,7 +816,7 @@ class SpecialUserPage extends SpecialPage {
       $admin_message3 = $this->msg('userpage-admin3');
       $admin_message4 = $this->msg('userpage-admin4');
             
-      $html.= "<p>" . $admin_message1 . $free_disk_space_bytes . ' ' . $admin_message2 . ' ' . $free_disk_space_mb . ' ' . $admin_message3 . ' ' . $free_disk_space_gb . $admin_message4 . ".</p>";
+      $html.= "<p>" . $admin_message1 . ' ' . $free_disk_space_bytes . ' ' . $admin_message2 . ' ' . $free_disk_space_mb . ' ' . $admin_message3 . ' ' . $free_disk_space_gb . ' ' . $admin_message4 . ".</p>";
     }
     
     return $out->addHTML($html);
