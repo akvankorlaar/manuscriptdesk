@@ -568,10 +568,12 @@ class SpecialUserPage extends SpecialPage {
     $html .= $this->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $this->msg('userpage-contains2');
     $html .= "<br>";
     
+    $html .= "<form id='userpage-edittitle' target='" . $article_url . "Special:UserPage' method='post'>";
     $html .= "<table id='userpage-table' style='width: 100%;'>";
     $html .= "<tr>";
-    $html .= "<td class='td-long'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
-    $html .= "<td><b>" . $this->msg('userpage-creationdate') . "</b></td>";
+    $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
+    $html .= "<td class='td-three'><b>" . $this->msg('userpage-creationdate') . "</b></td>";
+    $html .= "<td class='td-three'></td>";
     $html .= "</tr>";
     
     foreach($pages_within_collection as $key=>$array){
@@ -581,13 +583,16 @@ class SpecialUserPage extends SpecialPage {
       $manuscripts_date = isset($array['manuscripts_date']) ? $array['manuscripts_date'] : '';
       
       $html .= "<tr>";
-      $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" . 
+      $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" . 
           htmlspecialchars($manuscripts_title) . "</a></td>";
-      $html .= "<td>" . htmlspecialchars($manuscripts_date) . "</td>";
+      $html .= "<td class='td-three'>" . htmlspecialchars($manuscripts_date) . "</td>";
+      $html .= "<td class='td-three'><input type='submit' class='button-transparent' name='" . htmlspecialchars($manuscripts_title) . "' "
+          . "value='" . $this->msg('userpage-changetitle') . "'></td>";
       $html .= "</tr>";
     }
     
     $html .= "</table>";
+    $html .= "</form>";
     $html .= "</div>";
    
     return $out->addHTML($html);

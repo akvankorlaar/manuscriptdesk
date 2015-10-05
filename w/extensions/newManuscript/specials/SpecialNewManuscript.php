@@ -17,8 +17,6 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
- * Todo: Add a button on a page with a collection that can take you to the next page of that collection. Use the alphabetical order of pages. 
- * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
  * 
  * Todo: Try to create unit tests for the extensions. See: https://www.mediawiki.org/wiki/Manual:PHP_unit_testing/Writing_unit_tests_for_extensions , and check 

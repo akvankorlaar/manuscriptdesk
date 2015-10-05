@@ -85,6 +85,7 @@ $messages['en'] = array(
   'userpage-collection'                           => 'Collection',
   'userpage-user'                                 => 'User',
   'userpage-creationdate'                         => 'Creation Date',
+  'userpage-changetitle'                          => 'Change Title',
   'userpage-newmanuscriptpage'                    => 'Create a new manuscript page',
   'userpage-newcollation'                         => 'Create a new collation',
   'userpage-newcollection'                        => 'Create a new collection',
