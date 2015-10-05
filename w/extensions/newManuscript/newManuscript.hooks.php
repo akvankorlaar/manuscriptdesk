@@ -213,7 +213,7 @@ class newManuscriptHooks {
   }
   
   /**
-   * 
+   * This function gets the links to the previous and the next page of the collection, if they exist 
    */
   private function getPreviousNextPageLinks($collection_title){
     
@@ -242,7 +242,6 @@ class newManuscriptHooks {
     
     $no_previous_page = false; 
     
-    //there should only be 1 result
     while ($s = $res->fetchObject()){
       
       if($s->manuscripts_url === $page_title_with_namespace){
@@ -252,7 +251,8 @@ class newManuscriptHooks {
           continue; 
         }
         
-        $no_previous_page = true; 
+        $no_previous_page = true;
+        continue; 
       }
       
       if(isset($previous_page_url) || $no_previous_page === true){
