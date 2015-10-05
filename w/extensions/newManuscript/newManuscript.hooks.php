@@ -160,10 +160,10 @@ class newManuscriptHooks {
     $user_fromurl = $this->user_fromurl; 
     
     $html = "";    
-    $collection = $this->getCollection();
+    $collection_title = $this->getCollection();
     
-    if($collection !== null){
-      $html .= '<h2>' . htmlspecialchars($collection) . '</h2><br>';
+    if($collection_title !== null){
+      $html .= '<h2>' . htmlspecialchars($collection_title) . '</h2><br>';
     }
     
     $html .= "<table id='link-wrap'>";
@@ -171,8 +171,13 @@ class newManuscriptHooks {
     
     $html .= $this->getOriginalImageLink();
        
-    if($collection !== null && $user_name === $user_fromurl){
-      $html .= $this->getLinkToEditCollection($collection);
+    if($collection_title !== null){
+      
+      if($user_name === $user_fromurl){
+        $html .= $this->getLinkToEditCollection($collection_title);
+      }
+      
+      $html .= $this->getPreviousNextPageLinks($collection_title);
     }
     
     $html .= "</tr>";
@@ -190,7 +195,7 @@ class newManuscriptHooks {
   /**
    * This function gets the link to edit the current collection
    */
-  private function getLinkToEditCollection($collection){
+  private function getLinkToEditCollection($collection_title){
     
     global $wgArticleUrl;
     
@@ -199,12 +204,84 @@ class newManuscriptHooks {
     
     $html = "";
     $html .= '<form class="manuscriptpage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='hidden' name='linkcollection' value='" . $collection . "'>";
+    $html .= "<input type='hidden' name='linkcollection' value='" . $collection_title . "'>";
     $html .= "<input type='hidden' name='linkback' value='" . $page_title_with_namespace . "'>";
     $html .= "<td><input class='button-transparent' type='submit' name='editlink' value='Edit Collection Metadata'></td>";
     $html .= "</form>";
     
     return $html;
+  }
+  
+  /**
+   * 
+   */
+  private function getPreviousNextPageLinks($collection_title){
+    
+    global $wgArticleUrl; 
+    
+    $page_title_with_namespace = $this->page_title_with_namespace;
+    $article_url = $wgArticleUrl; 
+    
+    $dbr = wfGetDB(DB_SLAVE);
+        
+     //Database query
+    $res = $dbr->select(
+      'manuscripts', //from
+      array(
+        'manuscripts_url', //values
+        'manuscripts_lowercase_title', 
+      ),
+      array(
+       'manuscripts_collection = ' . $dbr->addQuotes($collection_title),//conditions
+      ), 
+      __METHOD__,
+      array(
+      'ORDER BY' => 'manuscripts_lowercase_title',
+      )
+    );
+    
+    $no_previous_page = false; 
+    
+    //there should only be 1 result
+    while ($s = $res->fetchObject()){
+      
+      if($s->manuscripts_url === $page_title_with_namespace){
+        
+        if(isset($previous_url)){
+          $previous_page_url = $previous_url;
+          continue; 
+        }
+        
+        $no_previous_page = true; 
+      }
+      
+      if(isset($previous_page_url) || $no_previous_page === true){
+        $next_page_url = $s->manuscripts_url; 
+        break;
+        
+      }else{    
+        $previous_url = $s->manuscripts_url;
+      }
+    }
+    
+    $html = "";  
+    $html .= "<td>";
+    
+    if(isset($previous_page_url)){
+      $html .= "<a href='" . $article_url . htmlspecialchars($previous_page_url) . "' class='link-transparent' title='Go to Previous Page'>Go to Previous Page</a>";
+    }
+    
+    if(isset($previous_page_url) && isset($next_page_url)){
+      $html .= "<br>";
+    }
+              
+    if(isset($next_page_url)){
+      $html .= "<a href='" . $article_url . htmlspecialchars($next_page_url) . "' class='link-transparent' title='Go to Next Page'>Go to Next Page</a>";
+    }
+    
+    $html .= "</td>";
+    
+    return $html; 
   }
   
   /**
@@ -498,7 +575,7 @@ class newManuscriptHooks {
    * @param type $reason
    * @param type $error
    */
-  public function onArticleDelete( WikiPage &$article, User &$user, &$reason, &$error ){
+  public function onArticleDelete(WikiPage &$article, User &$user, &$reason, &$error){
     
     $this->assignGlobalsToProperties();
     

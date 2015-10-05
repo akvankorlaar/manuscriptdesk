@@ -12,16 +12,12 @@
  * 
  * Todo: Also make it possible to validate text within tags 
  * 
- * Todo: In the summarypages, place the alphabet bar html, or userpage bar html in a separate function
- * 
- * Todo: Check out how to fix the placement of the javascript loader for the summary pages
- * 
- * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form)
+ * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form).
+ * Perhaps implement this giving the users the ability to change the name of manuscript pages, which can automatically alter the alphabetical ordering of the pages
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
- * Todo: Add a button on a page with a collection that can take you to the next page of that collection. Perhaps assign every manuscript page a unique long number
- * (made of for example the user name and the date of creation for the collection), so that the next page can be found by doing current page + 1
+ * Todo: Add a button on a page with a collection that can take you to the next page of that collection. Use the alphabetical order of pages. 
  * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
  * 
@@ -244,7 +240,7 @@ class SpecialNewManuscript extends SpecialPage {
     
     $posted_title = $this->posted_title;
     $uploadbase_object = $this->uploadbase_object;
-    $collection = $this->posted_collection; 
+    $collection_title = $this->posted_collection; 
     $target_dir = $this->target_dir; 
     $user_name = $this->user_name; 
     $collection_error = "";
@@ -253,10 +249,10 @@ class SpecialNewManuscript extends SpecialPage {
     list($new_page_url, $local_url, $title_error) = $this->checkTitle($posted_title);
     
     //set the collection name to "none" if no collection name was given
-    if($collection === ""){
-      $collection = "none";
+    if($collection_title === ""){
+      $collection_title = "none";
     }else{  
-      $collection_error = $this->checkCollection($collection);
+      $collection_error = $this->checkCollection($collection_title);
     }
     
     $target_dir = $target_dir . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $posted_title;
@@ -358,7 +354,7 @@ class SpecialNewManuscript extends SpecialPage {
     }
     
     //create a new wikipage
-    $wikipage_status = $this->createNewWikiPage($collection);
+    $wikipage_status = $this->createNewWikiPage();
     
     if($wikipage_status !== true){
        //something went wrong when creating a new wikipage, so delete all export files, if they exist
@@ -370,20 +366,20 @@ class SpecialNewManuscript extends SpecialPage {
     
     $date = date("d-m-Y H:i:s");  
     
-    if($collection !== "none"){
+    if($collection_title !== "none"){
       //store information about the collection in the 'collections' table. Only inserts values if collection does not already exist  
-      $collectionstable_status = $new_manuscript_wrapper->storeCollections($collection, $user_name, $date);
+      $collectionstable_status = $new_manuscript_wrapper->storeCollections($collection_title, $user_name, $date);
     }
     
     //store information about the new uploaded manuscript page in the 'manuscripts' table
-    $manuscriptstable_status = $new_manuscript_wrapper->storeManuscripts($posted_title, $collection, $user_name,$new_page_url, $date);
+    $manuscriptstable_status = $new_manuscript_wrapper->storeManuscripts($posted_title, $collection_title, $user_name,$new_page_url, $date);
    
     if(!$manuscriptstable_status){
       //delete all exported files if writing to the database failed, and show an error
       $prepare_slicer->deleteExportFiles(); 
       return $this->showUploadError($this->msg('newmanuscript-error-database'));
     }
-    
+        
     //redirect to the new page
     return $this->getOutput()->redirect($local_url);
   }
@@ -448,7 +444,6 @@ class SpecialNewManuscript extends SpecialPage {
       
     }else{
       $new_manuscript_wrapper = new newManuscriptWrapper($this->user_name, $this->maximum_pages_per_collection);
-      
       $collection_error = $new_manuscript_wrapper->checkTables($posted_collection);
     }
     
@@ -458,8 +453,10 @@ class SpecialNewManuscript extends SpecialPage {
   /**
    * This function makes a new wikipage, and auto loads wiki text needed for the metatable.
    */
-  private function createNewWikiPage($collection){
-        
+  private function createNewWikiPage(){
+    
+    $collection = $this->posted_collection; 
+    
     if($collection === 'none'){
       $collection = ''; 
     }

@@ -83,27 +83,25 @@ class newManuscriptWrapper{
     
     $dbr = wfGetDB(DB_SLAVE);
          
-      //Database query
     $res = $dbr->select(
-        'manuscripts', //from
+      'manuscripts', //from
       array(
-        'manuscripts_url',//values
-         ),
+      'manuscripts_url',//values
+       ),
       array(
         'manuscripts_user = ' . $dbr->addQuotes($this->user_name), //conditions
         'manuscripts_collection = ' . $dbr->addQuotes($posted_collection),
-        ),
+      ),
       __METHOD__,
       array(
         'ORDER BY' => 'manuscripts_lowercase_title',
       )
-      );
+    );
         
     if ($res->numRows() > $this->maximum_pages_per_collection){
       return 'newmanuscript-error-collectionmaxreached';
     }
         
-        //Database query
     $res = $dbr->select(
       'collections', //from
       array( //values
@@ -117,9 +115,9 @@ class newManuscriptWrapper{
       array(
       'ORDER BY' => 'collections_title',
       )
-      );
+    );
         
-    //if it already exists, return an error
+    //if the user is not the owner of the collection, return an error
     if ($res->numRows() === 1){
       $s = $res->fetchObject();
       $collections_user = $s->collections_user;
