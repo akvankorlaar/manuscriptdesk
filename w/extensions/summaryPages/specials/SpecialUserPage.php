@@ -50,6 +50,8 @@ class SpecialUserPage extends SpecialPage {
   private $textfield_array;
   private $token_is_ok; 
   private $linkback;
+  private $manuscript_change_title;
+  private $manuscript_new_title; 
   
   //class constructor 
   public function __construct(){
@@ -123,10 +125,14 @@ class SpecialUserPage extends SpecialPage {
       }elseif($value === 'wpEditToken'){
         $token = $request->getText($value);
         $this->token_is_ok = $this->getUser()->matchEditToken($token);
-        $this->button_name = 'submitedit';
         
       }elseif($value === 'wptextfield'){
         $this->textfield_array[$original_value] = $request->getText($original_value);
+        $this->button_name = 'submitedit';
+        
+      }elseif($value === 'wptitlefield'){
+        $this->manuscript_new_title = $request->getText($original_value);
+        $this->button_name = 'submittitle';
         
       }elseif($value === 'edit_selectedcollection'){
         $this->selected_collection = $this->validateInput($request->getText($value));
@@ -147,6 +153,13 @@ class SpecialUserPage extends SpecialPage {
         $this->selected_collection = $this->validateInput($request->getText($value));
         $this->button_name = 'editmetadata';
         break;
+        
+      }elseif($value === 'changetitle_button'){      
+        preg_match_all('!\d+!', $original_value, $matches);
+        $number = intval($matches[0][0]);
+        
+        $this->manuscript_change_title = $this->validateInput($request->getText('changetitle' . $number));
+        $this->button_name = 'changetitle';
            
       //get offset, if it is available. The offset specifies at which place in the database the query should begin relative to the start  
       }elseif ($value === 'offset'){
@@ -162,7 +175,8 @@ class SpecialUserPage extends SpecialPage {
     }
     
     //if there is no button, there was no correct request
-    if(!isset($this->button_name) || $this->token_is_ok === false || $this->selected_collection === false || $this->linkback === false){
+    if(!isset($this->button_name) || $this->token_is_ok === false || $this->selected_collection === false || $this->linkback === false
+        || $this->manuscript_change_title === false){
       return false;
     }  
     
@@ -235,28 +249,65 @@ class SpecialUserPage extends SpecialPage {
     
     $button_name = $this->button_name;
     $user_name = $this->user_name;
-    
-    if($button_name === 'singlecollection'){             
-      $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
-      $single_collection_data = $summary_page_wrapper->retrieveFromDatabase(); 
-      return $this->showSingleCollection($single_collection_data);
-    }
-    
+        
     if($button_name === 'editmetadata'){
       $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
       $meta_data = $summary_page_wrapper->retrieveFromDatabase();
       return $this->showEditMetadata($meta_data, ''); 
     }
     
+    if($button_name === 'changetitle'){
+      return $this->showEditTitle();
+    }
+    
     if($button_name === 'submitedit'){
       return $this->processEdit();
     }
-      
+    
+    if($button_name === 'submittitle'){
+      return $this->processNewTitle();
+    }
+    
+    if($button_name === 'singlecollection'){             
+      $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
+      $single_collection_data = $summary_page_wrapper->retrieveFromDatabase(); 
+      return $this->showSingleCollection($single_collection_data);
+    }
+          
     if($button_name === 'viewmanuscripts' || $button_name === 'viewcollations' || $button_name === 'viewcollections'){
       $summary_page_wrapper = new summaryPageWrapper($button_name, $this->max_on_page, $this->offset, $user_name);
       list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
       return $this->showPage($title_array);          
     }   
+  }
+  
+  /**
+   * This function processes the edit when submitting a new tilte
+   */
+  private function processNewTitle(){
+    
+    $max_length = $this->max_length; 
+    $manuscript_new_title = $this->manuscript_new_title;
+     
+    if(empty($manuscript_new_title)){
+      return $this->showEditTitle($this->msg('userpage-error-empty'));  
+    
+    }elseif(strlen($manuscript_new_title) > $max_length){                  
+      return $this->showEditTitle($this->msg('userpage-error-editmax1') . " ". $max_length . " " . $this->msg('userpage-error-editmax2'));
+            
+    //allow only alphanumeric charachters 
+    }elseif(!preg_match("/^[A-Za-z0-9]+$/",$manuscript_new_title)){              
+      return $this->showEditTitle($this->msg('userpage-error-alphanumeric'));
+    }
+    
+    //rename old folder in zoomImages and the archive folder.. 
+    //delete old wikipage.. 
+    //create new wikipage..
+    
+    $summary_page_wrapper = new summaryPageWrapper('submitedit',0,0,$this->user_name,"","", $this->selected_collection);
+    $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
+             
+    return $this->showSingleCollection($single_collection_data);
   }
   
   /**
@@ -342,6 +393,53 @@ class SpecialUserPage extends SpecialPage {
             
     return $out->addHTML($html);
   }
+  
+  /**
+   * This function shows the form when editing a manuscript title
+   * 
+   * See https://www.mediawiki.org/wiki/HTMLForm/tutorial for information on the MediaWiki form builder
+   */
+  private function showEditTitle($error = ''){
+    
+    $out = $this->getOutput(); 
+    $user_name = $this->user_name;
+    $selected_collection = $this->selected_collection;
+    $manuscript_change_title = $this->manuscript_change_title;
+    $max_length = $this->max_length;   
+    
+    $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+
+    $html = "";
+    $html .= $this->getMenuBar('edit'); 
+    $html .= $this->addSummaryPageLoader();
+    
+    $html .= "<div id='userpage-singlecollectionwrap'>";
+    
+    $html .= "<br><br>";
+      
+    if(!empty($error)){
+      $html .= "<div class='error'>" . $error . "</div>";  
+    }
+    
+    $html .= "</div>";
+    
+    $out->addHTML($html);
+        
+    $descriptor = array();
+    
+    $descriptor['titlefield'] = array(
+      'label-message' => 'userpage-newmanuscripttitle', 
+      'class' => 'HTMLTextField',
+      'default' => $manuscript_change_title,
+      'maxlength' => $max_length,
+    );
+    
+    $html_form = new HTMLForm($descriptor, $this->getContext());
+    $html_form->setSubmitText($this->msg('metadata-submit'));
+    $html_form->addHiddenField('edit_selectedcollection', $selected_collection);
+    $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
+    $html_form->show();
+  }
     
   /**
    * This function constructs the edit form for editing metadata.
@@ -371,8 +469,8 @@ class SpecialUserPage extends SpecialPage {
     
     $out = $this->getOutput(); 
     $user_name = $this->user_name;
-    $article_url = $this->article_url;
     $selected_collection = $this->selected_collection;
+    $max_length = $this->max_length;   
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
@@ -393,11 +491,9 @@ class SpecialUserPage extends SpecialPage {
     
     $out->addHTML($html);
         
-    $max_length = $this->max_length;   
     $descriptor = array();
     
     $descriptor['textfield1'] = array(
-      //change to label-message for i18n support
         'label-message' => 'metadata-title', 
         'class' => 'HTMLTextField',
         'default' => $metatitle,
@@ -508,7 +604,7 @@ class SpecialUserPage extends SpecialPage {
                
     $html_form = new HTMLForm($descriptor, $this->getContext());
     $html_form->setSubmitText($this->msg('metadata-submit'));
-    $html_form->addHiddenField('edit_selectedcollection', $this->selected_collection);
+    $html_form->addHiddenField('edit_selectedcollection', $selected_collection);
     $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
     $html_form->show();
   }
@@ -576,21 +672,28 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<td class='td-three'></td>";
     $html .= "</tr>";
     
+    $counter = 0; 
+    
     foreach($pages_within_collection as $key=>$array){
 
       $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
       $manuscripts_title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : ''; 
       $manuscripts_date = isset($array['manuscripts_date']) ? $array['manuscripts_date'] : '';
-      
+            
       $html .= "<tr>";
       $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" . 
           htmlspecialchars($manuscripts_title) . "</a></td>";
       $html .= "<td class='td-three'>" . htmlspecialchars($manuscripts_date) . "</td>";
-      $html .= "<td class='td-three'><input type='submit' class='button-transparent' name='" . htmlspecialchars($manuscripts_title) . "' "
+      $html .= "<td class='td-three'><input type='submit' class='button-transparent' name='changetitle_button" . $counter . "' "
           . "value='" . $this->msg('userpage-changetitle') . "'></td>";
+      $html .= "<input type='hidden' name='changetitle" . $counter . "' value = '" . htmlspecialchars($manuscripts_title) . "'>";
       $html .= "</tr>";
+      
+      $counter+=1; 
     }
     
+    $html .= "<input type='hidden' name='edit_selectedcollection' value = '" . $selected_collection . "'>";
+        
     $html .= "</table>";
     $html .= "</form>";
     $html .= "</div>";
@@ -602,7 +705,7 @@ class SpecialUserPage extends SpecialPage {
    * This function adds html used for the summarypage loader (see ext.summarypageloader)
    */
   private function addSummaryPageLoader(){
-        
+       
     //shows after submit has been clicked
     $html  = "<h3 id='summarypage-loaderdiv' style='display: none;'>Loading";
     $html .= "<span id='summarypage-loaderspan'></span>";
