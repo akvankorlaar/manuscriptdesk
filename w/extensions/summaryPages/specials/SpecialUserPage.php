@@ -378,7 +378,7 @@ class SpecialUserPage extends SpecialPage {
     if (!$doEditStatus->isOK()){
       rename($new_zoomimages, $old_zoomimages);
       rename($new_original_images, $old_original_images);
-      wfErrorLog($this->msg('userpage-error-wikipage') . $new_page_url . $this->msg('userpage-error3') . $manuscript_url_old_title, $web_root . 'ManuscriptDeskDebugLog.log');   
+      wfErrorLog($this->msg('userpage-error-wikipage') . $new_page_url . $this->msg('userpage-error3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
       return $this->showEditTitle($this->msg('userpage-error-wikipage2'));  
     }
     
@@ -402,7 +402,7 @@ class SpecialUserPage extends SpecialPage {
 			$dbw->rollback( __METHOD__ );    
       rename($new_zoomimages, $old_zoomimages);
       rename($new_original_images, $old_original_images);
-      wfErrorLog( $this->msg('userpage-error-log1') . $new_page_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title, $web_root . 'ManuscriptDeskDebugLog.log');   
+      wfErrorLog( $this->msg('userpage-error-log1') . $new_page_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
       return $this->showEditTitle($this->msg('userpage-error-delete'));  
 		}
         
@@ -425,7 +425,7 @@ class SpecialUserPage extends SpecialPage {
       $dbw->rollback( __METHOD__ );     
       rename($new_zoomimages, $old_zoomimages);
       rename($new_original_images, $old_original_images);
-      wfErrorLog( $this->msg('userpage-error-log3') . $new_page_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title, $web_root . 'ManuscriptDeskDebugLog.log');
+      wfErrorLog( $this->msg('userpage-error-log3') . $new_page_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
       return $this->showEditTitle($this->msg('userpage-error-database'));  
     }   
       
@@ -533,7 +533,8 @@ class SpecialUserPage extends SpecialPage {
     $selected_collection = $this->selected_collection;
     $manuscript_old_title = $this->manuscript_old_title;
     $manuscript_url_old_title = $this->manuscript_url_old_title; 
-    $max_length = $this->max_length;   
+    $max_length = $this->max_length;
+    $article_url = $this->article_url; 
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
@@ -544,6 +545,10 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<div id='userpage-singlecollectionwrap'>";
     
     $html .= "<br><br>";
+    
+//    $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
+//    $html .= "<input type='submit' class='userpage-collectionlist' name='singlecollection' value='" . htmlspecialchars($selected_collection) . "'>";
+//    $html .= "</form>";
       
     if(!empty($error)){
       $html .= "<div class='error'>" . $error . "</div>";  

@@ -12,8 +12,6 @@
  * 
  * Todo: Also make it possible to validate text within tags
  * 
- * Todo: Use wfErrorLog in some situations 
- * 
  * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form).
  * Perhaps implement this giving the users the ability to change the name of manuscript pages, which can automatically alter the alphabetical ordering of the pages
  * 
@@ -331,6 +329,7 @@ class SpecialNewManuscript extends SpecialPage {
     $upload_succesfull = move_uploaded_file($temp_path, $target_file); 
 
     if(!$upload_succesfull){
+      wfErrorLog($this->msg('newmanuscript-error-upload') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
       return $this->showUploadError($this->msg('newmanuscript-error-upload'));
     }
 
@@ -344,6 +343,7 @@ class SpecialNewManuscript extends SpecialPage {
       
       if($status === 'slicer-error-execute'){
         //something went wrong when executing the slicer, so delete all export files, if they exist
+        wfErrorLog($this->msg('slicer-error-execute') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
         $prepare_slicer->deleteExportFiles(); 
       }
       
@@ -358,7 +358,8 @@ class SpecialNewManuscript extends SpecialPage {
     
     if($wikipage_status !== true){
        //something went wrong when creating a new wikipage, so delete all export files, if they exist
-      $prepare_slicer->deleteExportFiles();      
+      $prepare_slicer->deleteExportFiles();   
+      wfErrorLog($this->msg($wikipage_status) . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
       return $this->showUploadError($this->msg($wikipage_status));
     }
     
@@ -377,6 +378,7 @@ class SpecialNewManuscript extends SpecialPage {
     if(!$manuscriptstable_status){
       //delete all exported files if writing to the database failed, and show an error
       $prepare_slicer->deleteExportFiles(); 
+      wfErrorLog($this->msg('newmanuscript-error-database') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
       return $this->showUploadError($this->msg('newmanuscript-error-database'));
     }
         
