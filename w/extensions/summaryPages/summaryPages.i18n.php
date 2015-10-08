@@ -92,6 +92,7 @@ $messages['en'] = array(
   'userpage-tabletitle'                           => 'Title',
   'userpage-collection'                           => 'Collection',
   'userpage-user'                                 => 'User',
+  'userpage-goback'                               => 'Go Back',
   'userpage-creationdate'                         => 'Creation Date',
   'userpage-changetitle'                          => 'Change Title',
   'userpage-newmanuscriptpage'                    => 'Create a new manuscript page',

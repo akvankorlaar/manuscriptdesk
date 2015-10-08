@@ -505,7 +505,7 @@ class SpecialUserPage extends SpecialPage {
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
     $html = "";
-    $html .= $this->getMenuBar('edit');   
+    $html .= $this->addMenuBar('edit');   
     $html .= $this->addSummaryPageLoader();
     
     $html .= "<div id='userpage-singlecollectionwrap'>";
@@ -534,22 +534,17 @@ class SpecialUserPage extends SpecialPage {
     $manuscript_old_title = $this->manuscript_old_title;
     $manuscript_url_old_title = $this->manuscript_url_old_title; 
     $max_length = $this->max_length;
-    $article_url = $this->article_url; 
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
     $html = "";
-    $html .= $this->getMenuBar('edit'); 
+    $html .= $this->addMenuBar('edit'); 
     $html .= $this->addSummaryPageLoader();
     
     $html .= "<div id='userpage-singlecollectionwrap'>";
     
-    $html .= "<br><br>";
-    
-//    $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
-//    $html .= "<input type='submit' class='userpage-collectionlist' name='singlecollection' value='" . htmlspecialchars($selected_collection) . "'>";
-//    $html .= "</form>";
-      
+    $html .= $this->addGoBackButton();
+              
     if(!empty($error)){
       $html .= "<div class='error'>" . $error . "</div>";  
     }
@@ -576,7 +571,7 @@ class SpecialUserPage extends SpecialPage {
     $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
     $html_form->show();
   }
-    
+  
   /**
    * This function constructs the edit form for editing metadata.
    * 
@@ -611,10 +606,11 @@ class SpecialUserPage extends SpecialPage {
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
     $html = "";
-    $html .= $this->getMenuBar('edit'); 
+    $html .= $this->addMenuBar('edit'); 
     $html .= $this->addSummaryPageLoader();
         
     $html .= "<div id='userpage-singlecollectionwrap'>"; 
+    $html .= $this->addGoBackButton();
     $html .= "<h2>" . $this->msg('userpage-editmetadata') . " ". $selected_collection . "</h2>";
     $html .= $this->msg('userpage-optional');
     $html .= "<br><br>";
@@ -772,7 +768,7 @@ class SpecialUserPage extends SpecialPage {
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
     $html = "";
-    $html .= $this->getMenuBar();
+    $html .= $this->addMenuBar();
     $html .= $this->addSummaryPageLoader();
     
     $html .= "<div id='userpage-singlecollectionwrap'>"; 
@@ -856,7 +852,7 @@ class SpecialUserPage extends SpecialPage {
    * 
    * @return string
    */
-  private function getMenuBar($context = null){
+  private function addMenuBar($context = null){
     
     $article_url = $this->article_url; 
             
@@ -883,6 +879,24 @@ class SpecialUserPage extends SpecialPage {
     
     return $html; 
   }
+  
+  /**
+   * This function constructs html for a go back button
+   */
+  private function addGoBackButton(){
+    
+    $article_url = $this->article_url;
+    $selected_collection = $this->selected_collection; 
+    
+    $html = "";
+    $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
+    $html .= "<input type='submit' class='button-transparent' value='" . $this->msg('userpage-goback') . "'>";
+    $html .= "<input type='hidden' name='singlecollection' value='" . htmlspecialchars($selected_collection) . "'>";
+    $html .= "</form>";   
+    $html .= "<br><br>";
+    
+    return $html; 
+  }
    
   /**
    * This function shows the page after a request has been processed
@@ -898,7 +912,7 @@ class SpecialUserPage extends SpecialPage {
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
         
     $html = "";
-    $html .= $this->getMenuBar();   
+    $html .= $this->addMenuBar();   
     $html .= $this->addSummaryPageLoader();
         
     if(empty($title_array)){
@@ -1047,7 +1061,7 @@ class SpecialUserPage extends SpecialPage {
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
     
     $html = "";
-    $html .= $this->getMenuBar('default');
+    $html .= $this->addMenuBar('default');
     $html .= $this->addSummaryPageLoader();
         
     //if the current user is a sysop, display how much space is still left on the disk
