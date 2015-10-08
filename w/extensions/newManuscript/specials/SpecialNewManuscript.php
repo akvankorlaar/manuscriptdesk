@@ -12,7 +12,6 @@
  * 
  * Todo: Also make it possible to validate text within tags
  * 
- * Todo: Perhaps make it possible to change the order of the manuscript pages within collections in Special:UserPage (move page up, move page down? - perhaps make a separate form).
  * Perhaps implement this giving the users the ability to change the name of manuscript pages, which can automatically alter the alphabetical ordering of the pages
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage

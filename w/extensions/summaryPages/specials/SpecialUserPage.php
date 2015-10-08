@@ -541,9 +541,11 @@ class SpecialUserPage extends SpecialPage {
     $html .= $this->addMenuBar('edit'); 
     $html .= $this->addSummaryPageLoader();
     
-    $html .= "<div id='userpage-singlecollectionwrap'>";
-    
-    $html .= $this->addGoBackButton();
+    $html .= "<div id='userpage-singlecollectionwrap'>";   
+    $html .= $this->addGoBackButton();  
+    $html .= "<h2>" . $this->msg('userpage-edittitle') . " ". $manuscript_old_title . "</h2>";
+    $html .= $this->msg('userpage-edittitleinstruction');   
+    $html .= "<br><br>";
               
     if(!empty($error)){
       $html .= "<div class='error'>" . $error . "</div>";  
@@ -893,7 +895,6 @@ class SpecialUserPage extends SpecialPage {
     $html .= "<input type='submit' class='button-transparent' value='" . $this->msg('userpage-goback') . "'>";
     $html .= "<input type='hidden' name='singlecollection' value='" . htmlspecialchars($selected_collection) . "'>";
     $html .= "</form>";   
-    $html .= "<br><br>";
     
     return $html; 
   }
