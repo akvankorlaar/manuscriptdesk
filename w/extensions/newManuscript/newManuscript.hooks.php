@@ -173,6 +173,7 @@ class newManuscriptHooks {
        
     if($collection_title !== null){
       
+      //only show the edit collection metadata link to the owner of the collection
       if($user_name === $user_fromurl){
         $html .= $this->getLinkToEditCollection($collection_title);
       }
@@ -244,8 +245,10 @@ class newManuscriptHooks {
     
     while ($s = $res->fetchObject()){
       
+      //once the current page has been found in the database
       if($s->manuscripts_url === $page_title_with_namespace){
         
+        //set the last entry to $previous_page_url, if it exists
         if(isset($previous_url)){
           $previous_page_url = $previous_url;
           continue; 
@@ -255,10 +258,12 @@ class newManuscriptHooks {
         continue; 
       }
       
+      //once $previous_page_url has been sete, or if there is $no_previous_page, set the $next_page_url
       if(isset($previous_page_url) || $no_previous_page === true){
         $next_page_url = $s->manuscripts_url; 
         break;
         
+      //otherwise, the current page has not been found yet  
       }else{    
         $previous_url = $s->manuscripts_url;
       }
@@ -505,9 +510,9 @@ class newManuscriptHooks {
    }
   
   /**
-   * The function register, registers the wikitext <metadata> </metadata>
-   * with the parser, so that the metatable can be loaded. When these tags are encountered in the wikitext, the function render
-   * is called
+   * The function register, registers the wikitext <pagemetatable> </pagemetatable>
+   * with the parser, so that the metatable can be loaded. When these tags are encountered in the wikitext, the function renderPageMetaTable
+   * is called. The metatable refers to meta data on a collection level, while the pagemetatable tags enable users to insert page-specific meta data
    */
   public static function register(Parser &$parser){
     
@@ -517,8 +522,7 @@ class newManuscriptHooks {
   }
   
   /**
-   * This function makes a new meta table object, extracts
-   * the options in the tags, and renders the table
+   * This function renders the pagemetatable, when the tags are encountered in the wikitext
    */
   public static function renderPageMetaTable($input, $args, Parser $parser){
       
@@ -529,8 +533,8 @@ class newManuscriptHooks {
   }
   
   /**
-   * This function makes a new meta table object, extracts
-   * the options in the tags, and renders the table
+   * This function initialises the $summary_page_wrapper, retrieves the $meta_data for the current collection, and uses this $meta_data
+   * to construct the meta table
    */
   private function renderMetaTable($collection_name){
         
@@ -734,7 +738,8 @@ class newManuscriptHooks {
   }
   
   /**
-   * This function prevents users from saving new wiki pages on NS_MANUSCRIPTS when there is no corresponding file in the database
+   * This function prevents users from saving new wiki pages on NS_MANUSCRIPTS when there is no corresponding file in the database,
+   * and it checks if the content is not larger than $max_charachters_manuscript  
    * 
    * @param type $wikiPage
    * @param type $user

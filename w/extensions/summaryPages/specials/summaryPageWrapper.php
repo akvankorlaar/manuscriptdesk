@@ -32,9 +32,11 @@ class summaryPageWrapper{
   private $next_page_possible; 
   private $next_letter_alphabet; 
   private $selected_collection;
+  private $page_title; 
   
   //class constructor
-  public function __construct($request_context, $max_on_page = 0, $offset = 0,$user_name = "", $button_name = "", $next_letter_alphabet = "", $selected_collection = ""){
+  public function __construct($request_context, $max_on_page = 0, $offset = 0,$user_name = "", $button_name = "", $next_letter_alphabet = "", 
+      $selected_collection = "", $page_title = ""){
     
     $this->request_context = $request_context;
     $this->max_on_page = $max_on_page;
@@ -44,6 +46,7 @@ class summaryPageWrapper{
     $this->next_page_possible = false; //default value
     $this->next_letter_alphabet = $next_letter_alphabet; 
     $this->selected_collection = $selected_collection;
+    $this->page_title = $page_title; 
   }
   
   /**
@@ -81,6 +84,7 @@ class summaryPageWrapper{
       case 'singlecollection':
       case 'submitedit':
         return $this->retrieveSingleCollection();
+        break; 
       case 'editmetadata':
       case 'getmetadata' :  
         return $this->retrieveMetadata();
@@ -716,5 +720,38 @@ class summaryPageWrapper{
     //return error
       return false;      
     }   
+  }
+  
+  /**
+   * This function retrieves the page id from the 'page' table 
+   */
+  public function retrievePageId(){
+    
+    $page_id = false; 
+    $page_title = $this->page_title; 
+    $dbr = wfGetDB(DB_SLAVE);
+    
+     //Database query
+    $res = $dbr->select(
+        'page', //from
+      array(
+        'page_id',//values
+         ),
+      array(
+        'page_namespace = ' . $dbr->addQuotes(NS_MANUSCRIPTS),
+        'page_title = ' . $dbr->addQuotes($page_title),
+      ),
+      __METHOD__,
+      array(
+        'ORDER BY' => 'page_id', //is this needed? 
+      )
+      );
+        
+    //there should only be one result
+    if ($res->numRows() === 1){
+      $page_id = $res->fetchObject()->page_id;    
+    }
+    
+    return $page_id; 
   }
 }

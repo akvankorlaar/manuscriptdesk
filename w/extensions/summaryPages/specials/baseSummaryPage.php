@@ -171,6 +171,7 @@ class baseSummaryPage extends SpecialPage {
     
       //retrieve data from the database wrapper
       list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
+      
     }else{    
       $summary_page_wrapper = new summaryPageWrapper('singlecollection', 0, 0,"","","", $this->selected_collection);
       $single_collection_data = $summary_page_wrapper->retrieveFromDatabase(); 

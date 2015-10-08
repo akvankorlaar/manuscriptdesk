@@ -51,10 +51,16 @@ $messages['en'] = array(
   'allcollections-instruction'                    => 'Click one of the buttons to view all collections starting with the letter of your choice.',
   'userpage-welcome'                              => 'Welcome',
   'userpage-error-empty'                          => 'Please fill in a new title for your manuscript page',
+  'userpage-error-log1'                           => 'SpecialUserPage failed to delete page when changing title. New stray title at',
+  'userpage-error-log2'                           => 'SpecialUserPage failed to update manuscripts table when changing title. New stray title at',
+  'userpage-error-log3'                           => '. Url the user wanted to change:',
   'userpage-error-editmax1'                       => 'You can only use a maximum of',
   'userpage-error-editmax2'                       => 'charachters for the input',
   'userpage-error-editmax3'                       => 'charachters for the notes. You have currently used',
   'userpage-error-editmax4'                       => 'charachters.',
+  'userpage-error-wikipage'                       => 'SpecialUserPage failed to create a new page:',
+  'userpage-error-wikipage2'                      => 'Something went wrong when creating the new page',
+  'userpage-error-exists'                         => 'This title already exists. Please specify another title',
   'userpage-error-alphanumeric'                   => 'You can only use letters or numbers for the input',
   'userpage-error-alphanumeric2'                  => "You can only use letters, numbers, or these charachters: '.,!?' for the notes",
   'userpage-editcomplete'                         => 'Your collection metadata has been edited. Note that it is possible that you do not see results of this edit on the page immediately, because in some cases your browser caches the pages.',
@@ -105,6 +111,6 @@ $messages['en'] = array(
   'recentmanuscriptpages'                         => 'Recent Manuscript Pages',
   'recentmanuscriptpages-nomanuscripts'           => 'No manuscript pages have been created yet.',
   'recentmanuscriptpages-information'             => 'This page shows the 30 most recently created manuscript pages.',
-  );
+);
 
 $messages['en-gb'] = $messages['en'];
