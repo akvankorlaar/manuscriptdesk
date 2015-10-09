@@ -16,7 +16,6 @@ Additionally, your server needs to have:
 
 * Perl with the ImageMagick Module enabled
 * Apache to be able to write to directories
-* PHP >= 5.6.3
 
 And ofcourse all the other requirements needed for MediaWiki.
 

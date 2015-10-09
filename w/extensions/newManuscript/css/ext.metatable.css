@@ -87,6 +87,10 @@ h2 {
   color: black;
 }
 
+#link-wrap {
+  width: 100%;
+}
+
 #link-wrap td {
   width: 40%;
 }

@@ -150,7 +150,7 @@ class SpecialAllCollations extends baseSummaryPage {
     
     $out->setPageTitle($this->msg('allcollations'));    
     
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollations" method="post">';
+    $html ='<form class="summarypage-form-default" action="' . $article_url . 'Special:AllCollations" method="post">';
 
     //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  

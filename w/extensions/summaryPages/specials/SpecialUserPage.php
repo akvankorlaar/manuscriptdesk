@@ -50,6 +50,9 @@ class SpecialUserPage extends SpecialPage {
   private $textfield_array;
   private $token_is_ok; 
   private $linkback;
+  private $manuscript_old_title;
+  private $manuscript_url_old_title; 
+  private $manuscript_new_title; 
   
   //class constructor 
   public function __construct(){
@@ -123,10 +126,16 @@ class SpecialUserPage extends SpecialPage {
       }elseif($value === 'wpEditToken'){
         $token = $request->getText($value);
         $this->token_is_ok = $this->getUser()->matchEditToken($token);
-        $this->button_name = 'submitedit';
-        
+      
+      //form textfield. Is validated later on
       }elseif($value === 'wptextfield'){
         $this->textfield_array[$original_value] = $request->getText($original_value);
+        $this->button_name = 'submitedit';
+        
+      //form textfield. Is validated later on  
+      }elseif($value === 'wptitlefield'){
+        $this->manuscript_new_title = $request->getText($original_value);
+        $this->button_name = 'submittitle';
         
       }elseif($value === 'edit_selectedcollection'){
         $this->selected_collection = $this->validateInput($request->getText($value));
@@ -138,16 +147,30 @@ class SpecialUserPage extends SpecialPage {
       }elseif($value === 'linkback'){
         $this->linkback = $this->validateLink($request->getText($value));
         
+      }elseif($value === 'manuscriptoldtitle'){  
+        $this->manuscript_old_title = $this->validateInput($request->getText('manuscriptoldtitle'));
+
       }elseif($value === 'singlecollection'){
         $this->selected_collection = $this->validateInput($request->getText($value));
         $this->button_name = 'singlecollection';
         break;
-        
+                
       }elseif($value === 'selectedcollection'){
         $this->selected_collection = $this->validateInput($request->getText($value));
         $this->button_name = 'editmetadata';
         break;
-           
+        
+      }elseif($value === 'manuscripturloldtitle'){  
+        $this->manuscript_url_old_title = $this->validateLink($request->getText('manuscripturloldtitle'));
+
+      }elseif($value === 'changetitle_button'){ 
+        preg_match_all('!\d+!', $original_value, $matches);
+        $number = intval($matches[0][0]);
+        
+        $this->manuscript_old_title = $this->validateInput($request->getText('oldtitle' . $number));
+        $this->manuscript_url_old_title = $this->validateLink($request->getText('urloldtitle' . $number));
+        $this->button_name = 'changetitle';
+                   
       //get offset, if it is available. The offset specifies at which place in the database the query should begin relative to the start  
       }elseif ($value === 'offset'){
         $string = $request->getText($value);      
@@ -162,7 +185,8 @@ class SpecialUserPage extends SpecialPage {
     }
     
     //if there is no button, there was no correct request
-    if(!isset($this->button_name) || $this->token_is_ok === false || $this->selected_collection === false || $this->linkback === false){
+    if(!isset($this->button_name) || $this->token_is_ok === false || $this->selected_collection === false || $this->linkback === false
+        || $this->manuscript_old_title === false || $this->manuscript_old_title === false || $this->manuscript_url_old_title === false){
       return false;
     }  
     
@@ -200,8 +224,7 @@ class SpecialUserPage extends SpecialPage {
     
     return $link; 
   }
-  
-  
+    
   /**
    * This function calls processRequest() if a request was posted, or calls showDefaultPage() if no request was posted
    */
@@ -236,28 +259,179 @@ class SpecialUserPage extends SpecialPage {
     
     $button_name = $this->button_name;
     $user_name = $this->user_name;
-    
-    if($button_name === 'singlecollection'){             
-      $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
-      $single_collection_data = $summary_page_wrapper->retrieveFromDatabase(); 
-      return $this->showSingleCollection($single_collection_data);
-    }
-    
+        
     if($button_name === 'editmetadata'){
       $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
       $meta_data = $summary_page_wrapper->retrieveFromDatabase();
       return $this->showEditMetadata($meta_data, ''); 
     }
     
+    if($button_name === 'changetitle'){
+      return $this->showEditTitle();
+    }
+    
     if($button_name === 'submitedit'){
       return $this->processEdit();
     }
-      
+    
+    if($button_name === 'submittitle'){
+      return $this->processNewTitle();
+    }
+    
+    if($button_name === 'singlecollection'){             
+      $summary_page_wrapper = new summaryPageWrapper($button_name,0,0,$user_name,"","",$this->selected_collection);
+      $single_collection_data = $summary_page_wrapper->retrieveFromDatabase(); 
+      return $this->showSingleCollection($single_collection_data);
+    }
+          
     if($button_name === 'viewmanuscripts' || $button_name === 'viewcollations' || $button_name === 'viewcollections'){
       $summary_page_wrapper = new summaryPageWrapper($button_name, $this->max_on_page, $this->offset, $user_name);
       list($title_array, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
       return $this->showPage($title_array);          
     }   
+  }
+  
+  /**
+   * This function processes the edit when submitting a new manuscript page title
+   */
+  private function processNewTitle(){
+    
+    global $wgWebsiteRoot, $wgNewManuscriptOptions; 
+    
+    $web_root = $wgWebsiteRoot;   
+    $zoomimages_dirname = $wgNewManuscriptOptions['zoomimages_root_dir'];
+    $original_images_dir = $wgNewManuscriptOptions['original_images_dir'];
+    $manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
+    
+    $user_name = $this->user_name; 
+    $manuscript_new_title = $this->manuscript_new_title;
+    $manuscript_old_title = $this->manuscript_old_title;
+    $selected_collection = $this->selected_collection; 
+    $manuscript_url_old_title = $this->manuscript_url_old_title;
+    $max_length = $this->max_length; 
+         
+    //if the new title and the old title are equal, do nothing and return 
+    if($manuscript_new_title === $manuscript_old_title){   
+      $summary_page_wrapper = new summaryPageWrapper('submitedit',0,0,$user_name,"","", $selected_collection);
+      $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();          
+      return $this->showSingleCollection($single_collection_data); 
+    }
+     
+    //check for errors in $manuscript_new_title
+    if(empty($manuscript_new_title)){
+      return $this->showEditTitle($this->msg('userpage-error-empty'));  
+    
+    }elseif(strlen($manuscript_new_title) > $max_length){                  
+      return $this->showEditTitle($this->msg('userpage-error-editmax1') . " ". $max_length . " " . $this->msg('userpage-error-editmax2'));
+            
+    //allow only alphanumeric charachters 
+    }elseif(!preg_match("/^[A-Za-z0-9]+$/",$manuscript_new_title)){              
+      return $this->showEditTitle($this->msg('userpage-error-alphanumeric'));
+    }
+    
+    $new_page_url = trim($manuscripts_namespace_url . $user_name . '/' . $manuscript_new_title);
+
+    if(null !== Title::newFromText($new_page_url)){
+      
+      $title_object = Title::newFromText($new_page_url);
+      
+      if($title_object->exists()){
+        return $this->showEditTitle($this->msg('userpage-error-exists'));  
+      }
+      
+    }else{
+      return $this->showEditTitle($this->msg('userpage-error-exists')); 
+    }  
+            
+    $old_zoomimages = $web_root . DIRECTORY_SEPARATOR . $zoomimages_dirname . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_old_title; 
+    $new_zoomimages = $web_root . DIRECTORY_SEPARATOR . $zoomimages_dirname . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_new_title; 
+    
+    $old_original_images = $web_root . DIRECTORY_SEPARATOR . $original_images_dir . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_old_title; 
+    $new_original_images = $web_root . DIRECTORY_SEPARATOR . $original_images_dir . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_new_title; 
+   
+    //if the directories do not exist, do nothing and return 
+    if(!is_dir($old_zoomimages) && !is_dir($old_original_images)){
+      $summary_page_wrapper = new summaryPageWrapper('submitedit',0,0,$user_name,"","", $selected_collection);
+      $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();            
+      return $this->showSingleCollection($single_collection_data);
+    }
+           
+    //rename the zoomimages folder and the original images folder
+    rename($old_zoomimages, $new_zoomimages);
+    rename($old_original_images, $new_original_images);
+    
+    //get text from old wikipage
+    $title_object = Title::newFromText($manuscript_url_old_title);  
+    $article_object = Wikipage::factory($title_object);  
+    $old_page_text = $article_object->getRawText();
+           
+    //create a new wikipage with the $old_page_text
+    $title_object = Title::newFromText($new_page_url);  
+    $context = $this->getContext();  
+    $article = Article::newFromTitle($title_object, $context);        
+    $editor_object = new EditPage($article); 
+    $content_new = new wikitextcontent($old_page_text);
+    
+    $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97,
+                        false, null, $editor_object->contentFormat);
+    
+    if (!$doEditStatus->isOK()){
+      rename($new_zoomimages, $old_zoomimages);
+      rename($new_original_images, $old_original_images);
+      wfErrorLog($this->msg('userpage-error-wikipage') . $new_page_url . $this->msg('userpage-error3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
+      return $this->showEditTitle($this->msg('userpage-error-wikipage2'));  
+    }
+    
+    $dbw = wfGetDB(DB_MASTER);
+    $dbw->begin( __METHOD__ );
+           
+    //get the page id of the old page, and delete the old page
+    $page_title = str_replace('Manuscripts:','',$manuscript_url_old_title);    
+    $summary_page_wrapper = new summaryPageWrapper('submitedit',0,0,$user_name,"","",$selected_collection, $page_title);
+    $page_id = $summary_page_wrapper->retrievePageId();
+    
+		$dbw->delete( 
+      'page', //from
+      array(
+        'page_id' => $page_id
+      ),  //conditions
+      __METHOD__ 
+    );
+    
+		if (!$dbw->affectedRows() > 0){   
+			$dbw->rollback( __METHOD__ );    
+      rename($new_zoomimages, $old_zoomimages);
+      rename($new_original_images, $old_original_images);
+      wfErrorLog( $this->msg('userpage-error-log1') . $new_page_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
+      return $this->showEditTitle($this->msg('userpage-error-delete'));  
+		}
+        
+    //update the 'manuscripts' table
+    $dbw->update(
+      'manuscripts', //select table
+      array( //update values
+      'manuscripts_title' => $manuscript_new_title,
+      'manuscripts_url' => $new_page_url, 
+      'manuscripts_lowercase_title' => strtolower($manuscript_new_title),
+      ),
+      array(
+        'manuscripts_url  = ' . $dbw->addQuotes($manuscript_url_old_title),//conditions
+      ), //conditions
+      __METHOD__,
+      'IGNORE'
+    );
+    
+    if (!$dbw->affectedRows()){
+      $dbw->rollback( __METHOD__ );     
+      rename($new_zoomimages, $old_zoomimages);
+      rename($new_original_images, $old_original_images);
+      wfErrorLog( $this->msg('userpage-error-log3') . $new_page_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
+      return $this->showEditTitle($this->msg('userpage-error-database'));  
+    }   
+      
+    //redirect back if there were no errors          
+    $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();           
+    return $this->showSingleCollection($single_collection_data);
   }
   
   /**
@@ -280,13 +454,11 @@ class SpecialUserPage extends SpecialPage {
 
       if(!empty($textfield)){
         if($index !== 'wptextfield14'){
-          if(strlen($textfield) > $max_length){
             
-            
+          if(strlen($textfield) > $max_length){                  
             return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " ". $max_length . " " . $this->msg('userpage-error-editmax2'));
-          }elseif(!preg_match("/^[A-Za-z0-9\s]+$/",$textfield)){ 
             
-            
+          }elseif(!preg_match("/^[A-Za-z0-9\s]+$/",$textfield)){              
             return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric'));
           }  
 
@@ -298,6 +470,7 @@ class SpecialUserPage extends SpecialPage {
           
           if($length_textfield > $max_charachters_notes){
             return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " " . $max_charachters_notes . " " . $this->msg('userpage-error-editmax3') . " ". $length_textfield . " " . $this->msg('userpage-error-editmax4'));
+            
           }elseif(!preg_match("/^[A-Za-z0-9,.;!?\s]+$/",$textfield)){  
             return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric2'));
           }  
@@ -331,16 +504,8 @@ class SpecialUserPage extends SpecialPage {
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
-    $manuscripts_message = $this->msg('userpage-mymanuscripts');
-    $collations_message = $this->msg('userpage-mycollations');
-    $collections_message = $this->msg('userpage-mycollections');
-    
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
-    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
-    $html .= '</form>';
-    
+    $html = "";
+    $html .= $this->addMenuBar('edit');   
     $html .= $this->addSummaryPageLoader();
     
     $html .= "<div id='userpage-singlecollectionwrap'>";
@@ -357,16 +522,56 @@ class SpecialUserPage extends SpecialPage {
   }
   
   /**
-   * This function adds html used for the summarypage loader (see ext.summarypageloader)
+   * This function shows the form when editing a manuscript title
+   * 
+   * See https://www.mediawiki.org/wiki/HTMLForm/tutorial for information on the MediaWiki form builder
    */
-  private function addSummaryPageLoader(){
-        
-    //shows after submit has been clicked
-    $html  = "<h3 id='summarypage-loaderdiv' style='display: none;'>Loading";
-    $html .= "<span id='summarypage-loaderspan'></span>";
-    $html .= "</h3>";
+  private function showEditTitle($error = ''){
     
-    return $html; 
+    $out = $this->getOutput(); 
+    $user_name = $this->user_name;
+    $selected_collection = $this->selected_collection;
+    $manuscript_old_title = $this->manuscript_old_title;
+    $manuscript_url_old_title = $this->manuscript_url_old_title; 
+    $max_length = $this->max_length;
+    
+    $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+
+    $html = "";
+    $html .= $this->addMenuBar('edit'); 
+    $html .= $this->addSummaryPageLoader();
+    
+    $html .= "<div id='userpage-singlecollectionwrap'>";   
+    $html .= $this->addGoBackButton();  
+    $html .= "<h2>" . $this->msg('userpage-edittitle') . " ". $manuscript_old_title . "</h2>";
+    $html .= $this->msg('userpage-edittitleinstruction');   
+    $html .= "<br><br>";
+              
+    if(!empty($error)){
+      $html .= "<div class='error'>" . $error . "</div>";  
+    }
+    
+    $html .= "</div>";
+    
+    $out->addHTML($html);
+        
+    $descriptor = array();
+    
+    $descriptor['titlefield'] = array(
+      'label-message' => 'userpage-newmanuscripttitle', 
+      'class' => 'HTMLTextField',
+      'default' => $manuscript_old_title,
+      'maxlength' => $max_length,
+    );
+    
+    $html_form = new HTMLForm($descriptor, $this->getContext());
+    $html_form->setSubmitText($this->msg('metadata-submit'));
+    $html_form->addHiddenField('edit_selectedcollection', $selected_collection);
+    $html_form->addHiddenField('manuscriptoldtitle', $manuscript_old_title);
+    $html_form->addHiddenField('manuscripturloldtitle', $manuscript_url_old_title);
+    
+    $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
+    $html_form->show();
   }
   
   /**
@@ -397,25 +602,17 @@ class SpecialUserPage extends SpecialPage {
     
     $out = $this->getOutput(); 
     $user_name = $this->user_name;
-    $article_url = $this->article_url;
     $selected_collection = $this->selected_collection;
+    $max_length = $this->max_length;   
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
-    $manuscripts_message = $this->msg('userpage-mymanuscripts');
-    $collations_message = $this->msg('userpage-mycollations');
-    $collections_message = $this->msg('userpage-mycollections');
-
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
-    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
-    $html .= '</form>';
-    $html .= "<br>";
-    
+    $html = "";
+    $html .= $this->addMenuBar('edit'); 
     $html .= $this->addSummaryPageLoader();
         
     $html .= "<div id='userpage-singlecollectionwrap'>"; 
+    $html .= $this->addGoBackButton();
     $html .= "<h2>" . $this->msg('userpage-editmetadata') . " ". $selected_collection . "</h2>";
     $html .= $this->msg('userpage-optional');
     $html .= "<br><br>";
@@ -428,11 +625,9 @@ class SpecialUserPage extends SpecialPage {
     
     $out->addHTML($html);
         
-    $max_length = $this->max_length;   
     $descriptor = array();
     
     $descriptor['textfield1'] = array(
-      //change to label-message for i18n support
         'label-message' => 'metadata-title', 
         'class' => 'HTMLTextField',
         'default' => $metatitle,
@@ -543,7 +738,7 @@ class SpecialUserPage extends SpecialPage {
                
     $html_form = new HTMLForm($descriptor, $this->getContext());
     $html_form->setSubmitText($this->msg('metadata-submit'));
-    $html_form->addHiddenField('edit_selectedcollection', $this->selected_collection);
+    $html_form->addHiddenField('edit_selectedcollection', $selected_collection);
     $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));  
     $html_form->show();
   }
@@ -574,16 +769,8 @@ class SpecialUserPage extends SpecialPage {
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
-    $manuscripts_message = $this->msg('userpage-mymanuscripts');
-    $collations_message = $this->msg('userpage-mycollations');
-    $collections_message = $this->msg('userpage-mycollections');
-
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
-    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='button-active' value='$collections_message'>";   
-    $html .= '</form>';
-    
+    $html = "";
+    $html .= $this->addMenuBar();
     $html .= $this->addSummaryPageLoader();
     
     $html .= "<div id='userpage-singlecollectionwrap'>"; 
@@ -611,29 +798,105 @@ class SpecialUserPage extends SpecialPage {
     $html .= $this->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $this->msg('userpage-contains2');
     $html .= "<br>";
     
+    $html .= "<form id='userpage-edittitle' action='" . $article_url . "Special:UserPage' method='post'>";
     $html .= "<table id='userpage-table' style='width: 100%;'>";
     $html .= "<tr>";
-    $html .= "<td class='td-long'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
-    $html .= "<td><b>" . $this->msg('userpage-creationdate') . "</b></td>";
+    $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
+    $html .= "<td class='td-three'><b>" . $this->msg('userpage-creationdate') . "</b></td>";
+    $html .= "<td class='td-three'></td>";
     $html .= "</tr>";
+    
+    $counter = 0; 
     
     foreach($pages_within_collection as $key=>$array){
 
       $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
       $manuscripts_title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : ''; 
       $manuscripts_date = isset($array['manuscripts_date']) ? $array['manuscripts_date'] : '';
-      
+            
       $html .= "<tr>";
-      $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" . 
-          htmlspecialchars($manuscripts_title) . "</a></td>";
-      $html .= "<td>" . htmlspecialchars($manuscripts_date) . "</td>";
+      $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" 
+          . htmlspecialchars($manuscripts_title) . "</a></td>";
+      $html .= "<td class='td-three'>" . htmlspecialchars($manuscripts_date) . "</td>";
+      $html .= "<td class='td-three'><input type='submit' class='button-transparent' name='changetitle_button" . $counter . "' "
+          . "value='" . $this->msg('userpage-changetitle') . "'></td>";
+      $html .= "<input type='hidden' name='oldtitle" . $counter . "' value = '" . htmlspecialchars($manuscripts_title) . "'>";
+      $html .= "<input type='hidden' name='urloldtitle" . $counter . "' value = '" . htmlspecialchars($manuscripts_url) . "'>";
       $html .= "</tr>";
+      
+      $counter+=1; 
     }
     
+    $html .= "<input type='hidden' name='edit_selectedcollection' value = '" . $selected_collection . "'>";
+        
     $html .= "</table>";
+    $html .= "</form>";
     $html .= "</div>";
    
     return $out->addHTML($html);
+  }
+  
+  /**
+   * This function adds html used for the summarypage loader (see ext.summarypageloader)
+   */
+  private function addSummaryPageLoader(){
+       
+    //shows after submit has been clicked
+    $html  = "<h3 id='summarypage-loaderdiv' style='display: none;'>Loading";
+    $html .= "<span id='summarypage-loaderspan'></span>";
+    $html .= "</h3>";
+    
+    return $html; 
+  }
+  
+  /**
+   * This function constructs the menu bar
+   * 
+   * @return string
+   */
+  private function addMenuBar($context = null){
+    
+    $article_url = $this->article_url; 
+            
+    $manuscripts_message = $this->msg('userpage-mymanuscripts');
+    $collations_message = $this->msg('userpage-mycollations');
+    $collections_message = $this->msg('userpage-mycollections');
+    
+    $id_manuscripts = isset($this->id_manuscripts) ? $this->id_manuscripts : 'button';
+    $id_collations = isset($this->id_collations) ? $this->id_collations : 'button';
+    
+    if(isset($this->id_collections) && $context === null){
+      $id_collections = $this->id_collections; 
+    }elseif($context === 'default'){
+      $id_collections = 'button'; 
+    }elseif($context === 'edit'){
+      $id_collections = 'button-active';    
+    }
+
+    $html =  '<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+    $html .= "<input type='submit' name='viewmanuscripts' id='$id_manuscripts' value='$manuscripts_message'>"; 
+    $html .= "<input type='submit' name='viewcollations' id='$id_collations' value='$collations_message'>"; 
+    $html .= "<input type='submit' name='viewcollections' id='$id_collections' value='$collections_message'>";   
+    $html .= '</form>';
+    
+    return $html; 
+  }
+  
+  /**
+   * This function constructs html for a go back button
+   */
+  private function addGoBackButton(){
+    
+    $article_url = $this->article_url;
+    $selected_collection = $this->selected_collection; 
+    
+    $html = "";
+    $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
+    $html .= "<input type='submit' class='button-transparent' value='" . $this->msg('userpage-goback') . "'>";
+    $html .= "<input type='hidden' name='singlecollection' value='" . htmlspecialchars($selected_collection) . "'>";
+    $html .= "</form>";   
+    
+    return $html; 
   }
    
   /**
@@ -649,20 +912,8 @@ class SpecialUserPage extends SpecialPage {
 
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
         
-    $manuscripts_message = $this->msg('userpage-mymanuscripts');
-    $collations_message = $this->msg('userpage-mycollations');
-    $collections_message = $this->msg('userpage-mycollections');
-    
-    $id_manuscripts = $this->id_manuscripts;
-    $id_collations = $this->id_collations;
-    $id_collections = $this->id_collections; 
-
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='submit' name='viewmanuscripts' id='$id_manuscripts' value='$manuscripts_message'>"; 
-    $html .= "<input type='submit' name='viewcollations' id='$id_collations' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='$id_collections' value='$collections_message'>";   
-    $html .= '</form>';
-    
+    $html = "";
+    $html .= $this->addMenuBar();   
     $html .= $this->addSummaryPageLoader();
         
     if(empty($title_array)){
@@ -810,16 +1061,8 @@ class SpecialUserPage extends SpecialPage {
     
     $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
     
-    $manuscripts_message = $this->msg('userpage-mymanuscripts');
-    $collations_message = $this->msg('userpage-mycollations');
-    $collections_message = $this->msg('userpage-mycollections');
-
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
-    $html .= "<input type='submit' name='viewmanuscripts' id='button' value='$manuscripts_message'>"; 
-    $html .= "<input type='submit' name='viewcollations' id='button' value='$collations_message'>"; 
-    $html .= "<input type='submit' name='viewcollections' id='button' value='$collections_message'>";   
-    $html .= '</form>';
-    
+    $html = "";
+    $html .= $this->addMenuBar('default');
     $html .= $this->addSummaryPageLoader();
         
     //if the current user is a sysop, display how much space is still left on the disk
@@ -833,10 +1076,9 @@ class SpecialUserPage extends SpecialPage {
       $admin_message3 = $this->msg('userpage-admin3');
       $admin_message4 = $this->msg('userpage-admin4');
             
-      $html.= "<p>" . $admin_message1 . $free_disk_space_bytes . ' ' . $admin_message2 . ' ' . $free_disk_space_mb . ' ' . $admin_message3 . ' ' . $free_disk_space_gb . $admin_message4 . ".</p>";
+      $html.= "<p>" . $admin_message1 . ' ' . $free_disk_space_bytes . ' ' . $admin_message2 . ' ' . $free_disk_space_mb . ' ' . $admin_message3 . ' ' . $free_disk_space_gb . ' ' . $admin_message4 . ".</p>";
     }
     
     return $out->addHTML($html);
   } 
 }
-
