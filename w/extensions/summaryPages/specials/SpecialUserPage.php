@@ -453,17 +453,28 @@ class SpecialUserPage extends SpecialPage {
     foreach($textfield_array as $index=>$textfield){
 
       if(!empty($textfield)){
-        if($index !== 'wptextfield14'){
+        //wptextfield12 is the websource textfield, and wptextfield14 is the notes textfield
+        if($index !== 'wptextfield12' && $index !== 'wptextfield14'){
             
           if(strlen($textfield) > $max_length){                  
             return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " ". $max_length . " " . $this->msg('userpage-error-editmax2'));
             
+          //allow alphanumeric charachters and whitespace  
           }elseif(!preg_match("/^[A-Za-z0-9\s]+$/",$textfield)){              
             return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric'));
           }  
-
-        //in case the textfield is the 'notes' textfield  
-        }else{
+        
+        }elseif ($index === 'wptextfield12'){
+          
+          if(strlen($textfield) > $max_length){                  
+            return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " ". $max_length . " " . $this->msg('userpage-error-editmax2'));
+            
+          //allow alphanumeric charachters, whitespace, and '-./:'  
+          }elseif(!preg_match("/^[A-Za-z0-9\-.\/:\s]+$/",$textfield)){              
+            return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric2'));
+          }  
+          
+        }elseif ($index === 'wptextfield14'){
           
           $length_textfield = strlen($textfield);
           $max_charachters_notes = $max_length*20; 
@@ -471,8 +482,9 @@ class SpecialUserPage extends SpecialPage {
           if($length_textfield > $max_charachters_notes){
             return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " " . $max_charachters_notes . " " . $this->msg('userpage-error-editmax3') . " ". $length_textfield . " " . $this->msg('userpage-error-editmax4'));
             
+           //allow alphanumeric charachters, whitespace, and ',.;!?' 
           }elseif(!preg_match("/^[A-Za-z0-9,.;!?\s]+$/",$textfield)){  
-            return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric2'));
+            return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric3'));
           }  
         }
       }
