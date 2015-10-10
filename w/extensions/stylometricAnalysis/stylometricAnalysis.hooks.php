@@ -39,7 +39,7 @@ class stylometricAnalysisHooks {
     
 		global $wgStylometricAnalysisOptions;
         
-    $vars['wgmin_stylometricanalysis_pages'] = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_pages'];
+    $vars['wgmin_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
 		
 		return true;
 	}

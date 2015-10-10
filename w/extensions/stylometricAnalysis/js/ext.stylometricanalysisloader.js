@@ -36,7 +36,7 @@
      */
     function changeSubmit(){
             
-      var min_number_pages = mw.config.get('wgmin_stylometricanalysis_pages');
+      var min_number_pages = mw.config.get('wgmin_stylometricanalysis_collections');
       
       //count the number of checked checkboxes
       var collection_checked = $("input[class='stylometricanalysis-checkbox']:checked").length;

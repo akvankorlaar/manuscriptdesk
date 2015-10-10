@@ -41,17 +41,14 @@ class SpecialStylometricAnalysis extends SpecialPage {
   //class constructor
   public function __construct(){
     
-    global $wgNewManuscriptOptions, $wgArticleUrl;  
+    global $wgNewManuscriptOptions, $wgArticleUrl, $wgStylometricAnalysisOptions;  
     
     $this->article_url = $wgArticleUrl;
     $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
-    
-    $this->minimum_collections = 2;  //put this into a global variable later on
-    //$this->maximum_collections = 5; 
-    
-    $this->minimum_pages_per_collection = 3; //change this to 5 later on and put into a global variable
-    $this->error_message = false; //default value
-    
+    $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];    
+    $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection']; 
+     //$this->maximum_collections = 5; 
+    $this->error_message = false; //default value    
     $this->redirect_to_start = false;
     $this->collection_array = array();
     $this->collection_hidden_array = array();
