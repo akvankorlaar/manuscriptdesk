@@ -21,61 +21,62 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-#stylometricanalysis-infobox {
-padding: 0.3em;
-float: right; 
-margin-left: 15px; 
-margin-bottom: 8px; 
-border: 1px solid #aa8899; 
-background: #e1e9e1; 
-text-align: center; 
-font-size: 95%; 
-line-height: 1.5em; 
-width: 28em;  
+.stylometricanalysis-table td {
+  width: 20%;
 }
 
-#stylometricanalysis-infobox th {
-  background: #283d88; 
-  padding: 0.3em; 
-  font-size: 1.1em;  
-  color: #FFF
+.stylometricanalysis-table {
+  width: 100%;
 }
 
-#stylometricanalysis-td {
-  background: #283d88; 
-  padding: 0.3em; 
-  color: #FFF;
-}
-
-#stylometricanalysis-contentwrapper {
-    overflow-y: auto;
-    overflow-x: hidden; 
-    position: relative;
-    height: 100%;
-}
-
-#stylometricanalysis-collection { 
-  display: inline-block;
-  height: 100%; 
-  width: 30%; 
-}
-
-#stylometricanalysis-textarea {
-  display: inline-block;
-  height: 100%;
-  width: 80%; 
-  position: absolute;
+.stylometricanalysis-span {
+  font-size: 85%;
 }
 
 #stylometricanalysis-submitbutton {
   width: 30em; 
   height: 1.5em; 
-  cursor: pointer;
+  cursor: default; 
+  position: relative; 
+  background-color: #F2FCFF;
+}
+
+.stylometricanalysis-form {
+  overflow-y: auto;  
   position: relative;
-  top: 20px;
+  width: 100%;
+}
+
+#stylometricanalysis-infobox {
+  padding: 0.3em;
+  float: right; 
+  width: 500px;
+  margin-bottom: 8px; 
+  margin-left: 15px; 
+  border: 1px solid #aa8899; 
+  background: #fff; 
+  text-align: center;
+  font-size: 95%; 
+  line-height: 1.5em; 
+}
+
+#stylometricanalysis-infobox th {
+  background: #F2FCFF; 
+  color: #black;
+  padding: 0.3em; 
+  font-size: 1.1em;  
+}
+
+#stylometricanalysis-infobox-td {
+  background: #F2FCFF; 
+  padding: 0.3em; 
+  color: black;
+}
+
+#stylometricanalysis-loaderdiv {
+  display: none;
 }
 
 .stylometricanalysis-transparent {
   background-color: #F2FCFF;
 }
-

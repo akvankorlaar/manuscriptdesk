@@ -25,11 +25,13 @@
 class stylometricAnalysisWrapper{
   
   private $user_name; 
+  private $minimum_pages_per_collection; 
 
   //class constructor
-  public function __construct($user_name){
+  public function __construct($user_name, $minimum_pages_per_collection){
     
     $this->user_name = $user_name;
+    $this->minimum_pages_per_collection = $minimum_pages_per_collection; 
   }
   /**
    * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
@@ -39,7 +41,8 @@ class stylometricAnalysisWrapper{
    */
   public function checkForManuscriptCollections(){
     
-    $user_name = $this->user_name; 
+    $user_name = $this->user_name;
+    $minimum_pages_per_collection = $this->minimum_pages_per_collection; 
     $dbr = wfGetDB(DB_SLAVE);
     $collection_urls = array();       
     
@@ -50,14 +53,14 @@ class stylometricAnalysisWrapper{
         'manuscripts_title',//values
         'manuscripts_url',
         'manuscripts_collection',
-        'manuscripts_lowercase_title',
       ),
-      array('manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
-       'manuscripts_collection != ' . $dbr->addQuotes("none"),
+      array(
+        'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
+        'manuscripts_collection != ' . $dbr->addQuotes("none"),
        ),
       __METHOD__,
       array(
-      'ORDER BY' => 'manuscripts_lowercase_title',
+      'ORDER BY' => 'manuscripts_lowercase_collection',
       )
     );
         
@@ -68,9 +71,9 @@ class stylometricAnalysisWrapper{
         //check if the current collection has been added
         if(!isset($collection_urls[$s->manuscripts_collection])){
           $collection_urls[$s->manuscripts_collection] = array(
-              'manuscripts_url' => array($s->manuscripts_url),
-              'manuscripts_title' => array($s->manuscripts_title),
-              );
+            'manuscripts_url' => array($s->manuscripts_url),
+            'manuscripts_title' => array($s->manuscripts_title),
+          );
      
         //if the collection already has been added, append the new manuscripts_url to the current array
         }else{
@@ -82,7 +85,15 @@ class stylometricAnalysisWrapper{
         }                
       }     
     }
-  
+    
+    //remove collections with less pages than $this->minimum_pages_per_collection from the list
+    foreach($collection_urls as $collection_name => &$small_url_array){
+      if(count($small_url_array['manuscripts_url']) < $minimum_pages_per_collection){
+        unset($collection_urls[$collection_name]);
+      }
+    }
+      
     return $collection_urls; 
+    
   }
 }

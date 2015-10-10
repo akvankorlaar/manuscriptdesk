@@ -41,12 +41,9 @@ class stylometricAnalysisHooks {
   public function onBeforePageDisplay(OutputPage &$out, Skin &$ski ){
 
     $title_object = $out->getTitle();
-    $page_title = $title_object->mPrefixedText; 
+    $page_title = $title_object->getPrefixedURL();
     
-    $page_title2 = $title_object->mTextform; 
-
-    if($page_title === 'Special:StylometricAnalysis' || $page_title2 === 'StylometricAnalysis'){
-      //add css for the collation table    
+    if($page_title === 'Special:StylometricAnalysis'){    
       $out->addModuleStyles('ext.stylometricAnalysis');
     }
 

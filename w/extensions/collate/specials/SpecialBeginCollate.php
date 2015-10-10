@@ -552,7 +552,7 @@ class SpecialBeginCollate extends SpecialPage {
   private function addBeginCollateLoader(){
     
     //shows after submit has been clicked
-    $html  = "<div id='begincollate-loaderdiv' style='display: none;'>";
+    $html  = "<div id='begincollate-loaderdiv'>";
     $html .= "<img id='begincollate-loadergif' src='/w/extensions/collate/specials/assets/362.gif' style='width: 64px; height: 64px;"
         . " position: relative; left: 50%;'>"; 
     $html .= "</div>";
@@ -639,8 +639,7 @@ class SpecialBeginCollate extends SpecialPage {
     $html .= "<div id='javascript-error'></div>"; 
         
     if($this->error_message){
-     $error_message = $this->error_message;
-     
+     $error_message = $this->error_message;   
      $html .= "<br>";
      $html .= "<div class = 'error'>$error_message</div>";
     }
@@ -678,7 +677,7 @@ class SpecialBeginCollate extends SpecialPage {
       
       $collection_message = $this->msg('collate-collections');           
       $html .= "<h3>$collection_message</h3>";
-      $html .= "<table class=begincollate-table>";
+      $html .= "<table class='begincollate-table'>";
 
       $a = 0;
       $html .= "<tr>";
@@ -727,5 +726,3 @@ class SpecialBeginCollate extends SpecialPage {
     $out->addHTML($html);  
   }
 }
-
-

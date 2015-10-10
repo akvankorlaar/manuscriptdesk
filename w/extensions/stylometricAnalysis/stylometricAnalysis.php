@@ -65,7 +65,6 @@ $wgResourceModules['ext.stylometricAnalysis' ] = array(
 		'styles'  => '/ext.stylometricAnalysis.css',
 );
 
-
 //Instantiate the stylometricAnalysisHooks class and register the hooks
 $stylometricAnalysisHooks = new stylometricAnalysisHooks();
 
