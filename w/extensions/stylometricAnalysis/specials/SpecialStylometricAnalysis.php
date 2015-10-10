@@ -241,13 +241,13 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $html .= "</table>";
     
     $html .= "<p>" . $this->msg('stylometricanalysis-instruction') . '</p>';
-        
+            
     //display the error 
     if($this->error_message){     
       $error_message = $this->error_message;  
       $html .= "<div class = 'error'>$error_message</div>";
     }
-        
+            
     $html .= "<form id='stylometricanalysis-form' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";    
     $html .= "<h3>" . $this->msg('stylometricanalysis-collectionheader') . "</h3>";
        
@@ -255,6 +255,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
 
     $a = 0;
     $html .= "<tr>";
+    
     foreach($collection_urls as $collection_name=>$small_url_array){
 
       if(($a % 4) === 0){  

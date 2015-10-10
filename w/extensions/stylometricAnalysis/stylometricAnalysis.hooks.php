@@ -31,6 +31,18 @@ class stylometricAnalysisHooks {
   //class constructor 
   public function __construct(){    
   }
+  
+  /**
+	 * This function sends configuration variables to javascript. In javascript they are accessed through 'mw.config.get('..') 
+	 */
+	public function onResourceLoaderGetConfigVars(&$vars){
+    
+		global $wgStylometricAnalysisOptions;
+        
+    $vars['wgmin_stylometricanalysis_pages'] = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_pages'];
+		
+		return true;
+	}
 
   /**
    * This function loads additional modules containing CSS before the page is displayed
@@ -44,7 +56,8 @@ class stylometricAnalysisHooks {
     $page_title = $title_object->getPrefixedURL();
     
     if($page_title === 'Special:StylometricAnalysis'){    
-      $out->addModuleStyles('ext.stylometricAnalysis');
+      $out->addModuleStyles('ext.stylometricanalysis');
+      $out->addModules('ext.stylometricanalysisloader');
     }
 
     return true; 
