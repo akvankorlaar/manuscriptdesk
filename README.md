@@ -17,7 +17,8 @@ Additionally, your server needs to have:
 * Perl with the ImageMagick Module enabled.
 * Apache to be able to write to directories.
 
-And ofcourse all the other requirements needed for MediaWiki (Apache, MySQL, PHP).See: https://www.mediawiki.org/wiki/Manual:Installation_requirements.
+And ofcourse all the other requirements needed for MediaWiki (Apache, MySQL, PHP). 
+See: https://www.mediawiki.org/wiki/Manual:Installation_requirements.
 
 ##Installation##
 
@@ -54,7 +55,7 @@ you can install the extensions by:
 - Configuring '$wgNewManuscriptOptions['perl_path']' in localsettings.php if needed. If you can call perl scripts from the command line by just typing 'perl path/to/a/perl/file.pl', the default 'perl'.
 should be used.
 - Installing CollateX. This can be done by downloading and installing the latest version from:http://collatex.net/. CollateX can be configured by modifying $wgCollationOptions['collatex_url'] in localsettings.php.
-- Copying the contents of Sidebar.txt to Mediawiki:Sidebar (For example localhost/md/Mediawiki:Sidebar).
+- Logging in as Administrator, and copying the contents of Sidebar.txt to Mediawiki:Sidebar (For example localhost/md/Mediawiki:Sidebar).
 
 Once everything is installed, you should log in as administrator, go to Special:UserRights (for example: localhost/md/Special:UserRights), enter your own username, and add yourself to the 'ManuscriptEditors' group. 
 With the default installation, every registered user needs to be added manually to this group to be able to access the functionality of the Manuscript Desk. 
