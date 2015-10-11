@@ -1,4 +1,4 @@
-# manuscriptdesk
+# The Manuscript Desk
 
 **The programs and files are still incomplete (work in progress) , and so installing these extensions is not recommended yet.**
 
@@ -14,16 +14,16 @@ on older versions of MediaWiki is not recommended.
 
 Additionally, your server needs to have: 
 
-* Perl with the ImageMagick Module enabled
-* Apache to be able to write to directories
+* Perl with the ImageMagick Module enabled.
+* Apache to be able to write to directories.
 
-And ofcourse all the other requirements needed for MediaWiki.
+And ofcourse all the other requirements needed for MediaWiki.See: https://www.mediawiki.org/wiki/Manual:Installation_requirements.
 
 ##Installation##
 
-Full installation instructions for MediaWiki can be found here: https://www.mediawiki.org/wiki/Manual:Installation_guide
+Full installation instructions for MediaWiki can be found here: https://www.mediawiki.org/wiki/Manual:Installation_guide.
 
-Short instructions: 
+**Short instructions:** 
 
 Before installing MediaWiki, you should already have a full web-framework (Apache, MySQL, PHP, Perl, ImageMagick) installed.
 When this is done, you should download MediaWiki version 1.23 from https://github.com/wikimedia/mediawiki/tree/REL1_23
@@ -54,9 +54,9 @@ you can install the extensions by:
   after MediaWiki's default installation. These should remain there).
 - Going to localsettings.php located in the root of your MediaWiki installation (for example w/localsettings.php), and by appending all code in exampleConf.php (except for the php tag) to this file.
 - Configuring the variables $wgWebsiteRoot, $wgPrimaryDisk in localsettings.php.
-- Configuring $wgNewManuscriptOptions['perl_path'] if needed. If you can call perl scripts from the command line by just typing 'perl <path/to/a/perl/file.pl>', the default 'perl'.
+- Configuring $wgNewManuscriptOptions['perl_path'] if needed. If you can call perl scripts from the command line by just typing 'perl path/to/a/perl/file.pl', the default 'perl'.
 should be used.
--Installing CollateX. This can be done by downloading and installing the latest version from:http://collatex.net/.
+- Installing CollateX. This can be done by downloading and installing the latest version from:http://collatex.net/.
 - CollateX can be configured by modifying $wgCollationOptions['collatex_url'] in localsettings.php.
 
 Once everything is installed, you should log in as administrator, go to Special:UserRights (for example: localhost/md/Special:UserRights), enter your own username, and add yourself to the 'ManuscriptEditors' group. 
