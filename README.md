@@ -58,7 +58,7 @@ should be used.
 - Copying the contents of Sidebar.txt to Mediawiki:Sidebar (For example localhost/md/Mediawiki:Sidebar).
 
 Once everything is installed, you should log in as administrator, go to Special:UserRights (for example: localhost/md/Special:UserRights), enter your own username, and add yourself to the 'ManuscriptEditors' group. 
-With the default installation, every registered user needs to be added manually to this group to be able to access the functionality of the ManuscriptDesk. 
+With the default installation, every registered user needs to be added manually to this group to be able to access the functionality of the Manuscript Desk. 
 If you want to change this, you can reconfigure the section on User Permissions in localSettings.php. See https://www.mediawiki.org/wiki/Manual:User_rights
 
 ##Technical documentation##
