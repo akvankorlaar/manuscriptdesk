@@ -17,7 +17,7 @@ Additionally, your server needs to have:
 * Perl with the ImageMagick Module enabled.
 * Apache to be able to write to directories.
 
-And ofcourse all the other requirements needed for MediaWiki.See: https://www.mediawiki.org/wiki/Manual:Installation_requirements.
+And ofcourse all the other requirements needed for MediaWiki (Apache, MySQL, PHP).See: https://www.mediawiki.org/wiki/Manual:Installation_requirements.
 
 ##Installation##
 
@@ -25,8 +25,7 @@ Full installation instructions for MediaWiki can be found here: https://www.medi
 
 **Short instructions:** 
 
-Before installing MediaWiki, you should already have a full web-framework (Apache, MySQL, PHP, Perl, ImageMagick) installed.
-When this is done, you should download MediaWiki version 1.23 from https://github.com/wikimedia/mediawiki/tree/REL1_23
+You can download MediaWiki version 1.23 from https://github.com/wikimedia/mediawiki/tree/REL1_23
 
 The MediaWiki files should be extracted to a subdirectory of your website root (for example /w). You should point your browser to the directory where you have extracted MediaWiki, and follow the on-screen instructions.
 
