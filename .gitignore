@@ -5,6 +5,7 @@
 !.gitignore
 !.htaccess
 !README.md
+!Sidebar.txt
 !collationsTable.sql
 !manuscriptsTable.sql
 !tempcollateTable.sql 

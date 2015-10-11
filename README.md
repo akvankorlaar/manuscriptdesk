@@ -28,9 +28,7 @@ Full installation instructions for MediaWiki can be found here: https://www.medi
 Before installing MediaWiki, you should already have a full web-framework (Apache, MySQL, PHP, Perl, ImageMagick) installed.
 When this is done, you should download MediaWiki version 1.23 from https://github.com/wikimedia/mediawiki/tree/REL1_23
 
-The MediaWiki files should be extracted to a subdirectory of your website root (for example /w).
-
-You should point your browser to the directory where you have extracted MediaWiki, and follow the on-screen instructions.
+The MediaWiki files should be extracted to a subdirectory of your website root (for example /w). You should point your browser to the directory where you have extracted MediaWiki, and follow the on-screen instructions.
 
 **Important:**
 
@@ -52,12 +50,12 @@ you can install the extensions by:
 - Moving the .htaccess file to your website root (NOT the .htaccess files in the initialUpload and zoomImages folders - these should stay in the initialUpload and zoomImages folders).
 - Importing the CollateTable.sql, TempcollateTable.sql, ManuscriptsTable.sql and CollectionsTable.sql into your local MediaWiki's database (there should already be many tables in this database 
   after MediaWiki's default installation. These should remain there).
-- Going to localsettings.php located in the root of your MediaWiki installation (for example w/localsettings.php), and by appending all code in exampleConf.php (except for the php tag) to this file.
-- Configuring the variables $wgWebsiteRoot, $wgPrimaryDisk in localsettings.php.
-- Configuring $wgNewManuscriptOptions['perl_path'] if needed. If you can call perl scripts from the command line by just typing 'perl path/to/a/perl/file.pl', the default 'perl'.
+- Going to localsettings.php located in the root of your MediaWiki installation (for example w/localsettings.php), and by appending all code in exampleConf.php (except for the PHP tag) to this file.
+- Configuring the variables '$wgWebsiteRoot' and '$wgPrimaryDisk' in localsettings.php.
+- Configuring '$wgNewManuscriptOptions['perl_path']' in localsettings.php if needed. If you can call perl scripts from the command line by just typing 'perl path/to/a/perl/file.pl', the default 'perl'.
 should be used.
-- Installing CollateX. This can be done by downloading and installing the latest version from:http://collatex.net/.
-- CollateX can be configured by modifying $wgCollationOptions['collatex_url'] in localsettings.php.
+- Installing CollateX. This can be done by downloading and installing the latest version from:http://collatex.net/. CollateX can be configured by modifying $wgCollationOptions['collatex_url'] in localsettings.php.
+- Copying the contents of Sidebar.txt to Mediawiki:Sidebar (For example localhost/md/Mediawiki:Sidebar).
 
 Once everything is installed, you should log in as administrator, go to Special:UserRights (for example: localhost/md/Special:UserRights), enter your own username, and add yourself to the 'ManuscriptEditors' group. 
 With the default installation, every registered user needs to be added manually to this group to be able to access the functionality of the ManuscriptDesk. 
