@@ -41,7 +41,7 @@
   background-color: #F2FCFF;
 }
 
-.stylometricanalysis-form {
+#stylometricanalysis-form {
   overflow-y: auto;  
   position: relative;
   width: 100%;
@@ -79,4 +79,9 @@
 
 .stylometricanalysis-transparent {
   background-color: #F2FCFF;
+}
+
+#javascript-error {
+  font-size: larger;
+  color: #cc0000;
 }

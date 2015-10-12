@@ -33,16 +33,17 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 $messages = array();
 
 $messages['en'] = array( 
-  'stylometricanalysis'                     => 'Stylometric Analysis',
-  'stylometricanalysis-desc'                => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
-  'stylometricanalysis-nopermission'        => 'You do not have permission to access the functionality of this page.',
-  'stylometricanalysis-fewcollections'      => 'You need to create at least 2 collections to be able to do Stylometric Analysis.',
-  'stylometricanalysis-welcome'             => 'Welcome to the Stylometric Analysis module',
-  'stylometricanalysis-about'               => 'About the Stylometric Analysis module',
-  'stylometricanalysis-collectionheader'    => 'Collections',
-  'stylometricanalysis-wordformheader'      => 'Enter Words (Optional)',
-  'stylometricanalysis-contains'            => 'Contains:',
-  'stylometricanalysis-submit'              => 'Submit Selection',
+  'stylometricanalysis'                       => 'Stylometric Analysis',
+  'stylometricanalysis-desc'                  => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
+  'stylometricanalysis-nopermission'          => 'You do not have permission to access the functionality of this page.',
+  'stylometricanalysis-fewcollections'        => 'You need to create at least 2 collections to be able to do Stylometric Analysis.',
+  'stylometricanalysis-welcome'               => 'Welcome to the Stylometric Analysis module',
+  'stylometricanalysis-about'                 => 'About the Stylometric Analysis module',
+  'stylometricanalysis-collectionheader'      => 'Collections',
+  'stylometricanalysis-wordformheader'        => 'Enter Words (Optional)',
+  'stylometricanalysis-contains'              => 'Contains:',
+  'stylometricanalysis-submit'                => 'Submit Selection',
+  'stylometricanalysis-error-manycollections' => 'You can only select up to 5 collections',
   );
 
 $messages['en-gb'] = $messages['en'];

@@ -40,6 +40,7 @@ class stylometricAnalysisHooks {
 		global $wgStylometricAnalysisOptions;
         
     $vars['wgmin_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
+    $vars['wgmax_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
 		
 		return true;
 	}

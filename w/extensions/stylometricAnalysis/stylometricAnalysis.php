@@ -61,13 +61,16 @@ $wgSpecialPages['StylometricAnalysis'] = 'SpecialStylometricAnalysis';
 
 //Extra file loaded later 
 $wgResourceModules['ext.stylometricanalysis' ] = array(
-		'localBasePath' => dirname( __FILE__ ) . '/css',  
-		'styles'  => '/ext.stylometricanalysis.css',
+  'localBasePath' => dirname( __FILE__ ) . '/css',  
+	'styles'  => '/ext.stylometricanalysis.css',
 );
 
 $wgResourceModules['ext.stylometricanalysisloader' ] = array(
-		'localBasePath' => dirname( __FILE__ ) . '/js',  
-		'scripts'  => '/ext.stylometricanalysisloader.js',
+	'localBasePath' => dirname( __FILE__ ) . '/js',  
+	'scripts'  => '/ext.stylometricanalysisloader.js',
+  'messages' => array(
+    'stylometricanalysis-error-manycollections',
+   ),
 );
 
 //Instantiate the stylometricAnalysisHooks class and register the hooks

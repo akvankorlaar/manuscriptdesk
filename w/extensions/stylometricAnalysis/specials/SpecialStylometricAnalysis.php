@@ -45,9 +45,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     $this->article_url = $wgArticleUrl;
     $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
-    $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];    
+    $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];  
+    $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections']; 
     $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection']; 
-     //$this->maximum_collections = 5; 
     $this->error_message = false; //default value    
     $this->redirect_to_start = false;
     $this->collection_array = array();
@@ -238,6 +238,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $html .= "</table>";
     
     $html .= "<p>" . $this->msg('stylometricanalysis-instruction') . '</p>';
+    
+    $html .= "<div id='javascript-error'></div>"; 
             
     //display the error 
     if($this->error_message){     
