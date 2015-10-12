@@ -27,12 +27,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
   public $article_url; 
   
   private $minimum_collections;
+  private $maximum_collections; 
   private $minimum_pages_per_collection; 
-  private $max_input_textarea; 
   private $user_name;  
   private $full_manuscripts_url; 
   private $collection_array;
-  private $collection_hidden_array;
   private $error_message;
   private $manuscripts_namespace_url;
   private $redirect_to_start;
@@ -41,20 +40,17 @@ class SpecialStylometricAnalysis extends SpecialPage {
   //class constructor
   public function __construct(){
     
-    global $wgNewManuscriptOptions, $wgArticleUrl;  
+    global $wgNewManuscriptOptions, $wgArticleUrl, $wgStylometricAnalysisOptions;  
     
-    $this->article_url = $wgArticleUrl; 
-    
-    $this->minimum_collections = 2;  //put this into a global variable later on
-    $this->minimum_pages_per_collection = 1; //change this to 5 later on and put into a global variable
-    $this->max_input_textarea = 500; //the maximum number of input charachters for the textarea 
-    $this->error_message = false; //default value
-    
+    $this->article_url = $wgArticleUrl;
     $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
+    $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];  
+    $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections']; 
+    $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection']; 
+    $this->error_message = false; //default value    
     $this->redirect_to_start = false;
+    $this->variable_not_validated = false; //default value
     $this->collection_array = array();
-    $this->collection_hidden_array = array();
-    $this->textarea_text = "";
 
     parent::__construct('StylometricAnalysis');
 	}
@@ -76,28 +72,21 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $posted_names = $request->getValueNames();    
      
     //identify the button pressed
-    foreach($posted_names as $key=>$name){
+    foreach($posted_names as $key=>$checkbox){
       
       //remove the numbers from $checkbox to see if it matches to 'collection', 'collection_hidden', or 'redirect_to_start'
-      $checkbox_without_numbers = trim(str_replace(range(0,9),'',$name));
+      $checkbox_without_numbers = trim(str_replace(range(0,9),'',$checkbox));
 
       if($checkbox_without_numbers === 'collection'){
-        $this->collection_array[$name] = $this->validateInput($request->getText($name));    
-      
-      }elseif($checkbox_without_numbers === 'collection_hidden'){
-        $this->collection_hidden_array[$name] = $this->validateInput(json_decode($request->getText($name)));
-        
-        //does it also send 'textarea', if it contains no input? 
-      }elseif($checkbox_without_numbers === 'textarea'){
-        $this->textarea_text = $this->validateInput($request->getText($name));
-            
+        $this->collection_array[$checkbox] = $this->validateInput(json_decode($request->getText($checkbox)));    
+                  
       }elseif($checkbox_without_numbers === 'redirect_to_start'){
         $this->redirect_to_start = true; 
         break;      
       }
     }
     
-    if($this->collection_array === false || $this->collection_hidden_array === false || $this->textarea_text === false ){
+    if($this->variable_not_validated === true){
       return false; 
     }
     
@@ -109,22 +98,38 @@ class SpecialStylometricAnalysis extends SpecialPage {
   }
   
   /**
-   * This function validates the textarea input
+   * This function validates input sent by the client
    * 
    * @param type $input
    */
   private function validateInput($input){
     
-    //only allow lowercase letters, uppercase letters, digits, comma's and whitespace 
-    if(preg_match('/^[a-zA-Z0-9, ]*$/', $input)){
+    if(is_array($input) || is_object($input)){
+      
+      foreach($input as $index => $value){
+        $status = $this->validateInput($value);
+        
+        if(!$status){
+          return false; 
+        }
+      }
+      
+      return $input; 
+    }
+    
+    //see if one or more of these sepcial charachters match
+    if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
+      $this->variable_not_validated = true; 
       return false; 
     }
-   
-    if(strlen($input) === 0 || strlen($input) > $this->max_input_textarea){
+    
+    //check for empty variables or unusually long string lengths
+    if($input === null || strlen($input) > 500){
+      $this->variable_not_validated = true; 
       return false; 
     }
- 
-    return $input;    
+    
+    return $input; 
   }
   
   /**
@@ -159,8 +164,24 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * @return type
    */
   private function processRequest(){
+      
+    //perhaps change this to something that is specific to the second request
+    
+    if(count($this->collection_array) < $this->minimum_collections){
+      return $this->showError('stylometricanalysis-error-fewcollections');
+    }
+
+    if(count($this->collection_array) > $this->minimum_collections){
+      return $this->showError('stylometricanalysis-error-manycollections');
+    }
+
+    return $this->showStylometricAnalysisForm();
+    
+    //if secondary request ...
+    
+    
                        
-    //next screen should always be a display of your selected texts, the calculated words, and your entered words.
+    //next screen should always be a display of your selected texts, and the form
        
     //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both. 
      
@@ -175,7 +196,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
 //      return $this->showError('stylometricanalysis-error-notexists');
 //    }
     
-    return true; 
   }
   
       
@@ -186,17 +206,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
    */
   private function prepareDefaultPage($out){
     
-    $stylometric_analysis_wrapper = new stylometricAnalysisWrapper($this->user_name);
-    
+    $stylometric_analysis_wrapper = new stylometricAnalysisWrapper($this->user_name, $this->minimum_pages_per_collection);   
     $collection_urls = $stylometric_analysis_wrapper->checkForManuscriptCollections();
-    
-    //remove collections with less pages than $this->minimum_pages_per_collection from the list
-    foreach($collection_urls as $collection_name => $smaller_url_array){
-      if(count($smaller_url_array) < $this->minimum_pages_per_collection){
-        unset($collection_urls[$collection_name]);
-      }
-    }
-    
+        
     //check if the total number of collections is less than the minimum
     if(count($collection_urls) < $this->minimum_collections){
                 
@@ -211,6 +223,48 @@ class SpecialStylometricAnalysis extends SpecialPage {
    
     return $this->showDefaultPage($collection_urls, $out);    
 	}
+  
+  /**
+   * This function fetches the correct error message, and redirects to showDefaultPage()
+   * 
+   * @param type $type
+   */
+  private function showError($type){
+    
+    $error_message = $this->msg($type);
+       
+    $this->error_message = $error_message;    
+    
+    return $this->prepareDefaultPage($this->getOutput());
+  }
+  
+ /**
+  * This function adds html used for the begincollate loader (see ext.begincollate)
+  * 
+  * Source of the gif: http://preloaders.net/en/circular
+  */
+  private function addStylometricAnalysisLoader(){
+    
+    //shows after submit has been clicked
+    $html  = "<div id='stylometricanalysis-loaderdiv'>";
+    $html .= "<img id='stylometricanalysis-loadergif' src='/w/extensions/collate/specials/assets/362.gif' style='width: 64px; height: 64px;"
+        . " position: relative; left: 50%;'>"; 
+    $html .= "</div>";
+    
+    return $html; 
+  }
+  
+  /**
+   * 
+   */
+  private function showStylometricAnalysisForm(){
+    
+    $article_url = $this->article_url; 
+    $collection_array = $this->collection_array;
+    $out = $this->getOutput();
+    
+    $out->setPageTitle($this->msg('stylometricanalysis-welcome'));   
+  }
    
   /**
    * This function constructs the HTML for the default page
@@ -236,69 +290,65 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $html .= "<tr><td id='stylometricanalysis-td'><small>$lastedit_message</small></td></tr>";
     $html .= "</table>";
     
-    $html .= $this->msg('stylometricanalysis-instruction') . '<br>';
-        
+    $html .= "<p>" . $this->msg('stylometricanalysis-instruction') . '</p>';
+    
+    $html .= "<div id='javascript-error'></div>"; 
+            
     //display the error 
-    if($this->error_message){
-      
-     $error_message = $this->error_message;  
-     $html .= "<div class = 'error'>$error_message</div>";
+    if($this->error_message){     
+      $error_message = $this->error_message;  
+      $html .= "<div class = 'error'>$error_message</div>";
     }
-        
-    $html .= "<form id='stylometricanalysis-form' action='" . $article_url . "Special:StylometricAnalysis' id='stylometricanalysis-form' method='post'>";
-      
-    $html .= "<div id='stylometricanalysis-contentwrapper'>";
-    $collection_header = $this->msg('stylometricanalysis-collectionheader');
-
-    $html .= "<div id='stylometricanalysis-collection'>";
-    $html .= "<h3>$collection_header</h3>";
-    $html .= "<ul class ='checkbox_grid'>";
+            
+    $html .= "<form id='stylometricanalysis-form' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";    
+    $html .= "<h3>" . $this->msg('stylometricanalysis-collectionheader') . "</h3>";
+       
+    $html .= "<table class='stylometricanalysis-table'>";
 
     $a = 0;
+    $html .= "<tr>";
+    
     foreach($collection_urls as $collection_name=>$small_url_array){
 
-      //this will be sent when the checkbox is selected
-      $json_small_url_array = json_encode($small_url_array['manuscripts_url']);
+      if(($a % 4) === 0){  
+        $html .= "</tr>";
+        $html .= "<tr>";    
+      }
 
-      //this is to construct the information about the collection which will be displayed to the user
-      $manuscript_pages_within_collection = implode(', ',$small_url_array['manuscripts_title']);
+      $manuscripts_urls = $small_url_array['manuscripts_url'];
+      $manuscripts_urls['collection_name'] = $collection_name; 
+
+      foreach($manuscripts_urls as $index=>&$url){
+        $url = htmlspecialchars($url);
+      }
+      
+      //encode the array into json to be able to place it in the checkbox value
+      $json_small_url_array = json_encode($manuscripts_urls);       
+      $manuscript_pages_within_collection = htmlspecialchars(implode(', ',$small_url_array['manuscripts_title']));   
       $collection_text = $this->msg('stylometricanalysis-contains') . $manuscript_pages_within_collection . '.';
 
       //add a checkbox for the collection
-      $html .="<li>";
-      $html .="<input type='checkbox' name='collection$a' value='$json_small_url_array'>$collection_name";
-      $html .="<input type='hidden' name='collection_hidden$a' value='$collection_name'>"; 
+      $html .="<td>";
+      $html .="<input type='checkbox' class='stylometricanalysis-checkbox' name='collection$a' value='$json_small_url_array'>" . htmlspecialchars($collection_name);
       $html .= "<br>";
-      $html .= $collection_text; 
-      $html .="</li>";
-      $html .="<br>";
+      $html .= "<span class='stylometricanalysis-span'>" . $collection_text . "</span>"; 
+      $html .="</td>";
       $a = ++$a; 
     }
-      
-    $html .= "</ul>";
-    $html .= "</div>";
-    
-    $word_form_header = $this->msg('stylometricanalysis-wordformheader');
-    $placeholder_text = $this->msg('stylometricanalysis-placeholder');
-    
-    $html .= "<div id='stylometricanalysis-textarea'>";
-    $html .= "<h3>$word_form_header</h3>";
-      
+
+    $html .= "</tr>";
+    $html .= "</table>";
+  
     $html .= "<br><br>"; 
-      
-    $html .= "<textarea id='stylometricanalysis-textarea' rows='4' cols = '10' maxlength='500' name='textarea' placeholder='$placeholder_text'>";
-    $html .= "</textarea>";
     
-    $html .= "</div>";
-    
-    $html .= "</div>";
-      
     $submit_hover_message = $this->msg('stylometricanalysis-hover');
     $submit_message = $this->msg('stylometricanalysis-submit');
     
-    $html .= "<input type = 'submit' id='stylometricanalysis-submitbutton' title = $submit_hover_message value=$submit_message>";
+    $html .= "<input type='submit' disabled id='stylometricanalysis-submitbutton' title = $submit_hover_message value=$submit_message>";   
+    $html .="</form>";   
+    $html .= "<br>";  
     
-    $html .= "</form>";
+    $html .= $this->addStylometricAnalysisLoader();
         
     $out->addHTML($html);  
   }

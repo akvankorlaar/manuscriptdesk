@@ -31,6 +31,19 @@ class stylometricAnalysisHooks {
   //class constructor 
   public function __construct(){    
   }
+  
+  /**
+	 * This function sends configuration variables to javascript. In javascript they are accessed through 'mw.config.get('..') 
+	 */
+	public function onResourceLoaderGetConfigVars(&$vars){
+    
+		global $wgStylometricAnalysisOptions;
+        
+    $vars['wgmin_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
+    $vars['wgmax_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
+		
+		return true;
+	}
 
   /**
    * This function loads additional modules containing CSS before the page is displayed
@@ -41,13 +54,11 @@ class stylometricAnalysisHooks {
   public function onBeforePageDisplay(OutputPage &$out, Skin &$ski ){
 
     $title_object = $out->getTitle();
-    $page_title = $title_object->mPrefixedText; 
+    $page_title = $title_object->getPrefixedURL();
     
-    $page_title2 = $title_object->mTextform; 
-
-    if($page_title === 'Special:StylometricAnalysis' || $page_title2 === 'StylometricAnalysis'){
-      //add css for the collation table    
-      $out->addModuleStyles('ext.stylometricAnalysis');
+    if($page_title === 'Special:StylometricAnalysis'){    
+      $out->addModuleStyles('ext.stylometricanalysis');
+      $out->addModules('ext.stylometricanalysisloader');
     }
 
     return true; 

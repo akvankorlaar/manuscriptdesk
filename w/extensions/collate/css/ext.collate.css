@@ -37,7 +37,7 @@ pre {
   width: 100%;
 }
 
-.begincollate-form {
+#begincollate-form {
   overflow-y: auto;  
   position: relative;
   width: 100%;

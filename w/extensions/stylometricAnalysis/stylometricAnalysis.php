@@ -60,17 +60,21 @@ $wgAutoloadClasses['SpecialStylometricAnalysis'] = $dir . '/specials/SpecialStyl
 $wgSpecialPages['StylometricAnalysis'] = 'SpecialStylometricAnalysis';
 
 //Extra file loaded later 
-$wgResourceModules['ext.stylometricAnalysis' ] = array(
-		'localBasePath' => dirname( __FILE__ ) . '/css',  
-		'styles'  => '/ext.stylometricAnalysis.css',
+$wgResourceModules['ext.stylometricanalysis' ] = array(
+  'localBasePath' => dirname( __FILE__ ) . '/css',  
+	'styles'  => '/ext.stylometricanalysis.css',
 );
 
+$wgResourceModules['ext.stylometricanalysisloader' ] = array(
+	'localBasePath' => dirname( __FILE__ ) . '/js',  
+	'scripts'  => '/ext.stylometricanalysisloader.js',
+  'messages' => array(
+    'stylometricanalysis-error-manycollections',
+   ),
+);
 
 //Instantiate the stylometricAnalysisHooks class and register the hooks
 $stylometricAnalysisHooks = new stylometricAnalysisHooks();
 
 $wgHooks['BeforePageDisplay'][] = array($stylometricAnalysisHooks, 'onBeforePageDisplay');
-
-
-
-
+$wgHooks['ResourceLoaderGetConfigVars'][] = array($stylometricAnalysisHooks, 'onResourceLoaderGetConfigVars');

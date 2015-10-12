@@ -12,9 +12,9 @@
  * 
  * Todo: Also make it possible to validate text within tags
  * 
- * Perhaps implement this giving the users the ability to change the name of manuscript pages, which can automatically alter the alphabetical ordering of the pages
- * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
+ * 
+ * Todo: Rewrite loadRequest in Special:BeginCollate
  * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
  * 

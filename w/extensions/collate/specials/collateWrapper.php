@@ -56,7 +56,6 @@ class collateWrapper{
         'manuscripts_title',//values
         'manuscripts_url',
         'manuscripts_collection',
-        'manuscripts_lowercase_title',
       ),
       array(
        'manuscripts_user = ' . $dbr->addQuotes($user_name),//conditions

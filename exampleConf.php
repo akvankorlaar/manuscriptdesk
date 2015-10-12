@@ -289,5 +289,10 @@ $wgNewManuscriptOptions = array(
   'url_count_size' => 2, //length of a manuscript pages url once transformed into an array by removing the slashes
 );
 
+$wgStylometricAnalysisOptions = array(
+  'wgmin_stylometricanalysis_collections' => 2, //minimum number of collections to be able to do stylometric analysis
+  'minimum_pages_per_collection' => 3, //minimum pages within a collection to be able to do stylometric analysis
+);
+
 //sends complete stack trace to output in case of an uncaught exceptions. This should only be true in debugging mode
 $wgShowExceptionDetails = true;
