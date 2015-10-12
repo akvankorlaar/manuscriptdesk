@@ -35,7 +35,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $error_message;
   private $manuscripts_namespace_url;
   private $redirect_to_start;
-  private $textarea_text; 
+  private $max_length;
    
   //class constructor
   public function __construct(){
@@ -51,6 +51,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->redirect_to_start = false;
     $this->variable_not_validated = false; //default value
     $this->collection_array = array();
+    
+    $this->max_length = 50; 
 
     parent::__construct('StylometricAnalysis');
 	}
@@ -78,7 +80,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $checkbox_without_numbers = trim(str_replace(range(0,9),'',$checkbox));
 
       if($checkbox_without_numbers === 'collection'){
-        $this->collection_array[$checkbox] = $this->validateInput(json_decode($request->getText($checkbox)));    
+        $this->collection_array[$checkbox] = (array)$this->validateInput(json_decode($request->getText($checkbox)));    
                   
       }elseif($checkbox_without_numbers === 'redirect_to_start'){
         $this->redirect_to_start = true; 
@@ -255,15 +257,183 @@ class SpecialStylometricAnalysis extends SpecialPage {
   }
   
   /**
-   * 
+   * This function constructs and shows the stylometric analysis form
    */
   private function showStylometricAnalysisForm(){
     
     $article_url = $this->article_url; 
     $collection_array = $this->collection_array;
+    $max_length = $this->max_length; 
     $out = $this->getOutput();
     
-    $out->setPageTitle($this->msg('stylometricanalysis-welcome'));   
+    $collections_message = $this->constructCollectionsMessage($collection_array); 
+    
+    $out->setPageTitle($this->msg('stylometricanalysis-options')); 
+    
+    $html = "";
+    $html .= "<a href='" . $article_url . "Special:StylometricAnalysis' class='link-transparent' title='Go Back'>Go Back</a>";
+    $html .= "<br><br>";
+    $html .= $this->msg('stylometricanalysis-chosencollections') . $collections_message . "<br>"; 
+    $html .= $this->msg('stylometricanalysis-chosencollection2');   
+    $html .= "<br><br>";
+    
+    $out->addHTML($html);
+    
+    $descriptor = array();
+    
+    $descriptor['removenonalpha'] = array(
+      'label' => 'Remove non-alpha',
+      'class' => 'HTMLCheckField',
+    );
+    
+    $descriptor['lowercase'] = array(
+      'label' => 'Lowercase',
+      'class' => 'HTMLCheckField',
+    );
+    
+     $descriptor['tokenizer'] = array(
+      'label' => 'Tokenizer',
+      'class' => 'HTMLSelectField',
+      'options' => array( 
+        'Whitespace' => 'Whitespace',
+        'Option 2' => 2,
+      ),
+      'default' => 'Whitespace',
+    );
+     
+    $descriptor['minimumsize'] = array(
+      'label' => 'Minimum Size',
+      'class' => 'HTMLIntField',
+      'default' => 0, 
+      'size' => 5, //display size
+      'maxlength'=> 5, //input size
+      'min' => 0,  
+      'max' => 10000, 
+    );
+    
+    $descriptor['maximumsize'] = array(
+      'label' => 'Maximum Size',
+      'class' => 'HTMLIntField',
+      'default' => 10000, 
+      'size' => 5, //display size
+      'maxlength'=> 5, //input size
+      'min' => 10000,  
+      'max' => 20000, 
+    );
+    
+    $descriptor['segmentsize'] = array(
+      'label' => 'Segment Size',
+      'class' => 'HTMLIntField',
+      'default' => 0, 
+      'size' => 5, //display size
+      'maxlength'=> 5, //input size
+      'min' => 0,  
+      'max' => 10000, 
+    );
+    
+    $descriptor['stepsize'] = array(
+      'label' => 'Step Size',
+      'class' => 'HTMLIntField',
+      'default' => 0, 
+      'size' => 5, //display size
+      'maxlength'=> 5, //input size
+      'min' => 0,  
+      'max' => 10000, 
+    );
+    
+    $descriptor['removepronouns'] = array(
+      'label' => 'Remove Pronouns',
+      'class' => 'HTMLCheckField',
+    );
+    
+    //add field for 'remove these items too'
+    
+    $descriptor['vectorspace'] = array(
+      'label' => 'Vector Space',
+      'class' => 'HTMLSelectField',
+      'options' => array( 
+        'tf'        => 'tf',
+        'tf_scaled' => 'tf_scaled',
+        'tf_std'    => 'tf_std',
+        'tf_idf'    => 'tf_idf',
+        'bin'       => 'bin'
+      ),
+      'default' => 'tf',
+    );
+    
+    $descriptor['featuretype'] = array(
+      'label' => 'Feature Type',
+      'class' => 'HTMLSelectField',
+      'options' => array( 
+        'word'       => 'word',
+        'char'       => 'char',
+        'char_wb'    => 'char_wb',
+      ),
+      'default' => 'word',
+    );
+    
+    $descriptor['mfi'] = array(
+      'label' => 'MFI',
+      'class' => 'HTMLIntField',
+      'default' => 100, 
+      'size' => 5, //display size
+      'maxlength'=> 5, //input size
+      'min' => 0,  
+      'max' => 10000, 
+    );
+    
+    $descriptor['minimumdf'] = array(
+      'class' => 'HTMLFloatField',
+      'label' => 'Minimum DF',
+      'default' => 0.00, 
+      'size' => 5,
+      'maxlength'=> 5, 
+      'min' => 0, 
+      'max' => 1 
+    );
+    
+    $descriptor['maximumdf'] = array(
+      'class' => 'HTMLFloatField',
+      'label' => 'Minimum DF',
+      'default' => 0.90, 
+      'size' => 5, 
+      'maxlength'=> 5, 
+      'min' => 0, 
+      'max' => 1 
+    );
+       
+    $html_form = new HTMLForm($descriptor, $this->getContext());
+    $html_form->setSubmitText($this->msg('stylometricanalysis-submit'));
+    $html_form->addHiddenField('collection_array', json_encode($collection_array));
+    $html_form->setSubmitCallback(array('SpecialStylometricAnalysis', 'processInput'));  
+    $html_form->show();
+  }
+  
+    /**
+     * Callback function. Makes sure the page is redisplayed in case there was an error. 
+     * 
+     * @param type $formData
+     * @return string|boolean
+     */
+  static function processInput($form_data){ 
+    return false; 
+  }
+  
+  /**
+   * This function constructs the collections message
+   * 
+   * @param type $collection_array
+   * @return type
+   */
+  private function constructCollectionsMessage($collection_array){
+    
+    $collection_name_array = array();
+    
+    foreach($collection_array as $index=>$small_url_array){
+      $collection_name_array[] = $small_url_array['collection_name'];
+    }
+    
+    return implode(',',$collection_name_array) . ".";
   }
    
   /**
@@ -290,7 +460,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $html .= "<tr><td id='stylometricanalysis-td'><small>$lastedit_message</small></td></tr>";
     $html .= "</table>";
     
-    $html .= "<p>" . $this->msg('stylometricanalysis-instruction') . '</p>';
+    $html .= "<p>" . $this->msg('stylometricanalysis-instruction1') . '</p>';
     
     $html .= "<div id='javascript-error'></div>"; 
             

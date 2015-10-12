@@ -85,3 +85,9 @@
   font-size: larger;
   color: #cc0000;
 }
+
+.link-transparent {
+  background: #F2FCFF;
+  font-weight: bold;
+  color: black;
+}
