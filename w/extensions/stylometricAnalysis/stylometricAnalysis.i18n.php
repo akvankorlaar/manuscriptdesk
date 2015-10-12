@@ -44,6 +44,8 @@ $messages['en'] = array(
   'stylometricanalysis-contains'              => 'Contains:',
   'stylometricanalysis-submit'                => 'Submit Selection',
   'stylometricanalysis-error-manycollections' => 'You can only select up to 5 collections',
+  'stylometricanalysis-error-fewcollections'  => 'You need to select at least 2 collections',
+
   );
 
 $messages['en-gb'] = $messages['en'];

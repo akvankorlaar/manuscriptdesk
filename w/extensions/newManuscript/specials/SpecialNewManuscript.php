@@ -14,6 +14,8 @@
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
+ * Todo: Rewrite loadRequest in Special:BeginCollate
+ * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
  * 
  * Todo: Try to create unit tests for the extensions. See: https://www.mediawiki.org/wiki/Manual:PHP_unit_testing/Writing_unit_tests_for_extensions , and check 

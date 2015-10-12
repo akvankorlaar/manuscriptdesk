@@ -32,7 +32,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $user_name;  
   private $full_manuscripts_url; 
   private $collection_array;
-  private $collection_hidden_array;
   private $error_message;
   private $manuscripts_namespace_url;
   private $redirect_to_start;
@@ -50,8 +49,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection']; 
     $this->error_message = false; //default value    
     $this->redirect_to_start = false;
+    $this->variable_not_validated = false; //default value
     $this->collection_array = array();
-    $this->collection_hidden_array = array();
 
     parent::__construct('StylometricAnalysis');
 	}
@@ -73,24 +72,21 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $posted_names = $request->getValueNames();    
      
     //identify the button pressed
-    foreach($posted_names as $key=>$name){
+    foreach($posted_names as $key=>$checkbox){
       
       //remove the numbers from $checkbox to see if it matches to 'collection', 'collection_hidden', or 'redirect_to_start'
-      $checkbox_without_numbers = trim(str_replace(range(0,9),'',$name));
+      $checkbox_without_numbers = trim(str_replace(range(0,9),'',$checkbox));
 
       if($checkbox_without_numbers === 'collection'){
-        $this->collection_array[$name] = $this->validateInput($request->getText($name));    
-      
-      }elseif($checkbox_without_numbers === 'collection_hidden'){
-        $this->collection_hidden_array[$name] = $this->validateInput(json_decode($request->getText($name)));
-            
+        $this->collection_array[$checkbox] = $this->validateInput(json_decode($request->getText($checkbox)));    
+                  
       }elseif($checkbox_without_numbers === 'redirect_to_start'){
         $this->redirect_to_start = true; 
         break;      
       }
     }
     
-    if($this->collection_array === false || $this->collection_hidden_array === false || $this->textarea_text === false ){
+    if($this->variable_not_validated === true){
       return false; 
     }
     
@@ -102,22 +98,38 @@ class SpecialStylometricAnalysis extends SpecialPage {
   }
   
   /**
-   * This function validates the textarea input
+   * This function validates input sent by the client
    * 
    * @param type $input
    */
   private function validateInput($input){
     
-    //only allow lowercase letters, uppercase letters, digits, comma's and whitespace 
-    if(preg_match('/^[a-zA-Z0-9, ]*$/', $input)){
+    if(is_array($input) || is_object($input)){
+      
+      foreach($input as $index => $value){
+        $status = $this->validateInput($value);
+        
+        if(!$status){
+          return false; 
+        }
+      }
+      
+      return $input; 
+    }
+    
+    //see if one or more of these sepcial charachters match
+    if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
+      $this->variable_not_validated = true; 
       return false; 
     }
-   
-    if(strlen($input) === 0 || strlen($input) > 500){
+    
+    //check for empty variables or unusually long string lengths
+    if($input === null || strlen($input) > 500){
+      $this->variable_not_validated = true; 
       return false; 
     }
- 
-    return $input;    
+    
+    return $input; 
   }
   
   /**
@@ -152,8 +164,24 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * @return type
    */
   private function processRequest(){
+      
+    //perhaps change this to something that is specific to the second request
+    
+    if(count($this->collection_array) < $this->minimum_collections){
+      return $this->showError('stylometricanalysis-error-fewcollections');
+    }
+
+    if(count($this->collection_array) > $this->minimum_collections){
+      return $this->showError('stylometricanalysis-error-manycollections');
+    }
+
+    return $this->showStylometricAnalysisForm();
+    
+    //if secondary request ...
+    
+    
                        
-    //next screen should always be a display of your selected texts, the calculated words, and your entered words.
+    //next screen should always be a display of your selected texts, and the form
        
     //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both. 
      
@@ -168,7 +196,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
 //      return $this->showError('stylometricanalysis-error-notexists');
 //    }
     
-    return true; 
   }
   
       
@@ -197,6 +224,20 @@ class SpecialStylometricAnalysis extends SpecialPage {
     return $this->showDefaultPage($collection_urls, $out);    
 	}
   
+  /**
+   * This function fetches the correct error message, and redirects to showDefaultPage()
+   * 
+   * @param type $type
+   */
+  private function showError($type){
+    
+    $error_message = $this->msg($type);
+       
+    $this->error_message = $error_message;    
+    
+    return $this->prepareDefaultPage($this->getOutput());
+  }
+  
  /**
   * This function adds html used for the begincollate loader (see ext.begincollate)
   * 
@@ -211,6 +252,18 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $html .= "</div>";
     
     return $html; 
+  }
+  
+  /**
+   * 
+   */
+  private function showStylometricAnalysisForm(){
+    
+    $article_url = $this->article_url; 
+    $collection_array = $this->collection_array;
+    $out = $this->getOutput();
+    
+    $out->setPageTitle($this->msg('stylometricanalysis-welcome'));   
   }
    
   /**
@@ -263,11 +316,12 @@ class SpecialStylometricAnalysis extends SpecialPage {
       }
 
       $manuscripts_urls = $small_url_array['manuscripts_url'];
+      $manuscripts_urls['collection_name'] = $collection_name; 
 
       foreach($manuscripts_urls as $index=>&$url){
         $url = htmlspecialchars($url);
       }
-
+      
       //encode the array into json to be able to place it in the checkbox value
       $json_small_url_array = json_encode($manuscripts_urls);       
       $manuscript_pages_within_collection = htmlspecialchars(implode(', ',$small_url_array['manuscripts_title']));   
@@ -276,7 +330,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
       //add a checkbox for the collection
       $html .="<td>";
       $html .="<input type='checkbox' class='stylometricanalysis-checkbox' name='collection$a' value='$json_small_url_array'>" . htmlspecialchars($collection_name);
-      $html .="<input type='hidden' name='collection_hidden$a' value='" . htmlspecialchars($collection_name) . "'>"; 
       $html .= "<br>";
       $html .= "<span class='stylometricanalysis-span'>" . $collection_text . "</span>"; 
       $html .="</td>";

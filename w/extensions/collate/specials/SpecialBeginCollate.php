@@ -68,6 +68,7 @@ class SpecialBeginCollate extends SpecialPage {
     $this->collection_array = array();
     $this->collection_hidden_array = array();
     $this->time_identifier = null; //default value
+    $this->variable_not_validated = false; //default value
 
     parent::__construct('BeginCollate');
 	}
@@ -116,7 +117,7 @@ class SpecialBeginCollate extends SpecialPage {
     }
     
     //return false if something went wrong during validation
-    if($this->posted_titles_array === false || $this->collection_array === false || $this->collection_hidden_array === false || $this->time_identifier === false){
+    if($this->variable_not_validated === true){
       return false; 
     }
     
@@ -148,12 +149,14 @@ class SpecialBeginCollate extends SpecialPage {
     }
     
     //see if one or more of these sepcial charachters match
-    if(preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $input)){
+    if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
+      $this->variable_not_validated = true; 
       return false; 
     }
     
     //check for empty variables or unusually long string lengths
     if($input === null || strlen($input) > 500){
+      $this->variable_not_validated = true; 
       return false; 
     }
     
@@ -646,7 +649,7 @@ class SpecialBeginCollate extends SpecialPage {
     
     $manuscript_message = $this->msg('collate-manuscriptpages');
     
-    $html .= "<form class='begincollate-form' action='" . $article_url . "Special:BeginCollate' method='post'>";    
+    $html .= "<form id='begincollate-form' action='" . $article_url . "Special:BeginCollate' method='post'>";    
     $html .= "<h3>$manuscript_message</h3>";
     $html .= "<table class='begincollate-table'>";
     
