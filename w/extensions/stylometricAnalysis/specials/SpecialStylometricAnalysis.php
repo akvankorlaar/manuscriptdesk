@@ -34,7 +34,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $collection_array;
   private $error_message;
   private $manuscripts_namespace_url;
-  private $redirect_to_start;
   private $max_length;
    
   //class constructor
@@ -48,7 +47,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections']; 
     $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection']; 
     $this->error_message = false; //default value    
-    $this->redirect_to_start = false;
     $this->variable_not_validated = false; //default value
     $this->collection_array = array();
     
@@ -76,23 +74,15 @@ class SpecialStylometricAnalysis extends SpecialPage {
     //identify the button pressed
     foreach($posted_names as $key=>$checkbox){
       
-      //remove the numbers from $checkbox to see if it matches to 'collection', 'collection_hidden', or 'redirect_to_start'
+      //remove the numbers from $checkbox to see if it matches to 'collection'
       $checkbox_without_numbers = trim(str_replace(range(0,9),'',$checkbox));
 
       if($checkbox_without_numbers === 'collection'){
-        $this->collection_array[$checkbox] = (array)$this->validateInput(json_decode($request->getText($checkbox)));    
-                  
-      }elseif($checkbox_without_numbers === 'redirect_to_start'){
-        $this->redirect_to_start = true; 
-        break;      
-      }
+        $this->collection_array[$checkbox] = (array)$this->validateInput(json_decode($request->getText($checkbox)));                      
+      }     
     }
     
     if($this->variable_not_validated === true){
-      return false; 
-    }
-    
-    if($this->redirect_to_start){
       return false; 
     }
         
@@ -126,7 +116,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     }
     
     //check for empty variables or unusually long string lengths
-    if($input === null || strlen($input) > 500){
+    if(empty($input) || strlen($input) > 500){
       $this->variable_not_validated = true; 
       return false; 
     }
@@ -281,17 +271,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     $descriptor = array();
     
-    $descriptor['removenonalpha'] = array(
-      'label' => 'Remove non-alpha',
-      'class' => 'HTMLCheckField',
-    );
-    
-    $descriptor['lowercase'] = array(
-      'label' => 'Lowercase',
-      'class' => 'HTMLCheckField',
-    );
-    
-     $descriptor['tokenizer'] = array(
+    $descriptor['tokenizer'] = array(
       'label' => 'Tokenizer',
       'class' => 'HTMLSelectField',
       'options' => array( 
@@ -340,12 +320,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       'min' => 0,  
       'max' => 10000, 
     );
-    
-    $descriptor['removepronouns'] = array(
-      'label' => 'Remove Pronouns',
-      'class' => 'HTMLCheckField',
-    );
-    
+        
     //add field for 'remove these items too'
     
     $descriptor['vectorspace'] = array(
@@ -401,6 +376,21 @@ class SpecialStylometricAnalysis extends SpecialPage {
       'min' => 0, 
       'max' => 1 
     );
+    
+   $descriptor['removepronouns'] = array(
+      'label' => 'Remove Pronouns',
+      'class' => 'HTMLCheckField',
+    );
+    
+    $descriptor['removenonalpha'] = array(
+      'label' => 'Remove non-alpha',
+      'class' => 'HTMLCheckField',
+    );
+    
+    $descriptor['lowercase'] = array(
+      'label' => 'Lowercase',
+      'class' => 'HTMLCheckField',
+    );
        
     $html_form = new HTMLForm($descriptor, $this->getContext());
     $html_form->setSubmitText($this->msg('stylometricanalysis-submit'));
@@ -433,7 +423,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $collection_name_array[] = $small_url_array['collection_name'];
     }
     
-    return implode(',',$collection_name_array) . ".";
+    return implode(', ',$collection_name_array) . ".";
   }
    
   /**
