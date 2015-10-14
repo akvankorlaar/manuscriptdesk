@@ -85,6 +85,19 @@ class SpecialStylometricAnalysis extends SpecialPage {
     if($this->variable_not_validated === true){
       return false; 
     }
+    
+//    tokenizer
+//minimumsize
+//maximumsize
+//segmentsize
+//stepsize
+//vectorspace
+//featuretype
+//mfi
+//minimumdf
+//removepronouns
+//removenonalpha
+//lowercase
         
     return true; 
   }
