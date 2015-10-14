@@ -62,13 +62,13 @@ class SpecialNewManuscript extends SpecialPage {
   public $request;
   public $uploadbase_object;
   public $upload_was_clicked;
-  public $token_is_ok;
   public $posted_title;
   public $posted_collection; 
   public $title_ok;
   public $max_upload_size;
   public $maximum_pages_per_collection; 
   
+  private $token_is_ok;
   private $allowed_file_extensions;  
   private $target_dir; 
   private $user_name; 
@@ -109,7 +109,7 @@ class SpecialNewManuscript extends SpecialPage {
     
     // If it was posted check for the token (no remote POST'ing with user credentials)
     $token = $request->getVal('wpEditToken');
-    $this->token_is_ok = $this->getUser()->matchEditToken($token);
+    $this->token_is_ok = $user_object->matchEditToken($token);
     $this->posted_title = $request->getText('wptitle_field');
     $this->posted_collection = $request->getText('wpcollection_field');
     $this->user_name = $user_object->getName();        

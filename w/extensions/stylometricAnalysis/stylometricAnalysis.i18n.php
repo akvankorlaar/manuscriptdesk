@@ -47,9 +47,14 @@ $messages['en'] = array(
   'stylometricanalysis-options'               => 'Stylometric Analysis Options',
   'stylometricanalysis-chosencollections'     => 'You have chosen the following collections for the analysis:',
   'stylometricanalysis-chosencollection2'     => 'You can select additional options below.',
+  '-stylometricanalysis-section-import'       => 'Import Settings',
+  '-stylometricanalysis-section-preprocess'   => 'Preprocess Settings',
+  '-stylometricanalysis-section-feature'      => 'Feature Settings',
   'stylometricanalysis-error-manycollections' => 'You can only select up to 5 collections',
   'stylometricanalysis-error-fewcollections'  => 'You need to select at least 2 collections',
-
+  'stylometricanalysis-error-number'          => 'You can only use positive numbers for the input of the textfields',
+  'stylometricanalysis-error-empty'           => 'You must specify a value in every textfield',
+  'stylometricanalysis-error-maxlength'       => 'Your input can be at most 50 charachters long',
   );
 
 $messages['en-gb'] = $messages['en'];

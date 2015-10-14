@@ -35,6 +35,31 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $error_message;
   private $manuscripts_namespace_url;
   private $max_length;
+  private $variable_validated;
+  private $token_is_ok;
+  
+  private $variable_validated_number;
+  private $variable_validated_empty; 
+  private $variable_validated_max_length;
+  
+  //user stylometric analysis options 
+  
+  private $removenonalpha;
+  private $lowercase; 
+  
+  private $tokenizer;
+  private $minimumsize;
+  private $maximumsize;
+  private $segmentsize;
+  private $stepsize;
+  private $removepronouns;
+  
+  private $vectorspace;
+  private $featuretype;
+  private $ngramsize; 
+  private $mfi;
+  private $minimumdf;
+  private $maximumdf;
    
   //class constructor
   public function __construct(){
@@ -46,8 +71,13 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];  
     $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections']; 
     $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection']; 
-    $this->error_message = false; //default value    
-    $this->variable_not_validated = false; //default value
+    
+    $this->error_message = false; //default value     
+    $this->variable_validated = true; //default value
+    $this->variable_validated_number = true;//default value
+    $this->variable_validated_empty = true;//default value 
+    $this->variable_validated_max_length = true;//default value
+    
     $this->collection_array = array();
     
     $this->max_length = 50; 
@@ -79,26 +109,47 @@ class SpecialStylometricAnalysis extends SpecialPage {
 
       if($checkbox_without_numbers === 'collection'){
         $this->collection_array[$checkbox] = (array)$this->validateInput(json_decode($request->getText($checkbox)));                      
+      }elseif($checkbox_without_numbers === 'wpEditToken'){
+        $token = $request->getVal('wpEditToken');
+        $this->token_is_ok = $this->getUser()->matchEditToken($token);
+        break; 
       }     
     }
-    
-    if($this->variable_not_validated === true){
-      return false; 
+               
+    if($this->token_is_ok === true){
+      
+      $this->removenonalpha = $this->validateInput($request->getText('wpremovenonalpha'));
+      $this->lowercase = $this->validateInput($request->getText('wplowercase'));
+      
+      $this->tokenizer = $this->validateInput($request->getText('wptokenizer'));
+      $this->minimumsize = (int)$this->validateForm($request->getText('wpminimumsize'));
+      $this->maximumsize = (int)$this->validateForm($request->getText('wpmaximumsize'));
+      $this->segmentsize = (int)$this->validateForm($request->getText('wpsegmentsize'));
+      $this->stepsize = (int)$this->validateForm($request->getText('wpstepsize'));
+      $this->removepronouns = $this->validateInput($request->getText('wpremovepronouns'));
+      
+      $this->vectorspace = $this->validateInput($request->getText('wpvectorspace'));
+      $this->featuretype = $this->validateInput($request->getText('wpfeaturetype'));
+      
+      $this->ngramsize = (int)$this->validateForm($request->getText('ngramsize'));
+      $this->mfi = (int)$this->validateForm($request->getText('wpmfi'));
+      $this->minimumdf = (int)$this->validateForm($request->getText('wpminimumdf'));
+      $this->maximumdf = (int)$this->validateForm($request->getText('wpmaximumdf'));
+      
+ 
+      $this->collection_array = (array)$this->validateInput(json_decode($request->getText('collection_array')));
+      
+      foreach($this->collection_array as $index=>&$value){
+        $this->collection_array[$index] = (array)$value;
+      }
+      
+      return true; 
     }
     
-//    tokenizer
-//minimumsize
-//maximumsize
-//segmentsize
-//stepsize
-//vectorspace
-//featuretype
-//mfi
-//minimumdf
-//removepronouns
-//removenonalpha
-//lowercase
-        
+    if($this->variable_validated === false || $this->token_is_ok === false){
+      return false; 
+    }
+              
     return true; 
   }
   
@@ -124,14 +175,41 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     //see if one or more of these sepcial charachters match
     if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
-      $this->variable_not_validated = true; 
+      $this->variable_validated = false; 
       return false; 
     }
     
     //check for empty variables or unusually long string lengths
     if(empty($input) || strlen($input) > 500){
-      $this->variable_not_validated = true; 
+      $this->variable_validated = false; 
       return false; 
+    }
+    
+    return $input; 
+  }
+  
+  /**
+   * This function checks if basic form conditions are met. Field specific validation is done later. 
+   */
+  private function validateForm($input){
+    
+    $max_length = $this->max_length; 
+    
+    //see if one or more of these sepcial charachters match
+    if(!preg_match('/^[0-9.]*$/', $input)){
+      $this->variable_validated_number = false; 
+      return false; 
+    }
+    
+    //check for empty variables or unusually long string lengths
+    if(empty($input) && $input !== '0'){
+      $this->variable_validated_empty = false; 
+      return false; 
+    }
+    
+    if(strlen($input) > $max_length){
+      $this->variable_validated_max_length = false; 
+      return false;
     }
     
     return $input; 
@@ -170,23 +248,37 @@ class SpecialStylometricAnalysis extends SpecialPage {
    */
   private function processRequest(){
       
-    //perhaps change this to something that is specific to the second request
+    //Form1
+    if(!isset($this->token_is_ok)){
     
-    if(count($this->collection_array) < $this->minimum_collections){
-      return $this->showError('stylometricanalysis-error-fewcollections');
-    }
+      if(count($this->collection_array) < $this->minimum_collections){
+        return $this->showError('stylometricanalysis-error-fewcollections', 'Form1');
+      }
 
-    if(count($this->collection_array) > $this->minimum_collections){
-      return $this->showError('stylometricanalysis-error-manycollections');
-    }
+      if(count($this->collection_array) > $this->minimum_collections){
+        return $this->showError('stylometricanalysis-error-manycollections', 'Form1');
+      }
 
-    return $this->showStylometricAnalysisForm();
+      return $this->showStylometricAnalysisForm();
+    }
     
-    //if secondary request ...
+    //Form2
+    if($this->variable_validated_number === false){
+      //no error message is entered because MedaWiki has built-in error messages for this
+      return $this->showError('stylometricanalysis-error-number', 'Form2');
+    }
+    
+    if($this->variable_validated_empty === false){
+      return $this->showError('stylometricanalysis-error-empty', 'Form2');
+    }
+    
+    if($this->variable_validated_max_length === false){
+      return $this->showError('stylometricanalysis-error-maxlength', 'Form2');
+    }
+    
     
     
                        
-    //next screen should always be a display of your selected texts, and the form
        
     //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both. 
      
@@ -234,13 +326,23 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * 
    * @param type $type
    */
-  private function showError($type){
+  private function showError($type, $context){
     
-    $error_message = $this->msg($type);
+    if(!empty($type)){
+      $error_message = $this->msg($type);
+    }else{
+      $error_message = '';
+    }
        
     $this->error_message = $error_message;    
     
-    return $this->prepareDefaultPage($this->getOutput());
+    if($context === 'Form1'){
+      return $this->prepareDefaultPage($this->getOutput());
+    }
+    
+    //get values needed for stylometric analysis form
+    
+    return $this->showStylometricAnalysisForm();
   }
   
  /**
@@ -280,9 +382,27 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $html .= $this->msg('stylometricanalysis-chosencollection2');   
     $html .= "<br><br>";
     
+    //display the error 
+    if($this->error_message){     
+      $error_message = $this->error_message;  
+      $html .= "<div class = 'error'>". $error_message . "</div>";
+    }
+    
     $out->addHTML($html);
     
     $descriptor = array();
+    
+    $descriptor['removenonalpha'] = array(
+      'label' => 'Remove non-alpha',
+      'class' => 'HTMLCheckField',
+      'section' => 'stylometricanalysis-section-import',
+    );
+    
+    $descriptor['lowercase'] = array(
+      'label' => 'Lowercase',
+      'class' => 'HTMLCheckField',
+      'section' => 'stylometricanalysis-section-import',
+    );
     
     $descriptor['tokenizer'] = array(
       'label' => 'Tokenizer',
@@ -292,47 +412,51 @@ class SpecialStylometricAnalysis extends SpecialPage {
         'Option 2' => 2,
       ),
       'default' => 'Whitespace',
+      'section' => 'stylometricanalysis-section-preprocess',
     );
      
     $descriptor['minimumsize'] = array(
       'label' => 'Minimum Size',
-      'class' => 'HTMLIntField',
+      'class' => 'HTMLTextField',
       'default' => 0, 
       'size' => 5, //display size
       'maxlength'=> 5, //input size
-      'min' => 0,  
-      'max' => 10000, 
+      'section' => 'stylometricanalysis-section-preprocess',
     );
     
     $descriptor['maximumsize'] = array(
       'label' => 'Maximum Size',
-      'class' => 'HTMLIntField',
+      'class' => 'HTMLTextField',
       'default' => 10000, 
       'size' => 5, //display size
       'maxlength'=> 5, //input size
-      'min' => 10000,  
-      'max' => 20000, 
+      'section' => 'stylometricanalysis-section-preprocess',
     );
     
     $descriptor['segmentsize'] = array(
       'label' => 'Segment Size',
-      'class' => 'HTMLIntField',
+      'class' => 'HTMLTextField',
       'default' => 0, 
       'size' => 5, //display size
       'maxlength'=> 5, //input size
-      'min' => 0,  
-      'max' => 10000, 
+      'section' => 'stylometricanalysis-section-preprocess',
     );
     
     $descriptor['stepsize'] = array(
       'label' => 'Step Size',
-      'class' => 'HTMLIntField',
+      'class' => 'HTMLTextField',
       'default' => 0, 
       'size' => 5, //display size
       'maxlength'=> 5, //input size
-      'min' => 0,  
-      'max' => 10000, 
+      'section' => 'stylometricanalysis-section-preprocess',
     );
+    
+    $descriptor['removepronouns'] = array(
+      'label' => 'Remove Pronouns',
+      'class' => 'HTMLCheckField',
+      'section' => 'stylometricanalysis-section-preprocess',
+    );
+     
         
     //add field for 'remove these items too'
     
@@ -347,6 +471,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
         'bin'       => 'bin'
       ),
       'default' => 'tf',
+      'section' => 'stylometricanalysis-section-feature',
     );
     
     $descriptor['featuretype'] = array(
@@ -358,53 +483,45 @@ class SpecialStylometricAnalysis extends SpecialPage {
         'char_wb'    => 'char_wb',
       ),
       'default' => 'word',
+      'section' => 'stylometricanalysis-section-feature',
+    );
+    
+    $descriptor['ngramsize'] = array(
+      'label' => 'Ngram Size',
+      'class' => 'HTMLTextField',
+      'default' => 1, 
+      'size' => 5, //display size
+      'maxlength'=> 5, //input size
+      'section' => 'stylometricanalysis-section-feature',
     );
     
     $descriptor['mfi'] = array(
       'label' => 'MFI',
-      'class' => 'HTMLIntField',
+      'class' => 'HTMLTextField',
       'default' => 100, 
       'size' => 5, //display size
       'maxlength'=> 5, //input size
-      'min' => 0,  
-      'max' => 10000, 
+      'section' => 'stylometricanalysis-section-feature',
     );
     
     $descriptor['minimumdf'] = array(
-      'class' => 'HTMLFloatField',
+      'class' => 'HTMLTextField',
       'label' => 'Minimum DF',
       'default' => 0.00, 
       'size' => 5,
-      'maxlength'=> 5, 
-      'min' => 0, 
-      'max' => 1 
+      'maxlength'=> 5,
+      'section' => 'stylometricanalysis-section-feature',
     );
     
     $descriptor['maximumdf'] = array(
-      'class' => 'HTMLFloatField',
-      'label' => 'Minimum DF',
+      'class' => 'HTMLTextField',
+      'label' => 'Maximum DF',
       'default' => 0.90, 
       'size' => 5, 
       'maxlength'=> 5, 
-      'min' => 0, 
-      'max' => 1 
+      'section' => 'stylometricanalysis-section-feature',
     );
     
-   $descriptor['removepronouns'] = array(
-      'label' => 'Remove Pronouns',
-      'class' => 'HTMLCheckField',
-    );
-    
-    $descriptor['removenonalpha'] = array(
-      'label' => 'Remove non-alpha',
-      'class' => 'HTMLCheckField',
-    );
-    
-    $descriptor['lowercase'] = array(
-      'label' => 'Lowercase',
-      'class' => 'HTMLCheckField',
-    );
-       
     $html_form = new HTMLForm($descriptor, $this->getContext());
     $html_form->setSubmitText($this->msg('stylometricanalysis-submit'));
     $html_form->addHiddenField('collection_array', json_encode($collection_array));
@@ -470,7 +587,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     //display the error 
     if($this->error_message){     
       $error_message = $this->error_message;  
-      $html .= "<div class = 'error'>$error_message</div>";
+      $html .= "<div class = 'error'>". $error_message . "</div>";
     }
             
     $html .= "<form id='stylometricanalysis-form' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";    
