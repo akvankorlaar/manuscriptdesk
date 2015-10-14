@@ -43,7 +43,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $variable_validated_max_length;
   
   //user stylometric analysis options 
-  
   private $removenonalpha;
   private $lowercase; 
   
@@ -122,19 +121,19 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $this->lowercase = $this->validateInput($request->getText('wplowercase'));
       
       $this->tokenizer = $this->validateInput($request->getText('wptokenizer'));
-      $this->minimumsize = (int)$this->validateForm($request->getText('wpminimumsize'));
-      $this->maximumsize = (int)$this->validateForm($request->getText('wpmaximumsize'));
-      $this->segmentsize = (int)$this->validateForm($request->getText('wpsegmentsize'));
-      $this->stepsize = (int)$this->validateForm($request->getText('wpstepsize'));
+      $this->minimumsize = (int)$this->validateNumber($request->getText('wpminimumsize'));
+      $this->maximumsize = (int)$this->validateNumber($request->getText('wpmaximumsize'));
+      $this->segmentsize = (int)$this->validateNumber($request->getText('wpsegmentsize'));
+      $this->stepsize = (int)$this->validateNumber($request->getText('wpstepsize'));
       $this->removepronouns = $this->validateInput($request->getText('wpremovepronouns'));
       
       $this->vectorspace = $this->validateInput($request->getText('wpvectorspace'));
       $this->featuretype = $this->validateInput($request->getText('wpfeaturetype'));
       
-      $this->ngramsize = (int)$this->validateForm($request->getText('ngramsize'));
-      $this->mfi = (int)$this->validateForm($request->getText('wpmfi'));
-      $this->minimumdf = (int)$this->validateForm($request->getText('wpminimumdf'));
-      $this->maximumdf = (int)$this->validateForm($request->getText('wpmaximumdf'));
+      $this->ngramsize = (int)$this->validateNumber($request->getText('ngramsize'));
+      $this->mfi = (int)$this->validateNumber($request->getText('wpmfi'));
+      $this->minimumdf = (int)$this->validateNumber($request->getText('wpminimumdf'));
+      $this->maximumdf = (int)$this->validateNumber($request->getText('wpmaximumdf'));
       
  
       $this->collection_array = (array)$this->validateInput(json_decode($request->getText('collection_array')));
@@ -191,7 +190,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   /**
    * This function checks if basic form conditions are met. Field specific validation is done later. 
    */
-  private function validateForm($input){
+  private function validateNumber($input){
     
     $max_length = $this->max_length; 
     
@@ -264,7 +263,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     //Form2
     if($this->variable_validated_number === false){
-      //no error message is entered because MedaWiki has built-in error messages for this
       return $this->showError('stylometricanalysis-error-number', 'Form2');
     }
     
@@ -338,15 +336,13 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     if($context === 'Form1'){
       return $this->prepareDefaultPage($this->getOutput());
-    }
-    
-    //get values needed for stylometric analysis form
-    
-    return $this->showStylometricAnalysisForm();
+    }elseif($context === 'Form2'){
+      return $this->showStylometricAnalysisForm();
+    }    
   }
   
  /**
-  * This function adds html used for the begincollate loader (see ext.begincollate)
+  * This function adds html used for the stylometricanalysis loader
   * 
   * Source of the gif: http://preloaders.net/en/circular
   */
@@ -373,9 +369,10 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     $collections_message = $this->constructCollectionsMessage($collection_array); 
     
-    $out->setPageTitle($this->msg('stylometricanalysis-options')); 
+    $out->setPageTitle($this->msg('stylometricanalysis-options'));
     
     $html = "";
+    $html .= "<div id='stylometricanalysis-wrap'>";
     $html .= "<a href='" . $article_url . "Special:StylometricAnalysis' class='link-transparent' title='Go Back'>Go Back</a>";
     $html .= "<br><br>";
     $html .= $this->msg('stylometricanalysis-chosencollections') . $collections_message . "<br>"; 
@@ -387,6 +384,10 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $error_message = $this->error_message;  
       $html .= "<div class = 'error'>". $error_message . "</div>";
     }
+    
+    $html .= "</div>";
+    
+    $html .= $this->addStylometricAnalysisLoader();
     
     $out->addHTML($html);
     

@@ -78,9 +78,9 @@
    /**
     * This function shows #stylometricanalysis-loaderdiv, the loader gif, and hides .stylometricanalysis-form-two, p elements after clicking submit
     */
-    $('#stylometricanalysis-form-two').submit(function() {
-      $('#stylometricanalysis-form-two').hide();
-      $('p').hide();
+    $('.visualClear').submit(function() {
+      $('#stylometricanalysis-wrap').hide();
+      $('.visualClear').hide();
       $('#stylometricanalysis-loaderdiv').show();
     });
     
