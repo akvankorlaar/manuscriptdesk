@@ -12,6 +12,10 @@
  * 
  * Todo: Also make it possible to validate text within tags
  * 
+ * Todo: Check if you should use CentOS 6 or CentOS 7
+ * 
+ * Todo: Setup a CentOS development environment through Vagrant. Check this tutorial: http://coolestguidesontheplanet.com/getting-started-vagrant-os-osx-10-9-mavericks/
+ * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
  * Todo: Rewrite loadRequest in Special:BeginCollate

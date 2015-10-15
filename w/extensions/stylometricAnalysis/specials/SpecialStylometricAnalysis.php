@@ -37,7 +37,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $max_length;
   private $variable_validated;
   private $token_is_ok;
+  private $web_root; 
   
+  //basic validation variables for stylometric analysis options form
   private $variable_validated_number;
   private $variable_validated_empty; 
   private $variable_validated_max_length;
@@ -63,7 +65,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   //class constructor
   public function __construct(){
     
-    global $wgNewManuscriptOptions, $wgArticleUrl, $wgStylometricAnalysisOptions;  
+    global $wgNewManuscriptOptions, $wgArticleUrl, $wgStylometricAnalysisOptions, $wgWebsiteRoot;  
     
     $this->article_url = $wgArticleUrl;
     $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
@@ -80,6 +82,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->collection_array = array();
     
     $this->max_length = 50; 
+    
+    $this->web_root = $wgWebsiteRoot; 
 
     parent::__construct('StylometricAnalysis');
 	}
@@ -130,7 +134,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $this->vectorspace = $this->validateInput($request->getText('wpvectorspace'));
       $this->featuretype = $this->validateInput($request->getText('wpfeaturetype'));
       
-      $this->ngramsize = (int)$this->validateNumber($request->getText('ngramsize'));
+      $this->ngramsize = (int)$this->validateNumber($request->getText('wpngramsize'));
       $this->mfi = (int)$this->validateNumber($request->getText('wpmfi'));
       $this->minimumdf = (int)$this->validateNumber($request->getText('wpminimumdf'));
       $this->maximumdf = (int)$this->validateNumber($request->getText('wpmaximumdf'));
@@ -172,7 +176,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       return $input; 
     }
     
-    //see if one or more of these sepcial charachters match
+    //check if all charachters are alphanumeric, or '/' or ':'
     if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
       $this->variable_validated = false; 
       return false; 
@@ -194,18 +198,19 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     $max_length = $this->max_length; 
     
-    //see if one or more of these sepcial charachters match
+    //check if all the input consists of numbers or '.'
     if(!preg_match('/^[0-9.]*$/', $input)){
       $this->variable_validated_number = false; 
       return false; 
     }
     
-    //check for empty variables or unusually long string lengths
+    //check for empty variables 
     if(empty($input) && $input !== '0'){
       $this->variable_validated_empty = false; 
       return false; 
     }
     
+    //check if the input is not longer than $max_length
     if(strlen($input) > $max_length){
       $this->variable_validated_max_length = false; 
       return false;
@@ -241,13 +246,15 @@ class SpecialStylometricAnalysis extends SpecialPage {
   }
   
   /**
-   * Processes the request when a user has submitted the form
+   * Processes the request when a user has submitted a form
    * 
    * @return type
    */
   private function processRequest(){
+    
+    $web_root = $this->web_root; 
       
-    //Form1
+    //Form1: Stylometric Analysis collection selection
     if(!isset($this->token_is_ok)){
     
       if(count($this->collection_array) < $this->minimum_collections){
@@ -261,7 +268,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       return $this->showStylometricAnalysisForm();
     }
     
-    //Form2
+    //Form2: Stylometric Analysis options form
     if($this->variable_validated_number === false){
       return $this->showError('stylometricanalysis-error-number', 'Form2');
     }
@@ -274,26 +281,119 @@ class SpecialStylometricAnalysis extends SpecialPage {
       return $this->showError('stylometricanalysis-error-maxlength', 'Form2');
     }
     
+    //field specific errors (values that are too high or too low)
+      
+    $texts = $this->constructTexts();
+    
+    //if returned false, one of the posted pages did not exist
+    if(!$texts){
+      wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
+      return $this->showError('stylometricanalysis-error-notexists', 'Form1');
+    }
     
     
                        
        
-    //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both. 
-     
-    //they can also choose to go back, run a PCA analysis or a clustering analysis
-      
+    //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both.     
+    //they can also choose to run a PCA analysis or a clustering analysis     
     //only after clicking clustering analysis or PCA analysis, the texts should be assembled 
     
-//    $texts = $this->constructTexts();
-//    
-//    //if returned false, one of the posted pages did not exist
-//    if(!$texts){
-//      return $this->showError('stylometricanalysis-error-notexists');
-//    }
-    
+
   }
   
+  /**
+   * This function loops through all the posted collections, and
+   * retrieves the text from the corresponding pages 
+   * 
+   * @return type
+   */
+  private function constructTexts(){
+    
+    //in $texts combined collection texts will be stored 
+    $texts = array();
+  
+    if($this->collection_array){
+      //for collections, collect all single pages of a collection and merge them together
+      foreach($this->collection_array as $collection_name => $url_array){
+
+        $all_texts_for_one_collection = "";
+
+        //go through all urls of a collection
+        foreach($url_array as $index => $file_url){
+          
+          if($index !== 'collection_name'){
+
+            $title_object = Title::newFromText($file_url);
+
+            if(!$title_object->exists()){
+              return false; 
+            }
+
+            $single_page_text = $this->getSinglePageText($title_object);
+            //add $single_page_text to $single_page_texts
+            $all_texts_for_one_collection .= $single_page_text; 
+          }
+        }  
+
+        //add the combined texts of one collection to $texts
+        $texts[] = $all_texts_for_one_collection; 
+      }
+    }
+  
+    return $texts; 
+  }
+  
+  /**
+   * This function retrieves the wiki text from a page url
+   * 
+   * @param type $title_object
+   * @return type
+   */
+  private function getSinglePageText($title_object){
+    
+    $article_object = Wikipage::factory($title_object);  
+    $raw_text = $article_object->getRawText();
+    
+    $filtered_raw_text = $this->filterText($raw_text);
+        
+    return $filtered_raw_text; 
+  }
+  
+  /**
+   * This function filters out tags, and text in between certain tags. It also trims the text, and adds a single space to the last charachter if needed 
+   */
+  private function filterText($raw_text){
+            
+    //filter out the following tags, and all text in between the tags
+    
+    //pagemetatable tag
+    $raw_text = preg_replace('/<pagemetatable>[^<]+<\/pagemetatable>/i', '', $raw_text);
+    
+    //del tag
+    $raw_text = preg_replace('/<del>[^<]+<\/del>/i', '', $raw_text);
+
+    //note tag
+    $raw_text = preg_replace('/<note>[^<]+<\/note>/i', '', $raw_text);
+    
+    //filter out any other tags, but keep all text in between the tags
+    $raw_text = strip_tags($raw_text);
+    
+    $raw_text = trim($raw_text);
+       
+    //check if it is possible to get the last charachter of the page
+    if(substr($raw_text, -1) !== false){
+      $last_charachter = substr($raw_text, -1);
       
+      if($last_charachter !== '-'){
+        //If the last charachter of the current page is '-', this may indicate that the first word of the next page 
+        //is linked to the last word of this page because they form a single word. In other cases, add a space after the last charachter of the current page 
+        $raw_text = $raw_text . ' ';
+      }
+    }
+    
+    return $raw_text; 
+  }  
+  
   /**
    * This function prepares the default page, in case no request was posted
    * 

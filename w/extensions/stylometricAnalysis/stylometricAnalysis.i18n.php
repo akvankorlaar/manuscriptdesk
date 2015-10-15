@@ -55,6 +55,7 @@ $messages['en'] = array(
   'stylometricanalysis-error-number'          => 'You can only use positive numbers for the input of the textfields',
   'stylometricanalysis-error-empty'           => 'You must specify a value in every textfield',
   'stylometricanalysis-error-maxlength'       => 'Your input can be at most 50 charachters long',
+  'stylometricanalysis-error-notexists'       => 'Something went wrong when retrieving the wiki page texts.',
   );
 
 $messages['en-gb'] = $messages['en'];
