@@ -38,6 +38,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $variable_validated;
   private $token_is_ok;
   private $web_root; 
+  private $python_path; 
   
   //basic validation variables for stylometric analysis options form
   private $variable_validated_number;
@@ -71,7 +72,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
     $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];  
     $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections']; 
-    $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection']; 
+    $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
+    $this->python_path = $wgStylometricAnalysisOptions['python_path'];
     
     $this->error_message = false; //default value     
     $this->variable_validated = true; //default value
@@ -286,19 +288,54 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $texts = $this->constructTexts();
     
     //if returned false, one of the posted pages did not exist
-    if(!$texts){
+    if($texts === false){
       wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
       return $this->showError('stylometricanalysis-error-notexists', 'Form1');
     }
-    
-    
-                       
+        
+    $config_array['values'] = array(
+      'removenonalpha' => $this->removenonalpha,
+      'lowercase' => $this->lowercase, 
+      'tokenizer' => $this->tokenizer,
+      'minimumsize' => $this->minimumsize,
+      'maximumsize' => $this->maximumsize,
+      'segmentsize' => $this->segmentsize,
+      'stepsize' => $this->stepsize,
+      'removepronouns' => $this->removepronouns,
+      'vectorspace' => $this->vectorspace,
+      'featuretype' => $this->featuretype,
+      'ngramsize' => $this->ngramsize,
+      'mfi' => $this->mfi,
+      'minimumdf' => $this->minimumdf,
+      'maximumdf' => $this->maximumdf,
+      'texts' => $texts, 
+    );
+        
+    $command = $this->constructCommand() . ' ' . json_encode($config_array);    
+      
+    $output = shell_exec($command);      
+        
+    $this->getOutput()->addHTML($output);
+               
        
     //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both.     
     //they can also choose to run a PCA analysis or a clustering analysis     
     //only after clicking clustering analysis or PCA analysis, the texts should be assembled 
     
 
+  }
+  
+  /**
+   * This function constructs the shell command in order to call PyStyl
+   */
+  private function constructCommand(){
+    
+    $python_path = $this->python_path;            
+    $dir = dirname( dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'test.py';  
+    
+    //return $dir; 
+    
+    return $python_path . ' ' . $dir; 
   }
   
   /**
