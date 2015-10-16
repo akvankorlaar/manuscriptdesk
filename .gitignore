@@ -63,6 +63,12 @@ w/skins/*
 !w/extensions/stylometricAnalysis/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*
 
-
-
-
+#these lines are to ensure that every file in PyStyl is also included
+!w/extensions/stylometricAnalysis/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*/*/*/*/*/*
