@@ -86,7 +86,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->max_length = 50; 
     
     $this->web_root = $wgWebsiteRoot; 
-
+    
     parent::__construct('StylometricAnalysis');
 	}
   
@@ -148,6 +148,10 @@ class SpecialStylometricAnalysis extends SpecialPage {
         $this->collection_array[$index] = (array)$value;
       }
       
+      $this->removenonalpha = empty($this->removenonalpha) ? 0 : $this->removenonalpha; 
+      $this->lowercase = empty($this->lowercase) ? 0 : $this->lowercase;
+      $this->removepronouns = empty($this->removepronouns) ? 0 : $this->removepronouns; 
+      
       return true; 
     }
     
@@ -159,7 +163,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   }
   
   /**
-   * This function validates input sent by the client
+   * This function checks if basic form conditions are met 
    * 
    * @param type $input
    */
@@ -178,7 +182,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       return $input; 
     }
     
-    //check if all charachters are alphanumeric, or '/' or ':'
+    //check if all charachters are alphanumeric, or '/' or ':' (in case of url)
     if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
       $this->variable_validated = false; 
       return false; 
@@ -194,7 +198,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   }
   
   /**
-   * This function checks if basic form conditions are met. Field specific validation is done later. 
+   * This function checks if basic form conditions are met for numbers. Field specific validation is done later 
    */
   private function validateNumber($input){
     
@@ -293,36 +297,46 @@ class SpecialStylometricAnalysis extends SpecialPage {
       return $this->showError('stylometricanalysis-error-notexists', 'Form1');
     }
         
-    $config_array['values'] = array(
-      'removenonalpha' => $this->removenonalpha,
-      'lowercase' => $this->lowercase, 
-      'tokenizer' => $this->tokenizer,
-      'minimumsize' => $this->minimumsize,
-      'maximumsize' => $this->maximumsize,
-      'segmentsize' => $this->segmentsize,
-      'stepsize' => $this->stepsize,
-      'removepronouns' => $this->removepronouns,
-      'vectorspace' => $this->vectorspace,
-      'featuretype' => $this->featuretype,
-      'ngramsize' => $this->ngramsize,
-      'mfi' => $this->mfi,
-      'minimumdf' => $this->minimumdf,
-      'maximumdf' => $this->maximumdf,
-      'texts' => $texts, 
+    $config_array = array(
+      "'removenonalpha'" => "'$this->removenonalpha'",
+      "'lowercase'" => "'$this->lowercase'", 
+      "'tokenizer'" => "'$this->tokenizer'",
+      "'minimumsize'" => "'$this->minimumsize'",
+      "'maximumsize'" => "'$this->maximumsize'",
+      "'segmentsize'" => "'$this->segmentsize'",
+      "'stepsize'" => "'$this->stepsize'",
+      "'removepronouns'" => "'$this->removepronouns'",
+      "'vectorspace'" => "'$this->vectorspace'",
+      "'featuretype'" => "'$this->featuretype'",
+      "'ngramsize'" => "'$this->ngramsize'",
+      "'mfi'" => "'$this->mfi'",
+      "'minimumdf'" => "'$this->minimumdf'",
+      "'maximumdf'" => "'$this->maximumdf'",
+      //"'texts'" => "'$texts'", 
     );
-        
-    $command = $this->constructCommand() . ' ' . json_encode($config_array);    
-      
-    $output = shell_exec($command);      
-        
+    
+    $data = json_encode($config_array);
+    $data = escapeshellarg($data);
+
+    $output = shell_exec(escapeshellcmd($this->constructCommand() . ' ' . $data));
+    //$output .= exec(escapeshellcmd($command . ' ' . $data));
+    //$output .= system(escapeshellcmd($command . ' ' . $data));
+    //$output .= system($command . ' ' . $data);
+
+    // Decode the result
+
     $this->getOutput()->addHTML($output);
+//    $test = '{"a":1,"b":2,"c":3,"d":4,"e":5}';
+//                
+//    $command = $this->constructCommand() . ' ' . escapeshellarg($test);    
+//      
+//    $output = shell_exec($command);      
+        
                
        
     //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both.     
     //they can also choose to run a PCA analysis or a clustering analysis     
     //only after clicking clustering analysis or PCA analysis, the texts should be assembled 
-    
-
   }
   
   /**
