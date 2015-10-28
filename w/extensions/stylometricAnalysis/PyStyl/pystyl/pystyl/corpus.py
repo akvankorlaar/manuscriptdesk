@@ -263,7 +263,7 @@ class Corpus:
                 continue
             self.tokenized_texts.append(tokens)
 
-            print(self.tokenized_texts)
+        print(self.tokenized_texts)
 
     def remove_tokens(self, rm_tokens=[], rm_pronouns=False, language=None):
         """
