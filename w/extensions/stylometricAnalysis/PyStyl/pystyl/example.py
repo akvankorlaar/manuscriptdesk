@@ -69,7 +69,7 @@ except:
 
 #plot
 bct_dendrogram(corpus=corpus, tree=bct, fontsize=8, color_leafs=False,
-                 mode='c', outputfile='C:/xampp/htdocs/mediawikinew/stylometricAnalysisInitial/test2.jpg', save=True)
+                 mode='c', outputfile='C:/xampp/htdocs/mediawikinew/initialStylometricAnalysis/test3.jpg', save=True)
 
 #outputfile='../output/test4.jpg'
 #mode='c', outputfile='~/Desktop/bct_dendrogram.pdf', save=True)

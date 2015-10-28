@@ -23,9 +23,9 @@ initialUpload/*
 zoomImages/*
 !zoomImages/.htaccess
 
-!stylometricAnalysisInitial
-stylometricAnalysisInitial/*
-!stylometricAnalysisInitial/.htaccess
+!initialStylometricAnalysis
+initialStylometricAnalysis/*
+!initialStylometricAnalysis/.htaccess
 
 #the procedure for specifying the directories not to be ignored in w, is the same as was used for Initialupload
 !w
