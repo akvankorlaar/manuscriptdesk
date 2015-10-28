@@ -27,38 +27,52 @@ try:
     mfi = data['mfi']
     minimumdf = data['minimumdf']
     maximumdf = data['maximumdf']
-    texts_information_array = data['texts']
+    texts_information_dict = data['texts']
 except:
-    print "ERROR " + data
+    print "Data import error " + data
     sys.exit(1)
 
-print 'SUCCESS'
-#texts_information_array
+#texts_information_array = {'collection1' : {'title': 'title1', 'target_name' : 'target_name1', 'text':'Hello World, I was just typing this text, in order to get a very long text, because somehow the copy paste button does not work. Notwithstanding, the murmer of the fish was so loud that they jumped on the carrousel and sang "I love you John Myaer", who also happened to be there somehow, but that is part of another story'},
+#                           'collection2' : {'title': 'title2', 'target_name': 'target_name2', 'text':'The crab fish is a very dangerous fish because the fish is a very large fish. Very large means that you can pretty much need a few kilometers of rape. About the length of Saturn or Earth which is pretty large. The mamoth of the fish is named "scorpius". Scorpius ruled the land of the fish for ions. He was a very smart fish also, and a friend of John Mayer'}}
 
 if not os.path.isdir('../output/'):
     os.mkdir('../output/')
 
 corpus = Corpus(language='en')
 
-corpus.add_texts_manuscriptdesk(texts_information_array = texts_information_array)
+corpus.add_texts_manuscriptdesk(texts_information_dict = texts_information_dict)
+
 corpus.preprocess(alpha_only=True, lowercase=True)
+
 
 #additional tokenize options: self.corpus.tokenize(min_size=min_size,max_size=max_size, tokenizer_option=tokenizer_option)
 corpus.tokenize()
-corpus.segment(segment_size=100)
+
+corpus.segment(segment_size=0)
+
 corpus.remove_tokens(rm_tokens=None, rm_pronouns=False, language='en') # watch out: if you do this before segment(), if will influence segment legths... (I would do it afterwards...)
 #corpus.temporal_sort() # we assume that the categpries are sortable integers, indicating some order (e.g. date of composition)
+
 #print(corpus)
 corpus.vectorize(mfi=50, ngram_type='word', ngram_size=1, vector_space='tf_std')
+
 #print(corpus.vectorizer.feature_names)
 
 dms = bootstrapped_distance_matrices(corpus, n_iter=100, random_prop=0.20, metric='manhattan')
+
 trees = [hierarchical_clustering(dm, linkage='ward') for dm in dms]
-bct = bootstrap_consensus_tree(corpus=corpus, trees=trees, consensus_level=0.5)
+
+try:
+    bct = bootstrap_consensus_tree(corpus=corpus, trees=trees, consensus_level=0.5)
+except:
+    print sys.exc_info()[0]
+    sys.exit(1)
 
 #plot
 bct_dendrogram(corpus=corpus, tree=bct, fontsize=8, color_leafs=False,
                  mode='c', outputfile='../output/test.jpg', save=True)
+
+
 
                  #mode='c', outputfile='~/Desktop/bct_dendrogram.pdf', save=True)
 

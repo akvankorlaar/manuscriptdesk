@@ -105,7 +105,7 @@ class Corpus:
                     print("Ignored: "+filename+" (does not contain any text...)")
 
 
-    def add_texts_manuscriptdesk(self, texts_information_array):
+    def add_texts_manuscriptdesk(self, texts_information_dict):
         """
         Add the texts under a directory to the corpus. Consecutive calls
         will add new texts to the corpus, instead of overwriting the old ones.
@@ -119,16 +119,16 @@ class Corpus:
             self.target_idx = []
             self.texts, self.titles, self.target_ints = [], [], []
 
-        for i in texts_information_array:
+        for i in texts_information_dict:
 
             try:
                 #Anne_Grey
                 #Anne_Tenant
-                title = texts_information_array[i]['title']
-                target_name = texts_information_array[i]['target_name']
-                text = texts_information_array[i]['text']
+                title = texts_information_dict[i]['title']
+                target_name = texts_information_dict[i]['target_name']
+                text = texts_information_dict[i]['text']
             except:
-                print(texts_information_array)
+                print(texts_information_dict)
                 sys.exit(1)
 
             if text.strip():
@@ -262,6 +262,8 @@ class Corpus:
                 print("Title: %s only has %d tokens (< sample_size = %d) -> ignored" % (self.titles[i], len(text)))
                 continue
             self.tokenized_texts.append(tokens)
+
+            print(self.tokenized_texts)
 
     def remove_tokens(self, rm_tokens=[], rm_pronouns=False, language=None):
         """
