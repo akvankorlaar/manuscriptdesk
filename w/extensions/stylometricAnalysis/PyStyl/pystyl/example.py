@@ -29,10 +29,11 @@ try:
     maximumdf = data['maximumdf']
     texts_information_array = data['texts']
 except:
-    print "ERROR " + input
+    print "ERROR " + data
     sys.exit(1)
 
 print 'SUCCESS'
+#texts_information_array
 
 if not os.path.isdir('../output/'):
     os.mkdir('../output/')
@@ -44,11 +45,11 @@ corpus.preprocess(alpha_only=True, lowercase=True)
 
 #additional tokenize options: self.corpus.tokenize(min_size=min_size,max_size=max_size, tokenizer_option=tokenizer_option)
 corpus.tokenize()
-corpus.segment(segment_size=30000)
+corpus.segment(segment_size=100)
 corpus.remove_tokens(rm_tokens=None, rm_pronouns=False, language='en') # watch out: if you do this before segment(), if will influence segment legths... (I would do it afterwards...)
 #corpus.temporal_sort() # we assume that the categpries are sortable integers, indicating some order (e.g. date of composition)
 #print(corpus)
-corpus.vectorize(mfi=3000, ngram_type='word', ngram_size=1, vector_space='tf_std')
+corpus.vectorize(mfi=50, ngram_type='word', ngram_size=1, vector_space='tf_std')
 #print(corpus.vectorizer.feature_names)
 
 dms = bootstrapped_distance_matrices(corpus, n_iter=100, random_prop=0.20, metric='manhattan')

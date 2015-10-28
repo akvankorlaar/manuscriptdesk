@@ -13,30 +13,37 @@ import ast
 #from pystyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering, vnc_clustering, bootstrapped_distance_matrices, bootstrap_consensus_tree
 #from pystyl.visualization import scatterplot, scatterplot_3d, clustermap, scipy_dendrogram, ete_dendrogram, bct_dendrogram
 
+
+
 # Load the data that PHP sent us
 try:
-   data = ast.literal_eval(sys.argv[1])
-   removenonalpha = data['removenonalpha']
-   lowercase = data['lowercase']
-   tokenizer = data['tokenizer']
-   minimumsize = data['minimumsize']
-   maximumsize = data['maximumsize']
-   segmentsize = data['segmentsize']
-   stepsize = data['stepsize']
-   removepronouns = data['removepronouns']
-   vectorspace = data['vectorspace']
-   featuretype = data['featuretype']
-   ngramsize = data['ngramsize']
-   mfi = data['mfi']
-   minimumdf = data['minimumdf']
-   maximumdf = data['maximumdf']
-   texts_information_array = data['texts']
+    data = ast.literal_eval(sys.argv[1])
+    removenonalpha = data['removenonalpha']
+    lowercase = data['lowercase']
+    tokenizer = data['tokenizer']
+    minimumsize = data['minimumsize']
+    maximumsize = data['maximumsize']
+    segmentsize = data['segmentsize']
+    stepsize = data['stepsize']
+    removepronouns = data['removepronouns']
+    vectorspace = data['vectorspace']
+    featuretype = data['featuretype']
+    ngramsize = data['ngramsize']
+    mfi = data['mfi']
+    minimumdf = data['minimumdf']
+    maximumdf = data['maximumdf']
+    texts_information_array = data['texts']
 
 except:
-    print "ERROR " + input
+    print "ERROR " + data
     sys.exit(1)
 
-print texts_information_array
+for i in texts_information_array:
+    print texts_information_array[i]['title']
+
+
+
+
 
 
 

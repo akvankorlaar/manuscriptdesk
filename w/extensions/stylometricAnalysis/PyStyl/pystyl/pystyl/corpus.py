@@ -119,16 +119,16 @@ class Corpus:
             self.target_idx = []
             self.texts, self.titles, self.target_ints = [], [], []
 
-        for text_information in texts_information_array:
+        for i in texts_information_array:
 
             try:
                 #Anne_Grey
                 #Anne_Tenant
-                title = text_information['title']
-                target_name = text_information['target_name']
-                text = text_information['text']
+                title = texts_information_array[i]['title']
+                target_name = texts_information_array[i]['target_name']
+                text = texts_information_array[i]['text']
             except:
-                print("ERROR ")
+                print(texts_information_array)
                 sys.exit(1)
 
             if text.strip():
@@ -136,6 +136,7 @@ class Corpus:
 
             else:
                 print("Ignored:  (does not contain any text...)")
+                sys.exit(1)
 
     def add_text(self, text, title, target_name):
         """

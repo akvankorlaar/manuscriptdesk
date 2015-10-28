@@ -335,7 +335,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private function constructCommand(){
     
     $python_path = $this->python_path;            
-    $dir = dirname( dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'test.py';  
+    $dir = dirname( dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'example.py';  
     //test.py
         
     return $python_path . ' ' . $dir; 
