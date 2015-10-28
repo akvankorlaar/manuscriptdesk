@@ -320,7 +320,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $data = json_encode($config_array);
     $data = escapeshellarg($data);
 
-    $output = shell_exec(escapeshellcmd($this->constructCommand() . ' ' . $data));
+    $output = system(escapeshellcmd($this->constructCommand() . ' ' . $data));
 
     $this->getOutput()->addHTML($output); 
                

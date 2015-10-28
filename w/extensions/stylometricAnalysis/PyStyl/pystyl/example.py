@@ -64,14 +64,12 @@ trees = [hierarchical_clustering(dm, linkage='ward') for dm in dms]
 try:
     bct = bootstrap_consensus_tree(corpus=corpus, trees=trees, consensus_level=0.5)
 except:
-    print 'bla11'
     print 'Error'
     sys.exit(1)
 
-
 #plot
 bct_dendrogram(corpus=corpus, tree=bct, fontsize=8, color_leafs=False,
-                 mode='c', outputfile='~/Desktop/bct_dendrogram.pdf', save=True)
+                 mode='c', outputfile='C:/xampp/htdocs/mediawikinew/stylometricAnalysisInitial/test2.jpg', save=True)
 
 #outputfile='../output/test4.jpg'
 #mode='c', outputfile='~/Desktop/bct_dendrogram.pdf', save=True)
