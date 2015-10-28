@@ -30,13 +30,13 @@ try:
    mfi = data['mfi']
    minimumdf = data['minimumdf']
    maximumdf = data['maximumdf']
-   texts = data['texts']
+   texts_information_array = data['texts']
 
 except:
     print "ERROR " + input
     sys.exit(1)
 
-print texts
+print texts_information_array
 
 
 

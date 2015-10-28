@@ -336,6 +336,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     $python_path = $this->python_path;            
     $dir = dirname( dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'test.py';  
+    //test.py
         
     return $python_path . ' ' . $dir; 
   }
@@ -378,7 +379,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
         $collection_name = isset($url_array['collection_name']) ? $url_array['collection_name'] : 'collection' . $a; 
 
         //add the combined texts of one collection to $texts
-        $texts["'collection" . $collection_name . "'"] = "'$all_texts_for_one_collection'"; 
+        $texts["'collection" . $a . "'"] = array(
+          "'title'" => "'" . $collection_name . "'",
+          "'target_name'" => "'" . $collection_name . "'",
+          "'text'" => "'" . $all_texts_for_one_collection . "'",
+        );
         $a += 1; 
       }
     }

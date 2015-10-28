@@ -12,23 +12,22 @@ from pystyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering,
 from pystyl.visualization import scatterplot, scatterplot_3d, clustermap, scipy_dendrogram, ete_dendrogram, bct_dendrogram
 
 try:
-   data = ast.literal_eval(sys.argv[1])
-   removenonalpha = data['removenonalpha']
-   lowercase = data['lowercase']
-   tokenizer = data['tokenizer']
-   minimumsize = data['minimumsize']
-   maximumsize = data['maximumsize']
-   segmentsize = data['segmentsize']
-   stepsize = data['stepsize']
-   removepronouns = data['removepronouns']
-   vectorspace = data['vectorspace']
-   featuretype = data['featuretype']
-   ngramsize = data['ngramsize']
-   mfi = data['mfi']
-   minimumdf = data['minimumdf']
-   maximumdf = data['maximumdf']
-   texts = data['texts']
-
+    data = ast.literal_eval(sys.argv[1])
+    removenonalpha = data['removenonalpha']
+    lowercase = data['lowercase']
+    tokenizer = data['tokenizer']
+    minimumsize = data['minimumsize']
+    maximumsize = data['maximumsize']
+    segmentsize = data['segmentsize']
+    stepsize = data['stepsize']
+    removepronouns = data['removepronouns']
+    vectorspace = data['vectorspace']
+    featuretype = data['featuretype']
+    ngramsize = data['ngramsize']
+    mfi = data['mfi']
+    minimumdf = data['minimumdf']
+    maximumdf = data['maximumdf']
+    texts_information_array = data['texts']
 except:
     print "ERROR " + input
     sys.exit(1)
@@ -40,9 +39,7 @@ if not os.path.isdir('../output/'):
 
 corpus = Corpus(language='en')
 
-#this should be an initialupload directory the server writes to
-corpus.add_directory(directory='data/dummy')
-#corpus.add_directory(directory='data/sorted')
+corpus.add_texts_manuscriptdesk(texts_information_array = texts_information_array)
 corpus.preprocess(alpha_only=True, lowercase=True)
 
 #additional tokenize options: self.corpus.tokenize(min_size=min_size,max_size=max_size, tokenizer_option=tokenizer_option)
@@ -50,7 +47,7 @@ corpus.tokenize()
 corpus.segment(segment_size=30000)
 corpus.remove_tokens(rm_tokens=None, rm_pronouns=False, language='en') # watch out: if you do this before segment(), if will influence segment legths... (I would do it afterwards...)
 #corpus.temporal_sort() # we assume that the categpries are sortable integers, indicating some order (e.g. date of composition)
-print(corpus)
+#print(corpus)
 corpus.vectorize(mfi=3000, ngram_type='word', ngram_size=1, vector_space='tf_std')
 #print(corpus.vectorizer.feature_names)
 
