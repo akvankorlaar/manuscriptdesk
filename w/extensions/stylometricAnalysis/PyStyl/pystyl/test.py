@@ -13,12 +13,9 @@ import ast
 #from pystyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering, vnc_clustering, bootstrapped_distance_matrices, bootstrap_consensus_tree
 #from pystyl.visualization import scatterplot, scatterplot_3d, clustermap, scipy_dendrogram, ete_dendrogram, bct_dendrogram
 
-
-input = sys.argv[1]
-
 # Load the data that PHP sent us
 try:
-   data = ast.literal_eval(input)
+   data = ast.literal_eval(sys.argv[1])
 except:
     print "ERROR " + input
     sys.exit(1)

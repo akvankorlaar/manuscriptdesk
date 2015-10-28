@@ -243,7 +243,7 @@ class SpecialBeginCollate extends SpecialPage {
     //construct an URL for the new page
     list($main_title, $new_url) = $this->makeURL($titles_array);
     
-    //time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are. 
+    //time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are
     $time = idate('U');
     
     $status = $this->prepareTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);

@@ -312,8 +312,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
       "'mfi'" => "'$this->mfi'",
       "'minimumdf'" => "'$this->minimumdf'",
       "'maximumdf'" => "'$this->maximumdf'",
-      //"'texts'" => "'$texts'", 
     );
+    
+    $config_array = array_merge($config_array, $texts);
     
     $data = json_encode($config_array);
     $data = escapeshellarg($data);
@@ -323,17 +324,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     //$output .= system(escapeshellcmd($command . ' ' . $data));
     //$output .= system($command . ' ' . $data);
 
-    // Decode the result
-
-    $this->getOutput()->addHTML($output);
-//    $test = '{"a":1,"b":2,"c":3,"d":4,"e":5}';
-//                
-//    $command = $this->constructCommand() . ' ' . escapeshellarg($test);    
-//      
-//    $output = shell_exec($command);      
-        
+    $this->getOutput()->addHTML($output); 
                
-       
     //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both.     
     //they can also choose to run a PCA analysis or a clustering analysis     
     //only after clicking clustering analysis or PCA analysis, the texts should be assembled 
@@ -346,9 +338,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     $python_path = $this->python_path;            
     $dir = dirname( dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'test.py';  
-    
-    //return $dir; 
-    
+        
     return $python_path . ' ' . $dir; 
   }
   
@@ -362,10 +352,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     //in $texts combined collection texts will be stored 
     $texts = array();
+    $a = 1; 
   
     if($this->collection_array){
       //for collections, collect all single pages of a collection and merge them together
-      foreach($this->collection_array as $collection_name => $url_array){
+      foreach($this->collection_array as $collection_index => $url_array){
 
         $all_texts_for_one_collection = "";
 
@@ -384,10 +375,13 @@ class SpecialStylometricAnalysis extends SpecialPage {
             //add $single_page_text to $single_page_texts
             $all_texts_for_one_collection .= $single_page_text; 
           }
-        }  
+        }
+        
+        $collection_name = isset($url_array['collection_name']) ? $url_array['collection_name'] : 'collection' . $a; 
 
         //add the combined texts of one collection to $texts
-        $texts[] = $all_texts_for_one_collection; 
+        $texts["'collection" . $collection_name . "'"] = "'$all_texts_for_one_collection'"; 
+        $a += 1; 
       }
     }
   
