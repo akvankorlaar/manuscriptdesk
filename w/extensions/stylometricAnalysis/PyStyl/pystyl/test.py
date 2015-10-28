@@ -16,12 +16,28 @@ import ast
 # Load the data that PHP sent us
 try:
    data = ast.literal_eval(sys.argv[1])
+   removenonalpha = data['removenonalpha']
+   lowercase = data['lowercase']
+   tokenizer = data['tokenizer']
+   minimumsize = data['minimumsize']
+   maximumsize = data['maximumsize']
+   segmentsize = data['segmentsize']
+   stepsize = data['stepsize']
+   removepronouns = data['removepronouns']
+   vectorspace = data['vectorspace']
+   featuretype = data['featuretype']
+   ngramsize = data['ngramsize']
+   mfi = data['mfi']
+   minimumdf = data['minimumdf']
+   maximumdf = data['maximumdf']
+
 except:
     print "ERROR " + input
     sys.exit(1)
 
-print data
 print 'SUCCESS'
+
+
 
 # Send it to stdout (to PHP)
 
