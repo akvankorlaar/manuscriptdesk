@@ -312,9 +312,10 @@ class SpecialStylometricAnalysis extends SpecialPage {
       "'mfi'" => "'$this->mfi'",
       "'minimumdf'" => "'$this->minimumdf'",
       "'maximumdf'" => "'$this->maximumdf'",
+      "'texts'" => $texts, 
     );
     
-    $config_array = array_merge($config_array, $texts);
+    //$config_array = array_merge($config_array, $texts);
     
     $data = json_encode($config_array);
     $data = escapeshellarg($data);

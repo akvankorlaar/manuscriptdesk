@@ -5,18 +5,39 @@ Ideas: The output directory should be a temporary directory, refreshed or delete
 
 import sys
 import os
+import ast
 
 from pystyl.corpus import Corpus
 from pystyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering, vnc_clustering, bootstrapped_distance_matrices, bootstrap_consensus_tree
 from pystyl.visualization import scatterplot, scatterplot_3d, clustermap, scipy_dendrogram, ete_dendrogram, bct_dendrogram
 
-config1 = os.path.expanduser(sys.argv[1])
-config2 = os.path.expanduser(sys.argv[2])
+try:
+   data = ast.literal_eval(sys.argv[1])
+   removenonalpha = data['removenonalpha']
+   lowercase = data['lowercase']
+   tokenizer = data['tokenizer']
+   minimumsize = data['minimumsize']
+   maximumsize = data['maximumsize']
+   segmentsize = data['segmentsize']
+   stepsize = data['stepsize']
+   removepronouns = data['removepronouns']
+   vectorspace = data['vectorspace']
+   featuretype = data['featuretype']
+   ngramsize = data['ngramsize']
+   mfi = data['mfi']
+   minimumdf = data['minimumdf']
+   maximumdf = data['maximumdf']
+   texts = data['texts']
+
+except:
+    print "ERROR " + input
+    sys.exit(1)
+
+print 'SUCCESS'
 
 if not os.path.isdir('../output/'):
     os.mkdir('../output/')
 
-#keep this constant
 corpus = Corpus(language='en')
 
 #this should be an initialupload directory the server writes to

@@ -104,6 +104,39 @@ class Corpus:
                 else:
                     print("Ignored: "+filename+" (does not contain any text...)")
 
+
+    def add_texts_manuscriptdesk(self, text_information_array):
+        """
+        Add the texts under a directory to the corpus. Consecutive calls
+        will add new texts to the corpus, instead of overwriting the old ones.
+
+        Parameters
+        ----------
+
+        """
+
+        if not self.target_idx:
+            self.target_idx = []
+            self.texts, self.titles, self.target_ints = [], [], []
+
+        for text_information in text_information_array:
+
+            try:
+                #Anne_Grey
+                #Anne_Tenant
+                title = text_information['title']
+                target_name = text_information['targetname']
+                text = text_information['text']
+            except:
+                print("ERROR ")
+                sys.exit(1)
+
+            if text.strip():
+                self.add_text(text=text, title=title, target_name=target_name)
+
+            else:
+                print("Ignored:  (does not contain any text...)")
+
     def add_text(self, text, title, target_name):
         """
         Add a single new text to the corpus.
