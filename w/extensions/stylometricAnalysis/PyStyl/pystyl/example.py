@@ -1,8 +1,3 @@
-"""
-Ideas: The output directory should be a temporary directory, refreshed or deleted every few hours. If the user saves the result, it should be moved to a temporary place
-"""
-
-
 import sys
 import os
 import ast
@@ -27,49 +22,51 @@ try:
     mfi = data['mfi']
     minimumdf = data['minimumdf']
     maximumdf = data['maximumdf']
+    base_outputpath = data['base_outputpath']
+    full_outputpath = data['full_outputpath']
     texts_information_dict = data['texts']
 except:
-    print "Data import error " + data
+    print "importerror"
     sys.exit(1)
 
 #texts_information_dict = {'collection1' : {'title': 'title1', 'target_name' : 'target_name1', 'text':'Hello World, I was just typing this text, in order to get a very long text, because somehow the copy paste button does not work. Notwithstanding, the murmer of the fish was so loud that they jumped on the carrousel and sang "I love you John Myaer", who also happened to be there somehow, but that is part of another story'},
-#                           'collection2' : {'title': 'title2', 'target_name': 'target_name2', 'text':'The crab fish2 is a very dangerous fish because the fish is a very large fish. Very large means that you can pretty much need a few kilometers of rape. About the length of Saturn or Earth which is pretty large. The mamoth of the fish is named "scorpius". Scorpius ruled the land of the fish for ions. He was a very smart fish also, and a friend of John Mayer'}}
+#                           'collection2' : {'ti                                                tle': 'title2', 'target_name': 'target_name2', 'text':'The crab fish2 is a very dangerous fish because the fish is a very large fish. Very large means that you can pretty much need a few kilometers of rope. About the length of Saturn or Earth which is pretty large. The mamoth of the fish is named "scorpius". Scorpius ruled the land of the fish for ions. He was a very smart fish also, and a friend of John Mayer'}}
 
-if not os.path.isdir('../output/'):
-    os.mkdir('../output/')
-
-corpus = Corpus(language='en')
-
-corpus.add_texts_manuscriptdesk(texts_information_dict = texts_information_dict)
-
-corpus.preprocess(alpha_only=True, lowercase=True)
-
-#additional tokenize options: self.corpus.tokenize(min_size=min_size,max_size=max_size, tokenizer_option=tokenizer_option)
-corpus.tokenize()
-
-corpus.segment(segment_size=0)
-
-corpus.remove_tokens(rm_tokens=None, rm_pronouns=False, language='en') # watch out: if you do this before segment(), if will influence segment legths... (I would do it afterwards...)
-#corpus.temporal_sort() # we assume that the categpries are sortable integers, indicating some order (e.g. date of composition)
-
-#print(corpus)
-corpus.vectorize(mfi=50, ngram_type='word', ngram_size=1, vector_space='tf_std')
-
-#print(corpus.vectorizer.feature_names)
-
-dms = bootstrapped_distance_matrices(corpus, n_iter=100, random_prop=0.20, metric='manhattan')
-
-trees = [hierarchical_clustering(dm, linkage='ward') for dm in dms]
-
-try:
-    bct = bootstrap_consensus_tree(corpus=corpus, trees=trees, consensus_level=0.5)
-except:
-    print 'Error'
+if os.path.isfile(full_outputpath):
+    print 'patherror'
     sys.exit(1)
 
-#plot
-bct_dendrogram(corpus=corpus, tree=bct, fontsize=8, color_leafs=False,
-                 mode='c', outputfile='C:/xampp/htdocs/mediawikinew/initialStylometricAnalysis/test3.jpg', save=True)
+if not os.path.exists(base_outputpath):
+    os.makedirs(base_outputpath)
+
+try:
+    corpus = Corpus(language='en')
+    corpus.add_texts_manuscriptdesk(texts_information_dict = texts_information_dict)
+    corpus.preprocess(alpha_only=True, lowercase=True)
+    #additional tokenize options: self.corpus.tokenize(min_size=min_size,max_size=max_size, tokenizer_option=tokenizer_option)
+    corpus.tokenize()
+
+    corpus.segment(segment_size=0)
+    corpus.remove_tokens(rm_tokens=None, rm_pronouns=False, language='en') # watch out: if you do this before segment(), if will influence segment legths... (I would do it afterwards...)
+    #corpus.temporal_sort() # we assume that the categpries are sortable integers, indicating some order (e.g. date of composition)
+
+    #print(corpus)
+    corpus.vectorize(mfi=50, ngram_type='word', ngram_size=1, vector_space='tf_std')
+
+    #print(corpus.vectorizer.feature_names)
+
+    dms = bootstrapped_distance_matrices(corpus, n_iter=100, random_prop=0.20, metric='manhattan')
+    trees = [hierarchical_clustering(dm, linkage='ward') for dm in dms]
+    bct = bootstrap_consensus_tree(corpus=corpus, trees=trees, consensus_level=0.5)
+
+    #plot
+    bct_dendrogram(corpus=corpus, tree=bct, fontsize=8, color_leafs=False,
+                 mode='c', outputfile=full_outputpath, save=True)
+
+except:
+    print 'analysiserror'
+    print full_outputpath
+    sys.exit(1)
 
 #outputfile='../output/test4.jpg'
 #mode='c', outputfile='~/Desktop/bct_dendrogram.pdf', save=True)
@@ -101,6 +98,3 @@ bct_dendrogram(corpus=corpus, tree=bct, fontsize=8, color_leafs=False,
 # vnc_tree = vnc_clustering(dm, linkage='ward')
 # scipy_dendrogram(corpus, tree=vnc_tree, fontsize=8, color_leafs=False)
 # ete_dendrogram(corpus, tree=vnc_tree, fontsize=8, color_leafs=False, mode='r')
-
-
-

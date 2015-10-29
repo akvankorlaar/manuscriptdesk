@@ -39,6 +39,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $token_is_ok;
   private $web_root; 
   private $python_path; 
+  private $initial_analysis_dir;
+  private $collection_name_array; 
   
   //basic validation variables for stylometric analysis options form
   private $variable_validated_number;
@@ -74,6 +76,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections']; 
     $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
     $this->python_path = $wgStylometricAnalysisOptions['python_path'];
+    $this->initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
     
     $this->error_message = false; //default value     
     $this->variable_validated = true; //default value
@@ -296,6 +299,12 @@ class SpecialStylometricAnalysis extends SpecialPage {
       wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
       return $this->showError('stylometricanalysis-error-notexists', 'Form1');
     }
+    
+    list($base_outputpath, $full_outputpath) = $this->constructOutputPath();
+    
+    if(is_file($full_outputpath)){
+      return $this->showError('stylometricanalysis-error-outputpath', 'Form2');
+    }
         
     $config_array = array(
       "'removenonalpha'" => "'$this->removenonalpha'",
@@ -312,11 +321,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
       "'mfi'" => "'$this->mfi'",
       "'minimumdf'" => "'$this->minimumdf'",
       "'maximumdf'" => "'$this->maximumdf'",
+      "'base_outputpath'" => "'$base_outputpath'",
+      "'full_outputpath'" => "'$full_outputpath'",
       "'texts'" => $texts, 
     );
-    
-    //$config_array = array_merge($config_array, $texts);
-    
+        
     $data = json_encode($config_array);
     $data = escapeshellarg($data);
 
@@ -327,6 +336,23 @@ class SpecialStylometricAnalysis extends SpecialPage {
     //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both.     
     //they can also choose to run a PCA analysis or a clustering analysis     
     //only after clicking clustering analysis or PCA analysis, the texts should be assembled 
+  }
+  
+  /**
+   * This function constructs the output path for the initial analysis
+   */
+  private function constructOutputPath(){
+    
+    $imploded_collection_name_array = implode('',$this->collection_name_array);             
+    $year_month_day = date('Ymd');   
+    $hours_minutes_seconds = date('his');
+    
+    $file_name = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . '.jpg';
+    
+    $base_outputpath = $this->web_root . '/' . $this->initial_analysis_dir . '/' . $this->user_name;
+    $full_outputpath = $base_outputpath . '/' . $file_name;
+    
+    return array($base_outputpath, $full_outputpath); 
   }
   
   /**
@@ -351,6 +377,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     //in $texts combined collection texts will be stored 
     $texts = array();
+    $collection_name_array = array();
     $a = 1; 
   
     if($this->collection_array){
@@ -362,7 +389,10 @@ class SpecialStylometricAnalysis extends SpecialPage {
         //go through all urls of a collection
         foreach($url_array as $index => $file_url){
           
-          if($index !== 'collection_name'){
+          if($index === 'collection_name'){
+            $collection_name_array[] = $url_array['collection_name'];
+          }else{
+            
 
             $title_object = Title::newFromText($file_url);
 
@@ -375,6 +405,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
             $all_texts_for_one_collection .= $single_page_text; 
           }
         }
+        
+        $this->collection_name_array = $collection_name_array; 
         
         $collection_name = isset($url_array['collection_name']) ? $url_array['collection_name'] : 'collection' . $a; 
 

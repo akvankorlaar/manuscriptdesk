@@ -56,6 +56,7 @@ $messages['en'] = array(
   'stylometricanalysis-error-empty'           => 'You must specify a value in every textfield',
   'stylometricanalysis-error-maxlength'       => 'Your input can be at most 50 charachters long',
   'stylometricanalysis-error-notexists'       => 'Something went wrong when retrieving the wiki page texts.',
+  'stylometricanalysis-error-outputpath'      => 'The analysis already exists',
   );
 
 $messages['en-gb'] = $messages['en'];
