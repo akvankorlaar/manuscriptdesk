@@ -6,8 +6,6 @@ from pystyl.corpus import Corpus
 from pystyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering, vnc_clustering, bootstrapped_distance_matrices, bootstrap_consensus_tree
 from pystyl.visualization import scatterplot, scatterplot_3d, clustermap, scipy_dendrogram, ete_dendrogram, bct_dendrogram
 
-#idea: make a big forloop to test all possible config settings?
-
 web_run = 0
 
 if web_run:
@@ -32,6 +30,9 @@ if web_run:
 
         base_outputpath = data['base_outputpath']
         full_outputpath = data['full_outputpath']
+
+        visualization1 = data['visualization1']
+        visualization2 = data['visualization2']
 
         texts_information_dict = data['texts']
     except:
@@ -106,6 +107,9 @@ try:
     else:
         bct_dendrogram(corpus=corpus, tree=bct, fontsize=8, color_leafs=False,mode='c', show=True)
 
+        #cluster_tree = hierarchical_clustering(dm, linkage='ward') #works
+        #scipy_dendrogram(corpus=corpus, tree=cluster_tree, fontsize=8, color_leafs=False, show=True)
+
         #pca_coor, pca_loadings = pca(corpus)
         #scatterplot(corpus, coor=pca_coor, loadings=pca_loadings, plot_type='static', return_svg=False, show=True) #works
 
@@ -117,9 +121,6 @@ try:
 
         #dm = distance_matrix(corpus, metric='minmax') #works
         #clustermap(corpus, distance_matrix=dm, fontsize=8, color_leafs=True,show=True)
-
-        #cluster_tree = hierarchical_clustering(dm, linkage='ward') #works
-        #scipy_dendrogram(corpus=corpus, tree=cluster_tree, fontsize=8, color_leafs=False, show=True)
 
         #vnc_tree = vnc_clustering(dm, linkage='ward')#works
         #scipy_dendrogram(corpus, tree=vnc_tree, fontsize=8, color_leafs=False)

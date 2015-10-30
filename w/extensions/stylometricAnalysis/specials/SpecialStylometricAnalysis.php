@@ -64,6 +64,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $mfi;
   private $minimumdf;
   private $maximumdf;
+  private $visualization1;
+  private $visualization2; 
    
   //class constructor
   public function __construct(){
@@ -144,7 +146,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $this->minimumdf = (int)$this->validateNumber($request->getText('wpminimumdf'));
       $this->maximumdf = (int)$this->validateNumber($request->getText('wpmaximumdf'));
       
- 
+      $this->visualization1 = $this->validateInput($request->getText('wpvisualization1'));
+      $this->visualization2 = $this->validateInput($request->getText('wpvisualization2'));
+            
       $this->collection_array = (array)$this->validateInput(json_decode($request->getText('collection_array')));
       
       foreach($this->collection_array as $index=>&$value){
@@ -323,6 +327,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
       "'maximumdf'" => "'$this->maximumdf'",
       "'base_outputpath'" => "'$base_outputpath'",
       "'full_outputpath'" => "'$full_outputpath'",
+      "'visualization1'" => "'$this->visualization1'",
+      "'visualization2'" => "'$this->visualization2'",
       "'texts'" => $texts, 
     );
         
@@ -711,6 +717,35 @@ class SpecialStylometricAnalysis extends SpecialPage {
       'size' => 5, 
       'maxlength'=> 5, 
       'section' => 'stylometricanalysis-section-feature',
+    );
+    
+    $descriptor['visualization1'] = array(
+      'label' => 'Visualization1',
+      'class' => 'HTMLSelectField',
+      'options' => array( 
+         'Hierarchical Clustering Dendrogram'  => 'dendrogram',
+         'PCA Scatterplot' => 'pcascatterplot',
+         'TNSE Scatterplot' => 'tnsescatterplot',
+         'Distance Matrix Clustering' => 'distancematrix',
+         'Hierarchical Clustering' => 'hierarchicalclustering',
+         'Variability Based Neighbour Clustering' => 'neighbourclustering',
+      ),
+      'default' => 'Hierarchical Clustering Dendrogram',
+      'section' => 'stylometricanalysis-section-visualization',
+    );
+    
+    $descriptor['visualization2'] = array(
+      'label' => 'Visualization2',
+      'class' => 'HTMLSelectField',
+      'options' => array( 
+         'Hierarchical Clustering Dendrogram'  => 'dendrogram',
+         'PCA Scatterplot' => 'pcascatterplot',
+         'TNSE Scatterplot' => 'tnsescatterplot',
+         'Distance Matrix Clustering' => 'distancematrix',
+         'Variability Based Neighbour Clustering' => 'neighbourclustering',
+      ),
+      'default' => 'Hierarchical Clustering Dendrogram',
+      'section' => 'stylometricanalysis-section-visualization',
     );
     
     $html_form = new HTMLForm($descriptor, $this->getContext());
