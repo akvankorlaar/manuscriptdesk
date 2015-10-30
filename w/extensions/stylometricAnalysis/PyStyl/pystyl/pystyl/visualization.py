@@ -477,8 +477,8 @@ def bct_dendrogram(corpus, tree, outputfile=None,
     if outputfile:
         outputfile = os.path.expanduser(outputfile)
 
-    if save_newick: # save tree in newick format for later manipulation in e.g. FigTree:
-        tree.write(outfile=os.path.splitext(outputfile)[0]+'.newick')
+    # if save_newick: # save tree in newick format for later manipulation in e.g. FigTree:
+    #     tree.write(outfile=os.path.splitext(outputfile)[0]+'.newick')
 
     if save:
         tree.render(outputfile, tree_style=ts)

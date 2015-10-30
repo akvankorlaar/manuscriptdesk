@@ -331,7 +331,17 @@ class SpecialStylometricAnalysis extends SpecialPage {
 
     $output = system(escapeshellcmd($this->constructCommand() . ' ' . $data));
 
-    $this->getOutput()->addHTML($output); 
+    $this->getOutput()->addHTML($output);
+    
+    //the variables should be usable in python...
+    //multiple output options ...
+    //check if minimum/maximum amount of text is set ...
+    
+    //now that you have a jpg file of the right format..
+    //files should be deleted if they are older than 2 hours... 
+    
+    //screen with the output..
+    //
                
     //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both.     
     //they can also choose to run a PCA analysis or a clustering analysis     
