@@ -295,6 +295,12 @@ class SpecialStylometricAnalysis extends SpecialPage {
     }
     
     //field specific errors (values that are too high or too low)
+    //rules: minimumsize cannot be larger than maximumsize
+    //every collection has to be larger than minimumsize and smaller than maximumsize
+    //vectorization does noto seem to work with low amounts of text.. check if collections contain at least 100 words each
+    //segment+segment size can never be larger than any of the collections
+    //ngram size can never be larger than any of the collections
+    //mfi has to be at least 5. Make it impossible to go lower than 20
       
     $texts = $this->constructTexts();
     
