@@ -156,8 +156,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
       
       $this->ngramsize = (int)$this->validateNumber($request->getText('wpngramsize'));
       $this->mfi = (int)$this->validateNumber($request->getText('wpmfi'));
-      $this->minimumdf = (int)$this->validateNumber($request->getText('wpminimumdf'));
-      $this->maximumdf = (int)$this->validateNumber($request->getText('wpmaximumdf'));
+      $this->minimumdf = floatval($this->validateNumber($request->getText('wpminimumdf')));
+      $this->maximumdf = floatval($this->validateNumber($request->getText('wpmaximumdf')));
       
       $this->visualization1 = $this->validateInput($request->getText('wpvisualization1'));
       $this->visualization2 = $this->validateInput($request->getText('wpvisualization2'));
@@ -350,21 +350,22 @@ class SpecialStylometricAnalysis extends SpecialPage {
       return $this->showError('stylometricanalysis-error-outputpath', 'Form2');
     }
         
+    //to be able to send array data to python via the command line, strings must be double quoted, and integers must be single quoted
     $config_array = array(
-      "'removenonalpha'" => "'$this->removenonalpha'",
-      "'lowercase'" => "'$this->lowercase'", 
+      "'removenonalpha'" => "$this->removenonalpha",
+      "'lowercase'" => "$this->lowercase", 
       "'tokenizer'" => "'$this->tokenizer'",
-      "'minimumsize'" => "'$this->minimumsize'",
-      "'maximumsize'" => "'$this->maximumsize'",
-      "'segmentsize'" => "'$this->segmentsize'",
-      "'stepsize'" => "'$this->stepsize'",
-      "'removepronouns'" => "'$this->removepronouns'",
-      "'vectorspace'" => "'$this->vectorspace'",
+      "'minimumsize'" => "$this->minimumsize",
+      "'maximumsize'" => "$this->maximumsize",
+      "'segmentsize'" => "$this->segmentsize",
+      "'stepsize'" => "$this->stepsize",
+      "'removepronouns'" => "$this->removepronouns",
+      "'vectorspace'" => "'$this->vectorspace'", //tf
       "'featuretype'" => "'$this->featuretype'",
-      "'ngramsize'" => "'$this->ngramsize'",
-      "'mfi'" => "'$this->mfi'",
-      "'minimumdf'" => "'$this->minimumdf'",
-      "'maximumdf'" => "'$this->maximumdf'",
+      "'ngramsize'" => "$this->ngramsize", //1 
+      "'mfi'" => "$this->mfi", //100
+      "'minimumdf'" => "$this->minimumdf", //0
+      "'maximumdf'" => "$this->maximumdf", //0
       "'base_outputpath'" => "'$base_outputpath'",
       "'full_outputpath1'" => "'$full_outputpath1'",
       "'full_outputpath2'" => "'$full_outputpath2'",
@@ -380,13 +381,31 @@ class SpecialStylometricAnalysis extends SpecialPage {
     //files should be deleted if they are older than 2 hours... 
     //make a database that checks this
 
-    $html = ""; 
-    $html .= system(escapeshellcmd($this->constructCommand() . ' ' . $data));
+    $output = system(escapeshellcmd($this->constructCommand() . ' ' . $data));
     
-    $html .= "<img src='" . $full_outputpath1 . "'>";  
-    $html .= "<img src='" . $full_outputpath2 . "'>";
+    if (strpos($output, 'stylometricanalysis-error-import') !== false){
+      return $this->showError('stylometricanalysis-error-import', 'Form2');  
+    }
+    
+    if (strpos($output, 'stylometricanalysis-error-path') !== false){
+      return $this->showError('stylometricanalysis-error-path', 'Form2');
+    }
+    
+    if (strpos($output, 'stylometricanalysis-error-analysis') !==false){
+      return $this->getOutput()->addHTML($output);
+      //return $this->showError('stylometricanalysis-error-analysis', 'Form2');      
+    }
+    
+    if (strpos($output, 'analysiscomplete') !==false){
+      //return show result
+      $this->getOutput()->addHTML('success');
+    }
     
     $this->getOutput()->addHTML($output);
+    
+    //$html .= "<img src='" . $full_outputpath1 . "'>";  
+    //$html .= "<img src='" . $full_outputpath2 . "'>";
+    
   }
   
   /**
@@ -660,10 +679,10 @@ class SpecialStylometricAnalysis extends SpecialPage {
       'label' => 'Tokenizer',
       'class' => 'HTMLSelectField',
       'options' => array( 
-        'Whitespace' => 'Whitespace',
-        'Option 2' => 2,
+        'Whitespace' => 'whitespace',
+        'Words' => 'words',
       ),
-      'default' => 'Whitespace',
+      'default' => 'whitespace',
       'section' => 'stylometricanalysis-section-preprocess',
     );
      
@@ -785,7 +804,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
          'Hierarchical Clustering' => 'hierarchicalclustering',
          'Variability Based Neighbour Clustering' => 'neighbourclustering',
       ),
-      'default' => 'Hierarchical Clustering Dendrogram',
+      'default' => 'dendrogram',
       'section' => 'stylometricanalysis-section-visualization',
     );
     
@@ -799,7 +818,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
          'Distance Matrix Clustering' => 'distancematrix',
          'Variability Based Neighbour Clustering' => 'neighbourclustering',
       ),
-      'default' => 'Hierarchical Clustering Dendrogram',
+      'default' => 'dendrogram',
       'section' => 'stylometricanalysis-section-visualization',
     );
     

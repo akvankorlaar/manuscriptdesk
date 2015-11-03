@@ -240,6 +240,7 @@ class Corpus:
 
         """
         # sanity check:
+
         if min_size and max_size and min_size > max_size:
             raise ValueError('Tokenization error: min_size > max_size')
 
@@ -262,8 +263,6 @@ class Corpus:
                 print("Title: %s only has %d tokens (< sample_size = %d) -> ignored" % (self.titles[i], len(text)))
                 continue
             self.tokenized_texts.append(tokens)
-
-        print(self.tokenized_texts)
 
     def remove_tokens(self, rm_tokens=[], rm_pronouns=False, language=None):
         """

@@ -156,9 +156,9 @@ class DistanceMatrix(numpy.ndarray):
 
     def summary(self):
         """Return a small summary of the matrix."""
-        print('DistanceMatrix (n=%s)' % len(self))
-        print('Distance metric = %s' % self.distance_metric.__name__)
-        print(self)
+        #print('DistanceMatrix (n=%s)' % len(self))
+        #print('Distance metric = %s' % self.distance_metric.__name__)
+        #print(self)
 
 
 class Clusterer(AbstractClusterer):
