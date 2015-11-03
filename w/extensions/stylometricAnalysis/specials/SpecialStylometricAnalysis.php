@@ -41,6 +41,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $python_path; 
   private $initial_analysis_dir;
   private $collection_name_array; 
+  
+  private $full_linkpath1;
+  private $full_linkpath2; 
     
   //basic validation variables for stylometric analysis options form
   private $variable_validated_number;
@@ -360,12 +363,12 @@ class SpecialStylometricAnalysis extends SpecialPage {
       "'segmentsize'" => "$this->segmentsize",
       "'stepsize'" => "$this->stepsize",
       "'removepronouns'" => "$this->removepronouns",
-      "'vectorspace'" => "'$this->vectorspace'", //tf
+      "'vectorspace'" => "'$this->vectorspace'", 
       "'featuretype'" => "'$this->featuretype'",
-      "'ngramsize'" => "$this->ngramsize", //1 
-      "'mfi'" => "$this->mfi", //100
-      "'minimumdf'" => "$this->minimumdf", //0
-      "'maximumdf'" => "$this->maximumdf", //0
+      "'ngramsize'" => "$this->ngramsize", 
+      "'mfi'" => "$this->mfi", 
+      "'minimumdf'" => "$this->minimumdf", 
+      "'maximumdf'" => "$this->maximumdf",
       "'base_outputpath'" => "'$base_outputpath'",
       "'full_outputpath1'" => "'$full_outputpath1'",
       "'full_outputpath2'" => "'$full_outputpath2'",
@@ -391,21 +394,32 @@ class SpecialStylometricAnalysis extends SpecialPage {
       return $this->showError('stylometricanalysis-error-path', 'Form2');
     }
     
-    if (strpos($output, 'stylometricanalysis-error-analysis') !==false){
-      return $this->getOutput()->addHTML($output);
-      //return $this->showError('stylometricanalysis-error-analysis', 'Form2');      
+    if (strpos($output, 'stylometricanalysis-error-analysis') !== false){
+      //return $this->getOutput()->addHTML($output);
+      return $this->showError('stylometricanalysis-error-analysis', 'Form2');      
     }
     
-    if (strpos($output, 'analysiscomplete') !==false){
-      //return show result
-      $this->getOutput()->addHTML('success');
+    if (strpos($output, 'analysiscomplete') !== false){
+      return $this->showResult($full_outputpath1, $full_outputpath2);
     }
+  }
+  
+  /**
+   * This function shows the output page after the stylometric analysis has completed
+   * 
+   * @return type
+   */
+  private function showResult($full_outputpath1, $full_outputpath2){
     
-    $this->getOutput()->addHTML($output);
+    $out = $this->getOutput();
+    $full_linkpath1 = $this->full_linkpath1;
+    $full_linkpath2 = $this->full_linkpath2;
+        
+    $html = "";
+    $html .= "<img src='" . $full_linkpath1 . "' alt='Test' height='300' width='300'>";  
+    $html .= "<img src='" . $full_linkpath2 . "' alt='Test' height='300' width='300'>";      
     
-    //$html .= "<img src='" . $full_outputpath1 . "'>";  
-    //$html .= "<img src='" . $full_outputpath2 . "'>";
-    
+    return $out->addHTML($html);
   }
   
   /**
@@ -423,6 +437,10 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $base_outputpath = $this->web_root . '/' . $this->initial_analysis_dir . '/' . $this->user_name;
     $full_outputpath1 = $base_outputpath . '/' . $file_name1;
     $full_outputpath2 = $base_outputpath . '/' . $file_name2;
+    
+    $base_link_path = $this->initial_analysis_dir . '/' . $this->user_name; 
+    $this->full_linkpath1 = '/' . $base_link_path . '/' . $file_name1;
+    $this->full_linkpath2 = '/' . $base_link_path . '/' . $file_name2; 
     
     return array($base_outputpath, $full_outputpath1, $full_outputpath2); 
   }

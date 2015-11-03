@@ -65,7 +65,7 @@ try:
         select the appropriate analysis methods
         save in the appropriate place with the appropriate name
         :param visualization1: the visualization selected by the user
-        :return: true or succcess, otherwise return error
+        :return: true or success, otherwise return error
         """
 
         if visualization == 'dendrogram':
