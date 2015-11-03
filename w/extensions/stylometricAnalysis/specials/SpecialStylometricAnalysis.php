@@ -41,13 +41,22 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $python_path; 
   private $initial_analysis_dir;
   private $collection_name_array; 
-  
+    
   //basic validation variables for stylometric analysis options form
   private $variable_validated_number;
   private $variable_validated_empty; 
   private $variable_validated_max_length;
   
-  //user stylometric analysis options 
+  //min number of most frequent items to extract. Errors will occur with mfi < 5
+  private $min_mfi; 
+  
+  //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
+  //the reason for this variable is that the analysis does not work when a collection has a very small number of words
+  private $min_words_collection;
+  
+  /*
+   * User Stylometric Analysis Options. Todo: Add extra information
+   */
   private $removenonalpha;
   private $lowercase; 
   
@@ -61,7 +70,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $vectorspace;
   private $featuretype;
   private $ngramsize; 
-  private $mfi;
+  private $mfi; 
   private $minimumdf;
   private $maximumdf;
   private $visualization1;
@@ -88,7 +97,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     $this->collection_array = array();
     
-    $this->max_length = 50; 
+    $this->max_length = 50;
+    
+    $this->min_mfi = 20; 
+    
+    $this->min_words_collection = 100; 
     
     $this->web_root = $wgWebsiteRoot; 
     
@@ -294,25 +307,46 @@ class SpecialStylometricAnalysis extends SpecialPage {
       return $this->showError('stylometricanalysis-error-maxlength', 'Form2');
     }
     
-    //field specific errors (values that are too high or too low)
-    //rules: minimumsize cannot be larger than maximumsize
-    //every collection has to be larger than minimumsize and smaller than maximumsize
-    //vectorization does noto seem to work with low amounts of text.. check if collections contain at least 100 words each
-    //segment+segment size can never be larger than any of the collections
-    //ngram size can never be larger than any of the collections
-    //mfi has to be at least 5. Make it impossible to go lower than 20
-      
+    if($this->minimumsize >= $this->maximumsize){
+      return $this->showError('stylometricanalysis-error-minmax', 'Form2');
+    }
+    
+    //mfi has to be at least $this->min_mfi (errors will occur with mfi less than 5)
+    if($this->mfi < $this->min_mfi){
+      return $this->showError('stylometricanalysis-error-mfi', 'Form2');
+    }
+          
     $texts = $this->constructTexts();
     
+    //collections can never be smaller than $this->min_words_collection
+    if($texts === 'stylometric-analysis-toosmall'){
+      return $this->showError('stylometricanalysis-error-toosmall', 'Form2');
+    }
+    
+    //collections can never be smaller than $this->minsize
+    if($texts === 'stylometric-analysis-minsize'){
+      return $this->showError('stylometricanalysis-error-minsize', 'Form2');
+    }
+    
+    //collections can never be smaller than $this->segmentsize + $this->stepsize
+    if($texts === 'stylometric-analysis-segment'){
+      return $this->showError('stylometricanalysis-error-segmentsize', 'Form2');
+    }
+    
+    //collection can never be smaller than $this->ngramsize
+    if($texts === 'stylometric-analysis-ngramsize'){
+      return $this->showError('stylometricanalysis-error-ngramsize', 'Form2');
+    }
+     
     //if returned false, one of the posted pages did not exist
     if($texts === false){
       wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
       return $this->showError('stylometricanalysis-error-notexists', 'Form1');
     }
     
-    list($base_outputpath, $full_outputpath) = $this->constructOutputPath();
+    list($base_outputpath, $full_outputpath1, $full_outputpath2) = $this->constructOutputPath();
     
-    if(is_file($full_outputpath)){
+    if(is_file($full_outputpath1) || is_file($full_outputpath2)){
       return $this->showError('stylometricanalysis-error-outputpath', 'Form2');
     }
         
@@ -332,7 +366,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
       "'minimumdf'" => "'$this->minimumdf'",
       "'maximumdf'" => "'$this->maximumdf'",
       "'base_outputpath'" => "'$base_outputpath'",
-      "'full_outputpath'" => "'$full_outputpath'",
+      "'full_outputpath1'" => "'$full_outputpath1'",
+      "'full_outputpath2'" => "'$full_outputpath2'",
       "'visualization1'" => "'$this->visualization1'",
       "'visualization2'" => "'$this->visualization2'",
       "'texts'" => $texts, 
@@ -340,24 +375,18 @@ class SpecialStylometricAnalysis extends SpecialPage {
         
     $data = json_encode($config_array);
     $data = escapeshellarg($data);
-
-    $output = system(escapeshellcmd($this->constructCommand() . ' ' . $data));
-
-    $this->getOutput()->addHTML($output);
-    
-    //the variables should be usable in python...
-    //multiple output options ...
-    //check if minimum/maximum amount of text is set ...
     
     //now that you have a jpg file of the right format..
     //files should be deleted if they are older than 2 hours... 
+    //make a database that checks this
+
+    $html = ""; 
+    $html .= system(escapeshellcmd($this->constructCommand() . ' ' . $data));
     
-    //screen with the output..
-    //
-               
-    //in this screen enable users to select 3 options: only use your words, only use the calculated words, use both.     
-    //they can also choose to run a PCA analysis or a clustering analysis     
-    //only after clicking clustering analysis or PCA analysis, the texts should be assembled 
+    $html .= "<img src='" . $full_outputpath1 . "'>";  
+    $html .= "<img src='" . $full_outputpath2 . "'>";
+    
+    $this->getOutput()->addHTML($output);
   }
   
   /**
@@ -369,12 +398,14 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $year_month_day = date('Ymd');   
     $hours_minutes_seconds = date('his');
     
-    $file_name = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . '.jpg';
+    $file_name1 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . '.jpg';
+    $file_name2 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . 2 . '.jpg';
     
     $base_outputpath = $this->web_root . '/' . $this->initial_analysis_dir . '/' . $this->user_name;
-    $full_outputpath = $base_outputpath . '/' . $file_name;
+    $full_outputpath1 = $base_outputpath . '/' . $file_name1;
+    $full_outputpath2 = $base_outputpath . '/' . $file_name2;
     
-    return array($base_outputpath, $full_outputpath); 
+    return array($base_outputpath, $full_outputpath1, $full_outputpath2); 
   }
   
   /**
@@ -428,6 +459,24 @@ class SpecialStylometricAnalysis extends SpecialPage {
           }
         }
         
+        $collection_n_words = str_word_count($all_texts_for_one_collection);
+        
+        if($collection_n_words < $this->min_words_collection){
+          return 'stylometricanalysis-error-toosmall';
+        }
+        
+        if($collection_n_words < $this->minimumsize){
+          return 'stylometricanalysis-error-minsize';
+        }
+        
+        if($collection_n_words < ($this->segmentsize+$this->stepsize)){
+          return 'stylometricanalysis-error-segmentsize';
+        }
+        
+        if($collection_n_words < $this->ngramsize){
+          return 'stylometricanalysis-error-ngramsize';
+        }
+                
         $this->collection_name_array = $collection_name_array; 
         
         $collection_name = isset($url_array['collection_name']) ? $url_array['collection_name'] : 'collection' . $a; 

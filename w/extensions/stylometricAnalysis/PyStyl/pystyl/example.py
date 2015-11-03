@@ -26,19 +26,20 @@ try:
     maximumdf = data['maximumdf']
 
     base_outputpath = data['base_outputpath']
-    full_outputpath = data['full_outputpath']
+    full_outputpath1 = data['full_outputpath1']
+    full_outputpath2 = data['full_outputpath2']
 
     visualization1 = data['visualization1']
     visualization2 = data['visualization2']
 
     texts_information_dict = data['texts']
 except:
-    print "importerror"
+    print 'stylometricanalysis-error-import'
     sys.exit(1)
 
 #error if destination files already exist
-if os.path.isfile(full_outputpath):
-    print 'patherror'
+if os.path.isfile(full_outputpath1) or os.pathisfile(full_outputpath2):
+    print 'stylometricanalysis-error-path'
     sys.exit(1)
 
 #make the base directory if it does not already exist
@@ -49,7 +50,6 @@ if not os.path.exists(base_outputpath):
 try:
     corpus = Corpus(language='en')
     corpus.add_texts_manuscriptdesk(texts_information_dict = texts_information_dict)
-    #corpus.add_directory(directory='data/dummy')
     corpus.preprocess(alpha_only=removenonalpha, lowercase=lowercase)
 
     corpus.tokenize(min_size=minimumsize, max_size=maximumsize, tokenizer_option=tokenizer) #defaults can be used
@@ -71,29 +71,29 @@ try:
             dms = bootstrapped_distance_matrices(corpus, n_iter=100, random_prop=0.20, metric='manhattan')
             trees = [hierarchical_clustering(dm, linkage='ward') for dm in dms]
             bct = bootstrap_consensus_tree(corpus=corpus, trees=trees, consensus_level=0.5)
-            bct_dendrogram(corpus=corpus, tree=bct, fontsize=8, color_leafs=False,mode='c', outputfile=full_outputpath, save=True)
+            bct_dendrogram(corpus=corpus, tree=bct, fontsize=8, color_leafs=False,mode='c', outputfile=full_outputpath1, save=True)
         elif visualization == 'pcascatterplot':
             pca_coor, pca_loadings = pca(corpus)
-            scatterplot(corpus, coor=pca_coor, loadings=pca_loadings, plot_type='static', outputfile=full_outputpath, save=True)
+            scatterplot(corpus, coor=pca_coor, loadings=pca_loadings, plot_type='static', outputfile=full_outputpath1, save=True)
         elif visualization == 'tnsescatterplot':
             tsne_coor = tsne(corpus, nb_dimensions=2)
-            scatterplot(corpus, coor=tsne_coor, nb_clusters=0, plot_type='static', outputfile=full_outputpath, save=True)
+            scatterplot(corpus, coor=tsne_coor, nb_clusters=0, plot_type='static', outputfile=full_outputpath1, save=True)
         elif visualization == 'distancematrix':
             dm = distance_matrix(corpus, metric='minmax')
-            clustermap(corpus, distance_matrix=dm, fontsize=8, color_leafs=True, outputfile=full_outputpath, save=True)
+            clustermap(corpus, distance_matrix=dm, fontsize=8, color_leafs=True, outputfile=full_outputpath1, save=True)
         elif visualization == 'neighbourclustering':
             dm = distance_matrix(corpus, metric='minmax')
             vnc_tree = vnc_clustering(dm, linkage='ward')
-            scipy_dendrogram(corpus, tree=vnc_tree, fontsize=8, color_leafs=False, outputfile=full_outputpath, save=True)
+            scipy_dendrogram(corpus, tree=vnc_tree, fontsize=8, color_leafs=False, outputfile=full_outputpath1, save=True)
         return
 
         constructAndSaveVisualization(visualization1)
         constructAndSaveVisualization(visualization2)
 
 except:
-    print 'analysiserror'
+    print 'stylometricanalysis-error-analysis'
     sys.exist(1)
 
-
+print 'ok'
 
 
