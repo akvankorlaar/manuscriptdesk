@@ -54,30 +54,33 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $min_mfi; 
   
   //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
-  //the reason for this variable is that the analysis does not work when a collection has a very small number of words
+  //the reason for this variable is that the analysis does not work when a collection has a very small number of tokens
   private $min_words_collection;
   
   /*
-   * User Stylometric Analysis Options. Todo: Add extra information
+   * User Stylometric Analysis Options. The option descriptions are from PyStyl
    */
-  private $removenonalpha;
-  private $lowercase; 
+  private $removenonalpha; //wheter or not to keep alphabetical symbols
+  private $lowercase; //wheter or not to lowercase all charachters
   
-  private $tokenizer;
-  private $minimumsize;
-  private $maximumsize;
-  private $segmentsize;
-  private $stepsize;
-  private $removepronouns;
+  private $tokenizer;   //str, default=None select the `nltk` tokenizer to be used. Currentlysupports: 'whitespace' (split on whitespace) and 'words' (alphabetic series of characters)
+  private $minimumsize; //minimum size of texts (in tokens), to be included in the set of tokenized texts
+  private $maximumsize; //maximum size of texts (in tokens). Longer texts will be truncated to max_size after tokenization
+  private $segmentsize;  //segment_size : int, default=0 The size of the segments to be extracted (in tokens). If `segment_size`=0, no segmentation will be applied to the tokenized texts
+  private $stepsize; //The nb of words in between two consecutive segments (in tokens). If `step_size`=zero, non-overlapping segments will be created. Else, segments will partially overlap
+  private $removepronouns; // Whether to remove personal pronouns. If the `corpus.language` is supported, we will load the relevant list from under `pystyl/pronouns`. The pronoun lists are identical to those for 'Stylometry with R'
   
-  private $vectorspace;
+  private $vectorspace; //Which vector space to use. Must be one of: 'tf', 'tf_scaled', 'tf_std', 'tf_idf', 'bin'
   private $featuretype;
-  private $ngramsize; 
-  private $mfi; 
-  private $minimumdf;
-  private $maximumdf;
+  private $ngramsize; //The length of the ngrams to be extracted
+  private $mfi; //The nb of most frequent items (words or ngrams) to extract
+  private $minimumdf; //Proportion of documents in which a feature should minimally occur. Useful to ignore low-frequency features
+  private $maximumdf; //Proportion of documents in which a feature should maximally occur. Useful for 'culling' and ignoring features which don't appear in enough texts
+  
   private $visualization1;
   private $visualization2; 
+  
+  //step size cannot be larger than segment size, or larger than any of the collections
    
   //class constructor
   public function __construct(){
@@ -97,14 +100,13 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->variable_validated_number = true;//default value
     $this->variable_validated_empty = true;//default value 
     $this->variable_validated_max_length = true;//default value
-    
-    $this->collection_array = array();
-    
+        
     $this->max_length = 50;
     
-    $this->min_mfi = 20; 
+    $this->min_mfi = $wgStylometricAnalysisOptions['min_mfi'];     
+    $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
     
-    $this->min_words_collection = 100; 
+    $this->collection_array = array();
     
     $this->web_root = $wgWebsiteRoot; 
     
@@ -256,7 +258,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $out = $this->getOutput();
     $user_object = $this->getUser();    
     
-    if(!in_array('ManuscriptEditors',$user_object->getGroups())){
+    if(!in_array('sysop',$user_object->getGroups())){
       return $out->addHTML($this->msg('stylometricanalysis-nopermission'));
     }
       
@@ -310,8 +312,14 @@ class SpecialStylometricAnalysis extends SpecialPage {
       return $this->showError('stylometricanalysis-error-maxlength', 'Form2');
     }
     
+    //$this->minimumsize cannot be larger or equal to $this->maximumsize
     if($this->minimumsize >= $this->maximumsize){
       return $this->showError('stylometricanalysis-error-minmax', 'Form2');
+    }
+    
+    //$this->stepsize cannot be larger or equal to $this->segmentsize
+    if($this->stepsize > $this->segmentsize){
+      return $this->showError('stylometricanalysis-error-stepsizesegmentsize', 'Form2'); 
     }
     
     //mfi has to be at least $this->min_mfi (errors will occur with mfi less than 5)
@@ -386,22 +394,63 @@ class SpecialStylometricAnalysis extends SpecialPage {
 
     $output = system(escapeshellcmd($this->constructCommand() . ' ' . $data));
     
+    //something went wrong when importing data into PyStyl
     if (strpos($output, 'stylometricanalysis-error-import') !== false){
       return $this->showError('stylometricanalysis-error-import', 'Form2');  
     }
     
+    //the path already exists
     if (strpos($output, 'stylometricanalysis-error-path') !== false){
       return $this->showError('stylometricanalysis-error-path', 'Form2');
     }
     
+    //something went wrong when doing the analysis in PyStyl
     if (strpos($output, 'stylometricanalysis-error-analysis') !== false){
       //return $this->getOutput()->addHTML($output);
       return $this->showError('stylometricanalysis-error-analysis', 'Form2');      
     }
     
     if (strpos($output, 'analysiscomplete') !== false){
+      
+//      $status = $this->insertAndDeleteData($full_outputpath1, $full_outputpath2);
+//      
+//      if($status === false){
+//        return $this->showError('stylometricanalysis-error-insertanddelete', 'Form2');
+//      }
+      
       return $this->showResult($full_outputpath1, $full_outputpath2);
     }
+  }
+  
+  /**
+   * This function inserts data about the new analysis in 'tempstylometricanalysis, and deletes old analysis values from 'tempstylometricanalysis' and analysis images
+   * 
+   * @param type $full_outputpath1
+   * @param type $full_outputpath2
+   * @return \type
+   */
+  private function insertAndDeleteData($full_outputpath1, $full_outputpath2){
+        
+    //time format (Unix Timestamp). This timestamp is used to see how old values are
+    $time = idate('U');
+     
+    $stylometric_analysis_wrapper = new stylometricAnalysisWrapper($this->user_name);
+     
+    //delete old entries and analysis images 
+    $status = $stylometric_analysis_wrapper->clearOldValues($time);
+    
+    if(!$status){
+      return false;
+    }
+        
+    //store new values in the 'tempstylometricanalysis' table
+    $status = $stylometric_analysis_wrapper->storeTempStylometricAnalysis($time, $full_outputpath1, $full_outputpath2);
+    
+    if(!$status){
+      return false;
+    }
+    
+    return true;   
   }
   
   /**
@@ -412,12 +461,51 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private function showResult($full_outputpath1, $full_outputpath2){
     
     $out = $this->getOutput();
+    $article_url = $this->article_url; 
     $full_linkpath1 = $this->full_linkpath1;
     $full_linkpath2 = $this->full_linkpath2;
+    
+    $out->setPageTitle($this->msg('stylometricanalysis-output'));
         
     $html = "";
-    $html .= "<img src='" . $full_linkpath1 . "' alt='Test' height='300' width='300'>";  
-    $html .= "<img src='" . $full_linkpath2 . "' alt='Test' height='300' width='300'>";      
+        
+    $html .= "<a href='" . $article_url . "Special:StylometricAnalysis' class='link-transparent' title='Perform New Analysis'>Perform New Analysis</a>";
+
+    //save current analysis button
+    
+    $html .= "<div style='display:block;'>";
+    
+    $html .= "<div id='visualization-wrap1'>";
+    $html .= "<h2>Analysis One </h2>";
+    $html .= "<p>Information about the plot</p>";
+    $html .= "<img src='" . $full_linkpath1 . "' alt='Visualization1' height='455' width='455'>";  
+    $html .= "</div>";
+    
+    $html .= "<div id='visualization-wrap2'>";
+    $html .= "<h2>Analysis Two </h2>";
+    $html .= "<p>Information about the plot</p>";
+    $html .= "<img src='" . $full_linkpath2 . "' alt='Visualization2' height='455' width='455'>";  
+    $html .= "</div>"; 
+    
+    $html .= "</div>";
+    
+    $html .= "<div id='visualization-wrap3'>";    
+    $html .= "<h2>Analysis Variables</h2><br>";
+    $html .= "Remove non-alpha:" . $this->removenonalpha . "<br>";
+    $html .= "Lowercase:" . $this->lowercase . "<br>";
+    $html .= "Tokenizer:" . $this->tokenizer . "<br>";
+    $html .= "Minimum Size:" . $this->minimumsize . "<br>";
+    $html .= "Maximum Size:" . $this->maximumsize . "<br>"; 
+    $html .= "Segment Size:" . $this->segmentsize . "<br>";
+    $html .= "Step Size:" . $this->stepsize . "<br>";
+    $html .= "Remove Pronouns:" . $this->removepronouns . "<br>";
+    $html .= "Vectorspace:" . $this->vectorspace . "<br>";
+    $html .= "Featuretype:" . $this->featuretype . "<br>";
+    $html .= "Ngram Size:" . $this->ngramsize . "<br>";
+    $html .= "MFI:" . $this->mfi . "<br>";
+    $html .= "Minimum DF:" . $this->minimumdf . "<br>";
+    $html .= "Maximum DF:" . $this->maximumdf;
+    $html .= "</div>";
     
     return $out->addHTML($html);
   }

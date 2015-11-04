@@ -98,3 +98,18 @@
   cursor: pointer;
   background-color: #F2FCFF;
 }
+
+#visualization-wrap1{
+  display: inline-block; 
+}
+
+#visualization-wrap2{
+  display: inline-block;
+  float: right; 
+  position: relative;
+  right: 100px; 
+}
+
+#visualization-wrap3{
+  display: block;
+}

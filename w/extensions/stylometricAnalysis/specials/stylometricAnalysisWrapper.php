@@ -25,13 +25,17 @@
 class stylometricAnalysisWrapper{
   
   private $user_name; 
-  private $minimum_pages_per_collection; 
+  private $minimum_pages_per_collection;
+  private $hours_before_delete; 
 
   //class constructor
-  public function __construct($user_name, $minimum_pages_per_collection){
+  public function __construct($user_name, $minimum_pages_per_collection = 0){
+    
+    global $wgStylometricAnalysisOptions; 
     
     $this->user_name = $user_name;
-    $this->minimum_pages_per_collection = $minimum_pages_per_collection; 
+    $this->minimum_pages_per_collection = $minimum_pages_per_collection;
+    $this->hours_before_delete = $wgStylometricAnalysisOptions['tempstylometricanalysis_hours_before_delete']; 
   }
   /**
    * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
@@ -95,5 +99,83 @@ class stylometricAnalysisWrapper{
       
     return $collection_urls; 
     
+  }
+  
+  /**
+   * 
+   */
+  public function clearOldValues($current_time){
+        
+    $dbr = wfGetDB(DB_SLAVE);
+    $user_name = $this->user_name; 
+    $time_array = array();
+        
+    //Database query
+    $res = $dbr->select(
+        'tempstylometricanalysis', //from
+      array(
+        'tempstylometricanalysis_user',//values
+        'tempstylometricanalysis_time',
+        'tempstylometricanalysis_fulloutputpath1',
+        'tempstylometricanalysis_fulloutputpath2',
+         ),
+      array(
+        'tempstylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
+      ),
+      __METHOD__,
+      array(
+        'ORDER BY' => 'tempstylometricanalysis_time',
+      )
+      );
+      
+    //while there are still titles in this query
+    while ($s = $res->fetchObject()){
+       
+      $time_array[] = $s->tempstylometricanalysis_time;    
+    }
+    
+    foreach($time_array as $index=>$time){
+      
+      if($current_time - $time > ($this->hours_before_delete * 3600)){  
+        
+        //delete images
+        
+        
+        $status = $this->deleteTempStylometricAnalysis($time);
+        
+        //deletion of an element failed, so something went wrong
+        if(!$status){
+          return false; 
+        }
+      }
+    }
+    
+    return true;    
+  }
+  
+  /**
+   * 
+   * @param type $time
+   */
+  private function deleteTempStylometricAnalysis($time){
+     
+    $dbw = wfGetDB(DB_MASTER);    
+    $user_name = $this->user_name; 
+    
+    $dbw->delete( 
+      'tempstylometricanalysis', //from
+      array( 
+      'tempstylometricanalysis_user = ' . $dbw->addQuotes($user_name), //conditions
+      'tempstylometricanalysis_time = ' . $dbw->addQuotes($time),
+        ),
+      __METHOD__ );
+    
+    if ($dbw->affectedRows()){
+      //something was deleted from the tempstylometricanalysis table  
+      return true;
+    }else{
+      //nothing was deleted
+      return false;
+    }  
   }
 }

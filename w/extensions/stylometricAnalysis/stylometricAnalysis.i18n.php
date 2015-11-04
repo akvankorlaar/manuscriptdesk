@@ -58,6 +58,7 @@ $messages['en'] = array(
   'stylometricanalysis-error-maxlength'         => 'Your input can be at most 50 charachters long',
   'stylometricanalysis-error-notexists'         => 'Something went wrong when retrieving the wiki page texts.',
   'stylometricanalysis-error-outputpath'        => 'The analysis already exists',
+  'stylometricanalysis-output'                  => 'Stylometric Analysis Output',
   );
 
 $messages['en-gb'] = $messages['en'];

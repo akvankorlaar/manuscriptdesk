@@ -280,7 +280,7 @@ $wgNewManuscriptOptions = array(
   'max_upload_size' => 8388608, //maximum upload size in bytes (8 mb --> 8*1024*1024)
   'original_images_dir' =>'initialUpload', //directory of the original images
   'zoomimages_root_dir' => 'zoomImages',//directory of the zoomimages
-  'perl_path' => 'perl', //alternative: /usr/bin/perl'.. for unix?  
+  'perl_path' => 'perl', //works if you can use 'perl path/to/perl/script.pl'. Alternative: /usr/bin/perl'.. for unix?  
   'slicer_path' => '/w/extensions/newManuscript/specials/slicer.pl', //path to the slicer
   'max_on_page' => 10, //maximum entries shown on a page part of the 'summaryPages' extension, except for Special:RecentManuscriptPages
   'max_recent' => 30, //maximum entries shown on Special:RecentManuscriptPages
@@ -291,7 +291,13 @@ $wgNewManuscriptOptions = array(
 
 $wgStylometricAnalysisOptions = array(
   'wgmin_stylometricanalysis_collections' => 2, //minimum number of collections to be able to do stylometric analysis
+  'wgmax_stylometricanalysis_collections' => 5, //maximum number of collections to be able to do stylometric analysis
   'minimum_pages_per_collection' => 3, //minimum pages within a collection to be able to do stylometric analysis
+  'python_path' => 'python', //works if you can use 'python path/to/python/script.py' in terminal
+  'initial_analysis_dir' => 'initialStylometricAnalysis',
+  'min_mfi' => 20, //minimum number of most frequent items
+  'min_words_collection' => 100, //minimum words in a collection
+  'tempstylometricanalysis_hours_before_delete'  => 2, //hours before entries are deleted from the 'tempstylometricanalysis' table 
 );
 
 //sends complete stack trace to output in case of an uncaught exceptions. This should only be true in debugging mode
