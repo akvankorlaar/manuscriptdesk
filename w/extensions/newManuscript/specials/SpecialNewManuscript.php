@@ -413,7 +413,7 @@ class SpecialNewManuscript extends SpecialPage {
     if($posted_title === ""){
       $title_error = 'newmanuscript-error-notitle';
        
-    }elseif(!preg_match('/^[a-zA-Z0-9äöüÄÖÜ_\-]*$/', $input)){
+    }elseif(!preg_match('/^[a-zA-Z0-9]*$/', $posted_title)){
       $title_error = 'newmanuscript-error-charachters';
       
     }elseif(strlen($posted_title) > 50){
@@ -448,7 +448,7 @@ class SpecialNewManuscript extends SpecialPage {
    */
   private function checkCollection($posted_collection){
     
-    if(!preg_match('/^[a-zA-Z0-9äöüÄÖÜ_\-]*$/', $input)){
+    if(!preg_match('/^[a-zA-Z0-9]*$/', $posted_collection)){
       $collection_error = 'newmanuscript-error-collectioncharachters';
         
     }elseif(strlen($posted_collection) > 50){

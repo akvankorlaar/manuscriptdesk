@@ -64,7 +64,7 @@
    */  
     function filterCharachters(event) {
     
-      var regeX = /[a-zA-Z0-9äöüÄÖÜ_\-\b]/g; 
+      var regeX = /[a-zA-Z0-9\b]/g; 
       var key = String.fromCharCode(event.which);
         
       if (regeX.test(key)) {
@@ -78,7 +78,7 @@
      * This function disables the paste function 
      */
     function preventPaste(event){
-      event.preventDefault();
+      //event.preventDefault();
     };
     
    /**
