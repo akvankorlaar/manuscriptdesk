@@ -78,7 +78,7 @@
      * This function disables the paste function 
      */
     function preventPaste(event){
-      //event.preventDefault();
+      event.preventDefault();
     };
     
    /**
