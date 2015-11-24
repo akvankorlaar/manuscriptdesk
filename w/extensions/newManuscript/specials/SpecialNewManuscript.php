@@ -8,11 +8,15 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
+ * Todo: Switch the image and the editor
+ * 
+ * Todo: Firefox bug: cannot do backspace when naming new manuscript page!
+ * 
+ * Todo: <pagemetatable> tag should only render on manuscript pages 
+ * 
  * Todo: Check if it is possible to restructure the collatex javascript
  * 
  * Todo: Also make it possible to validate text within tags
- * 
- * Todo: Check if you should use CentOS 6 or CentOS 7
  * 
  * Todo: Setup a CentOS development environment through Vagrant. Check this tutorial: http://coolestguidesontheplanet.com/getting-started-vagrant-os-osx-10-9-mavericks/
  * 
@@ -34,6 +38,7 @@
  * Todo: Some errors are probably redundant. Additional testing is needed to see if these are necessary. 
  * 
  * Todo: For unknown reasons, the javascript viewer doesn't always work... perhaps remove the javascript viewer? 
+ * 
  */
 
 /**

@@ -78,8 +78,8 @@ class SpecialRecentManuscriptPages extends SpecialPage {
     $html .= "<tr>";
     $html .= "<td class='td-four'><b>" . $this->msg('userpage-tabletitle') . "</b></td>";
     $html .= "<td class='td-four'><b>" . $this->msg('userpage-user') . "</b></td>";
-    $html .= "<td class='td-four'><b>" . $this->msg('userpage-creationdate') . "</b></td>";
     $html .= "<td class='td-four'><b>" . $this->msg('userpage-collection') . "</b></td>";
+    $html .= "<td class='td-four'><b>" . $this->msg('userpage-creationdate') . "</b></td>";
     $html .= "</tr>";
       
     foreach($title_array as $key=>$array){
