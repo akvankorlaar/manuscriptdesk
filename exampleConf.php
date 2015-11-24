@@ -151,7 +151,7 @@ $wgGroupPermissions['ManuscriptEditors']['reupload'] = true;
 $wgGroupPermissions['ManuscriptEditors']['purge'] = true;
 $wgGroupPermissions['ManuscriptEditors']['upload'] = true;
 $wgGroupPermissions['ManuscriptEditors']['writeapi'] = true;
-$wgGroupPermissions['ManuscriptEditors']['delete'] = true;
+$wgGroupPermissions['ManuscriptEditors']['delete'] = false;
 $wgGroupPermissions['ManuscriptEditors']['editmanuscripts'] = true;  
 $wgGroupPermissions['ManuscriptEditors']['editcollations'] = true;  
 

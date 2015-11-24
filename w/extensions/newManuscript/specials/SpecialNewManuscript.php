@@ -10,6 +10,8 @@
  * 
  * Todo: Switch the image and the editor
  * 
+ * Todo: Make the summary pages more user friendly (make it possible to view which numbers/digits contain something)
+ * 
  * Todo: Check if it is possible to restructure the collatex javascript
  * 
  * Todo: Also make it possible to validate text within tags
@@ -411,7 +413,7 @@ class SpecialNewManuscript extends SpecialPage {
     if($posted_title === ""){
       $title_error = 'newmanuscript-error-notitle';
        
-    }elseif(!ctype_alnum($posted_title)){
+    }elseif(!preg_match('/^[a-zA-Z0-9äöüÄÖÜ_\-]*$/', $input)){
       $title_error = 'newmanuscript-error-charachters';
       
     }elseif(strlen($posted_title) > 50){
@@ -446,7 +448,7 @@ class SpecialNewManuscript extends SpecialPage {
    */
   private function checkCollection($posted_collection){
     
-    if(!ctype_alnum($posted_collection)){
+    if(!preg_match('/^[a-zA-Z0-9äöüÄÖÜ_\-]*$/', $input)){
       $collection_error = 'newmanuscript-error-collectioncharachters';
         
     }elseif(strlen($posted_collection) > 50){
