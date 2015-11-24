@@ -40,7 +40,6 @@ w/skins/*
 !w/extensions/TEITags
 !w/extensions/summaryPages
 !w/extensions/stylometricAnalysis
-!w/extensions/WikiEditor
 !w/skins/CbpTranscriptionEnhanced
 
 !w/extensions/collate/*
@@ -49,7 +48,6 @@ w/skins/*
 !w/extensions/TEITags/*
 !w/extensions/summaryPages/*
 !w/extensions/stylometricAnalysis/*
-!w/extensions/WikiEditor/*
 !w/skins/CbpTranscriptionEnhanced/*
 
 #these last 2 paragraphs are to ensure that folders within folders, and folders within folders within folders are not ignored
@@ -59,7 +57,6 @@ w/skins/*
 !w/extensions/TEITags/*/*
 !w/extensions/summaryPages/*/*
 !w/extensions/stylometricAnalysis/*/*
-!w/extensions/WikiEditor/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*
 
 !w/extensions/collate/*/*/*
@@ -68,7 +65,6 @@ w/skins/*
 !w/extensions/TEITags/*/*/*
 !w/extensions/summaryPages/*/*/*
 !w/extensions/stylometricAnalysis/*/*/*
-!w/extensions/WikiEditor/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*
 
 !w/extensions/collate/*/*/*/*
@@ -77,12 +73,9 @@ w/skins/*
 !w/extensions/TEITags/*/*/*/*
 !w/extensions/summaryPages/*/*/*/*
 !w/extensions/stylometricAnalysis/*/*/*/*
-!w/extensions/WikiEditor/*/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*/*
 
-#these lines are to ensure that every file in PyStyl and the WikiEditor is also included
-!w/extensions/WikiEditor/*/*/*/*/*
-!w/extensions/WikiEditor/*/*/*/*/*/*
+#these lines are to ensure that every file in PyStyl is also included
 
 !w/extensions/stylometricAnalysis/*/*/*/*/*
 !w/extensions/stylometricAnalysis/*/*/*/*/*/*
