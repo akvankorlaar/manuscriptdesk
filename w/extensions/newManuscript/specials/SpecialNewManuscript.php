@@ -10,10 +10,6 @@
  * 
  * Todo: Switch the image and the editor
  * 
- * Todo: Firefox bug: cannot do backspace when naming new manuscript page!
- * 
- * Todo: <pagemetatable> tag should only render on manuscript pages 
- * 
  * Todo: Check if it is possible to restructure the collatex javascript
  * 
  * Todo: Also make it possible to validate text within tags
