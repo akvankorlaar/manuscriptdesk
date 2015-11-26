@@ -149,6 +149,7 @@ class CbpTranscriptionEnhancedTemplate extends QuickTemplate {
 <h1>
 <a href="<?php $this->text('stylepath');?>/../">
 <img src="<?php $this->text('stylepath'); ?>/CbpTranscriptionEnhanced/cmg.png"  alt="Manuscript Desk" style="border: 0; height: 50px; float:right;"/>
+<img src="<?php $this->text('stylepath'); ?>/CbpTranscriptionEnhanced/dariah.png"  alt="Manuscript Desk2" style="border: 0; height: 50px; float:left;"/>
 </a></h1>
    </div>
 
