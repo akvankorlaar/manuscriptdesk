@@ -147,10 +147,15 @@ class CbpTranscriptionEnhancedTemplate extends QuickTemplate {
 	<div id="mw_header">
 <!-- removed h1 from here -->
 <h1>
-<a href="<?php $this->text('stylepath');?>/../">
-<img src="<?php $this->text('stylepath'); ?>/CbpTranscriptionEnhanced/cmg.png"  alt="Manuscript Desk" style="border: 0; height: 50px; float:right;"/>
+  
+<a href="http://be.dariah.eu/" target ="_blank">  
 <img src="<?php $this->text('stylepath'); ?>/CbpTranscriptionEnhanced/dariah.png"  alt="Manuscript Desk2" style="border: 0; height: 50px; float:left;"/>
-</a></h1>
+</a>
+<a href="https://www.uantwerpen.be/en/rg/centre-for-manuscript-genetics/" target = "_blank">
+<img src="<?php $this->text('stylepath'); ?>/CbpTranscriptionEnhanced/cmg.png"  alt="Manuscript Desk" style="border: 0; height: 50px; float:right;"/>
+</a>
+  
+</h1>
    </div>
 
 	<div id="mw_main">

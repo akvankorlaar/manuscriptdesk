@@ -12,8 +12,6 @@
  * 
  * Todo: Make the summary pages more user friendly (make it possible to view which numbers/digits contain something)
  * 
- * Todo: When the last page in a collection is deleted, the collection should also be deleted
- * 
  * Todo: Check if it is possible to restructure the collatex javascript
  * 
  * Todo: Also make it possible to validate text within tags

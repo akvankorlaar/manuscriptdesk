@@ -718,9 +718,10 @@ class newManuscriptHooks {
    */
   private function deleteDatabaseEntry(){
     
-    $page_title_with_namespace = $this->page_title_with_namespace;
-    
+    $page_title_with_namespace = $this->page_title_with_namespace;    
     $dbw = wfGetDB(DB_MASTER);
+    
+    $collection_name = $this->getCollection();
     
     $dbw->delete( 
       'manuscripts', //from
@@ -729,12 +730,54 @@ class newManuscriptHooks {
       __METHOD__ );
     
     	if ($dbw->affectedRows()){
-        //something was deleted from the manuscripts table  
+        //something was deleted from the manuscripts table 
+            
+        if($collection_name !== null){
+          //check if the collection has no pages left, and if so, delete the collection
+          $this->checkAndDeleteCollection($collection_name);
+        }
+        
         return true;
+        
       }else{
         //nothing was deleted
         return false;
     }
+  }
+  
+  /**
+   * This function checks if the collection is empty, and deletes the collection along with its metadata if this is the case
+   */
+  private function checkAndDeleteCollection($collection_name){
+    
+    $dbr = wfGetDB(DB_SLAVE);
+    
+    //First check if the collection is empty
+    $res = $dbr->select(
+        'manuscripts', //from
+      array(
+        'manuscripts_url',
+      ),
+      array(
+        'manuscripts_collection = ' . $dbr->addQuotes($collection_name),
+      ),
+      __METHOD__
+    );
+        
+    //If the collection is empty, delete the collection
+    if($res->numRows() === 0){
+          
+      $dbw = wfGetDB(DB_MASTER);
+    
+      $dbw->delete( 
+        'collections', //from
+        array( 
+        'collections_title' => $collection_name //conditions
+          ), 
+        __METHOD__ ); 
+    }  
+    
+    return true; 
   }
   
   /**
