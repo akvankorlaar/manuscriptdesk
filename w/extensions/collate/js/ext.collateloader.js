@@ -92,11 +92,11 @@
    /**
     * This function shows #begincollate-loaderdiv, the loader gif, and hides p elements, #begincollate-infobox, .error, and #begincollate-form after clicking submit
     */
-    $('.begincollate-form').submit(function() {
+    $('#begincollate-form').submit(function() {
       $('p').hide();    
       $('#begincollate-infobox').hide();
       $('.error').hide();
-      $('.begincollate-form').hide();
+      $('#begincollate-form').hide();
       $('#begincollate-loaderdiv').show();
     });
    

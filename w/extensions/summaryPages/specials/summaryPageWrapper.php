@@ -501,7 +501,7 @@ class summaryPageWrapper{
   }
   
   /**
-   * 
+   * This function retrieves all the data for a single collection
    */
   private function retrieveSingleCollection(){
     

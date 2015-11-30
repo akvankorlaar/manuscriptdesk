@@ -291,7 +291,7 @@ class collateWrapper{
       __METHOD__ );
     
     if ($dbw->affectedRows()){
-      //something was deleted from the manuscripts table  
+      //something was deleted from the tempcollate table  
       return true;
     }else{
       //nothing was deleted

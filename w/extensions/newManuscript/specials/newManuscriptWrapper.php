@@ -48,26 +48,24 @@ class newManuscriptWrapper{
     
      //Database query
     $res = $dbr->select(
-       'manuscripts', //from
+       'collections', //from
      array(
-       'manuscripts_collection',//values
+       'collections_title',//values
+       'collections_title_lowercase',
         ),
      array(
-       'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
+       'collections_user = ' . $dbr->addQuotes($user_name), //conditions
      ),
      __METHOD__,
      array(
-       'ORDER BY' => 'manuscripts_collection',
+       'ORDER BY' => 'collections_title_lowercase',
      )
      );
 
     //while there are results
     while ($s = $res->fetchObject()){
       
-      //add to the $collections_current_user array, when the collection does not equal "", "none", and when the collection is not already in the array
-      if($s->manuscripts_collection !== "" && $s->manuscripts_collection !== "none" && !in_array($s->manuscripts_collection, $collections_current_user)){
-        $collections_current_user[] = $s->manuscripts_collection;
-      }
+      $collections_current_user[] = $s->collections_title;    
     }    
     
     return $collections_current_user; 

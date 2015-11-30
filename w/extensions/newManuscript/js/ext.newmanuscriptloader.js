@@ -64,7 +64,7 @@
    */  
     function filterCharachters(event) {
     
-      var regeX = /[a-zA-Z0-9]/g; 
+      var regeX = /[a-zA-Z0-9\b]/g; 
       var key = String.fromCharCode(event.which);
         
       if (regeX.test(key)) {

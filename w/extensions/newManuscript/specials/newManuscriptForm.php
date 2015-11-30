@@ -62,8 +62,6 @@ class newManuscriptForm extends HTMLForm {
   /**
    * This function adds the title information, the title field, the uploadfile button and the extension information
    * 
-   * For title-field see upload-title in newManuscript.i18n.php
-   * 
    * @return string
    */
   private function getSourceSection(){

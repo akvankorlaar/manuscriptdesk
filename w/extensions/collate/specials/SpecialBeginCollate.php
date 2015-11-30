@@ -148,7 +148,7 @@ class SpecialBeginCollate extends SpecialPage {
       return $input; 
     }
     
-    //see if one or more of these sepcial charachters match
+    //see it does not match any of the following charachters
     if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
       $this->variable_not_validated = true; 
       return false; 
@@ -243,7 +243,7 @@ class SpecialBeginCollate extends SpecialPage {
     //construct an URL for the new page
     list($main_title, $new_url) = $this->makeURL($titles_array);
     
-    //time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are. 
+    //time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are
     $time = idate('U');
     
     $status = $this->prepareTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
@@ -402,6 +402,11 @@ class SpecialBeginCollate extends SpecialPage {
 
       //get the text
       $single_page_text = $this->getSinglePageText($title_object);
+      
+      //check if $single_page_text does not only contain whitespace charachters
+      if(ctype_space($single_page_text) || $single_page_text === ''){
+        return false;
+      }
 
       //add the text to the array
       $texts[] = $single_page_text; 
@@ -427,6 +432,11 @@ class SpecialBeginCollate extends SpecialPage {
           //add $single_page_text to $single_page_texts
           $all_texts_for_one_collection .= $single_page_text; 
         }  
+        
+        //check if $all_texts_for_one_collection does not only contain whitespace charachters
+        if(ctype_space($all_texts_for_one_collection) || $all_texts_for_one_collection === ''){
+          return false;
+        }
 
         //add the combined texts of one collection to $texts
         $texts[] = $all_texts_for_one_collection; 
@@ -629,7 +639,7 @@ class SpecialBeginCollate extends SpecialPage {
     $html  = "<table id='begincollate-infobox'>";
     $html .= "<tr><th>$about_message</th></tr>";
     $html .= "<tr><td>$version_message</td></tr>";
-    $html .= "<tr><td>$software_message <a href= 'http://collatex.net' target='_blank'> Collatex Tools 1.5</a>.</td></tr>";
+    $html .= "<tr><td>$software_message <a href= 'http://collatex.net' target='_blank'> Collatex Tools 1.7.0</a>.</td></tr>";
     $html .= "<tr><td id='begincollate-infobox-td'><small>$lastedit_message</small></td></tr>";
     $html .= "</table>";
     

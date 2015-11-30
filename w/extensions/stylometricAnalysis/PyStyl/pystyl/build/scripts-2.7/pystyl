@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+
+import sys
+import os
+import ConfigParser
+
+from pystyl.corpus import Corpus
+from pystyl.experiment import Experiment
+from pystyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering, vnc_clustering
+from pystyl.visualization import scatterplot, scatterplot_3d, clustermap, scipy_dendrogram, ete_dendrogram
+
+# parse the config file
+config_path = os.path.expanduser(sys.argv[1])
+config = ConfigParser.ConfigParser()
+config.read(config_path)
+
+# instantiate the corpus, and
+# indicate it's a command line experiment:
+e = Experiment(mode='CMD_LINE')
+
+# load data:
+e.import_data(directory=config.get('import', 'input_dir'),
+              alpha_only=config.getboolean('import', 'alpha_only'),
+              lowercase=config.getboolean('import', 'lowercase'))
+
+# preprocess the data:
+e.preprocess(min_size=config.getint('preprocessing', 'min_size'),
+              max_size=config.getint('preprocessing', 'max_size'),
+              tokenizer_option=config.get('preprocessing', 'tokenizer_option'),
+              segment_size=config.getint('preprocessing', 'segment_size'),
+              step_size=config.getint('preprocessing', 'step_size'),
+              rm_pronouns=config.getboolean('preprocessing', 'rm_pronouns'),
+              language=config.get('preprocessing', 'language'),
+              rm_tokens=None)
+
+# extract features:
+e.extract_features(mfi=config.getint('features', 'mfi'),
+              ngram_type=config.get('features', 'ngram_type'),
+              ngram_size=config.getint('features', 'ngram_size'),
+              vector_space=config.get('features', 'vector_space'),
+              min_df=config.getfloat('features', 'min_df'),
+              max_df=config.getfloat('features', 'max_df'))
+
+# visualize the analysis:
+e.visualize(outputfile=config.get('visualization', 'outputfile'))
+

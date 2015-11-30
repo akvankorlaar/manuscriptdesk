@@ -23,6 +23,10 @@ initialUpload/*
 zoomImages/*
 !zoomImages/.htaccess
 
+!initialStylometricAnalysis
+initialStylometricAnalysis/*
+!initialStylometricAnalysis/.htaccess
+
 #the procedure for specifying the directories not to be ignored in w, is the same as was used for Initialupload
 !w
 w/*
@@ -63,6 +67,20 @@ w/skins/*
 !w/extensions/stylometricAnalysis/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*
 
+!w/extensions/collate/*/*/*/*
+!w/extensions/newManuscript/*/*/*/*
+!w/extensions/JBTEIToolbar/*/*/*/*
+!w/extensions/TEITags/*/*/*/*
+!w/extensions/summaryPages/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*
+!w/skins/CbpTranscriptionEnhanced/*/*/*/*
 
+#these lines are to ensure that every file in PyStyl is also included
 
-
+!w/extensions/stylometricAnalysis/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*/*/*/*/*
+!w/extensions/stylometricAnalysis/*/*/*/*/*/*/*/*/*/*/*

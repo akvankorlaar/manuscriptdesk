@@ -85,3 +85,31 @@
   font-size: larger;
   color: #cc0000;
 }
+
+.link-transparent {
+  background: #F2FCFF;
+  font-weight: bold;
+  color: black;
+}
+
+.mw-htmlform-submit {
+  width: 30em;  
+  height: 1.5em;
+  cursor: pointer;
+  background-color: #F2FCFF;
+}
+
+#visualization-wrap1{
+  display: inline-block; 
+}
+
+#visualization-wrap2{
+  display: inline-block;
+  float: right; 
+  position: relative;
+  right: 100px; 
+}
+
+#visualization-wrap3{
+  display: block;
+}

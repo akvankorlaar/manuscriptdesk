@@ -8,13 +8,21 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
+ * Todo: Switch the image and the editor
+ * 
+ * Todo: Make the summary pages more user friendly (make it possible to view which numbers/digits contain something)
+ * 
  * Todo: Check if it is possible to restructure the collatex javascript
  * 
  * Todo: Also make it possible to validate text within tags
  * 
+ * Todo: Setup a CentOS development environment through Vagrant. Check this tutorial: http://coolestguidesontheplanet.com/getting-started-vagrant-os-osx-10-9-mavericks/
+ * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
  * 
  * Todo: Rewrite loadRequest in Special:BeginCollate
+ * 
+ * Todo: Sometimes the stylometric analysis does not work. Find out why
  * 
  * Todo: Make it possible to export collection and single manuscript pages in TEI-format
  * 
@@ -28,6 +36,7 @@
  * Todo: Some errors are probably redundant. Additional testing is needed to see if these are necessary. 
  * 
  * Todo: For unknown reasons, the javascript viewer doesn't always work... perhaps remove the javascript viewer? 
+ * 
  */
 
 /**
@@ -62,13 +71,13 @@ class SpecialNewManuscript extends SpecialPage {
   public $request;
   public $uploadbase_object;
   public $upload_was_clicked;
-  public $token_is_ok;
   public $posted_title;
   public $posted_collection; 
   public $title_ok;
   public $max_upload_size;
   public $maximum_pages_per_collection; 
   
+  private $token_is_ok;
   private $allowed_file_extensions;  
   private $target_dir; 
   private $user_name; 
@@ -109,7 +118,7 @@ class SpecialNewManuscript extends SpecialPage {
     
     // If it was posted check for the token (no remote POST'ing with user credentials)
     $token = $request->getVal('wpEditToken');
-    $this->token_is_ok = $this->getUser()->matchEditToken($token);
+    $this->token_is_ok = $user_object->matchEditToken($token);
     $this->posted_title = $request->getText('wptitle_field');
     $this->posted_collection = $request->getText('wpcollection_field');
     $this->user_name = $user_object->getName();        
@@ -404,7 +413,7 @@ class SpecialNewManuscript extends SpecialPage {
     if($posted_title === ""){
       $title_error = 'newmanuscript-error-notitle';
        
-    }elseif(!ctype_alnum($posted_title)){
+    }elseif(!preg_match('/^[a-zA-Z0-9]*$/', $posted_title)){
       $title_error = 'newmanuscript-error-charachters';
       
     }elseif(strlen($posted_title) > 50){
@@ -439,7 +448,7 @@ class SpecialNewManuscript extends SpecialPage {
    */
   private function checkCollection($posted_collection){
     
-    if(!ctype_alnum($posted_collection)){
+    if(!preg_match('/^[a-zA-Z0-9]*$/', $posted_collection)){
       $collection_error = 'newmanuscript-error-collectioncharachters';
         
     }elseif(strlen($posted_collection) > 50){

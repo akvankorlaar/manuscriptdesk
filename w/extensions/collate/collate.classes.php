@@ -48,7 +48,7 @@ class collate {
     //import the javascript and the css
     $html .= "
        <script> var at = $collatex_output;</script>
-       <script type='text/javascript' src='/w/extensions/collate/specials/javascriptcss/yui-min.js'></script>
+       <script type='text/javascript' src='https://yui-s.yahooapis.com/3.18.1/build/yui/yui-min.js'></script>
        <script src='/w/extensions/collate/specials/javascriptcss/jquery.min.js'></script>
        <script type='text/javascript' src='/w/extensions/collate/specials/javascriptcss/collatex.js'></script>
        <script type='text/javascript' src='/w/extensions/collate/specials/javascriptcss/collatexTwo.js'></script>
