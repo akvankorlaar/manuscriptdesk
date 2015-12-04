@@ -480,7 +480,11 @@ class SpecialBeginCollate extends SpecialPage {
     
     //filter out any other tags, but keep all text in between the tags
     $raw_text = strip_tags($raw_text);
+        
+    //filter out newline charachters and carriage returns, and replace them with a single space
+    $raw_text = preg_replace( '/\r|\n/',' ', $raw_text);
     
+    //trim the text
     $raw_text = trim($raw_text);
        
     //check if it is possible to get the last charachter of the page

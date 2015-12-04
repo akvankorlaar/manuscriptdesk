@@ -38,7 +38,6 @@ class prepareSlicer {
   private $perl_path; 
   private $user_export_path;
   private $full_export_path; 
-  private $zoomimagedir_check_before_delete;
   
   /**
    * class constructor
@@ -57,7 +56,6 @@ class prepareSlicer {
     $this->export_path = $document_root . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['zoomimages_root_dir'];        
     $this->slicer_path = $document_root . $wgNewManuscriptOptions['slicer_path'];
     $this->perl_path = $wgNewManuscriptOptions['perl_path']; 
-    $this->zoomimagedir_check_before_delete = false; //default value
   }
   
   /**
@@ -150,7 +148,7 @@ class prepareSlicer {
     $perl_output = str_replace( "        1 file(s) moved.\r\n",'',$perl_output);
 
     if(strpos(strtolower($perl_output), 'error' ) !== false || !file_exists($this->full_export_path)){
-      return 'slicer-error-execute';   
+      return 'slicer-error-execute' . $perl_output;   
     }
     
     return true;    
@@ -172,12 +170,10 @@ class prepareSlicer {
     $tile_group_url = $zoom_images_file . DIRECTORY_SEPARATOR . 'TileGroup0';
     $image_properties_url = $zoom_images_file . DIRECTORY_SEPARATOR . 'ImageProperties.xml';    
     
-    if(!is_dir($tile_group_url) ||!is_file($image_properties_url)){
+    if(!is_dir($tile_group_url) || !is_file($image_properties_url)){
       return false; 
     }
-    
-    $this->zoomimagedir_check_before_delete = true; 
-    
+        
     return $this->deleteAllFiles($zoom_images_file);
   }
     
@@ -188,27 +184,22 @@ class prepareSlicer {
    * @return boolean
    */
   private function deleteAllFiles($zoom_images_file){
-    
-    if($this->zoomimagedir_check_before_delete){
-       
-      //start deleting files
-      if (is_dir($zoom_images_file) === true){      
-        $files = array_diff(scandir($zoom_images_file), array('.', '..'));
+           
+    //start deleting files
+    if (is_dir($zoom_images_file) === true){      
+      $files = array_diff(scandir($zoom_images_file), array('.', '..'));
 
-        foreach ($files as $file){
-          //recursive call
-          $this->deleteAllFiles(realpath($zoom_images_file) . DIRECTORY_SEPARATOR . $file);
-        }
-
-        return rmdir($zoom_images_file);
-        
-      }elseif (is_file($zoom_images_file) === true){
-        return unlink($zoom_images_file);
+      foreach ($files as $file){
+        //recursive call
+        $this->deleteAllFiles(realpath($zoom_images_file) . DIRECTORY_SEPARATOR . $file);
       }
+
+      return rmdir($zoom_images_file);
+
+    }elseif (is_file($zoom_images_file) === true){
+      return unlink($zoom_images_file);
     }
     
     return false;
   }  
 }
-
-  

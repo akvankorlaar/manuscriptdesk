@@ -3,6 +3,12 @@
 # Enable the rewrite engine 
 RewriteEngine On
 
+#Make sure user is not already on https
+#RewriteCond %{HTTPS} !on
+
+#Automatically redirect to https
+#RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+
 # Short url for wiki pages
 RewriteRule ^md/(.+)$ /w/index.php?title=$1 [L,QSA]
 

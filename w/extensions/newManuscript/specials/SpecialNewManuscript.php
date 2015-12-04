@@ -8,7 +8,15 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
+ * Todo: When creating a new username, no special charachters should be allowed
+ * 
+ * Todo: Add images and link page feature information on the Overview page
+ * 
  * Todo: Switch the image and the editor
+ * 
+ * Todo: Illegible tag should be gap
+ * 
+ * Todo: Questionable should be unclear
  * 
  * Todo: Make the summary pages more user friendly (make it possible to view which numbers/digits contain something)
  * 
@@ -19,6 +27,8 @@
  * Todo: Setup a CentOS development environment through Vagrant. Check this tutorial: http://coolestguidesontheplanet.com/getting-started-vagrant-os-osx-10-9-mavericks/
  * 
  * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
+ * 
+ * Todo: Perhaps make the letters of the transcription larger
  * 
  * Todo: Rewrite loadRequest in Special:BeginCollate
  * 
@@ -317,11 +327,11 @@ class SpecialNewManuscript extends SpecialPage {
       return $this->showUploadError($this->msg('newmanuscript-error-noextension'));
     }
       
-    if($extension !== $this->allowed_file_extensions[0] && $extension !== $this->allowed_file_extensions[1]){
+    if($extension !== $this->allowed_file_extensions[0] && $extension !== $this->allowed_file_extensions[1] && $extension !== $this->allowed_file_extensions[2] && $extension !== $this->allowed_file_extensions[3]){
       return $this->showUploadError($this->msg('newmanuscript-error-fileformat'));
     }
     
-    if(!strpos($mime,$this->allowed_file_extensions[0]) && !strpos($mime,$this->allowed_file_extensions[1])){
+    if(!strpos($mime,$this->allowed_file_extensions[0]) && !strpos($mime,$this->allowed_file_extensions[1]) && !strpos($mime,$this->allowed_file_extensions[2]) && !strpos($mime,$this->allowed_file_extensions[3])){
       return $this->showUploadError($this->msg('newmanuscript-error-fileformat'));
     }
             
@@ -349,9 +359,9 @@ class SpecialNewManuscript extends SpecialPage {
     if($status !== true){
       unlink($target_file);
       
-      if($status === 'slicer-error-execute'){
+      if(strpos($status,'slicer-error-execute') === true){
         //something went wrong when executing the slicer, so delete all export files, if they exist
-        wfErrorLog($this->msg('slicer-error-execute') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
+        wfErrorLog($status . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
         $prepare_slicer->deleteExportFiles(); 
       }
       

@@ -274,7 +274,7 @@ $wgCollationOptions = array(
 
 //global configuration settings that are used within the 'newmanuscript' extension
 $wgNewManuscriptOptions = array( 
-  'allowed_file_extensions' => array('jpg', 'jpeg'), //allowed file extensions 
+  'allowed_file_extensions' => array('jpg', 'jpeg', 'JPG', 'JPEG'), //allowed file extensions 
   'max_manuscripts' => 300, //maximum allowed manuscript pages per user
   'maximum_pages_per_collection' => 50, //maximum allowed pages for a collection
   'max_upload_size' => 8388608, //maximum upload size in bytes (8 mb --> 8*1024*1024)
@@ -291,7 +291,7 @@ $wgNewManuscriptOptions = array(
 
 $wgStylometricAnalysisOptions = array(
   'wgmin_stylometricanalysis_collections' => 2, //minimum number of collections to be able to do stylometric analysis
-  'wgmax_stylometricanalysis_collections' => 5, //maximum number of collections to be able to do stylometric analysis
+  'wgmax_stylometricanalysis_collections' => 10, //maximum number of collections to be able to do stylometric analysis
   'minimum_pages_per_collection' => 3, //minimum pages within a collection to be able to do stylometric analysis
   'python_path' => 'python', //works if you can use 'python path/to/python/script.py' in terminal
   'initial_analysis_dir' => 'initialStylometricAnalysis',
