@@ -748,7 +748,7 @@ $(document).ready(function(){
                   number_opened_tags = 0;
                   number_closed_tags = 0;
                                                       
-                  var open_regex = /<[a-zA-Z\d" =]+>/g;
+                  var open_regex = /<[a-zA-Z\d" =#]+>/g;
                   var close_regex = /<\/[a-zA-Z\d]+>/g;
                                
                   var opened_tags = wp_textbox1.match(open_regex);

@@ -42,7 +42,7 @@ $result = GetOptions (  'input_file=s'  => \$input_file
 unless ( -e $input_file )  { die( "Error: The input file $input_file does not exist\n" ); }		      		  
 unless ( -d $output_path ) { die( "Error: The output path $output_path does not exist\n" ); }
 
-die "Error: $input_file is not a JPEG or JPG file" unless ($input_file =~ /\.jpg$/ || $input_file =~ /\.jpeg$/);
+die "Error: $input_file is not a JPEG or JPG file" unless ($input_file =~ /\.jpg$/ || $input_file =~ /\.jpeg$/ || $input_file =~ /\.JPG$/ || $input_file =~ /\.JPEG$/);
 
 my $file_full_path = abs_path( $input_file ); 
 
@@ -50,6 +50,10 @@ if($input_file =~ /\.jpg$/){
   $file_full_path =~ s/\.jpg$//;
 }elsif($input_file =~ /\.jpeg$/){
   $file_full_path =~ s/\.jpeg$//;
+}elsif($input_file =~ /\.JPG$/){
+  $file_full_path =~ s/\.JPG$//;
+}elsif($input_file =~ /\.JPEG$/){
+  $file_full_path =~ s/\.JPEG$//;
 }
 
 my($file_name, $dir, $ext) = fileparse($file_full_path);
