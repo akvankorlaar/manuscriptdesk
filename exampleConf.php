@@ -57,6 +57,9 @@ $wgExternalLinkTarget  = '_blank';
 //Enables use of WikiEditor by default 
 $wgDefaultUserOptions['usebetatoolbar'] = 1;
 
+//do not allow the following charachters in usernames
+$wgInvalidUsernameCharacters = '~!@#%^&*()_+=.-|{}[]"/?<>,:;ÀÁÅÃÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ';
+
 #####Skin Settings#####
 
 //skin settings. The skin used is largely based on the 'cbptranscriptionenhanced' skin, with slight modifications 

@@ -8,7 +8,11 @@
  * (people will have to wait longer), or see if you can have a server with more RAM 
  * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
  * 
- * Todo: When creating a new username, no special charachters should be allowed
+ * Todo: Create backups of the database
+ * 
+ * Todo: Find out why the Stylometric Analysis page is available on the website
+ * 
+ * Todo: Check data that has been uploaded by the username with special charachters
  * 
  * Todo: Add images and link page feature information on the Overview page
  * 

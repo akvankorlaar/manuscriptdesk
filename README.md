@@ -63,6 +63,8 @@ Once everything is installed, you should log in as administrator, go to Special:
 With the default installation, every registered user needs to be added manually to this group to be able to access the functionality of the Manuscript Desk. 
 If you want to change this, you can reconfigure the section on User Permissions in localSettings.php. See https://www.mediawiki.org/wiki/Manual:User_rights
 
+If you have questions regarding the installation process you can always reach us at uamanuscriptdesk 'at' gmail 'dot' com.
+
 ##Technical documentation##
 
 The extensions are largely built according to the recommended structure for MediaWiki extensions. See [the manual for developing extensions]
