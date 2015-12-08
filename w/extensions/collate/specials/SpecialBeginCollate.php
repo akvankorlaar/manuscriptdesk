@@ -71,7 +71,7 @@ class SpecialBeginCollate extends SpecialPage {
     $this->variable_not_validated = false; //default value
 
     parent::__construct('BeginCollate');
-	}
+  }
   
   /**
    * This function loads requests when a user submits the collate form
@@ -359,8 +359,8 @@ class SpecialBeginCollate extends SpecialPage {
         
         //see if this collection name appears in $this->collection_array
         $collection_match = 'collection' . $number; 
-        if(isset($this->collection_array[$collection_match])){
-          
+        
+        if(isset($this->collection_array[$collection_match])){    
           //if it does appear in $this->collection array, add this collection name to $posted_hidden_collection_titles
           $posted_hidden_collection_titles[$key] = $value;
         }
@@ -524,8 +524,8 @@ class SpecialBeginCollate extends SpecialPage {
     
     $collection_urls = $collate_wrapper->checkForManuscriptCollections(); 
     
-    return $this->showDefaultPage($url_array,$title_array,$collection_urls, $out);    
-	}
+    return $this->showDefaultPage($url_array,$title_array,$collection_urls, $out);
+  }
    
   /**
    * This function makes a new URL, which will be used when the user saves the current table

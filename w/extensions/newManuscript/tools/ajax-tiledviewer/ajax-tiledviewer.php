@@ -26,7 +26,8 @@
 $lang = 'en';
 
 if( isset( $_GET[ 'lang' ] ) === TRUE ){
-	$lang = $_GET[ 'lang' ];
+  $lang = $_GET[ 'lang' ];
+  
 }
 
 define( 'MEDIAWIKI', '' );
@@ -46,27 +47,25 @@ $requiredGetVars = array(
   );
 
 foreach ($requiredGetVars as $getVar => $varName){
-
-	if(isset($_GET[$getVar]) === true){
-		$$varName = $_GET[ $getVar ];
+  if(isset($_GET[$getVar]) === true){
+    $$varName = $_GET[ $getVar ];
     
-	}else{
-		$errorMsg = sprintf( $errorMsg, $getVar );
-		throw new Exception( $errorMsg );
-	}
+  }else{
+    $errorMsg = sprintf( $errorMsg, $getVar );
+    throw new Exception( $errorMsg );   
+  } 
 }
 
 $width  = 2731;
 $height = 4096;
 
 if( isset( $_GET[ 'width' ] ) === TRUE ){
-	$width = (int) $_GET[ 'width' ];
+  $width = (int) $_GET[ 'width' ];
 }
 
 if( isset( $_GET[ 'height' ] ) === TRUE ){
-	$height = (int) $_GET[ 'height' ];
+  $height = (int) $_GET[ 'height' ]; 
 }
-
 
 ?>
 <head>

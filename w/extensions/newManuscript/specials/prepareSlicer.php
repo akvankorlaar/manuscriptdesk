@@ -128,7 +128,7 @@ class prepareSlicer {
    * @param string $sInputImagePath
    * @return void
    */
-	private function process($full_import_path){
+  private function process($full_import_path){
 
     $slicer_path = $this->slicer_path;
     $user_export_path = $this->user_export_path;
@@ -152,8 +152,8 @@ class prepareSlicer {
       return 'slicer-error-execute ' . $perl_output;   
     }
     
-    return true;    
-	}
+    return true;
+  }
   
   /**
    * Delete all exported files in case something went wrong 

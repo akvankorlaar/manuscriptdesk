@@ -37,12 +37,12 @@ if (!defined( 'MEDIAWIKI')){
 
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
-	'path'           => __FILE__,
-	'name'           => 'summaryPages',
-	'author'         => 'Arent van Korlaar',
-	'version'        => '0.0.1',
-	'url'            => '',
-	'description'    => 'Various special pages used to summarize data for the Manuscript Desk.',
+  'path'           => __FILE__,
+  'name'           => 'summaryPages',
+  'author'         => 'Arent van Korlaar',
+  'version'        => '0.0.1',
+  'url'            => '',
+  'description'    => 'Various special pages used to summarize data for the Manuscript Desk.',
 );
 
 //Shortcut to this extension directory
@@ -70,22 +70,19 @@ $wgSpecialPages['AllCollations'] = 'SpecialAllCollations';
 
 //Extra file loaded later 
 $wgResourceModules['ext.userPage'] = array(
-  	'localBasePath' => dirname( __FILE__ ) . '/css',  
-		'styles'  => '/ext.userPage.css',
+  'localBasePath' => dirname( __FILE__ ) . '/css',
+  'styles'  => '/ext.userPage.css',
 );
 
 $wgResourceModules['ext.summarypageloader' ] = array(
-		'scripts'  => array(
-      'js/ext.summarypageloader.js',
-      ),
-    'localBasePath' => __DIR__,
-    'remoteExtPath' => 'newManuscript',
+  'scripts'  => array(
+    'js/ext.summarypageloader.js',
+  ),
+  'localBasePath' => __DIR__,
+  'remoteExtPath' => 'newManuscript',
 );
 
 //Instantiate the collateHooks class and register the hooks
 $summary_pages_hooks_object = new summaryPagesHooks();
 
 $wgHooks['BeforePageDisplay'][] = array($summary_pages_hooks_object, 'onBeforePageDisplay');
-
-
-

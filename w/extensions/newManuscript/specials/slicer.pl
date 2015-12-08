@@ -2,6 +2,7 @@
 
 ##########################################################################################################
 # Copyright (C) 2013 Richard Davis
+# 2015: Some changes to integrate the program into the Manuscript Desk @Arent van Korlaar
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License Version 2, as
@@ -22,7 +23,6 @@
 # Windows:
 # slicer.pl --input_file D:/data/images/BOX_070/070_001_001.jpg --output_path D:/web/root/images --extension jpg
 #
-# Some changes to integrate the program into the Manuscript Desk @Arent van Korlaar
 ##########################################################################################################
 
 my $usage = "slicer.pl --<full input path> --output_path <full_output_path> --extension <extension of input file>";
