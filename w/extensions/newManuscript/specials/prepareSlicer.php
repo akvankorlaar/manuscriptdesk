@@ -25,9 +25,7 @@
 class prepareSlicer {
   
 /**
- * Class prepareSlicer. Prepares all paths needed by the slicer, and sends the right information to slice.pl.
- * 
- * Todo: If the slicer encounters an error while executing, the $shell_command and $perl_output should be sent to a log 
+ * Class prepareSlicer. Prepares all paths needed by the slicer, and sends the right information to slicer.pl.
  */
 
   public $file_name;
@@ -38,6 +36,7 @@ class prepareSlicer {
   private $perl_path; 
   private $user_export_path;
   private $full_export_path; 
+  private $extension; 
   
   /**
    * class constructor
@@ -45,7 +44,7 @@ class prepareSlicer {
    * @param type $file_name the file name entered by the user
    * @param type $import_path the path of the original uploaded image
    */
-  public function __construct($file_name, $import_path){
+  public function __construct($file_name, $import_path, $extension){
    
     global $wgNewManuscriptOptions,$wgWebsiteRoot; 
        
@@ -56,6 +55,7 @@ class prepareSlicer {
     $this->export_path = $document_root . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['zoomimages_root_dir'];        
     $this->slicer_path = $document_root . $wgNewManuscriptOptions['slicer_path'];
     $this->perl_path = $wgNewManuscriptOptions['perl_path']; 
+    $this->extension = $extension; 
   }
   
   /**
@@ -133,8 +133,9 @@ class prepareSlicer {
     $slicer_path = $this->slicer_path;
     $user_export_path = $this->user_export_path;
     $perl_path = $this->perl_path; 
+    $extension = $this->extension; 
 
-    $shell_command = $perl_path . ' ' . $slicer_path . ' --input_file ' . $full_import_path . ' --output_path ' . $user_export_path;
+    $shell_command = $perl_path . ' ' . $slicer_path . ' --input_file ' . $full_import_path . ' --output_path ' . $user_export_path . ' --extension ' . $extension;
     $shell_command = str_replace('\\', '/', $shell_command ); //is this needed? 
     $shell_command = escapeshellcmd($shell_command);
 
@@ -148,7 +149,7 @@ class prepareSlicer {
     $perl_output = str_replace( "        1 file(s) moved.\r\n",'',$perl_output);
 
     if(strpos(strtolower($perl_output), 'error' ) !== false || !file_exists($this->full_export_path)){
-      return 'slicer-error-execute' . $perl_output;   
+      return 'slicer-error-execute ' . $perl_output;   
     }
     
     return true;    

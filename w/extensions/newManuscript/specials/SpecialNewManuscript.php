@@ -1,5 +1,7 @@
 <?php
 /**
+ * Last server update: 7 December 2015
+ * 
  * Some of the functions (getUploadForm, showUploadForm and all the function in the class UploadFileForm and UploadSourceFile) have been copied from
  * includes/specials/SpecialUpload.php and slightly altered in order to change the functionality for the purpose of this extension.
  * 
@@ -10,7 +12,7 @@
  * 
  * Todo: Create backups of the database
  * 
- * Todo: Find out why the Stylometric Analysis page is available on the website
+ * Todo: Find out how to put the website offline, and show a 'maintenance' screen meanwhile... 
  * 
  * Todo: Check data that has been uploaded by the username with special charachters
  * 
@@ -355,7 +357,7 @@ class SpecialNewManuscript extends SpecialPage {
       return $this->showUploadError($this->msg('newmanuscript-error-upload'));
     }
 
-    $prepare_slicer = new prepareSlicer($posted_title,$target_file);
+    $prepare_slicer = new prepareSlicer($posted_title,$target_file, $extension);
     
     //execute the slicer
     $status = $prepare_slicer->execute();
@@ -366,7 +368,8 @@ class SpecialNewManuscript extends SpecialPage {
       if(strpos($status,'slicer-error-execute') === true){
         //something went wrong when executing the slicer, so delete all export files, if they exist
         wfErrorLog($status . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
-        $prepare_slicer->deleteExportFiles(); 
+        $prepare_slicer->deleteExportFiles();
+        $status = 'slicer-error-execute';
       }
       
       //get the error message

@@ -15,3 +15,11 @@ RewriteRule ^md/(.+)$ /w/index.php?title=$1 [L,QSA]
 # Redirect / to Main Page
 RewriteRule ^/*$ /w/index.php [L]
 
+
+#Uncomment on maintenance. You need a 503.php file in the web root that returns statuscode 503 with maintance information
+
+#Options +FollowSymLinks
+#RewriteEngine On
+#RewriteBase /
+#RewriteCond %{REQUEST_URI} !^/503.php [NC]
+#RewriteRule .* /503.php [R,L]
