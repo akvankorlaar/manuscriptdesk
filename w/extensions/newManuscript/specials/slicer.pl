@@ -17,11 +17,12 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 # Unix:
-# slicer.pl --input_file /data/incoming/070/070_001_001.jpg --output_path /web/root/images
+# slicer.pl --input_file /data/incoming/070/070_001_001.jpg --output_path /web/root/images --extension jpg
 #
 # Windows:
-# slicer.pl --input_file D:/data/images/BOX_070/070_001_001.jpg --output_path D:/web/root/images
+# slicer.pl --input_file D:/data/images/BOX_070/070_001_001.jpg --output_path D:/web/root/images --extension jpg
 #
+# Some changes to integrate the program into the Manuscript Desk @Arent van Korlaar
 ##########################################################################################################
 
 my $usage = "slicer.pl --<full input path> --output_path <full_output_path> --extension <extension of input file>";
