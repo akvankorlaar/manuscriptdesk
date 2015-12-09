@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Copyright (C) 2013 Richard Davis
+* Copyright (C) 2013 Richard Davis
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License Version 2, as
@@ -26,33 +25,32 @@
 
 # Alert the user that this is not a valid entry point to MediaWiki if they try to access the special pages file directly.
 if ( !defined( 'MEDIAWIKI' ) ) {
-	echo <<<EOT
+echo <<<EOT
 To install my extension, put the following line in LocalSettings.php:
 require_once( "\$IP/extensions/TEITags/TEITags.php" );
 EOT;
-	exit( 1 );
+exit( 1 );
 }
 
 $wgAutoloadClasses[ 'TEITagsHooks' ]   = __DIR__ . '/TEITags.hooks.php';
 $wgExtensionMessagesFiles[ 'TEITags' ] = __DIR__ . '/TEITags.i18n.php';
 
 $wgExtensionCredits[ 'teitags' ][] = array(
-		'path'        =>  __FILE__,
-		'name'        => 'TEITags',
-		'type'		  => 'parserhook',
-		'author'      => 'Richard Davis',
-		'url'         => 'http://dablog.ulcc.ac.uk/',
-		'version'     => '0.2',
-		'description' => new Message( 'teitags-descr' )
+  'path'        =>  __FILE__,
+  'name'        => 'TEITags',
+  'type'		  => 'parserhook',
+  'author'      => 'Richard Davis',
+  'url'         => 'http://dablog.ulcc.ac.uk/',
+  'version'     => '0.2',
+  'description' => new Message( 'teitags-descr' )
 );
 
 
 $wgResourceModules['ext.TEITags' ] = array(
-		'localBasePath' => dirname( __FILE__ ) . '/css',
-		'styles'        => 'ext.teitags.css',
+  'localBasePath' => dirname( __FILE__ ) . '/css',
+  'styles'        => 'ext.teitags.css',
 );
 
 $TEITagsHooks  = new TEITagsHooks;
 
 $wgHooks['ParserFirstCallInit'][] = array( $TEITagsHooks, 'ParserFirstCallInit' );
-

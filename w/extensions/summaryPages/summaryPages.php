@@ -29,8 +29,8 @@
 
 //Check environment
 if (!defined( 'MEDIAWIKI')){
-	echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
-	die( -1 );
+  echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
+  die( -1 );
 }
 
 /* Configuration */
