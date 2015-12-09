@@ -729,19 +729,19 @@ class newManuscriptHooks {
       'manuscripts_url' => $page_title_with_namespace), //conditions
       __METHOD__ );
     
-    	if ($dbw->affectedRows()){
-        //something was deleted from the manuscripts table 
-            
-        if($collection_name !== null){
-          //check if the collection has no pages left, and if so, delete the collection
-          $this->checkAndDeleteCollection($collection_name);
-        }
-        
-        return true;
-        
-      }else{
-        //nothing was deleted
-        return false;
+    if ($dbw->affectedRows()){
+      //something was deleted from the manuscripts table 
+
+      if($collection_name !== null){
+        //check if the collection has no pages left, and if so, delete the collection
+        $this->checkAndDeleteCollection($collection_name);
+      }
+
+      return true;
+
+    }else{
+      //nothing was deleted
+      return false;
     }
   }
   

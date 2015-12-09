@@ -39,74 +39,74 @@ $wgAutoloadClasses[ 'JBTEIToolbarHooks' ]   = __DIR__ . '/JBTEIToolbar.hooks.php
 $wgExtensionMessagesFiles[ 'JBTEIToolbar' ] = __DIR__ . '/JBTEIToolbar.i18n.php';
 
 $wgExtensionCredits[ 'jbteitoolbar' ][] = array(
-		'path' 	      =>  __FILE__,
-		'name'        => 'JBTEIToolbar',
-		'author'      => 'Richard Davis',
-		'type'		  => 'parserhook',
-		'url'         => 'http://www.transcribe-bentham.da.ulcc.ac.uk',
-		'version'     => '0.2',
-		'description' => new Message( 'jbteitoolbar-descr' )
+    'path' 	      =>  __FILE__,
+    'name'        => 'JBTEIToolbar',
+    'author'      => 'Richard Davis',
+    'type'		  => 'parserhook',
+    'url'         => 'http://www.transcribe-bentham.da.ulcc.ac.uk',
+    'version'     => '0.2',
+    'description' => new Message( 'jbteitoolbar-descr' )
 );
 
 $wgResourceModules['ext.JBTEIToolbar' ] = array(
-				'localBasePath' => dirname( __FILE__ ),
-				'scripts'       => 'js/ext.jbteitoolbar.js',
-				'messages'      => array(  /* Label text */
-										  'toolbar-label-line-break'
-										 ,'toolbar-label-page-break'
-										 ,'toolbar-label-heading'
-										 ,'toolbar-label-paragraph'
-										 ,'toolbar-label-addition'
-										 ,'toolbar-label-deletion'
-										 ,'toolbar-label-questionable'
-										 ,'toolbar-label-illegible'
-										 ,'toolbar-label-note'
-										 ,'toolbar-label-underline'
-										 ,'toolbar-label-superscript'
-										 ,'toolbar-label-spelling'
-										 ,'toolbar-label-foreign'
-										 ,'toolbar-label-ampersand'
-										 ,'toolbar-label-long-dash'
-										 ,'toolbar-label-comment'
-                     ,'toolbar-label-retrace'
-                     ,'toolbar-label-date'
-                     ,'toolbar-label-name'
-                     ,'toolbar-label-num'
-                     ,'toolbar-label-title'
-                     ,'toolbar-label-metamark'
-                     ,'toolbar-label-restore'
-                     ,'toolbar-label-supplied'
+  'localBasePath' => dirname( __FILE__ ),
+  'scripts'       => 'js/ext.jbteitoolbar.js',
+  'messages'      => array(  /* Label text */
+                            'toolbar-label-line-break'
+                            ,'toolbar-label-page-break'
+                            ,'toolbar-label-heading'
+                            ,'toolbar-label-paragraph'
+                            ,'toolbar-label-addition'
+                            ,'toolbar-label-deletion'
+                            ,'toolbar-label-questionable'
+                            ,'toolbar-label-illegible'
+                            ,'toolbar-label-note'
+                            ,'toolbar-label-underline'
+                            ,'toolbar-label-superscript'
+                            ,'toolbar-label-spelling'
+                            ,'toolbar-label-foreign'
+                            ,'toolbar-label-ampersand'
+                            ,'toolbar-label-long-dash'
+                            ,'toolbar-label-comment'
+                            ,'toolbar-label-retrace'
+                            ,'toolbar-label-date'
+                            ,'toolbar-label-name'
+                            ,'toolbar-label-num'
+                            ,'toolbar-label-title'
+                            ,'toolbar-label-metamark'
+                            ,'toolbar-label-restore'
+                            ,'toolbar-label-supplied'
 
 
 										  /* Peri text */
-										 ,'toolbar-peri-heading'
-										 ,'toolbar-peri-paragraph'
-										 ,'toolbar-peri-addition'
-										 ,'toolbar-peri-deletion'
-										 ,'toolbar-peri-questionable'
-										 ,'toolbar-peri-note'
-										 ,'toolbar-peri-underline'
-										 ,'toolbar-peri-superscript'
-										 ,'toolbar-peri-spelling'
-										 ,'toolbar-peri-foreign'
-										 ,'toolbar-peri-comment'
-                     ,'toolbar-peri-retrace'
-                     ,'toolbar-peri-date'
-                     ,'toolbar-peri-name'
-                     ,'toolbar-peri-num'
-                     ,'toolbar-peri-title'
-                     ,'toolbar-peri-metamark'
-                     ,'toolbar-peri-restore'
-                     ,'toolbar-peri-supplied'
-          
-                     ,'submit-error-message'
+                            ,'toolbar-peri-heading'
+                            ,'toolbar-peri-paragraph'
+                            ,'toolbar-peri-addition'
+                            ,'toolbar-peri-deletion'
+                            ,'toolbar-peri-questionable'
+                            ,'toolbar-peri-note'
+                            ,'toolbar-peri-underline'
+                            ,'toolbar-peri-superscript'
+                            ,'toolbar-peri-spelling'
+                            ,'toolbar-peri-foreign'
+                            ,'toolbar-peri-comment'
+                            ,'toolbar-peri-retrace'
+                            ,'toolbar-peri-date'
+                            ,'toolbar-peri-name'
+                            ,'toolbar-peri-num'
+                            ,'toolbar-peri-title'
+                            ,'toolbar-peri-metamark'
+                            ,'toolbar-peri-restore'
+                            ,'toolbar-peri-supplied'
 
-									)
+                            ,'submit-error-message'
+
+						)
 );
 
 $wgResourceModules['ext.JBTEIToolbarcss' ] = array(
-				'localBasePath' => dirname( __FILE__ ),
-				'styles'        => 'css/ext.jbteitoolbar.css',
+    'localBasePath' => dirname( __FILE__ ),
+    'styles'        => 'css/ext.jbteitoolbar.css',
   );
 
 $JBTEIToolbarHooks 							 = new JBTEIToolbarHooks();

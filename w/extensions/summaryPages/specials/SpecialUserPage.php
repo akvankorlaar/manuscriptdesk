@@ -249,8 +249,8 @@ class SpecialUserPage extends SpecialPage {
       return $this->processRequest();
     }
     
-    return $this->showDefaultPage();     
-	}
+    return $this->showDefaultPage();
+  }
   
   /**
    * This function processes the request if it was posted
@@ -390,21 +390,22 @@ class SpecialUserPage extends SpecialPage {
     $summary_page_wrapper = new summaryPageWrapper('submitedit',0,0,$user_name,"","",$selected_collection, $page_title);
     $page_id = $summary_page_wrapper->retrievePageId();
     
-		$dbw->delete( 
+    $dbw->delete(
       'page', //from
       array(
         'page_id' => $page_id
       ),  //conditions
-      __METHOD__ 
+      __METHOD__
     );
     
-		if (!$dbw->affectedRows() > 0){   
-			$dbw->rollback( __METHOD__ );    
+    if (!$dbw->affectedRows() > 0){
+      $dbw->rollback( __METHOD__ );
       rename($new_zoomimages, $old_zoomimages);
       rename($new_original_images, $old_original_images);
-      wfErrorLog( $this->msg('userpage-error-log1') . $new_page_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
+      wfErrorLog( $this->msg('userpage-error-log1') . $new_page_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
+      
       return $this->showEditTitle($this->msg('userpage-error-delete'));  
-		}
+    }
         
     //update the 'manuscripts' table
     $dbw->update(
@@ -426,6 +427,7 @@ class SpecialUserPage extends SpecialPage {
       rename($new_zoomimages, $old_zoomimages);
       rename($new_original_images, $old_original_images);
       wfErrorLog( $this->msg('userpage-error-log3') . $new_page_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
+      
       return $this->showEditTitle($this->msg('userpage-error-database'));  
     }   
       

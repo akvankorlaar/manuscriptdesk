@@ -35,15 +35,15 @@ class stylometricAnalysisHooks {
   /**
 	 * This function sends configuration variables to javascript. In javascript they are accessed through 'mw.config.get('..') 
 	 */
-	public function onResourceLoaderGetConfigVars(&$vars){
+  public function onResourceLoaderGetConfigVars(&$vars){
     
-		global $wgStylometricAnalysisOptions;
-        
+    global $wgStylometricAnalysisOptions;
+    
     $vars['wgmin_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
     $vars['wgmax_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
-		
-		return true;
-	}
+    
+    return true;
+  }
 
   /**
    * This function loads additional modules containing CSS before the page is displayed

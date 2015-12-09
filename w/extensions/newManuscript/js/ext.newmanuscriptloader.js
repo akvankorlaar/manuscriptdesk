@@ -50,18 +50,18 @@
       }         
     }
       
-  /**
-   * This function prevents users from putting non-alphanumeric charachters into the textfield
-   * 
-   * First this was used: if (event.keyCode == 8 || event.keyCode == 37 || event.keyCode == 39 || regeX.test(key))
-   * 
-   * keyCode 8, 37 and 39 are supposed to correspond to backspace, left arrow and right arrow respectively. However, these commands were
-   * possible anyway, while signs like '%' were being let through. The current code needs to be tested on other computers to see if you can still do
-   * a backspace, left arrow, right arrow. 
-   * 
-   * @param {type} event
-   * @returns {Boolean}
-   */  
+    /**
+     * This function prevents users from putting non-alphanumeric charachters into the textfield
+     * 
+     * First this was used: if (event.keyCode == 8 || event.keyCode == 37 || event.keyCode == 39 || regeX.test(key))
+     * 
+     * keyCode 8, 37 and 39 are supposed to correspond to backspace, left arrow and right arrow respectively. However, these commands were
+     * possible anyway, while signs like '%' were being let through. The current code needs to be tested on other computers to see if you can still do
+     * a backspace, left arrow, right arrow. 
+     * 
+     * @param {type} event
+     * @returns {Boolean}
+     */  
     function filterCharachters(event) {
     
       var regeX = /[a-zA-Z0-9\b]/g; 
@@ -80,10 +80,10 @@
     function preventPaste(event){
       event.preventDefault();
     };
-    
-   /**
-    * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
-    */
+
+    /**
+     * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
+     */
     $('#mw-upload-form').submit(function() {
       $('#mw-upload-form').hide();  
       $('h2').hide(); 

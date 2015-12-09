@@ -2,6 +2,7 @@
 
 ##########################################################################################################
 # Copyright (C) 2013 Richard Davis
+# 2015: Some changes to integrate the program into the Manuscript Desk @Arent van Korlaar
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License Version 2, as
@@ -17,14 +18,14 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 # Unix:
-# slicer.pl --input_file /data/incoming/070/070_001_001.jpg --output_path /web/root/images
+# slicer.pl --input_file /data/incoming/070/070_001_001.jpg --output_path /web/root/images --extension jpg
 #
 # Windows:
-# slicer.pl --input_file D:/data/images/BOX_070/070_001_001.jpg --output_path D:/web/root/images
+# slicer.pl --input_file D:/data/images/BOX_070/070_001_001.jpg --output_path D:/web/root/images --extension jpg
 #
 ##########################################################################################################
 
-my $usage = "slicer.pl --<full input path> --output_path <full_output_path>";
+my $usage = "slicer.pl --<full input path> --output_path <full_output_path> --extension <extension of input file>";
 
 use File::Basename;
 use FindBin '$Bin';
@@ -35,32 +36,22 @@ require("$Bin/slice.pl");
 
 my $input_file = '';
 my $output_path = '';
+my $extension = '';
 					  					    
-$result = GetOptions (  'input_file=s'  => \$input_file
-		      		  , 'output_path=s' => \$output_path );
+$result = GetOptions (  
+  'input_file=s'  => \$input_file,
+  'output_path=s' => \$output_path,
+  'extension=s' => \$extension 
+);
 
-unless ( -e $input_file )  { die( "Error: The input file $input_file does not exist\n" ); }		      		  
+unless ( -e $input_file )  { die( "Error: The input file $input_file does not exist\n" ); }
 unless ( -d $output_path ) { die( "Error: The output path $output_path does not exist\n" ); }
 
-die "Error: $input_file is not a JPEG or JPG file" unless ($input_file =~ /\.jpg$/ || $input_file =~ /\.jpeg$/ || $input_file =~ /\.JPG$/ || $input_file =~ /\.JPEG$/);
-
-my $file_full_path = abs_path( $input_file ); 
-
-if($input_file =~ /\.jpg$/){
-  $file_full_path =~ s/\.jpg$//;
-}elsif($input_file =~ /\.jpeg$/){
-  $file_full_path =~ s/\.jpeg$//;
-}elsif($input_file =~ /\.JPG$/){
-  $file_full_path =~ s/\.JPG$//;
-}elsif($input_file =~ /\.JPEG$/){
-  $file_full_path =~ s/\.JPEG$//;
-}
-
+my $file_full_path = abs_path( $input_file );
+$file_full_path =~ s/\.$extension$//; 
 my($file_name, $dir, $ext) = fileparse($file_full_path);
 
 $output_path           = $output_path . '/';
-
-print "Creating directory $output_path\n";
 
 mkdir $output_path;
 
@@ -74,47 +65,9 @@ my $target_output_path = $output_path . $file_name;
 
 # e.g. $output_path = '<output_path>/user_name/file_name
 
-print "Processing $file_full_path\n";                 
-
 $fault = slice( $input_file, $output_path );
 warn $fault if $fault;
 
 unless ( -d $tmp_output_path ) { die( "Error: slice failed to create $tmp_output_path\n" ); }
 
-print "Moving $tmp_output_path to $target_output_path\n";
-
 rename(  $tmp_output_path, $target_output_path ) || die ( "Error: Renaming $tmp_output_path to $target_output_path failed\n" );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -38,20 +38,20 @@ $insteadMsg   = $messages[ $lang ][ 'instead' ];
 $viewerTitle  = $messages[ $lang ][ 'flash-viewer' ];
 $errorMsg	  = $messages[ $lang ][ 'error' ];
 
-$requiredGetVars = array( 
+$requiredGetVars = array(
   'image'    => 'imageFilePath',
-	'lang'     => 'lang',
-	'sitename' => 'siteName',
+  'lang'     => 'lang',
+  'sitename' => 'siteName',
   );
 
 foreach ($requiredGetVars as $getVar => $varName){
-
-	if(isset($_GET[$getVar]) === true){
-		$$varName = $_GET[ $getVar ];
-	}else{
-		$errorMsg = sprintf( $errorMsg, $getVar );
-		throw new Exception( $errorMsg );
-	}
+  if(isset($_GET[$getVar]) === true){
+    $$varName = $_GET[ $getVar ];
+    
+  }else{
+    $errorMsg = sprintf( $errorMsg, $getVar );
+    throw new Exception( $errorMsg );    
+  } 
 }
 
 ?>

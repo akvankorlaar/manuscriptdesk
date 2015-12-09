@@ -1,59 +1,5 @@
 <?php
 /**
- * Some of the functions (getUploadForm, showUploadForm and all the function in the class UploadFileForm and UploadSourceFile) have been copied from
- * includes/specials/SpecialUpload.php and slightly altered in order to change the functionality for the purpose of this extension.
- * 
- * Possible problems: How to save the images in such a way that Gent can access and store these? 
- * Possible problems: What happens when 20 people create a new manuscript at the same time? Will the server be able to handle this? You can delay the processing 
- * (people will have to wait longer), or see if you can have a server with more RAM 
- * Possible problems: The new wikipage is being made with help of a requestcontext that has been made on this page. Maybe some data for the new page will not be right.
- * 
- * Todo: Create backups of the database
- * 
- * Todo: Find out why the Stylometric Analysis page is available on the website
- * 
- * Todo: Check data that has been uploaded by the username with special charachters
- * 
- * Todo: Add images and link page feature information on the Overview page
- * 
- * Todo: Switch the image and the editor
- * 
- * Todo: Illegible tag should be gap
- * 
- * Todo: Questionable should be unclear
- * 
- * Todo: Make the summary pages more user friendly (make it possible to view which numbers/digits contain something)
- * 
- * Todo: Check if it is possible to restructure the collatex javascript
- * 
- * Todo: Also make it possible to validate text within tags
- * 
- * Todo: Setup a CentOS development environment through Vagrant. Check this tutorial: http://coolestguidesontheplanet.com/getting-started-vagrant-os-osx-10-9-mavericks/
- * 
- * Todo: Perhaps add the options 'Sort by Date' and 'Sort by Title' in Special:UserPage
- * 
- * Todo: Perhaps make the letters of the transcription larger
- * 
- * Todo: Rewrite loadRequest in Special:BeginCollate
- * 
- * Todo: Sometimes the stylometric analysis does not work. Find out why
- * 
- * Todo: Make it possible to export collection and single manuscript pages in TEI-format
- * 
- * Todo: Try to create unit tests for the extensions. See: https://www.mediawiki.org/wiki/Manual:PHP_unit_testing/Writing_unit_tests_for_extensions , and check 
- * http://www.gossamer-threads.com/lists/wiki/mediawiki/520085 why the tests directory is missing for this version. Perhaps try to get them from github? 
- *   
- * Todo: Also install a fresh copy of mediawiki at home? 
- * 
- * Todo: Write documentation on how to install the software, and the structure of the software. Also, increase the amount of comments
- * 
- * Todo: Some errors are probably redundant. Additional testing is needed to see if these are necessary. 
- * 
- * Todo: For unknown reasons, the javascript viewer doesn't always work... perhaps remove the javascript viewer? 
- * 
- */
-
-/**
  * This file is part of the newManuscript extension
  * Copyright (C) 2015 Arent van Korlaar
  *
@@ -79,7 +25,8 @@
 class SpecialNewManuscript extends SpecialPage {
   
   /**
-   * This class handles file uploads for the newManuscript extension. 
+   * This class handles file uploads for the newManuscript extension. Some of the functions have been copied from
+   * includes/specials/SpecialUpload.php and altered for the purpose of this extension
    */
       
   public $request;
@@ -355,7 +302,7 @@ class SpecialNewManuscript extends SpecialPage {
       return $this->showUploadError($this->msg('newmanuscript-error-upload'));
     }
 
-    $prepare_slicer = new prepareSlicer($posted_title,$target_file);
+    $prepare_slicer = new prepareSlicer($posted_title,$target_file, $extension);
     
     //execute the slicer
     $status = $prepare_slicer->execute();
@@ -366,7 +313,8 @@ class SpecialNewManuscript extends SpecialPage {
       if(strpos($status,'slicer-error-execute') === true){
         //something went wrong when executing the slicer, so delete all export files, if they exist
         wfErrorLog($status . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
-        $prepare_slicer->deleteExportFiles(); 
+        $prepare_slicer->deleteExportFiles();
+        $status = 'slicer-error-execute';
       }
       
       //get the error message

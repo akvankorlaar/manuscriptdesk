@@ -158,7 +158,7 @@ class newManuscriptForm extends HTMLForm {
   public function show() {
     $this->addUploadJS();
     parent::show();
-	}
+  }
   
   /**
    * Add upload JS to the OutputPage (the JS construct the preview image)

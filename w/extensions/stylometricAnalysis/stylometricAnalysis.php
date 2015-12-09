@@ -29,20 +29,20 @@
 
 // Check environment
 if (!defined( 'MEDIAWIKI')){
-	echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
-	die( -1 );
+  echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
+  die( -1 );
 }
 
 /* Configuration */
 
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
-	'path'           => __FILE__,
-	'name'           => 'stylometricAnalysis',
-	'author'         => 'Arent van Korlaar',
-	'version'        => '0.0.1',
-	'url'            => '',
-	'description'    => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
+  'path'           => __FILE__,
+  'name'           => 'stylometricAnalysis',
+  'author'         => 'Arent van Korlaar',
+  'version'        => '0.0.1',
+  'url'            => '',
+  'description'    => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
   'descriptionmsg' => 'stylometricanalysis-desc'
 );
 
@@ -61,16 +61,16 @@ $wgSpecialPages['StylometricAnalysis'] = 'SpecialStylometricAnalysis';
 
 //Extra file loaded later 
 $wgResourceModules['ext.stylometricanalysis' ] = array(
-  'localBasePath' => dirname( __FILE__ ) . '/css',  
-	'styles'  => '/ext.stylometricanalysis.css',
+  'localBasePath' => dirname( __FILE__ ) . '/css',
+  'styles'  => '/ext.stylometricanalysis.css',
 );
 
 $wgResourceModules['ext.stylometricanalysisloader' ] = array(
-	'localBasePath' => dirname( __FILE__ ) . '/js',  
-	'scripts'  => '/ext.stylometricanalysisloader.js',
+  'localBasePath' => dirname( __FILE__ ) . '/js',
+  'scripts'  => '/ext.stylometricanalysisloader.js',
   'messages' => array(
     'stylometricanalysis-error-manycollections',
-   ),
+  ),
 );
 
 //Instantiate the stylometricAnalysisHooks class and register the hooks

@@ -97,12 +97,11 @@ class stylometricAnalysisWrapper{
       }
     }
       
-    return $collection_urls; 
-    
+    return $collection_urls;  
   }
   
   /**
-   * 
+   * This function checks if values should be removed from the 'tempstylometricanalysis' table
    */
   public function clearOldValues($current_time){
         
@@ -154,6 +153,7 @@ class stylometricAnalysisWrapper{
   }
   
   /**
+   * This function removes values from the 'tempstylometricanalysis' table
    * 
    * @param type $time
    */

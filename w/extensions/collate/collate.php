@@ -29,20 +29,20 @@
 
 // Check environment
 if (!defined( 'MEDIAWIKI')){
-	echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
-	die( -1 );
+  echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
+  die( -1 );
 }
 
 /* Configuration */
 
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
-	'path'           => __FILE__,
-	'name'           => 'collate',
-	'author'         => 'Arent van Korlaar',
-	'version'        => '0.0.1',
-	'url'            => '',
-	'description'    => 'This extension permits users to collate texts for the Manuscript Desk.',
+  'path'           => __FILE__,
+  'name'           => 'collate',
+  'author'         => 'Arent van Korlaar',
+  'version'        => '0.0.1',
+  'url'            => '',
+  'description'    => 'This extension permits users to collate texts for the Manuscript Desk.',
 );
 
 //Shortcut to this extension directory
@@ -65,19 +65,19 @@ $wgSpecialPages['BeginCollate'] = 'SpecialBeginCollate';
 
 //Extra file loaded later 
 $wgResourceModules['ext.collate' ] = array(
-		'localBasePath' => dirname( __FILE__ ),  
-		'styles'  => '/css/ext.collate.css',
+  'localBasePath' => dirname( __FILE__ ),
+  'styles'  => '/css/ext.collate.css',
 );
 
 $wgResourceModules['ext.collateloader' ] = array(
-		'scripts'  => array(
-      'js/ext.collateloader.js',
-     ),
-    'localBasePath' => __DIR__,
-    'remoteExtPath' => 'collate',
-    'messages' => array(
-      'collate-error-manytexts',
-     ),
+  'scripts'  => array(
+    'js/ext.collateloader.js',
+  ),
+  'localBasePath' => __DIR__,
+  'remoteExtPath' => 'collate',
+  'messages' => array(
+    'collate-error-manytexts',
+  ),
 );
 
 //Instantiate the collateHooks class and register the hooks

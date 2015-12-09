@@ -27,15 +27,16 @@
 
 # Alert the user that this is not a valid entry point to MediaWiki if they try to access the special pages file directly.
 if ( !defined( 'MEDIAWIKI' ) ) {
-	echo <<<EOT
+echo <<<EOT
 To install my extension, put the following line in LocalSettings.php:
 require_once( "\$IP/extensions/TEITags/TEITags.php" );
 EOT;
-	exit( 1 );
+exit( 1 );
 }
 
 $messages = array();
 
-$messages['en'] = array(  'tei-tags'      => 'TEI-Tags'
-						 ,'teitags-descr' => 'Adds support for TEI (Text Encoding Initiative) tags'
-					   );
+$messages['en'] = array(  
+  'tei-tags'      => 'TEI-Tags',
+  'teitags-descr' => 'Adds support for TEI (Text Encoding Initiative) tags',
+);

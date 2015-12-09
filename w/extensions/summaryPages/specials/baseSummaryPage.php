@@ -220,5 +220,3 @@ class baseSummaryPage extends SpecialPage {
     return $html; 
   }
 }
-
-

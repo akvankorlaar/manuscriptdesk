@@ -178,13 +178,13 @@ class collateHooks {
    * @return boolean
    */
   public function onAbortMove( Title $oldTitle, Title $newTitle, User $user, &$error, $reason ) {
-     
-		if($oldTitle->getNamespace() !== NS_COLLATIONS){
-			return true; 
-		}
-     
+    
+    if($oldTitle->getNamespace() !== NS_COLLATIONS){
+      return true; 
+    }
+    
     $error = $this->getMessage('collatehooks-move');
-  
+    
     return false; 
   }
   
@@ -274,13 +274,13 @@ class collateHooks {
 	 */
 	public function onResourceLoaderGetConfigVars(&$vars){
     
-		global $wgCollationOptions;
-        
-		$vars['wgmax_collation_pages'] = $wgCollationOptions['wgmax_collation_pages'];
+    global $wgCollationOptions;
+    
+    $vars['wgmax_collation_pages'] = $wgCollationOptions['wgmax_collation_pages'];
     $vars['wgmin_collation_pages'] = $wgCollationOptions['wgmin_collation_pages'];
-		
-		return true;
-	}
+    
+    return true;
+  }
   
   /**
    * This function retrieves the message from the i18n file for String $identifier
