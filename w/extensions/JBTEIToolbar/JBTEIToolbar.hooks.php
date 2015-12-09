@@ -48,27 +48,27 @@
 
 class JBTEIToolbarHooks {
 
-	/**
-	 * editPageShowEditFormInitial hook
-	 *
-	 * Adds the modules to the edit form
-	 *
-	 * @param $toolbar array list of toolbar items
-	 * @return bool
-	 */
-	public function editPageShowEditFormInitial($toolbar , $out){
+    /**
+     * editPageShowEditFormInitial hook
+     *
+     * Adds the modules to the edit form
+     *
+     * @param $toolbar array list of toolbar items
+     * @return bool
+     */
+    public function editPageShowEditFormInitial($toolbar , $out){
 
-	  $title_object = $out->getTitle();
-    
-	  if(!$this->isInEditMode($title_object)){
-	    return true;
-	  }
-        
+      $title_object = $out->getTitle();
+
+      if(!$this->isInEditMode($title_object)){
+        return true;
+      }
+
       $out->addModuleStyles('ext.JBTEIToolbarcss');
-	  $out->addModules('ext.JBTEIToolbar');
+      $out->addModules('ext.JBTEIToolbar');
 
-	  return true;
-	}
+      return true;
+    }
 
     /**
      * This function checks if the current $pageTitle is in edit mode
@@ -78,14 +78,14 @@ class JBTEIToolbarHooks {
      * @param type $page_title
      * @return boolean
      */
-	private function isInEditMode($title_object){
-    
+    private function isInEditMode($title_object){
+
       global $wgNewManuscriptOptions,$wgWebsiteRoot; 
 
       $images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
 
       //mTextform is the page title without namespace
-      $page_title = $title_object->mTextform; 
+      $page_title = $title_object->mTextform;
 
       $page_title_array = explode("/", $page_title);
 
@@ -93,16 +93,16 @@ class JBTEIToolbarHooks {
       $filename_fromurl = isset($page_title_array[1]) ? $page_title_array[1] : null;
 
       if(!isset($user_fromurl) || !isset($filename_fromurl) || !ctype_alnum($user_fromurl) || !ctype_alnum($filename_fromurl)){
-        return false; 
+        return false;
       }
 
-      $document_root = $wgWebsiteRoot;  
+      $document_root = $wgWebsiteRoot;
       $zoom_images_file = $document_root . DIRECTORY_SEPARATOR . $images_root_dir . DIRECTORY_SEPARATOR . $user_fromurl . DIRECTORY_SEPARATOR . $filename_fromurl;
 
       if(!file_exists($zoom_images_file)){
-        return false; 
+        return false;
       }
 
-      return true;
-    }
+      return true;  
+      }
 }

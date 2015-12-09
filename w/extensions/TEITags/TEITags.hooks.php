@@ -50,7 +50,7 @@ class TEITagsHooks {
 	$parser->setHook( 'hi'      , array( $this , 'RenderHi' ));
 	$parser->setHook( 'head'    , array( $this , 'RenderHead' ));
 	$parser->setHook( 'sic'     , array( $this , 'RenderSic' ));
-	$parser->setHook( 'foreign' , array( $this , 'RenderForeign' ));
+    $parser->setHook( 'foreign' , array( $this , 'RenderForeign' ));
     $parser->setHook( 'retrace', array( $this , 'RenderRetrace'  ));
     $parser->setHook( 'date'    , array( $this , 'RenderDate' ));
 	$parser->setHook( 'name'    , array( $this , 'RenderName' ));
@@ -75,92 +75,92 @@ class TEITagsHooks {
   }
 
   public function RenderPb(){
-      return '<br/>---<em>page break</em>---<br/>';
+    return '<br/>---<em>page break</em>---<br/>';
   }
 
   public function RenderDel(){
-      $HookArgs = func_get_args();
-      return $this->TEITagsRenderer( 'del', $HookArgs );
+    $HookArgs = func_get_args();
+    return $this->TEITagsRenderer( 'del', $HookArgs );
   }
 
   public function RenderAdd(){
-      $HookArgs = func_get_args();
-      return $this->TEITagsRenderer( 'add', $HookArgs );
+    $HookArgs = func_get_args();
+    return $this->TEITagsRenderer( 'add', $HookArgs );
   }
 
   public function RenderGap(){
-      $HookArgs = func_get_args();
-      return $this->TEITagsRenderer( 'gap', $HookArgs );
+    $HookArgs = func_get_args();
+    return $this->TEITagsRenderer( 'gap', $HookArgs );
   }
 
   public function RenderUnclear(){
-      $HookArgs = func_get_args();
-      return $this->TEITagsRenderer( 'unclear', $HookArgs );
+    $HookArgs = func_get_args();
+    return $this->TEITagsRenderer( 'unclear', $HookArgs );
   }
 
   public function RenderNote(){
-      $HookArgs = func_get_args();
-      return $this->TEITagsRenderer( 'note', $HookArgs );
+    $HookArgs = func_get_args();
+    return $this->TEITagsRenderer( 'note', $HookArgs );
   }
 
   public function RenderHi(){
-      $HookArgs = func_get_args();
-      return $this->TEITagsRenderer( 'hi', $HookArgs );
+    $HookArgs = func_get_args();
+    return $this->TEITagsRenderer( 'hi', $HookArgs );
   }
 
   public function RenderHead(){
-      $HookArgs = func_get_args();
-      return $this->TEITagsRenderer( 'head', $HookArgs );
+    $HookArgs = func_get_args();
+    return $this->TEITagsRenderer( 'head', $HookArgs );
   }
 
   public function RenderSic(){
-      $HookArgs = func_get_args();
-      return $this->TEITagsRenderer( 'sic', $HookArgs );
+    $HookArgs = func_get_args();
+    return $this->TEITagsRenderer( 'sic', $HookArgs );
   }
 
   public function RenderForeign(){   
-      $HookArgs = func_get_args();
-      return $this->TEITagsRenderer( 'foreign', $HookArgs );
+    $HookArgs = func_get_args();
+    return $this->TEITagsRenderer( 'foreign', $HookArgs );
   }
   
   public function RenderRetrace(){
-		$HookArgs = func_get_args();
-		return $this->TEITagsRenderer( 'retrace', $HookArgs );
+	$HookArgs = func_get_args();
+	return $this->TEITagsRenderer( 'retrace', $HookArgs );
   }
   
   public function RenderDate(){
-		$HookArgs = func_get_args();
-		return $this->TEITagsRenderer( 'date', $HookArgs );
+	$HookArgs = func_get_args();
+	return $this->TEITagsRenderer( 'date', $HookArgs );
   }
   
   public function RenderName(){
-		$HookArgs = func_get_args();
-		return $this->TEITagsRenderer( 'name', $HookArgs );
+	$HookArgs = func_get_args();
+	return $this->TEITagsRenderer( 'name', $HookArgs );
   }
   
   public function RenderNum(){
-		$HookArgs = func_get_args();
-		return $this->TEITagsRenderer( 'num', $HookArgs );
+	$HookArgs = func_get_args();
+	return $this->TEITagsRenderer( 'num', $HookArgs );
   }
   
   public function RenderTitle(){
-		$HookArgs = func_get_args();
-		return $this->TEITagsRenderer( 'title', $HookArgs );
+	$HookArgs = func_get_args();
+	return $this->TEITagsRenderer( 'title', $HookArgs );
   }
   
   public function RenderMetamark(){
-		$HookArgs = func_get_args();
-		return $this->TEITagsRenderer( 'metamark', $HookArgs );
+	$HookArgs = func_get_args();
+	return $this->TEITagsRenderer( 'metamark', $HookArgs );
   }
   
   public function RenderRestore(){
-		$HookArgs = func_get_args();
-		return $this->TEITagsRenderer( 'restore', $HookArgs );
+	$HookArgs = func_get_args();
+	return $this->TEITagsRenderer( 'restore', $HookArgs );
   }
   
   public function RenderSupplied(){
-		$HookArgs = func_get_args();
-		return $this->TEITagsRenderer( 'supplied', $HookArgs );
+	$HookArgs = func_get_args();
+	return $this->TEITagsRenderer( 'supplied', $HookArgs );
   }
 
   private function TEITagsRenderer ( $tag, $HookArgs ){
