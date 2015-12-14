@@ -102,18 +102,18 @@ var addExtraButtonsToClassicToolBar = function(){
     });
 
     mw.toolbar.addButton({
-    	'id'        : 'mw-editbutton-questionable',
-    	'imageFile' : $images_path + 'jb-button-questionable.png',
-        'speedTip'  : mw.msg( 'toolbar-label-questionable' ),
+    	'id'        : 'mw-editbutton-unclear',
+    	'imageFile' : $images_path + 'jb-button-unclear.png',
+        'speedTip'  : mw.msg( 'toolbar-label-unclear' ),
         'tagOpen'   : '<unclear>',
         'tagClose'  : '</unclear>',
-        'sampleText': mw.msg( 'toolbar-peri-questionable' )
+        'sampleText': mw.msg( 'toolbar-peri-unclear' )
     });
 
     mw.toolbar.addButton({
-    	'id'        : 'mw-editbutton-illegible',
-    	'imageFile' : $images_path + 'jb-button-illegible.png',
-        'speedTip'  : mw.msg( 'toolbar-label-illegible' ),
+    	'id'        : 'mw-editbutton-gap',
+    	'imageFile' : $images_path + 'jb-button-gap.png',
+        'speedTip'  : mw.msg( 'toolbar-label-gap' ),
         'tagOpen'   : '<gap/>',
         'tagClose'  : '',
         'sampleText': ''
@@ -290,7 +290,7 @@ var addExtraButtons = function() {
         $('.wikiEditor-ui-top').insertBefore('#editform')
         $('.wikiEditor-ui').insertAfter('.wikiEditor-ui-top');
         $('#wpTextbox1').insertBefore('#zoomviewerframe');
-                             
+        
 	$( '#wpTextbox1' ).wikiEditor( 'removeFromToolbar', {
         'section': 'advanced'
 	});
@@ -418,24 +418,24 @@ var addExtraButtons = function() {
 			        }
 			    },
 
-			    'questionable': {
-			        label : mw.msg( 'toolbar-label-questionable' ),
+			    'unclear': {
+			        label : mw.msg( 'toolbar-label-unclear' ),
 			        type  : 'button',
-			        icon  : $path + 'jb-button-questionable.png',
+			        icon  : $path + 'jb-button-unclear.png',
 			        action: {
 			                type   : 'encapsulate',
 			                options: {
 			                    pre:  '<unclear>',
-			                    peri: mw.msg( 'toolbar-peri-questionable' ),
+			                    peri: mw.msg( 'toolbar-peri-unclear' ),
 			                    post: '</unclear>',
 			                }
 			        }
 			    },
 
-			    'illegible': {
-			        label : mw.msg( 'toolbar-label-illegible' ),
+			    'gap': {
+			        label : mw.msg( 'toolbar-label-gap' ),
 			        type  : 'button',
-			        icon  : $path + 'jb-button-illegible.png',
+			        icon  : $path + 'jb-button-gap.png',
 			        action: {
 			                type   : 'encapsulate',
 			                options: {
