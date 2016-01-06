@@ -194,7 +194,7 @@ class baseSummaryPage extends SpecialPage {
   }
   
   /**
-   * This function gets the next letter of the alphabet
+   * This function gets the next letter or number 
    * 
    * @return string
    */
@@ -213,9 +213,12 @@ class baseSummaryPage extends SpecialPage {
     if($next_letter){
       return $next_letter; 
     }
-
-    //current letter is 'z', so do not set an upper limit
-    return ''; 
+    
+    if($next_letter === null){
+      return '99999999999999999999999999999999999999999999999999';
+    }
+    
+    return 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'; 
   }
   
   /**
