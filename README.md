@@ -50,12 +50,11 @@ you can install the extensions by:
 - Moving the content in w/skins into your local MediaWiki's skins folder (for example w/skins).
 - Moving the initialUpload and zoomImages folders to your website root.
 - Moving the .htaccess file to your website root (NOT the .htaccess files in the initialUpload and zoomImages folders - these should stay in the initialUpload and zoomImages folders).
-- Importing the CollateTable.sql, TempcollateTable.sql, ManuscriptsTable.sql and CollectionsTable.sql into your local MediaWiki's database (there should already be many tables in this database 
+- Importing ManuscriptDesk.sql into your local MediaWiki's database (there should already be many tables in this database 
   after MediaWiki's default installation. These should remain there).
 - Going to localsettings.php located in the root of your MediaWiki installation (for example w/localsettings.php), and by appending all code in exampleConf.php (except for the PHP tag) to this file.
 - Configuring the variables '$wgWebsiteRoot' and '$wgPrimaryDisk' in localsettings.php.
-- Configuring '$wgNewManuscriptOptions['perl_path']' in localsettings.php if needed. If you can call perl scripts from the command line by just typing 'perl path/to/a/perl/file.pl', the default 'perl'.
-should be used.
+- Configuring '$wgNewManuscriptOptions['perl_path']' in localsettings.php if needed. 
 - Installing CollateX. This can be done by downloading and installing the latest version from:http://collatex.net/. CollateX can be configured by modifying $wgCollationOptions['collatex_url'] in localsettings.php.
 - Logging in as Administrator, and copying the contents of Sidebar.txt to Mediawiki:Sidebar (For example localhost/md/Mediawiki:Sidebar).
 

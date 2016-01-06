@@ -211,7 +211,7 @@ class SpecialNewManuscript extends SpecialPage {
     $target_dir = $this->target_dir; 
     $user_name = $this->user_name; 
     $collection_error = "";
-        
+    
     //check if the $posted_title is valid
     list($new_page_url, $local_url, $title_error) = $this->checkTitle($posted_title);
     
@@ -221,7 +221,7 @@ class SpecialNewManuscript extends SpecialPage {
     }else{  
       $collection_error = $this->checkCollection($collection_title);
     }
-    
+        
     $target_dir = $target_dir . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $posted_title;
    
     $title_object = $uploadbase_object->getTitle();
@@ -351,6 +351,9 @@ class SpecialNewManuscript extends SpecialPage {
       wfErrorLog($this->msg('newmanuscript-error-database') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
       return $this->showUploadError($this->msg('newmanuscript-error-database'));
     }
+    
+    //insert into alphabetnumbersTable
+    $new_manuscript_wrapper->storeAlphabetnumbers($posted_title, $collection_title);    
         
     //redirect to the new page
     return $this->getOutput()->redirect($local_url);

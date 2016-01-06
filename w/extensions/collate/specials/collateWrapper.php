@@ -336,4 +336,98 @@ class collateWrapper{
     
     }  
   }
+  
+  /**
+   * This function increments the alphabetnumbers table. The first letter or digit of the $posted_title is extracted, and the value is incremented in the appropriate place.
+   * The alphabetnumbers table is used to visualize the number of pages in different categories (used in for example: Special:AllCollections)
+   * 
+   * @param type $collection_title
+   * @param type $user_name    
+   * @return boolean
+   */
+  public function storeAlphabetnumbers($main_title_lowercase){
+            
+    $first_char = substr($main_title_lowercase,0,1);
+    
+    if (preg_match('/[0-9]/',$first_char)){
+        
+      switch ($first_char){
+        case '0':
+          $first_char = 'zero';
+          break;  
+        case '1':
+          $first_char = 'one';
+          break;  
+        case '2':
+          $first_char = 'two';
+          break;  
+        case '3':
+          $first_char = 'three';
+          break;  
+        case '4':
+          $first_char = 'four';
+          break;  
+        case '5':
+          $first_char = 'five';
+          break;  
+        case '6':
+          $first_char = 'six';
+          break;  
+        case '7':
+          $first_char = 'seven';
+          break;  
+        case '8':
+          $first_char = 'eight';
+          break;  
+        case '9':
+          $first_char = 'nine';
+          break;  
+        }
+    }
+    
+    $alphabetnumbers_context = 'AllCollations';
+      
+    //first select the old value, increment it by one, and update the value. Ideally this should be done in 1 update statement, but there seems to be no other way using
+    //Mediawiki's database wrapper
+    $dbr = wfGetDB(DB_SLAVE);
+   
+    $res = $dbr->select(
+      'alphabetnumbers', //from
+      array( //values
+      $first_char,
+      ),
+      array(
+      'alphabetnumbers_context = ' . $dbr->addQuotes($alphabetnumbers_context),
+      ),
+      __METHOD__
+    );
+            
+    //there should only be 1 result
+    if ($res->numRows() === 1){
+      $s = $res->fetchObject();
+      $intvalue = (int)(($s->$first_char)+1);
+      
+      $dbw = wfGetDB(DB_MASTER);
+
+      $dbw->update(
+        'alphabetnumbers', //select table
+        array( //insert values
+        $first_char => $intvalue,
+         ),
+         array(
+        'alphabetnumbers_context = ' . $dbw->addQuotes($alphabetnumbers_context),
+      ),
+       __METHOD__
+    ); 
+    
+      if ($dbw->affectedRows()){
+        return true;
+      
+      }else{
+        return false;      
+      }    
+    }
+    
+    return false;   
+  }
 }

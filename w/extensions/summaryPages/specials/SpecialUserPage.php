@@ -958,8 +958,8 @@ class SpecialUserPage extends SpecialPage {
       
       $previous_offset = ($this->offset)-($this->max_on_page); 
       
-      $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
-      $previous_message = $this->msg('allmanuscriptpages-previous');
+      $previous_message_hover = $this->msg('singlemanuscriptpages-previoushover');
+      $previous_message = $this->msg('singlemanuscriptpages-previous');
       
       $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:UserPage" method="post">';      
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
@@ -974,8 +974,8 @@ class SpecialUserPage extends SpecialPage {
         $html.='<br>';
       }
       
-      $next_message_hover = $this->msg('allmanuscriptpages-nexthover');    
-      $next_message = $this->msg('allmanuscriptpages-next');
+      $next_message_hover = $this->msg('singlemanuscriptpages-nexthover');    
+      $next_message = $this->msg('singlemanuscriptpages-next');
       
       $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:UserPage" method="post">';           
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
