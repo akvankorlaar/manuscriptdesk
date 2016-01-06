@@ -354,24 +354,34 @@ class collateWrapper{
       switch ($first_char){
         case '0':
           $first_char = 'zero';
+          break;  
         case '1':
-          $first_char = 'one';  
+          $first_char = 'one';
+          break;  
         case '2':
           $first_char = 'two';
+          break;  
         case '3':
-          $first_char = 'three';  
+          $first_char = 'three';
+          break;  
         case '4':
-          $first_char = 'four';  
+          $first_char = 'four';
+          break;  
         case '5':
-          $first_char = 'five';  
+          $first_char = 'five';
+          break;  
         case '6':
-          $first_char = 'six';  
+          $first_char = 'six';
+          break;  
         case '7':
-          $first_char = 'seven';  
+          $first_char = 'seven';
+          break;  
         case '8':
-          $first_char = 'eight';  
+          $first_char = 'eight';
+          break;  
         case '9':
-          $first_char = 'nine';  
+          $first_char = 'nine';
+          break;  
         }
     }
     

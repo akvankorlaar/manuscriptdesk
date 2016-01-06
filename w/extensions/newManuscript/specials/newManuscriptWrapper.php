@@ -208,41 +208,51 @@ class newManuscriptWrapper{
    * @return boolean
    */
   public function storeAlphabetnumbers($posted_title, $collection_name){
-            
-    $first_char = substr($posted_title,0,1);
-    
+      
+    if($collection_name === 'none'){
+      $alphabetnumbers_context = 'SingleManuscriptPages'; 
+      $first_char = substr($posted_title,0,1);
+    }else{
+      $alphabetnumbers_context = 'AllCollections'; 
+      $first_char = substr($collection_name,0,1);
+    }
+                
     if (preg_match('/[0-9]/',$first_char)){
         
       switch ($first_char){
         case '0':
           $first_char = 'zero';
+          break;  
         case '1':
-          $first_char = 'one';  
+          $first_char = 'one';
+          break;  
         case '2':
           $first_char = 'two';
+          break;  
         case '3':
-          $first_char = 'three';  
+          $first_char = 'three';
+          break;  
         case '4':
-          $first_char = 'four';  
+          $first_char = 'four';
+          break;  
         case '5':
-          $first_char = 'five';  
+          $first_char = 'five';
+          break;  
         case '6':
-          $first_char = 'six';  
+          $first_char = 'six';
+          break;  
         case '7':
-          $first_char = 'seven';  
+          $first_char = 'seven';
+          break;  
         case '8':
-          $first_char = 'eight';  
+          $first_char = 'eight';
+          break;  
         case '9':
-          $first_char = 'nine';  
+          $first_char = 'nine';
+          break;   
         }
     }
 
-    if($collection_name === 'none'){
-      $alphabetnumbers_context = 'SingleManuscriptPages'; 
-    }else{
-      $alphabetnumbers_context = 'AllCollections';  
-    }  
-      
     //first select the old value, increment it by one, and update the value. Ideally this should be done in 1 update statement, but there seems to be no other way using
     //Mediawiki's database wrapper
     $dbr = wfGetDB(DB_SLAVE);

@@ -50,7 +50,7 @@ you can install the extensions by:
 - Moving the content in w/skins into your local MediaWiki's skins folder (for example w/skins).
 - Moving the initialUpload and zoomImages folders to your website root.
 - Moving the .htaccess file to your website root (NOT the .htaccess files in the initialUpload and zoomImages folders - these should stay in the initialUpload and zoomImages folders).
-- Importing the ManuscriptDesk.sql into your local MediaWiki's database (there should already be many tables in this database 
+- Importing ManuscriptDesk.sql into your local MediaWiki's database (there should already be many tables in this database 
   after MediaWiki's default installation. These should remain there).
 - Going to localsettings.php located in the root of your MediaWiki installation (for example w/localsettings.php), and by appending all code in exampleConf.php (except for the PHP tag) to this file.
 - Configuring the variables '$wgWebsiteRoot' and '$wgPrimaryDisk' in localsettings.php.
