@@ -351,6 +351,9 @@ class SpecialNewManuscript extends SpecialPage {
       wfErrorLog($this->msg('newmanuscript-error-database') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
       return $this->showUploadError($this->msg('newmanuscript-error-database'));
     }
+    
+    //insert into alphabetnumbersTable
+    $new_manuscript_wrapper->storeAlphabetnumbers($posted_title, $collection_title);    
         
     //redirect to the new page
     return $this->getOutput()->redirect($local_url);

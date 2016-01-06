@@ -40,7 +40,7 @@ class SpecialAllCollections extends baseSummaryPage {
    * 
    * @param type $title_array
    */
-  protected function showPage($title_array){
+  protected function showPage($title_array, $alphabet_numbers = array()){
     
     $out = $this->getOutput();  
     $article_url = $this->article_url; 
@@ -48,21 +48,48 @@ class SpecialAllCollections extends baseSummaryPage {
     $out->setPageTitle($this->msg('allcollections'));
     
     $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollections" method="post">';
+    $html .= "<table>";
 
-    //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
     $lowercase_alphabet = $this->lowercase_alphabet; 
-
+    
+    $a = 0;
+    
     foreach($uppercase_alphabet as $key=>$value){
-      $name = $lowercase_alphabet[$key]; 
-
-      if($this->button_name === $name){
-        $html .= "<input type='submit' name='$name' class='letter-button-active' value='$value'>";
-      }else{
-        $html .= "<input type='submit' name='$name' class='letter-button' value='$value'>";
+       
+      if($a === 0){
+        $html .= "<tr>";    
       }
-    }
-
+        
+      if($a === (count($uppercase_alphabet)/2)){
+        $html .= "</tr>";
+        $html .= "<tr>";  
+      }
+      
+      $name = $lowercase_alphabet[$key];
+      $alphabet_number = isset($alphabet_numbers[$key]) ? $alphabet_numbers[$key] : '';
+      
+      if($this->button_name === $name){   
+        $html .= "<td>";
+        $html .= "<div class='letter-div-active' style='display:inline-block;'>";
+        $html .= "<input type='submit' name='$name' class='letter-button-active' value='$value'>";
+        $html .= "<small>$alphabet_number</small>";
+        $html .= "</div>";  
+        $html .= "</td>";
+      }else{
+        $html .= "<td>";
+        $html .= "<div class='letter-div-initial' style='display:inline-block;'>";
+        $html .= "<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
+        $html .= "<small>$alphabet_number</small>";
+        $html .= "</div>";  
+        $html .= "</td>";    
+      }
+      
+      $a+=1; 
+    } 
+    
+    $html .= "</tr>";
+    $html .= "</table>";
     $html .= '</form>';
                 
     if(empty($title_array)){
@@ -151,7 +178,7 @@ class SpecialAllCollections extends baseSummaryPage {
    *  
    * @param type $single_collection_data
    */
-  protected function showSingleCollectionData($single_collection_data){
+  protected function showSingleCollectionData($single_collection_data, $alphabet_numbers = array()){
     
     $out = $this->getOutput();   
     $article_url = $this->article_url;
@@ -161,16 +188,48 @@ class SpecialAllCollections extends baseSummaryPage {
     $out->setPageTitle($this->msg('allcollections'));    
     
     $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollections" method="post">';
+    $html .= "<table>";
 
-    //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
     $lowercase_alphabet = $this->lowercase_alphabet; 
     
+    $a = 0;
+    
     foreach($uppercase_alphabet as $key=>$value){
-      $name = $lowercase_alphabet[$key]; 
-      $html .="<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
+       
+      if($a === 0){
+        $html .= "<tr>";    
+      }
+        
+      if($a === (count($uppercase_alphabet)/2)){
+        $html .= "</tr>";
+        $html .= "<tr>";  
+      }
+      
+      $name = $lowercase_alphabet[$key];
+      $alphabet_number = isset($alphabet_numbers[$key]) ? $alphabet_numbers[$key] : '';
+      
+      if($this->button_name === $name){   
+        $html .= "<td>";
+        $html .= "<div class='letter-div-active' style='display:inline-block;'>";
+        $html .= "<input type='submit' name='$name' class='letter-button-active' value='$value'>";
+        $html .= "<small>$alphabet_number</small>";
+        $html .= "</div>";  
+        $html .= "</td>";
+      }else{
+        $html .= "<td>";
+        $html .= "<div class='letter-div-initial' style='display:inline-block;'>";
+        $html .= "<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
+        $html .= "<small>$alphabet_number</small>";
+        $html .= "</div>";  
+        $html .= "</td>";    
+      }
+      
+      $a+=1; 
     } 
     
+    $html .= "</tr>";
+    $html .= "</table>";
     $html .= '</form><br>';
       
     $html .= $this->addSummaryPageLoader();
@@ -215,34 +274,56 @@ class SpecialAllCollections extends baseSummaryPage {
       
     return $out->addHTML($html);
   }
-  
+    
   /**
    * This function shows the default page if no request was posted 
    */
-  protected function showDefaultPage(){
+  protected function showDefaultPage($alphabet_numbers = array()){
       
     $out = $this->getOutput();   
     $article_url = $this->article_url; 
-        
+    
     $out->setPageTitle($this->msg('allcollections'));    
     
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllCollections" method="post">';
-
-    //make a list of buttons that have as value a letter of the alphabet
-    $uppercase_alphabet = $this->uppercase_alphabet;  
-    $lowercase_alphabet = $this->lowercase_alphabet; 
+    $html ='<form class="summarypage-form-default" action="' . $article_url . 'Special:AllCollections" method="post">';    
+    $html .= "<table>"; 
     
+    $uppercase_alphabet = $this->uppercase_alphabet;  
+    $lowercase_alphabet = $this->lowercase_alphabet;
+    $a = 0; 
+            
     foreach($uppercase_alphabet as $key=>$value){
-      $name = $lowercase_alphabet[$key]; 
-      $html .="<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
+       
+      if($a === 0){
+        $html .= "<tr>";    
+      }
+        
+      if($a === (count($uppercase_alphabet)/2)){
+        $html .= "</tr>";
+        $html .= "<tr>";  
+      }
+      
+      $name = $lowercase_alphabet[$key];
+      $alphabet_number = isset($alphabet_numbers[$key]) ? $alphabet_numbers[$key] : '';
+      
+      $html .= "<td>";
+      $html .= "<div class='letter-div-initial' style='display:inline-block;'>";
+      $html .= "<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
+      $html .= "<small>$alphabet_number</small>";
+      $html .= "</div>";  
+      $html .= "</td>";
+      
+      $a+=1; 
     } 
     
+    $html .= "</tr>";
+    $html .= "</table>"; 
     $html .= '</form><br>';
-    
+     
     $html .= $this->addSummaryPageLoader();
     
     $html .= "<p>" . $this->msg('allcollections-instruction') . "</p>";
     
-    return $out->addHTML($html);
+    return $out->addHTML($html);  
   }
 }

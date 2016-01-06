@@ -286,7 +286,7 @@ var addExtraButtons = function() {
       /*
        * The toolbar needs to be moved above the edit form so that
        * the viewer will float alongside the text area
-       */    
+       */         
         $('.wikiEditor-ui-top').insertBefore('#editform')
         $('.wikiEditor-ui').insertAfter('.wikiEditor-ui-top');
         $('#wpTextbox1').insertBefore('#zoomviewerframe');

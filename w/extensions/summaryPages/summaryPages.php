@@ -54,7 +54,7 @@ $wgExtensionMessagesFiles['summaryPages']  = __DIR__ . '/summaryPages.i18n.php';
 
 //Register auto load for the special page classes and register special pages
 $wgAutoloadClasses['SpecialUserPage'] = $dir . '/specials/SpecialUserPage.php';
-$wgAutoloadClasses['SpecialAllManuscriptPages'] = $dir . '/specials/SpecialAllManuscriptPages.php';
+$wgAutoloadClasses['SpecialSingleManuscriptPages'] = $dir . '/specials/SpecialSingleManuscriptPages.php';
 $wgAutoloadClasses['SpecialAllCollections'] = $dir . '/specials/SpecialAllCollections.php';
 $wgAutoloadClasses['SpecialRecentManuscriptPages'] = $dir . '/specials/SpecialRecentManuscriptPages.php';
 $wgAutoloadClasses['SpecialAllCollations'] = $dir . '/specials/SpecialAllCollations.php';
@@ -63,7 +63,7 @@ $wgAutoloadClasses['collectionMetaTable'] = $dir . '/specials/collectionMetaTabl
 $wgAutoloadClasses['summaryPageWrapper'] = $dir . '/specials/summaryPageWrapper.php';
 
 $wgSpecialPages['UserPage'] = 'SpecialUserPage';
-$wgSpecialPages['AllManuscriptPages'] = 'SpecialAllManuscriptPages';
+$wgSpecialPages['SingleManuscriptPages'] = 'SpecialSingleManuscriptPages';
 $wgSpecialPages['AllCollections'] = 'SpecialAllCollections';
 $wgSpecialPages['RecentManuscriptPages'] = 'SpecialRecentManuscriptPages';
 $wgSpecialPages['AllCollations'] = 'SpecialAllCollations';

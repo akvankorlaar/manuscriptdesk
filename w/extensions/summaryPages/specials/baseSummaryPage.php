@@ -148,13 +148,24 @@ class baseSummaryPage extends SpecialPage {
   public function execute(){
     
     $request_was_posted = $this->loadRequest();
-    
+        
     if($request_was_posted){
       return $this->processRequest();
     }
-    
+        
     //show the page without processing the request
-    return $this->showDefaultPage(); 
+    return $this->showDefaultPage($this->getAlphabetNumbers()); 
+  }
+  
+  /**
+   * This function returns the number of pages contained in each letter or digit
+   */
+  protected function getAlphabetNumbers(){
+      
+    $summary_page_wrapper = new summaryPageWrapper($this->page_name);  
+              
+    //retrieve data from the database wrapper
+    return $summary_page_wrapper->retrieveAlphabetNumbers();
   }
   
   /**
@@ -177,9 +188,9 @@ class baseSummaryPage extends SpecialPage {
       $single_collection_data = $summary_page_wrapper->retrieveFromDatabase(); 
       return $this->showSingleCollectionData($single_collection_data);
     }
-        
+                
     //show the page
-    $this->showPage($title_array);          
+    $this->showPage($title_array, $summary_page_wrapper->retrieveAlphabetNumbers());          
   }
   
   /**

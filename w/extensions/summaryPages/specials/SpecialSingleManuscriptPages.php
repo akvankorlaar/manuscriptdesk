@@ -22,16 +22,16 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SpecialAllManuscriptPages extends baseSummaryPage {
+class SpecialSingleManuscriptPages extends baseSummaryPage {
   
 /**
- * SpecialallManuscriptPages page. Organises all manuscripts 
+ * SpecialSingleManuscriptPages page. Organises all manuscripts 
  */
   
   public function __construct(){
     
     //call the parent constructor. The parent constructor (in 'summaryPages' class) will call the 'SpecialPage' class (grandparent) 
-    parent::__construct('AllManuscriptPages');
+    parent::__construct('SingleManuscriptPages');
   }
     
   /**
@@ -39,29 +39,56 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
    * 
    * @param type $title_array
    */
-  protected function showPage($title_array){
+  protected function showPage($title_array, $alphabet_numbers = array()){
     
     $out = $this->getOutput();   
     $article_url = $this->article_url; 
     
-    $out->setPageTitle($this->msg('allmanuscriptpages'));
+    $out->setPageTitle($this->msg('singlemanuscriptpages'));
     
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:SingleManuscriptPages" method="post">';
+    $html .= "<table>";
 
-    //make a list of buttons that have as value a letter of the alphabet
     $uppercase_alphabet = $this->uppercase_alphabet;  
     $lowercase_alphabet = $this->lowercase_alphabet; 
-
+    
+    $a = 0;
+    
     foreach($uppercase_alphabet as $key=>$value){
-      $name = $lowercase_alphabet[$key]; 
-
-      if($this->button_name === $name){
-        $html .= "<input type='submit' name='$name' class='letter-button-active' value='$value'>";
-      }else{
-        $html .= "<input type='submit' name='$name' class='letter-button' value='$value'>";
+       
+      if($a === 0){
+        $html .= "<tr>";    
       }
-    }
-
+        
+      if($a === (count($uppercase_alphabet)/2)){
+        $html .= "</tr>";
+        $html .= "<tr>";  
+      }
+      
+      $name = $lowercase_alphabet[$key];
+      $alphabet_number = isset($alphabet_numbers[$key]) ? $alphabet_numbers[$key] : '';
+      
+      if($this->button_name === $name){   
+        $html .= "<td>";
+        $html .= "<div class='letter-div-active' style='display:inline-block;'>";
+        $html .= "<input type='submit' name='$name' class='letter-button-active' value='$value'>";
+        $html .= "<small>$alphabet_number</small>";
+        $html .= "</div>";  
+        $html .= "</td>";
+      }else{
+        $html .= "<td>";
+        $html .= "<div class='letter-div-initial' style='display:inline-block;'>";
+        $html .= "<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
+        $html .= "<small>$alphabet_number</small>";
+        $html .= "</div>";  
+        $html .= "</td>";    
+      }
+      
+      $a+=1; 
+    } 
+    
+    $html .= "</tr>";
+    $html .= "</table>";
     $html .= '</form>';
                 
     if(empty($title_array)){
@@ -69,9 +96,9 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
       $html .= $this->addSummaryPageLoader();
            
       if($this->is_number){
-        $html .= "<p>" . $this->msg('allmanuscriptpages-nomanuscripts-number') . "</p>";
+        $html .= "<p>" . $this->msg('singlemanuscriptpages-nomanuscripts-number') . "</p>";
       }else{
-        $html .= "<p>" . $this->msg('allmanuscriptpages-nomanuscripts') . "</p>"; 
+        $html .= "<p>" . $this->msg('singlemanuscriptpages-nomanuscripts') . "</p>"; 
       }
       
       return $out->addHTML($html);
@@ -79,12 +106,12 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
     
     if($this->previous_page_possible){
       
-      $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
-      $previous_message = $this->msg('allmanuscriptpages-previous');
+      $previous_message_hover = $this->msg('singlemanuscriptpages-previoushover');
+      $previous_message = $this->msg('singlemanuscriptpages-previous');
       
       $previous_offset = ($this->offset)-($this->max_on_page); 
       
-      $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+      $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:SingleManuscriptPages" method="post">';
        
       $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
@@ -99,10 +126,10 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
         $html.='<br>';
       }
       
-      $next_message_hover = $this->msg('allmanuscriptpages-nexthover');    
-      $next_message = $this->msg('allmanuscriptpages-next');
+      $next_message_hover = $this->msg('singlemanuscriptpages-nexthover');    
+      $next_message = $this->msg('singlemanuscriptpages-next');
       
-      $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
+      $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:SingleManuscriptPages" method="post">';
             
       $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
       $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>"; 
@@ -143,31 +170,52 @@ class SpecialAllManuscriptPages extends baseSummaryPage {
   /**
    * This function shows the default page if no request was posted 
    */
-  protected function showDefaultPage(){
+  protected function showDefaultPage($alphabet_numbers = array()){
       
     $out = $this->getOutput();  
     $article_url = $this->article_url; 
         
-    $out->setPageTitle($this->msg('allmanuscriptpages'));    
+    $out->setPageTitle($this->msg('singlemanuscriptpages'));    
     
-    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:AllManuscriptPages" method="post">';
-
-    //make a list of buttons that have as value a letter of the alphabet
+    $html ='<form class="summarypage-form" action="' . $article_url . 'Special:SingleManuscriptPages" method="post">';
+    $html .= "<table>"; 
+    
     $uppercase_alphabet = $this->uppercase_alphabet;  
-    $lowercase_alphabet = $this->lowercase_alphabet; 
-    
+    $lowercase_alphabet = $this->lowercase_alphabet;
+    $a = 0; 
+            
     foreach($uppercase_alphabet as $key=>$value){
-      $name = $lowercase_alphabet[$key]; 
-      $html .="<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
+       
+      if($a === 0){
+        $html .= "<tr>";    
+      }
+        
+      if($a === (count($uppercase_alphabet)/2)){
+        $html .= "</tr>";
+        $html .= "<tr>";  
+      }
+      
+      $name = $lowercase_alphabet[$key];
+      $alphabet_number = isset($alphabet_numbers[$key]) ? $alphabet_numbers[$key] : '';
+      
+      $html .= "<td>";
+      $html .= "<div class='letter-div-initial' style='display:inline-block;'>";
+      $html .= "<input type='submit' name='$name' class='letter-button-initial' value='$value'>";
+      $html .= "<small>$alphabet_number</small>";
+      $html .= "</div>";  
+      $html .= "</td>";
+      
+      $a+=1; 
     } 
     
+    $html .= "</tr>";
+    $html .= "</table>"; 
     $html .= '</form><br>';
      
     $html .= $this->addSummaryPageLoader();
     
-    $html .= "<p>" . $this->msg('allmanuscriptpages-instruction') . "</p>";
+    $html .= "<p>" . $this->msg('singlemanuscriptpages-instruction') . "</p>";
     
     return $out->addHTML($html);
   }
 }
-

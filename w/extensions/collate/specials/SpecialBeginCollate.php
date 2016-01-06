@@ -309,6 +309,9 @@ class SpecialBeginCollate extends SpecialPage {
     if(!$status){
       return $this->showError('collate-error-database');
     }
+    
+    //save data in alphabetnumbersTable   
+    $collate_wrapper->storeAlphabetnumbers($main_title_lowercase);
                   
     //redirect the user to the new page
     return $this->getOutput()->redirect($local_url);  
@@ -445,7 +448,7 @@ class SpecialBeginCollate extends SpecialPage {
   
     return $texts; 
   }
-  
+
   /**
    * This function retrieves the wiki text from a page url
    * 

@@ -43,22 +43,45 @@
   background-color: white; 
 }
 
-.letter-button-active {
-  cursor: pointer;
-  background-color: #F2FCFF;
-  font-size: 30px;
-}
-
 .letter-button {
   cursor: pointer;
   background-color: #F2FCFF;
+}
+
+.letter-button-active {
+  cursor: pointer;
+  position: relative;
+  background-color: white;
+  border: transparent;
+  width: 25px;
+  height: 25px;
+}
+
+.letter-div-active {
+  background-color: white; 
+  border-width: 2px;
+  border-color: lightgray;
+  border-style: solid;
+  border-bottom: transparent; 
+  width: 60px; 
 }
 
 .letter-button-initial {
   cursor: pointer;
   position: relative;
   background-color: #F2FCFF;
-  top: 10px; 
+  border: transparent;
+  width: 25px;
+  height: 25px;
+}
+
+.letter-div-initial {
+  background-color: #F2FCFF; 
+  border-width: 2px;
+  border-color: lightgray;
+  border-style: solid;
+  border-bottom: transparent; 
+  width: 60px;
 }
 
 .button-transparent {
@@ -141,6 +164,5 @@ h2 {
 
 .summarypage-form-default{
   display: block;
-  height: 30px; 
+  height: 50px; 
 }
-
