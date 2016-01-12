@@ -79,9 +79,7 @@ class newManuscriptHooks {
     
   //class constructor
   public function __construct(){
-      
-    global $wgWebsiteRoot;   
-          
+                
     $this->new_manuscript_wrapper = new newManuscriptWrapper();    
   }
    

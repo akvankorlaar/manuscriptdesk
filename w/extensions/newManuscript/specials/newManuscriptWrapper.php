@@ -387,8 +387,7 @@ class newManuscriptWrapper{
       }    
     }
     
-    return false;   
-    
+    return false;      
   } 
   
   /**

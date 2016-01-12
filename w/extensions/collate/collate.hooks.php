@@ -27,9 +27,13 @@ class collateHooks {
 /**
  * Hooks for the collate extension 
  */
+    
+  private $collate_wrapper;   
    
   //class constructor 
-  public function __construct(){    
+  public function __construct(){ 
+  
+    $this->collate_wrapper = new collateWrapper();   
   }
 
   /**
@@ -57,7 +61,7 @@ class collateHooks {
 
     $page_title_with_namespace = $title->getPrefixedUrl();    
 
-    $status = $this->getCollations($page_title_with_namespace);
+    $status = $this->collate_wrapper->getCollations($page_title_with_namespace);
 
     //something went wrong when retrieving the values from the database 
     if(!$status){
@@ -80,49 +84,6 @@ class collateHooks {
     $output->addHTML($html_output);
   
     return true; 
-  }
-
-/**
- * This function retrieves data from the 'collations' table
- * 
- * @param type $url
- * @return boolean
- */
-  private function getCollations($url){
-
-    $dbr = wfGetDB(DB_SLAVE);
-
-    //Database query
-    $res = $dbr->select(
-      'collations', //from
-      array(
-        'collations_user',//values
-        'collations_url',
-        'collations_date',
-        'collations_titles_array',
-        'collations_collatex'
-         ),
-      array(
-      'collations_url = ' . $dbr->addQuotes($url), //conditions  
-      ),
-      __METHOD__ 
-      );
-
-      //there should be exactly 1 result
-    if ($res->numRows() === 1){
-      $s = $res->fetchObject();
-
-      $user_name = $s->collations_user;
-      $date = $s->collations_date; 
-      $titles_array = $s->collations_titles_array;
-      $collatex_output = $s->collations_collatex;
-
-      return array($user_name, $date, $titles_array,$collatex_output);
-
-    }else{
-
-      return false; 
-    }     
   }
 
   /**
@@ -220,35 +181,14 @@ class collateHooks {
         return false; 
     }
     
-    $this->deleteDatabaseEntry($title_object->getPrefixedURL()); 
+    $main_title_lowercase = isset($page_title_array[1]) ? $page_title_array[1] : null; 
+    
+    $this->collate_wrapper->deleteDatabaseEntry($title_object->getPrefixedURL());
+    $this->collate_wrapper->subtractAlphabetnumbers($main_title_lowercase); 
     
     return true; 
   }
   
-  /**
-   * This function deletes the entry for corresponding to the page in the 'collations' table
-   */
-  private function deleteDatabaseEntry($page_title_with_namespace){
-        
-    $dbw = wfGetDB(DB_MASTER);
-    
-    $dbw->delete( 
-      'collations', //from
-      array( 
-      'collations_url' => $page_title_with_namespace //conditions
-        ), 
-      __METHOD__ 
-        );
-    
-    if ($dbw->affectedRows()){
-      //something was deleted from the manuscripts table  
-      return true;
-    }else{
-      //nothing was deleted
-      return false;
-    }
-  }
-    
   /**
    * This function loads additional modules containing CSS before the page is displayed
    * 
