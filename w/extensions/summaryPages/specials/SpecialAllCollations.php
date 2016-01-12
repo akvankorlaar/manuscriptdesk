@@ -41,10 +41,6 @@ class SpecialAllCollations extends baseSummaryPage {
    */
   protected function showPage($title_array, $alphabet_numbers = array()){
       
-//    for($i = 0; $i <= 38; $i++){
-//      $alphabet_numbers[$i] = rand(0,1000);
-//    }
-    
     $out = $this->getOutput();    
     $article_url = $this->article_url; 
     
@@ -71,6 +67,12 @@ class SpecialAllCollations extends baseSummaryPage {
       
       $name = $lowercase_alphabet[$key];
       $alphabet_number = isset($alphabet_numbers[$key]) ? $alphabet_numbers[$key] : '';
+      
+      if(isset($alphabet_numbers[$key]) && $alphabet_numbers[$key] > 0){
+        $alphabet_number = $alphabet_numbers[$key];  
+      }else{
+        $alphabet_number = '';  
+      }
       
       if($this->button_name === $name){   
         $html .= "<td>";
@@ -200,7 +202,12 @@ class SpecialAllCollations extends baseSummaryPage {
       }
       
       $name = $lowercase_alphabet[$key];
-      $alphabet_number = isset($alphabet_numbers[$key]) ? $alphabet_numbers[$key] : '';
+      
+      if(isset($alphabet_numbers[$key]) && $alphabet_numbers[$key] > 0){
+        $alphabet_number = $alphabet_numbers[$key];  
+      }else{
+        $alphabet_number = '';  
+      }
       
       $html .= "<td>";
       $html .= "<div class='letter-div-initial' style='display:inline-block;'>";
