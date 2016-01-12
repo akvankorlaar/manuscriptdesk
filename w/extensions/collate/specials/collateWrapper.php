@@ -430,4 +430,167 @@ class collateWrapper{
     
     return false;   
   }
+  
+  
+/**
+ * This function retrieves data from the 'collations' table
+ * 
+ * @param type $url
+ * @return boolean
+ */
+  public function getCollations($url){
+
+    $dbr = wfGetDB(DB_SLAVE);
+
+    //Database query
+    $res = $dbr->select(
+      'collations', //from
+      array(
+        'collations_user',//values
+        'collations_url',
+        'collations_date',
+        'collations_titles_array',
+        'collations_collatex'
+         ),
+      array(
+      'collations_url = ' . $dbr->addQuotes($url), //conditions  
+      ),
+      __METHOD__ 
+      );
+
+      //there should be exactly 1 result
+    if ($res->numRows() === 1){
+      $s = $res->fetchObject();
+
+      $user_name = $s->collations_user;
+      $date = $s->collations_date; 
+      $titles_array = $s->collations_titles_array;
+      $collatex_output = $s->collations_collatex;
+
+      return array($user_name, $date, $titles_array,$collatex_output);
+
+    }else{
+
+      return false; 
+    }     
+  }
+  
+  
+  /**
+   * This function deletes the entry for corresponding to the page in the 'collations' table
+   */
+  public function deleteDatabaseEntry($page_title_with_namespace){
+        
+    $dbw = wfGetDB(DB_MASTER);
+    
+    $dbw->delete( 
+      'collations', //from
+      array( 
+      'collations_url' => $page_title_with_namespace //conditions
+        ), 
+      __METHOD__ 
+        );
+    
+    if ($dbw->affectedRows()){
+      //something was deleted from the manuscripts table  
+      return true;
+    }else{
+      //nothing was deleted
+      return false;
+    }
+  }
+  
+  /**
+   * This function subtracts entries in the alphabetnumbers table when one of the collation pages is deleted
+   */
+  public function subtractAlphabetnumbers($main_title_lowercase){
+      
+    if($main_title_lowercase === null){
+      return true; 
+    }  
+      
+    $first_char = substr($main_title_lowercase,0,1);
+    
+    if (preg_match('/[0-9]/',$first_char)){
+        
+      switch ($first_char){
+        case '0':
+          $first_char = 'zero';
+          break;  
+        case '1':
+          $first_char = 'one';
+          break;  
+        case '2':
+          $first_char = 'two';
+          break;  
+        case '3':
+          $first_char = 'three';
+          break;  
+        case '4':
+          $first_char = 'four';
+          break;  
+        case '5':
+          $first_char = 'five';
+          break;  
+        case '6':
+          $first_char = 'six';
+          break;  
+        case '7':
+          $first_char = 'seven';
+          break;  
+        case '8':
+          $first_char = 'eight';
+          break;  
+        case '9':
+          $first_char = 'nine';
+          break;  
+        }
+    }
+    
+    $alphabetnumbers_context = 'AllCollations';
+      
+    //first select the old value, increment it by one, and update the value. Ideally this should be done in 1 update statement, but there seems to be no other way using
+    //Mediawiki's database wrapper
+    $dbr = wfGetDB(DB_SLAVE);
+   
+    $res = $dbr->select(
+      'alphabetnumbers', //from
+      array( //values
+      $first_char,
+      ),
+      array(
+      'alphabetnumbers_context = ' . $dbr->addQuotes($alphabetnumbers_context),
+      ),
+      __METHOD__
+    );
+            
+    //there should only be 1 result
+    if ($res->numRows() === 1){
+      $s = $res->fetchObject();
+      $intvalue = (int)(($s->$first_char)-1);
+      
+      $dbw = wfGetDB(DB_MASTER);
+
+      $dbw->update(
+        'alphabetnumbers', //select table
+        array( //insert values
+        $first_char => $intvalue,
+         ),
+         array(
+        'alphabetnumbers_context = ' . $dbw->addQuotes($alphabetnumbers_context),
+      ),
+       __METHOD__
+    ); 
+    
+      if ($dbw->affectedRows()){
+        return true;
+      
+      }else{
+        return false;      
+      }    
+    }
+    
+    return false;
+    
+  }
 }

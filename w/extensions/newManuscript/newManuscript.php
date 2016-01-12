@@ -93,3 +93,4 @@ $wgHooks['AbortMove'][] = array($newManuscriptHooks, 'onAbortMove');
 $wgHooks['ArticleDelete'][] = array($newManuscriptHooks, 'onArticleDelete');
 $wgHooks['PageContentSave'][] = array($newManuscriptHooks,'onPageContentSave');
 $wgHooks['BeforePageDisplay'][] = array($newManuscriptHooks, 'onBeforePageDisplay');
+$wgHooks['ParserAfterTidy'][] = array($newManuscriptHooks, 'onParserAfterTidy');
