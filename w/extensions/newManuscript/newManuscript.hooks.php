@@ -872,6 +872,27 @@ class newManuscriptHooks {
           
     return true; 
   }
+  
+  /**
+   * This function visualizes <add> and <del> tags that are nested in themselves correctly. It also removes tags that are not available in the editor for visualization.
+   * These tags will still be available in the editor. 
+   * 
+   * @param type $identifier
+   * @return \type
+   */
+  public function onParserAfterTidy( &$parser, &$text ){
+                 
+    //look for stray </add> tags, and replace them with a tei-add span element  
+    $text = preg_replace('/<\/span><\/span>(.*?)&lt;\/add&gt;/','</span></span><span class="tei-add">$1</span>', $text);
+    
+    //look for stray </del> tags, and replace them with a tei-del span element  
+    $text = preg_replace('/<\/span><\/span>(.*?)&lt;\/del&gt;/','</span></span><span class="tei-del">$1</span>', $text);
+  
+    //look for any other escaped tags, and remove them
+    $text = preg_replace('/&lt;(.*?)&gt;/s','', $text);
+        
+    return true; 
+  }
 
   /**
    * This function retrieves the message from the i18n file for String $identifier
