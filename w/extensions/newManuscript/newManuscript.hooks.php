@@ -56,6 +56,8 @@ class newManuscriptHooks {
  * normal wiki pages on NS_MANUSCRIPTS (the manuscripts namespace identified by 'manuscripts:' in the URL)
  */
       
+  private $new_manuscript_wrapper;
+  
   private $title_options_site_name;
   private $images_root_dir;
   private $mediawiki_dir;
@@ -74,6 +76,14 @@ class newManuscriptHooks {
   private $original_image_check_before_delete;
   private $max_charachters_manuscript; 
   private $view;
+    
+  //class constructor
+  public function __construct(){
+      
+    global $wgWebsiteRoot;   
+          
+    $this->new_manuscript_wrapper = new newManuscriptWrapper();    
+  }
    
  /**
   * Assign globals to properties
@@ -88,7 +98,7 @@ class newManuscriptHooks {
     $this->original_images_dir = $wgNewManuscriptOptions['original_images_dir'];
     $this->page_title = strip_tags($wgOut->getTitle()->getPartialURL());
     $this->page_title_with_namespace = strip_tags($wgOut->getTitle()->getPrefixedURL());
-    $this->namespace = $wgOut->getTitle()->getNamespace();
+    $this->namespace = $wgOut->getTitle()->getNamespace();  
     $this->document_root = $wgWebsiteRoot; 
     
     $this->title_options_site_name = 'Manuscript Desk';   
@@ -99,7 +109,7 @@ class newManuscriptHooks {
     $this->max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
     
     $this->zoomimage_check_before_delete = false;
-    $this->original_image_check_before_delete = false;
+    $this->original_image_check_before_delete = false;      
         
     $this->view = false;
     
@@ -160,7 +170,7 @@ class newManuscriptHooks {
     $user_fromurl = $this->user_fromurl; 
     
     $html = "";    
-    $collection_title = $this->getCollection();
+    $collection_title = $this->new_manuscript_wrapper->getCollection($this->page_title_with_namespace);
     
     if($collection_title !== null){
       $html .= '<h2>' . htmlspecialchars($collection_title) . '</h2><br>';
@@ -287,45 +297,6 @@ class newManuscriptHooks {
     $html .= "</td>";
     
     return $html; 
-  }
-  
-  /**
-   * This function retrieves the collection of the current page
-   * 
-   * @return type
-   */
-  private function getCollection($page_title_with_namespace = null){
-    
-    $page_title_with_namespace = isset($page_title_with_namespace) ? $page_title_with_namespace : $this->page_title_with_namespace; 
-    
-    $dbr = wfGetDB(DB_SLAVE);
-        
-     //Database query
-    $res = $dbr->select(
-        'manuscripts', //from
-      array(
-        'manuscripts_collection',//values
-      ),
-      array(
-       'manuscripts_url = ' . $dbr->addQuotes($page_title_with_namespace),//conditions
-      ), 
-      __METHOD__,
-      array(
-      'ORDER BY' => 'manuscripts_collection',
-      )
-    );
-        
-    //there should only be 1 result
-    if ($res->numRows() === 1){
-      
-      $collection_name = $res->fetchObject()->manuscripts_collection; 
-      
-      if(!empty($collection_name) && $collection_name !== 'none'){
-        return htmlspecialchars($collection_name); 
-      }
-    }                
-           
-    return null; 
   }
   
   /**
@@ -619,13 +590,15 @@ class newManuscriptHooks {
     }
     
     $this->user_fromurl = $user_fromurl; 
-    $this->filename_fromurl = $filename_fromurl; 
-        
+    $this->filename_fromurl = $filename_fromurl;
+            
     $this->deleteExportFiles($zoom_images_file);
     
     $this->deleteOriginalImage();
-    
-    $this->deleteDatabaseEntry();
+        
+    $collection_name = $this->new_manuscript_wrapper->getCollection($this->page_title_with_namespace); 
+    $this->new_manuscript_wrapper->deleteDatabaseEntry($collection_name, $this->page_title_with_namespace);  
+    $this->new_manuscript_wrapper->subtractAlphabetnumbers($filename_fromurl, $collection_name);    
     
     return true;    
   }
@@ -712,74 +685,7 @@ class newManuscriptHooks {
     
     return false;   
   }  
-  
-  /**
-   * This function deletes the entry for $page_title in the 'manuscripts' table
-   */
-  private function deleteDatabaseEntry(){
     
-    $page_title_with_namespace = $this->page_title_with_namespace;    
-    $dbw = wfGetDB(DB_MASTER);
-    
-    $collection_name = $this->getCollection();
-    
-    $dbw->delete( 
-      'manuscripts', //from
-      array( 
-      'manuscripts_url' => $page_title_with_namespace), //conditions
-      __METHOD__ );
-    
-    if ($dbw->affectedRows()){
-      //something was deleted from the manuscripts table 
-
-      if($collection_name !== null){
-        //check if the collection has no pages left, and if so, delete the collection
-        $this->checkAndDeleteCollection($collection_name);
-      }
-
-      return true;
-
-    }else{
-      //nothing was deleted
-      return false;
-    }
-  }
-  
-  /**
-   * This function checks if the collection is empty, and deletes the collection along with its metadata if this is the case
-   */
-  private function checkAndDeleteCollection($collection_name){
-    
-    $dbr = wfGetDB(DB_SLAVE);
-    
-    //First check if the collection is empty
-    $res = $dbr->select(
-        'manuscripts', //from
-      array(
-        'manuscripts_url',
-      ),
-      array(
-        'manuscripts_collection = ' . $dbr->addQuotes($collection_name),
-      ),
-      __METHOD__
-    );
-        
-    //If the collection is empty, delete the collection
-    if($res->numRows() === 0){
-          
-      $dbw = wfGetDB(DB_MASTER);
-    
-      $dbw->delete( 
-        'collections', //from
-        array( 
-        'collections_title' => $collection_name //conditions
-          ), 
-        __METHOD__ ); 
-    }  
-    
-    return true; 
-  }
-  
   /**
    * This function prevents users from saving new wiki pages on NS_MANUSCRIPTS when there is no corresponding file in the database,
    * and it checks if the content is not larger than $max_charachters_manuscript  
@@ -860,7 +766,7 @@ class newManuscriptHooks {
        
       //meta table has to rendered here, because in this way it will be appended after the text html, and not before
       if($this->view){
-        $collection = $this->getCollection($page_title_with_namespace);
+        $collection = $this->new_manuscript_wrapper->getCollection($page_title_with_namespace);
         $html = $this->renderMetaTable($collection);
         $out->addHTML($html);
       }
