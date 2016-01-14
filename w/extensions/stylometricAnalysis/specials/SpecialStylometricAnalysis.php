@@ -1,5 +1,10 @@
 <?php
 /**
+ * Todo: Incorporate try catch statements
+ * 
+ * Todo: Make a database that checks whether the last analysis was 2 hours ago
+ * 
+ * 
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
@@ -80,6 +85,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $visualization1;
   private $visualization2; 
   
+  private $form; 
+  
   //step size cannot be larger than segment size, or larger than any of the collections
    
   //class constructor
@@ -111,7 +118,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->web_root = $wgWebsiteRoot; 
     
     parent::__construct('StylometricAnalysis');
-	}
+  }
   
   /**
    * This function loads requests when a user submits the StylometricAnalysis form
@@ -127,7 +134,28 @@ class SpecialStylometricAnalysis extends SpecialPage {
       return false;  
     }
     
-    $posted_names = $request->getValueNames();    
+    $edit_token = $request->getText('wpEditToken');
+        
+    if($edit_token !== ''){
+        
+      $this->token_is_ok = $this->getUser()->matchEditToken($edit_token);  
+        
+      if($this->token_is_ok === false){ 
+        return false; 
+      }  
+      
+      return $this->loadForm2($request);  
+    }
+   
+    return $this->loadForm1($request);
+  }
+  
+  /**
+   * This function loads the variables in Form 1
+   */
+  private function loadForm1($request){
+           
+    $posted_names = $request->getValueNames();  
      
     //identify the button pressed
     foreach($posted_names as $key=>$checkbox){
@@ -137,52 +165,63 @@ class SpecialStylometricAnalysis extends SpecialPage {
 
       if($checkbox_without_numbers === 'collection'){
         $this->collection_array[$checkbox] = (array)$this->validateInput(json_decode($request->getText($checkbox)));                      
-      }elseif($checkbox_without_numbers === 'wpEditToken'){
-        $token = $request->getVal('wpEditToken');
-        $this->token_is_ok = $this->getUser()->matchEditToken($token);
-        break; 
-      }     
-    }
-               
-    if($this->token_is_ok === true){
-      
-      $this->removenonalpha = $this->validateInput($request->getText('wpremovenonalpha'));
-      $this->lowercase = $this->validateInput($request->getText('wplowercase'));
-      
-      $this->tokenizer = $this->validateInput($request->getText('wptokenizer'));
-      $this->minimumsize = (int)$this->validateNumber($request->getText('wpminimumsize'));
-      $this->maximumsize = (int)$this->validateNumber($request->getText('wpmaximumsize'));
-      $this->segmentsize = (int)$this->validateNumber($request->getText('wpsegmentsize'));
-      $this->stepsize = (int)$this->validateNumber($request->getText('wpstepsize'));
-      $this->removepronouns = $this->validateInput($request->getText('wpremovepronouns'));
-      
-      $this->vectorspace = $this->validateInput($request->getText('wpvectorspace'));
-      $this->featuretype = $this->validateInput($request->getText('wpfeaturetype'));
-      
-      $this->ngramsize = (int)$this->validateNumber($request->getText('wpngramsize'));
-      $this->mfi = (int)$this->validateNumber($request->getText('wpmfi'));
-      $this->minimumdf = floatval($this->validateNumber($request->getText('wpminimumdf')));
-      $this->maximumdf = floatval($this->validateNumber($request->getText('wpmaximumdf')));
-      
-      $this->visualization1 = $this->validateInput($request->getText('wpvisualization1'));
-      $this->visualization2 = $this->validateInput($request->getText('wpvisualization2'));
-            
-      $this->collection_array = (array)$this->validateInput(json_decode($request->getText('collection_array')));
-      
-      foreach($this->collection_array as $index=>&$value){
-        $this->collection_array[$index] = (array)$value;
-      }
-      
-      $this->removenonalpha = empty($this->removenonalpha) ? 0 : $this->removenonalpha; 
-      $this->lowercase = empty($this->lowercase) ? 0 : $this->lowercase;
-      $this->removepronouns = empty($this->removepronouns) ? 0 : $this->removepronouns; 
-      
-      return true; 
+      }   
     }
     
-    if($this->variable_validated === false || $this->token_is_ok === false){
+    if($this->variable_validated === false){
       return false; 
     }
+    
+    $this->form = 'Form1';
+              
+    return true; 
+  }
+  
+  /**
+   * This function loads the variables in Form 2
+   * 
+   * @param type $request
+   * @return boolean
+   */
+  private function loadForm2($request){
+                         
+    $this->removenonalpha = $this->validateInput($request->getText('wpremovenonalpha'));
+    $this->lowercase = $this->validateInput($request->getText('wplowercase'));
+
+    $this->tokenizer = $this->validateInput($request->getText('wptokenizer'));
+    $this->minimumsize = (int)$this->validateNumber($request->getText('wpminimumsize'));
+    $this->maximumsize = (int)$this->validateNumber($request->getText('wpmaximumsize'));
+    $this->segmentsize = (int)$this->validateNumber($request->getText('wpsegmentsize'));
+    $this->stepsize = (int)$this->validateNumber($request->getText('wpstepsize'));
+    $this->removepronouns = $this->validateInput($request->getText('wpremovepronouns'));
+
+    $this->vectorspace = $this->validateInput($request->getText('wpvectorspace'));
+    $this->featuretype = $this->validateInput($request->getText('wpfeaturetype'));
+
+    $this->ngramsize = (int)$this->validateNumber($request->getText('wpngramsize'));
+    $this->mfi = (int)$this->validateNumber($request->getText('wpmfi'));
+    $this->minimumdf = floatval($this->validateNumber($request->getText('wpminimumdf')));
+    $this->maximumdf = floatval($this->validateNumber($request->getText('wpmaximumdf')));
+
+    $this->visualization1 = $this->validateInput($request->getText('wpvisualization1'));
+    $this->visualization2 = $this->validateInput($request->getText('wpvisualization2'));
+
+    $this->collection_array = (array)$this->validateInput(json_decode($request->getText('collection_array')));
+
+    foreach($this->collection_array as $index=>&$value){
+      //cast everything in collection_array to an array
+      $this->collection_array[$index] = (array)$value;
+    }
+
+    $this->removenonalpha = empty($this->removenonalpha) ? 0 : $this->removenonalpha; 
+    $this->lowercase = empty($this->lowercase) ? 0 : $this->lowercase;
+    $this->removepronouns = empty($this->removepronouns) ? 0 : $this->removepronouns;     
+    
+    if($this->variable_validated === false){
+      return false; 
+    }
+    
+    $this->form = 'Form2';
               
     return true; 
   }
@@ -209,7 +248,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     //check if all charachters are alphanumeric, or '/' or ':' (in case of url)
     if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
-      $this->variable_validated = false; 
+      $this->variable_validated = false;
       return false; 
     }
     
@@ -256,109 +295,100 @@ class SpecialStylometricAnalysis extends SpecialPage {
   public function execute(){
     
     $out = $this->getOutput();
-    $user_object = $this->getUser();    
+    $user_object = $this->getUser(); 
+    $this->user_name = $user_object->getName();    
+    $this->full_manuscripts_url = $this->manuscripts_namespace_url . $this->user_name . '/';
     
+    //user does not have permission
     if(!in_array('sysop',$user_object->getGroups())){
       return $out->addHTML($this->msg('stylometricanalysis-nopermission'));
     }
       
-    $user_name = $user_object->getName();
-    $this->user_name = $user_name; 
-    
-    $this->full_manuscripts_url = $this->manuscripts_namespace_url . $this->user_name . '/';
-    
-    $request_was_posted = $this->loadRequest();
-    
-    if($request_was_posted){
-      return $this->processRequest();
-    }
-    
+    if($this->loadRequest()){
+        
+      try{
+        if($this->form = 'Form1'){
+          return $this->processForm1();  
+        }else{             
+          return $this->processForm2();
+        }
+      }catch(Exception $e){        
+        return $this->showError($e->getMessage(), $this->form);        
+      }         
+    }     
+      
     return $this->prepareDefaultPage($out);   
   }
-  
+   
   /**
-   * Processes the request when a user has submitted a form
+   * This function processes form1
    * 
    * @return type
    */
-  private function processRequest(){
-    
-    $web_root = $this->web_root; 
-      
-    //Form1: Stylometric Analysis collection selection
-    if(!isset($this->token_is_ok)){
-    
-      if(count($this->collection_array) < $this->minimum_collections){
-        return $this->showError('stylometricanalysis-error-fewcollections', 'Form1');
-      }
-
-      if(count($this->collection_array) > $this->minimum_collections){
-        return $this->showError('stylometricanalysis-error-manycollections', 'Form1');
-      }
-
-      return $this->showStylometricAnalysisForm();
+  private function processForm1(){
+              
+    if(count($this->collection_array) < $this->minimum_collections){        
+      throw new Exception('stylometricanalysis-error-fewcollections');   
     }
+
+    if(count($this->collection_array) > $this->minimum_collections){
+      throw new Exception('stylometricanalysis-error-manycollections');   
+    }
+        
+    return $this->showStylometricAnalysisForm();
+  }
+  
+  /**
+   * This function processes form2
+   */
+  private function processForm2(){
     
     //Form2: Stylometric Analysis options form
     if($this->variable_validated_number === false){
-      return $this->showError('stylometricanalysis-error-number', 'Form2');
+      throw new Exception('stylometricanalysis-error-number');   
     }
     
     if($this->variable_validated_empty === false){
-      return $this->showError('stylometricanalysis-error-empty', 'Form2');
+      throw new Exception('stylometricanalysis-error-empty');   
     }
     
     if($this->variable_validated_max_length === false){
-      return $this->showError('stylometricanalysis-error-maxlength', 'Form2');
+      throw new Exception('stylometricanalysis-error-maxlength');    
     }
     
     //$this->minimumsize cannot be larger or equal to $this->maximumsize
     if($this->minimumsize >= $this->maximumsize){
-      return $this->showError('stylometricanalysis-error-minmax', 'Form2');
+      throw new Exception('stylometricanalysis-error-minmax');   
     }
     
     //$this->stepsize cannot be larger or equal to $this->segmentsize
     if($this->stepsize > $this->segmentsize){
-      return $this->showError('stylometricanalysis-error-stepsizesegmentsize', 'Form2'); 
+      throw new Exception('stylometricanalysis-error-stepsizesegmentsize');   
     }
     
     //mfi has to be at least $this->min_mfi (errors will occur with mfi less than 5)
     if($this->mfi < $this->min_mfi){
-      return $this->showError('stylometricanalysis-error-mfi', 'Form2');
+      throw new Exception('stylometricanalysis-error-mfi');   
     }
           
     $texts = $this->constructTexts();
     
-    //collections can never be smaller than $this->min_words_collection
-    if($texts === 'stylometric-analysis-toosmall'){
-      return $this->showError('stylometricanalysis-error-toosmall', 'Form2');
+    if(is_string($texts)){
+      //an error occurred when constructing the texts 
+      throw new Exception($texts);   
     }
-    
-    //collections can never be smaller than $this->minsize
-    if($texts === 'stylometric-analysis-minsize'){
-      return $this->showError('stylometricanalysis-error-minsize', 'Form2');
-    }
-    
-    //collections can never be smaller than $this->segmentsize + $this->stepsize
-    if($texts === 'stylometric-analysis-segment'){
-      return $this->showError('stylometricanalysis-error-segmentsize', 'Form2');
-    }
-    
-    //collection can never be smaller than $this->ngramsize
-    if($texts === 'stylometric-analysis-ngramsize'){
-      return $this->showError('stylometricanalysis-error-ngramsize', 'Form2');
-    }
-     
+         
     //if returned false, one of the posted pages did not exist
     if($texts === false){
-      wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');   
-      return $this->showError('stylometricanalysis-error-notexists', 'Form1');
+      wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log'); 
+      $this->form = 'Form1';
+      throw new Exception('stylometricanalysis-error-notexists');   
     }
     
     list($base_outputpath, $full_outputpath1, $full_outputpath2) = $this->constructOutputPath();
     
     if(is_file($full_outputpath1) || is_file($full_outputpath2)){
-      return $this->showError('stylometricanalysis-error-outputpath', 'Form2');
+      throw new Exception('stylometricanalysis-error-outputpath');   
     }
         
     //to be able to send array data to python via the command line, strings must be double quoted, and integers must be single quoted
@@ -386,50 +416,51 @@ class SpecialStylometricAnalysis extends SpecialPage {
     );
         
     $data = json_encode($config_array);
-    $data = escapeshellarg($data);
-    
-    //now that you have a jpg file of the right format..
-    //files should be deleted if they are older than 2 hours... 
-    //make a database that checks this
+    $data = escapeshellarg($data); 
 
     $output = system(escapeshellcmd($this->constructCommand() . ' ' . $data));
     
     //something went wrong when importing data into PyStyl
     if (strpos($output, 'stylometricanalysis-error-import') !== false){
-      return $this->showError('stylometricanalysis-error-import', 'Form2');  
+      throw new Exception('stylometricanalysis-error-import');   
     }
     
     //the path already exists
     if (strpos($output, 'stylometricanalysis-error-path') !== false){
-      return $this->showError('stylometricanalysis-error-path', 'Form2');
+      throw new Exception('stylometricanalysis-error-path');   
     }
     
     //something went wrong when doing the analysis in PyStyl
     if (strpos($output, 'stylometricanalysis-error-analysis') !== false){
-      //return $this->getOutput()->addHTML($output);
-      return $this->showError('stylometricanalysis-error-analysis', 'Form2');      
+      throw new Exception('stylometricanalysis-error-analysis');   
     }
     
     if (strpos($output, 'analysiscomplete') !== false){
+            
+    //now that you have a jpg file of the right format..
+    //files should be deleted if they are older than 2 hours... 
+    //make a database that checks this
+    
+    //also check for analysis of more than 2 collections ...
       
-//      $status = $this->insertAndDeleteData($full_outputpath1, $full_outputpath2);
-//      
-//      if($status === false){
-//        return $this->showError('stylometricanalysis-error-insertanddelete', 'Form2');
-//      }
+    $status = $this->prepareTempstylometricanalysis($full_outputpath1, $full_outputpath2);
       
-      return $this->showResult($full_outputpath1, $full_outputpath2);
+    if($status === false){
+      throw new Exception('stylometricanalysis-error-insertanddelete');   
+    }
+      
+     return $this->showResult($full_outputpath1, $full_outputpath2);
     }
   }
   
   /**
-   * This function inserts data about the new analysis in 'tempstylometricanalysis, and deletes old analysis values from 'tempstylometricanalysis' and analysis images
+   * This function inserts data of the new analysis in 'tempstylometricanalysis, and deletes old analysis values from 'tempstylometricanalysis' and analysis images
    * 
    * @param type $full_outputpath1
    * @param type $full_outputpath2
    * @return \type
    */
-  private function insertAndDeleteData($full_outputpath1, $full_outputpath2){
+  private function prepareTempstylometricanalysis($full_outputpath1, $full_outputpath2){
         
     //time format (Unix Timestamp). This timestamp is used to see how old values are
     $time = idate('U');
@@ -693,7 +724,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     }
    
     return $this->showDefaultPage($collection_urls, $out);    
-	}
+  }
   
   /**
    * This function fetches the correct error message, and redirects to showDefaultPage()

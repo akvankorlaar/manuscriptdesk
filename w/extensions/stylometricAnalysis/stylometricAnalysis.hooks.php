@@ -64,4 +64,3 @@ class stylometricAnalysisHooks {
     return true; 
   }
 }
-

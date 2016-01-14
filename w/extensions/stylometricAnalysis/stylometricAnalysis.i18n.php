@@ -36,7 +36,7 @@ $messages['en'] = array(
   'stylometricanalysis'                         => 'Stylometric Analysis',
   'stylometricanalysis-desc'                    => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
   'stylometricanalysis-nopermission'            => 'You do not have permission to access the functionality of this page.',
-  'stylometricanalysis-fewcollections'          => 'You need to create at least 2 collections to be able to do Stylometric Analysis.',
+  'stylometricanalysis-fewcollections'          => 'You need to create at least 2 collections containing at least 3 manuscript pages to be able to do Stylometric Analysis.',
   'stylometricanalysis-welcome'                 => 'Welcome to the Stylometric Analysis module',
   'stylometricanalysis-about'                   => 'About the Stylometric Analysis module',
   'stylometricanalysis-instruction1'            => 'Below, all your collections that contain at least 5 pages are displayed. A minimum of 2 and a maximum of 5 collections can be selected for the analysis.',
@@ -62,4 +62,3 @@ $messages['en'] = array(
   );
 
 $messages['en-gb'] = $messages['en'];
-
