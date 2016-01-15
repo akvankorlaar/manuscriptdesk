@@ -125,41 +125,35 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * 
    * @return boolean
    */
-  private function loadRequest(){
-    
+  private function loadRequest(){  
+      
     $request = $this->getRequest();
-        
-    //if the request was not posted, return false
-    if(!$request->wasPosted()){
-      return false;  
-    }
-    
     $edit_token = $request->getText('wpEditToken');
         
-    if($edit_token !== ''){
-        
-      $this->token_is_ok = $this->getUser()->matchEditToken($edit_token);  
-        
-      if($this->token_is_ok === false){ 
-        return false; 
-      }  
-      
-      return $this->loadForm2($request);  
+    if($edit_token === ''){
+      $this->form = 'Form1';  
+      return $this->loadForm1($request);
     }
-   
-    return $this->loadForm1($request);
+    
+    $this->form = 'Form2';
+    
+    //check if edit token is ok
+    if($this->getUser()->matchEditToken($edit_token) === false){ 
+      throw new Exception('stylometricanalysis-error-edittoken');
+    }  
+      
+    return $this->loadForm2($request);  
   }
   
   /**
    * This function loads the variables in Form 1
    */
   private function loadForm1($request){
-           
+      
     $posted_names = $request->getValueNames();  
      
     //identify the button pressed
-    foreach($posted_names as $key=>$checkbox){
-      
+    foreach($posted_names as $key=>$checkbox){  
       //remove the numbers from $checkbox to see if it matches to 'collection'
       $checkbox_without_numbers = trim(str_replace(range(0,9),'',$checkbox));
 
@@ -168,13 +162,15 @@ class SpecialStylometricAnalysis extends SpecialPage {
       }   
     }
     
-    if($this->variable_validated === false){
-      return false; 
+    if(count($this->collection_array) < $this->minimum_collections){        
+      throw new Exception('stylometricanalysis-error-fewcollections');   
     }
-    
-    $this->form = 'Form1';
-              
-    return true; 
+
+    if(count($this->collection_array) > $this->minimum_collections){
+      throw new Exception('stylometricanalysis-error-manycollections');   
+    }
+                  
+    return $this->showStylometricAnalysisForm(); 
   }
   
   /**
@@ -184,7 +180,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * @return boolean
    */
   private function loadForm2($request){
-                         
+                               
     $this->removenonalpha = $this->validateInput($request->getText('wpremovenonalpha'));
     $this->lowercase = $this->validateInput($request->getText('wplowercase'));
 
@@ -215,146 +211,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
 
     $this->removenonalpha = empty($this->removenonalpha) ? 0 : $this->removenonalpha; 
     $this->lowercase = empty($this->lowercase) ? 0 : $this->lowercase;
-    $this->removepronouns = empty($this->removepronouns) ? 0 : $this->removepronouns;     
-    
-    if($this->variable_validated === false){
-      return false; 
-    }
-    
-    $this->form = 'Form2';
-              
-    return true; 
-  }
-  
-  /**
-   * This function checks if basic form conditions are met 
-   * 
-   * @param type $input
-   */
-  private function validateInput($input){
-    
-    if(is_array($input) || is_object($input)){
-      
-      foreach($input as $index => $value){
-        $status = $this->validateInput($value);
-        
-        if(!$status){
-          return false; 
-        }
-      }
-      
-      return $input; 
-    }
-    
-    //check if all charachters are alphanumeric, or '/' or ':' (in case of url)
-    if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
-      $this->variable_validated = false;
-      return false; 
-    }
-    
-    //check for empty variables or unusually long string lengths
-    if(empty($input) || strlen($input) > 500){
-      $this->variable_validated = false; 
-      return false; 
-    }
-    
-    return $input; 
-  }
-  
-  /**
-   * This function checks if basic form conditions are met for numbers. Field specific validation is done later 
-   */
-  private function validateNumber($input){
-    
-    $max_length = $this->max_length; 
-    
-    //check if all the input consists of numbers or '.'
-    if(!preg_match('/^[0-9.]*$/', $input)){
-      $this->variable_validated_number = false; 
-      return false; 
-    }
-    
-    //check for empty variables 
-    if(empty($input) && $input !== '0'){
-      $this->variable_validated_empty = false; 
-      return false; 
-    }
-    
-    //check if the input is not longer than $max_length
-    if(strlen($input) > $max_length){
-      $this->variable_validated_max_length = false; 
-      return false;
-    }
-    
-    return $input; 
-  }
-  
-  /**
-   * This function determines if the user has the right permissions. If a valid request was posted, this request is processed. Otherwise, the default page is shown 
-   */
-  public function execute(){
-    
-    $out = $this->getOutput();
-    $user_object = $this->getUser(); 
-    $this->user_name = $user_object->getName();    
-    $this->full_manuscripts_url = $this->manuscripts_namespace_url . $this->user_name . '/';
-    
-    //user does not have permission
-    if(!in_array('sysop',$user_object->getGroups())){
-      return $out->addHTML($this->msg('stylometricanalysis-nopermission'));
-    }
-      
-    if($this->loadRequest()){
-        
-      try{
-        if($this->form = 'Form1'){
-          return $this->processForm1();  
-        }else{             
-          return $this->processForm2();
-        }
-      }catch(Exception $e){        
-        return $this->showError($e->getMessage(), $this->form);        
-      }         
-    }     
-      
-    return $this->prepareDefaultPage($out);   
-  }
-   
-  /**
-   * This function processes form1
-   * 
-   * @return type
-   */
-  private function processForm1(){
-              
-    if(count($this->collection_array) < $this->minimum_collections){        
-      throw new Exception('stylometricanalysis-error-fewcollections');   
-    }
-
-    if(count($this->collection_array) > $this->minimum_collections){
-      throw new Exception('stylometricanalysis-error-manycollections');   
-    }
-        
-    return $this->showStylometricAnalysisForm();
-  }
-  
-  /**
-   * This function processes form2
-   */
-  private function processForm2(){
-    
-    //Form2: Stylometric Analysis options form
-    if($this->variable_validated_number === false){
-      throw new Exception('stylometricanalysis-error-number');   
-    }
-    
-    if($this->variable_validated_empty === false){
-      throw new Exception('stylometricanalysis-error-empty');   
-    }
-    
-    if($this->variable_validated_max_length === false){
-      throw new Exception('stylometricanalysis-error-maxlength');    
-    }
+    $this->removepronouns = empty($this->removepronouns) ? 0 : $this->removepronouns;
     
     //$this->minimumsize cannot be larger or equal to $this->maximumsize
     if($this->minimumsize >= $this->maximumsize){
@@ -370,26 +227,142 @@ class SpecialStylometricAnalysis extends SpecialPage {
     if($this->mfi < $this->min_mfi){
       throw new Exception('stylometricanalysis-error-mfi');   
     }
-          
-    $texts = $this->constructTexts();
     
-    if(is_string($texts)){
-      //an error occurred when constructing the texts 
-      throw new Exception($texts);   
-    }
-         
-    //if returned false, one of the posted pages did not exist
-    if($texts === false){
-      wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log'); 
-      $this->form = 'Form1';
-      throw new Exception('stylometricanalysis-error-notexists');   
+    return $this->processForm2();                    
+  }
+  
+  /**
+   * This function checks if basic form conditions are met 
+   * 
+   * @param type $input
+   */
+  private function validateInput($input){
+    
+    if(is_array($input) || is_object($input)){
+      
+      foreach($input as $index => $value){
+        $status = $this->validateInput($value);
+      }
+      
+      return $input; 
     }
     
+    //check if all charachters are alphanumeric, or '/' or ':' (in case of url)
+    if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
+      throw new Exception('validation-charachters');
+    }
+    
+    //check for empty variables or unusually long string lengths
+    if(empty($input) || strlen($input) > 500){
+      throw new Exception('validation-charlength');
+    }
+    
+    return $input; 
+  }
+  
+  /**
+   * This function checks if basic form conditions are met for numbers. Field specific validation is done later 
+   */
+  private function validateNumber($input){
+    
+    $max_length = $this->max_length; 
+    
+    //check if all the input consists of numbers or '.'
+    if(!preg_match('/^[0-9.]*$/', $input)){
+      throw new Exception('stylometricanalysis-error-number');  
+    }
+    
+    //check for empty variables 
+    if(empty($input) && $input !== '0'){
+      throw new Exception('stylometricanalysis-error-empty');  
+    }
+    
+    //check if the input is not longer than $max_length
+    if(strlen($input) > $max_length){
+      throw new Exception('stylometricanalysis-error-maxlength');  
+    }
+    
+    return $input; 
+  }
+  
+  /**
+   * This function determines if the user has the right permissions. If a valid request was posted, this request is processed. Otherwise, the default page is shown 
+   */
+  public function execute(){
+      
+    try{  
+      $this->setVariables();   
+      $this->checkPermissions();
+      
+      if($this->checkRequests()){
+        return $this->loadRequest();  
+      }
+      
+      return $this->prepareDefaultPage($out);           
+              
+    //handle errors
+    }catch(Exception $e){  
+        
+      $error_message = $e->getMessage();
+      
+      if($e->getMessage() === 'stylometricanalysis-nopermission'){
+        return $out->addHTML($this->msg('stylometricanalysis-nopermission'));    
+      }
+
+      return $this->showError($e->getMessage(), $this->form);        
+    }       
+  }
+  
+  /**
+   * This function sets some class variables
+   * 
+   * @return type
+   */
+  private function setVariables(){
+    $user_object = $this->getUser(); 
+    $this->user_name = $user_object->getName();
+    $this->full_manuscripts_url = $this->manuscripts_namespace_url . $this->user_name . '/';
+    return true;  
+  }
+  
+  /**
+   * This function checks if the user has the appropriate permissions
+   * 
+   * @return boolean
+   * @throws Exception
+   */
+  private function checkPermissions(){
+    $out = $this->getOutput();    
+    //user does not have permission
+    if(!in_array('sysop',$user_object->getGroups())){
+      throw new Exception('stylometricanalysis-nopermission');
+    }
+    
+    return true; 
+  }
+  
+  /**
+   * This function checks if a request was posted
+   */
+  private function checkRequests(){
+      
+    $request = $this->getRequest();
+        
+    //if the request was not posted, return false
+    if(!$request->wasPosted()){
+      return false;   
+    }  
+    
+    return true;   
+  }
+   
+  /**
+   * This function processes form2
+   */
+  private function processForm2(){
+      
+    $texts = $this->constructTexts();   
     list($base_outputpath, $full_outputpath1, $full_outputpath2) = $this->constructOutputPath();
-    
-    if(is_file($full_outputpath1) || is_file($full_outputpath2)){
-      throw new Exception('stylometricanalysis-error-outputpath');   
-    }
         
     //to be able to send array data to python via the command line, strings must be double quoted, and integers must be single quoted
     $config_array = array(
@@ -415,9 +388,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       "'texts'" => $texts, 
     );
         
-    $data = json_encode($config_array);
-    $data = escapeshellarg($data); 
-
+    $data = escapeshellarg(json_encode($config_array));
     $output = system(escapeshellcmd($this->constructCommand() . ' ' . $data));
     
     //something went wrong when importing data into PyStyl
@@ -435,7 +406,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
       throw new Exception('stylometricanalysis-error-analysis');   
     }
     
-    if (strpos($output, 'analysiscomplete') !== false){
+    //keep this here for now.. later you can remove it if it is certain that analysiscomplete always follows
+    if (strpos($output, 'analysiscomplete') === true){
             
     //now that you have a jpg file of the right format..
     //files should be deleted if they are older than 2 hours... 
@@ -443,11 +415,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     //also check for analysis of more than 2 collections ...
       
-    $status = $this->prepareTempstylometricanalysis($full_outputpath1, $full_outputpath2);
-      
-    if($status === false){
-      throw new Exception('stylometricanalysis-error-insertanddelete');   
-    }
+    $this->prepareTempstylometricanalysis($full_outputpath1, $full_outputpath2);
       
      return $this->showResult($full_outputpath1, $full_outputpath2);
     }
@@ -468,11 +436,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $stylometric_analysis_wrapper = new stylometricAnalysisWrapper($this->user_name);
      
     //delete old entries and analysis images 
-    $status = $stylometric_analysis_wrapper->clearOldValues($time);
+    $stylometric_analysis_wrapper->clearOldValues($time);
     
-    if(!$status){
-      return false;
-    }
         
     //store new values in the 'tempstylometricanalysis' table
     $status = $stylometric_analysis_wrapper->storeTempStylometricAnalysis($time, $full_outputpath1, $full_outputpath2);
@@ -561,6 +526,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->full_linkpath1 = '/' . $base_link_path . '/' . $file_name1;
     $this->full_linkpath2 = '/' . $base_link_path . '/' . $file_name2; 
     
+    if(is_file($full_outputpath1) || is_file($full_outputpath2)){
+      throw new Exception('stylometricanalysis-error-outputpath');   
+    }  
     return array($base_outputpath, $full_outputpath1, $full_outputpath2); 
   }
   
@@ -602,11 +570,12 @@ class SpecialStylometricAnalysis extends SpecialPage {
             $collection_name_array[] = $url_array['collection_name'];
           }else{
             
-
             $title_object = Title::newFromText($file_url);
 
             if(!$title_object->exists()){
-              return false; 
+              wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log'); 
+              $this->form = 'Form1';
+              throw new Exception('stylometricanalysis-error-notexists');    
             }
 
             $single_page_text = $this->getSinglePageText($title_object);
@@ -618,19 +587,19 @@ class SpecialStylometricAnalysis extends SpecialPage {
         $collection_n_words = str_word_count($all_texts_for_one_collection);
         
         if($collection_n_words < $this->min_words_collection){
-          return 'stylometricanalysis-error-toosmall';
+          throw new Exception('stylometricanalysis-error-toosmall');  
         }
         
         if($collection_n_words < $this->minimumsize){
-          return 'stylometricanalysis-error-minsize';
+          throw new Exception('stylometricanalysis-error-minsize');    
         }
         
         if($collection_n_words < ($this->segmentsize+$this->stepsize)){
-          return 'stylometricanalysis-error-segmentsize';
+          throw new Exception('stylometricanalysis-error-segmentsize');  
         }
         
         if($collection_n_words < $this->ngramsize){
-          return 'stylometricanalysis-error-ngramsize';
+          throw new Exception('stylometricanalysis-error-ngramsize');  
         }
                 
         $this->collection_name_array = $collection_name_array; 

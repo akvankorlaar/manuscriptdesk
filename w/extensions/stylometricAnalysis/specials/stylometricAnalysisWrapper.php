@@ -144,7 +144,7 @@ class stylometricAnalysisWrapper{
         
         //deletion of an element failed, so something went wrong
         if(!$status){
-          return false; 
+          throw new Exception('stylometricanalysis-error-insertanddelete');   
         }
       }
     }
