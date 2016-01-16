@@ -165,6 +165,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private function checkEditToken($edit_token){
     //check if edit token is ok
     if($this->getUser()->matchEditToken($edit_token) === false){ 
+      $this->form = 'Form1';  
       throw new Exception('stylometricanalysis-error-edittoken');
     }
     
@@ -321,23 +322,31 @@ class SpecialStylometricAnalysis extends SpecialPage {
       
     try{  
       $this->setVariables();   
-      $this->checkPermissions();
+      $this->checkPermission();
       
       if($this->checkRequests()){
         return $this->loadAndProcessRequest();  
       }
       
-      $user_collections = $this->getUserCollections();
-      $this->checkUserCollections($user_collections);
-      $this->showDefaultPage($user_collections);   
-      return true;            
-              
+      $this->getDefaultPage();
+                    
     //handle errors
     }catch(Exception $e){
-      $this->handleErrors($e); 
-      
+      $this->handleErrors($e);     
       return true; 
     }
+  }
+  
+  /**
+   * This function gets the default page
+   * 
+   * @return boolean
+   */
+  private function getDefaultPage(){
+    $user_collections = $this->getUserCollections();
+    $this->checkUserCollections($user_collections);
+    $this->showDefaultPage($user_collections);   
+    return true;   
   }
   
   /**
@@ -347,19 +356,30 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * @return type
    */
   private function handleErrors($e){
-    $error_message = $e->getMessage();    
+    $error_message = $e->getMessage();   
+    
     if($e->getMessage() === 'stylometricanalysis-nopermission'){
       return $out->addHTML($this->msg('stylometricanalysis-nopermission')); 
     }
     
-    $error_message = isset($this->msg($e->getMessage())) ? $this->msg($e->getMessage()) : '';   
+    if($e->getMessage() === 'stylometricanalysis-error-fewcollections'){
+        
+      $article_url = $this->article_url;
+      
+      $html = "";
+      $html .= $this->msg('stylometricanalysis-fewcollections');    
+      $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
+      
+      return $out->addHTML($html);     
+    }
+    
+    $error_message = $e->getMessage();  
     $this->error_message = $error_message; 
 
     if($this->form === 'Form1'){
-      $this->getUserCollections();
-      $this->checkUserCollections($user_collections);
-      $this->showDefaultPage($user_collections);   
-      return true;         
+      $this->getDefaultpage();
+      return true; 
+      
     }elseif($this->form === 'Form2'){
         
      //show form 2....
@@ -385,8 +405,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * @return boolean
    * @throws Exception
    */
-  private function checkPermissions(){
-    $out = $this->getOutput();    
+  private function checkPermission(){
+    $out = $this->getOutput();
+    $user_object = $out->getUser();
     //user does not have permission
     if(!in_array('sysop',$user_object->getGroups())){
       throw new Exception('stylometricanalysis-nopermission');
