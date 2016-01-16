@@ -41,7 +41,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $manuscripts_namespace_url;
   private $max_length;
   private $variable_validated;
-  private $token_is_ok;
   private $web_root; 
   private $python_path; 
   private $initial_analysis_dir;
@@ -86,6 +85,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $visualization2; 
   
   private $form; 
+  private $base_outputpath;
+  private $full_outputpath1;
+  private $full_outputpath2; 
   
   //step size cannot be larger than segment size, or larger than any of the collections
    
@@ -125,31 +127,56 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * 
    * @return boolean
    */
-  private function loadRequest(){  
+  private function loadAndProcessRequest(){ 
       
-    $request = $this->getRequest();
-    $edit_token = $request->getText('wpEditToken');
+    $edit_token = $this->getEditToken();  
         
     if($edit_token === ''){
-      $this->form = 'Form1';  
-      return $this->loadForm1($request);
+      $this->form = 'Form1';
+      $this->loadForm1();
+      $this->showStylometricAnalysisForm();
+      return true;       
     }
     
-    $this->form = 'Form2';
-    
+    $this->form = 'Form2';  
+    $this->checkEditToken($edit_token);
+    $this->loadForm2();
+    $this->setOutputPaths();
+    $texts = $this->getPageTexts();   
+    $this->callPystyl($texts); 
+    $this->prepareTempstylometricanalysis();    
+    $this->showResult($full_outputpath1, $full_outputpath2);
+    return true;      
+  }
+  
+ /**
+  * This function gets the edit token
+  * 
+  * @return type String $edit_token
+  */
+  private function getEditToken(){       
+    $request = $this->getRequest();
+    return $request->getText('wpEditToken');  
+  }
+  
+  /**
+   * This function checks the edit token
+   */
+  private function checkEditToken($edit_token){
     //check if edit token is ok
     if($this->getUser()->matchEditToken($edit_token) === false){ 
       throw new Exception('stylometricanalysis-error-edittoken');
-    }  
-      
-    return $this->loadForm2($request);  
+    }
+    
+    return true; 
   }
   
   /**
    * This function loads the variables in Form 1
    */
-  private function loadForm1($request){
+  private function loadForm1(){
       
+    $request = $this->getRequest();  
     $posted_names = $request->getValueNames();  
      
     //identify the button pressed
@@ -169,8 +196,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     if(count($this->collection_array) > $this->minimum_collections){
       throw new Exception('stylometricanalysis-error-manycollections');   
     }
-                  
-    return $this->showStylometricAnalysisForm(); 
+    
+    return true;   
   }
   
   /**
@@ -179,7 +206,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * @param type $request
    * @return boolean
    */
-  private function loadForm2($request){
+  private function loadForm2(){
+      
+    $request = $this->getRequest();  
                                
     $this->removenonalpha = $this->validateInput($request->getText('wpremovenonalpha'));
     $this->lowercase = $this->validateInput($request->getText('wplowercase'));
@@ -226,9 +255,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
     //mfi has to be at least $this->min_mfi (errors will occur with mfi less than 5)
     if($this->mfi < $this->min_mfi){
       throw new Exception('stylometricanalysis-error-mfi');   
-    }
+    } 
     
-    return $this->processForm2();                    
+    return true; 
   }
   
   /**
@@ -295,22 +324,47 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $this->checkPermissions();
       
       if($this->checkRequests()){
-        return $this->loadRequest();  
+        return $this->loadAndProcessRequest();  
       }
       
-      return $this->prepareDefaultPage($out);           
+      $user_collections = $this->getUserCollections();
+      $this->checkUserCollections($user_collections);
+      $this->showDefaultPage($user_collections);   
+      return true;            
               
     //handle errors
-    }catch(Exception $e){  
-        
-      $error_message = $e->getMessage();
+    }catch(Exception $e){
+      $this->handleErrors($e); 
       
-      if($e->getMessage() === 'stylometricanalysis-nopermission'){
-        return $out->addHTML($this->msg('stylometricanalysis-nopermission'));    
-      }
+      return true; 
+    }
+  }
+  
+  /**
+   * This function handles errors
+   * 
+   * @param type $e
+   * @return type
+   */
+  private function handleErrors($e){
+    $error_message = $e->getMessage();    
+    if($e->getMessage() === 'stylometricanalysis-nopermission'){
+      return $out->addHTML($this->msg('stylometricanalysis-nopermission')); 
+    }
+    
+    $error_message = isset($this->msg($e->getMessage())) ? $this->msg($e->getMessage()) : '';   
+    $this->error_message = $error_message; 
 
-      return $this->showError($e->getMessage(), $this->form);        
-    }       
+    if($this->form === 'Form1'){
+      $this->getUserCollections();
+      $this->checkUserCollections($user_collections);
+      $this->showDefaultPage($user_collections);   
+      return true;         
+    }elseif($this->form === 'Form2'){
+        
+     //show form 2....
+      return $this->showStylometricAnalysisForm();
+    }    
   }
   
   /**
@@ -343,6 +397,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
   
   /**
    * This function checks if a request was posted
+   * 
+   * @return boolean
    */
   private function checkRequests(){
       
@@ -359,11 +415,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
   /**
    * This function processes form2
    */
-  private function processForm2(){
+  private function callPystyl($texts){
       
-    $texts = $this->constructTexts();   
-    list($base_outputpath, $full_outputpath1, $full_outputpath2) = $this->constructOutputPath();
-        
+    $full_outputpath1 = $this->full_outputpath1;
+    $full_outputpath2 = $this->full_outputpath2; 
+              
     //to be able to send array data to python via the command line, strings must be double quoted, and integers must be single quoted
     $config_array = array(
       "'removenonalpha'" => "$this->removenonalpha",
@@ -414,10 +470,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     //make a database that checks this
     
     //also check for analysis of more than 2 collections ...
-      
-    $this->prepareTempstylometricanalysis($full_outputpath1, $full_outputpath2);
-      
-     return $this->showResult($full_outputpath1, $full_outputpath2);
+        
+     return true;         
     }
   }
   
@@ -428,8 +482,15 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * @param type $full_outputpath2
    * @return \type
    */
-  private function prepareTempstylometricanalysis($full_outputpath1, $full_outputpath2){
-        
+  private function prepareTempstylometricanalysis(){
+      
+    if(!isset($this->full_outputpath1) || !isset($this->full_outputpath2)){
+      throw new \Exception('stylometricanalysis-error-pathsnotset');
+    }  
+      
+    $full_outputpath1 = $this->full_outputpath1;
+    $full_outputpath2 = $this->full_outputpath2; 
+          
     //time format (Unix Timestamp). This timestamp is used to see how old values are
     $time = idate('U');
      
@@ -438,13 +499,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     //delete old entries and analysis images 
     $stylometric_analysis_wrapper->clearOldValues($time);
     
-        
     //store new values in the 'tempstylometricanalysis' table
-    $status = $stylometric_analysis_wrapper->storeTempStylometricAnalysis($time, $full_outputpath1, $full_outputpath2);
-    
-    if(!$status){
-      return false;
-    }
+    $stylometric_analysis_wrapper->storeTempStylometricAnalysis($time, $full_outputpath1, $full_outputpath2);
     
     return true;   
   }
@@ -509,7 +565,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   /**
    * This function constructs the output path for the initial analysis
    */
-  private function constructOutputPath(){
+  private function setOutputPaths(){
     
     $imploded_collection_name_array = implode('',$this->collection_name_array);             
     $year_month_day = date('Ymd');   
@@ -529,7 +585,12 @@ class SpecialStylometricAnalysis extends SpecialPage {
     if(is_file($full_outputpath1) || is_file($full_outputpath2)){
       throw new Exception('stylometricanalysis-error-outputpath');   
     }  
-    return array($base_outputpath, $full_outputpath1, $full_outputpath2); 
+    
+    $this->base_outputpath = $base_outputpath;
+    $this->full_outputpath1 = $full_outputpath1;
+    $this->full_outputpath2 = $full_outputpath2;
+    
+    return true;   
   }
   
   /**
@@ -550,7 +611,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * 
    * @return type
    */
-  private function constructTexts(){
+  private function getPageTexts(){
     
     //in $texts combined collection texts will be stored 
     $texts = array();
@@ -668,55 +729,37 @@ class SpecialStylometricAnalysis extends SpecialPage {
     }
     
     return $raw_text; 
-  }  
+  } 
   
   /**
-   * This function prepares the default page, in case no request was posted
+   * This function checks if the user collections are less than the minimum
+   * 
+   * @param type $user_collections
+   * @return boolean
+   * @throws \Exception
+   */
+  
+  private function checkUserCollections($user_collections){
+    //check if the total number of collections is less than the minimum
+    if(count($user_collections) < $this->minimum_collections){
+      throw new \Exception ('stylometricanalysis-error-fewcollections');                     
+    }
+    
+    return true; 
+  }
+  
+  /**
+   * This function gets the user collections
    * 
    * @return type
    */
-  private function prepareDefaultPage($out){
+  private function getUserCollections(){
     
+    $out = $this->getOutput();  
     $stylometric_analysis_wrapper = new stylometricAnalysisWrapper($this->user_name, $this->minimum_pages_per_collection);   
-    $collection_urls = $stylometric_analysis_wrapper->checkForManuscriptCollections();
-        
-    //check if the total number of collections is less than the minimum
-    if(count($collection_urls) < $this->minimum_collections){
-                
-      $article_url = $this->article_url;
-      
-      $html = "";
-      $html .= $this->msg('stylometricanalysis-fewcollections');    
-      $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
-      
-      return $out->addHTML($html);     
-    }
-   
-    return $this->showDefaultPage($collection_urls, $out);    
+    return $stylometric_analysis_wrapper->checkForManuscriptCollections();      
   }
-  
-  /**
-   * This function fetches the correct error message, and redirects to showDefaultPage()
-   * 
-   * @param type $type
-   */
-  private function showError($type, $context){
     
-    if(!empty($type)){
-      $error_message = $this->msg($type);
-    }else{
-      $error_message = '';
-    }
-       
-    $this->error_message = $error_message;    
-    
-    if($context === 'Form1'){
-      return $this->prepareDefaultPage($this->getOutput());
-    }elseif($context === 'Form2'){
-      return $this->showStylometricAnalysisForm();
-    }    
-  }
-  
  /**
   * This function adds html used for the stylometricanalysis loader
   * 
@@ -965,11 +1008,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
   /**
    * This function constructs the HTML for the default page
    * 
-   * @param type $collection_urls
-   * @param type $out
+   * @param type $user_collections
    */
-  private function showDefaultPage($collection_urls, $out){
-    
+  private function showDefaultPage($user_collections){
+      
+    $out = $this->getOutput();   
     $article_url = $this->article_url; 
     
     $out->setPageTitle($this->msg('stylometricanalysis-welcome'));
@@ -1004,7 +1047,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $a = 0;
     $html .= "<tr>";
     
-    foreach($collection_urls as $collection_name=>$small_url_array){
+    foreach($user_collections as $collection_name=>$small_url_array){
 
       if(($a % 4) === 0){  
         $html .= "</tr>";
