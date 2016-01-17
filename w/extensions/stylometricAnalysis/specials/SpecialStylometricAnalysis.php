@@ -1,10 +1,5 @@
 <?php
-/**
- * Todo: Incorporate try catch statements
- * 
- * Todo: Make a database that checks whether the last analysis was 2 hours ago
- * 
- * 
+/**  
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
@@ -141,11 +136,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->form = 'Form2';  
     $this->checkEditToken($edit_token);
     $this->loadForm2();
-    $this->setOutputPaths();
     $texts = $this->getPageTexts();   
-    $this->callPystyl($texts); 
+    $this->setOutputPaths();
     $this->prepareTempstylometricanalysis();    
-    $this->showResult($full_outputpath1, $full_outputpath2);
+    $this->callPystyl($texts); 
+    $this->showResult();
     return true;      
   }
   
@@ -211,15 +206,15 @@ class SpecialStylometricAnalysis extends SpecialPage {
       
     $request = $this->getRequest();  
                                
-    $this->removenonalpha = $this->validateInput($request->getText('wpremovenonalpha'));
-    $this->lowercase = $this->validateInput($request->getText('wplowercase'));
+    $this->removenonalpha = $request->getText('wpremovenonalpha');
+    $this->lowercase = $request->getText('wplowercase');
 
     $this->tokenizer = $this->validateInput($request->getText('wptokenizer'));
     $this->minimumsize = (int)$this->validateNumber($request->getText('wpminimumsize'));
     $this->maximumsize = (int)$this->validateNumber($request->getText('wpmaximumsize'));
     $this->segmentsize = (int)$this->validateNumber($request->getText('wpsegmentsize'));
     $this->stepsize = (int)$this->validateNumber($request->getText('wpstepsize'));
-    $this->removepronouns = $this->validateInput($request->getText('wpremovepronouns'));
+    $this->removepronouns = $request->getText('wpremovepronouns');
 
     $this->vectorspace = $this->validateInput($request->getText('wpvectorspace'));
     $this->featuretype = $this->validateInput($request->getText('wpfeaturetype'));
@@ -239,9 +234,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $this->collection_array[$index] = (array)$value;
     }
 
-    $this->removenonalpha = empty($this->removenonalpha) ? 0 : $this->removenonalpha; 
-    $this->lowercase = empty($this->lowercase) ? 0 : $this->lowercase;
-    $this->removepronouns = empty($this->removepronouns) ? 0 : $this->removepronouns;
+    $this->removenonalpha = empty($this->removenonalpha) ? 0 : 1; 
+    $this->lowercase = empty($this->lowercase) ? 0 : 1;
+    $this->removepronouns = empty($this->removepronouns) ? 0 : 1;
     
     //$this->minimumsize cannot be larger or equal to $this->maximumsize
     if($this->minimumsize >= $this->maximumsize){
@@ -438,6 +433,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
    */
   private function callPystyl($texts){
       
+    $base_outputpath = $this->base_outputpath;   
     $full_outputpath1 = $this->full_outputpath1;
     $full_outputpath2 = $this->full_outputpath2; 
               
@@ -485,11 +481,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
     //keep this here for now.. later you can remove it if it is certain that analysiscomplete always follows
     if (strpos($output, 'analysiscomplete') === true){
-            
-    //now that you have a jpg file of the right format..
-    //files should be deleted if they are older than 2 hours... 
-    //make a database that checks this
-    
+             
     //also check for analysis of more than 2 collections ...
         
      return true;         
@@ -508,20 +500,17 @@ class SpecialStylometricAnalysis extends SpecialPage {
     if(!isset($this->full_outputpath1) || !isset($this->full_outputpath2)){
       throw new \Exception('stylometricanalysis-error-pathsnotset');
     }  
-      
-    $full_outputpath1 = $this->full_outputpath1;
-    $full_outputpath2 = $this->full_outputpath2; 
-          
+                
     //time format (Unix Timestamp). This timestamp is used to see how old values are
     $time = idate('U');
      
-    $stylometric_analysis_wrapper = new stylometricAnalysisWrapper($this->user_name);
+    $stylometric_analysis_wrapper = new stylometricAnalysisWrapper($this->user_name,0, $time, $this->full_outputpath1, $this->full_outputpath2);
      
     //delete old entries and analysis images 
-    $stylometric_analysis_wrapper->clearOldValues($time);
+    $stylometric_analysis_wrapper->clearOldValues();
     
     //store new values in the 'tempstylometricanalysis' table
-    $stylometric_analysis_wrapper->storeTempStylometricAnalysis($time, $full_outputpath1, $full_outputpath2);
+    $stylometric_analysis_wrapper->storeTempStylometricAnalysis();
     
     return true;   
   }
@@ -531,10 +520,14 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * 
    * @return type
    */
-  private function showResult($full_outputpath1, $full_outputpath2){
+  private function showResult(){
+      
+    //show results, and give the option to save the results.
     
     $out = $this->getOutput();
-    $article_url = $this->article_url; 
+    $article_url = $this->article_url;
+    $full_outputpath1 = $this->full_outputpath1;
+    $full_outputpath2 = $this->full_outputpath2; 
     $full_linkpath1 = $this->full_linkpath1;
     $full_linkpath2 = $this->full_linkpath2;
     

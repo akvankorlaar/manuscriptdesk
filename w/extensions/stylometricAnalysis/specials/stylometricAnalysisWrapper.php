@@ -26,16 +26,26 @@ class stylometricAnalysisWrapper{
   
   private $user_name; 
   private $minimum_pages_per_collection;
-  private $hours_before_delete; 
+  private $hours_before_delete;
+  private $web_root; 
+  private $initial_stylometricanalysis_dir;
+  private $time;
+  private $full_outputpath1;
+  private $full_outputpath2; 
 
   //class constructor
-  public function __construct($user_name, $minimum_pages_per_collection = 0){
+  public function __construct($user_name, $minimum_pages_per_collection = 0, $time = 0, $full_outputpath1 = '', $full_outputpath2 = ''){
     
-    global $wgStylometricAnalysisOptions; 
+    global $wgStylometricAnalysisOptions, $wgWebsiteRoot; 
     
     $this->user_name = $user_name;
     $this->minimum_pages_per_collection = $minimum_pages_per_collection;
-    $this->hours_before_delete = $wgStylometricAnalysisOptions['tempstylometricanalysis_hours_before_delete']; 
+    $this->time = $time;
+    $this->full_outputpath1 = $full_outputpath1;
+    $this->full_outputpath2 = $full_outputpath2; 
+    $this->hours_before_delete = $wgStylometricAnalysisOptions['tempstylometricanalysis_hours_before_delete'];
+    $this->web_root = $wgWebsiteRoot; 
+    $this->initial_stylometricanalysis_dir = 'initialStylometricAnalysis';
   }
   /**
    * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
@@ -103,10 +113,11 @@ class stylometricAnalysisWrapper{
   /**
    * This function checks if values should be removed from the 'tempstylometricanalysis' table
    */
-  public function clearOldValues($current_time){
+  public function clearOldValues(){
         
     $dbr = wfGetDB(DB_SLAVE);
-    $user_name = $this->user_name; 
+    $user_name = $this->user_name;
+    $current_time = $this->time; 
     $time_array = array();
         
     //Database query
@@ -125,7 +136,7 @@ class stylometricAnalysisWrapper{
       array(
         'ORDER BY' => 'tempstylometricanalysis_time',
       )
-      );
+    );
       
     //while there are still titles in this query
     while ($s = $res->fetchObject()){
@@ -133,19 +144,15 @@ class stylometricAnalysisWrapper{
       $time_array[] = $s->tempstylometricanalysis_time;    
     }
     
-    foreach($time_array as $index=>$time){
+    foreach($time_array as $index=>$old_time){
       
-      if($current_time - $time > ($this->hours_before_delete * 3600)){  
+      if($current_time - $old_time > ($this->hours_before_delete * 3600)){  
         
-        //delete images
-        
-        
-        $status = $this->deleteTempStylometricAnalysis($time);
-        
-        //deletion of an element failed, so something went wrong
-        if(!$status){
-          throw new Exception('stylometricanalysis-error-insertanddelete');   
-        }
+        $old_full_outputpath1 = $s->tempstylometricanalysis_fulloutputpath1;
+        $old_full_outputpath2 = $s->tempstylometricanalysis_fulloutputpath2; 
+         
+        $this->deleteOutputImages($old_full_outputpath1, $old_full_outputpath2);          
+        $this->deleteTempStylometricAnalysis($old_time);       
       }
     }
     
@@ -153,11 +160,30 @@ class stylometricAnalysisWrapper{
   }
   
   /**
+   * 
+   * @param type $old_full_outputpath1
+   * @param type $old_full_outputpath2
+   * @return boolean
+   * @throws Exception
+   */
+  private function deleteOutputImages($old_full_outputpath1, $old_full_outputpath2){
+    
+    if(!is_file($old_full_outputpath1) || !is_file($old_full_outputpath2)){
+      throw new Exception('stylometricanalysis-error-database');
+    }
+    
+    unlink($old_full_outputpath1);
+    unlink($old_full_outputpath2);
+    
+    return true; 
+  }
+  
+  /**
    * This function removes values from the 'tempstylometricanalysis' table
    * 
-   * @param type $time
+   * @param type $old_time
    */
-  private function deleteTempStylometricAnalysis($time){
+  private function deleteTempStylometricAnalysis($old_time){
      
     $dbw = wfGetDB(DB_MASTER);    
     $user_name = $this->user_name; 
@@ -166,16 +192,44 @@ class stylometricAnalysisWrapper{
       'tempstylometricanalysis', //from
       array( 
       'tempstylometricanalysis_user = ' . $dbw->addQuotes($user_name), //conditions
-      'tempstylometricanalysis_time = ' . $dbw->addQuotes($time),
+      'tempstylometricanalysis_time = ' . $dbw->addQuotes($old_time),
         ),
       __METHOD__ );
     
-    if ($dbw->affectedRows()){
-      //something was deleted from the tempstylometricanalysis table  
-      return true;
-    }else{
-      //nothing was deleted
-      return false;
-    }  
+    if (!$dbw->affectedRows()){
+      throw new Exception('stylometricanalysis-error-database');
+    }
+    
+    return true;     
+  }
+  
+ /**
+  * This function inserts data into the 'tempstylometricanalysis' table
+  * 
+  * @return boolean
+  * @throws Exception
+  */
+  public function storeTempStylometricAnalysis(){
+          
+    $dbw = wfGetDB(DB_MASTER);
+    
+    $user_name = $this->user_name;
+    $time = $this->time; 
+    $full_outputpath1 = $this->full_outputpath1;
+    $full_outputpath2 = $this->full_outputpath2;
+    
+    $dbw->insert('tempstylometricanalysis', //select table
+      array( //insert values
+      'tempstylometricanalysis_user'                   => $user_name,
+      'tempstylometricanalysis_time'                   => $time,
+      'tempstylometricanalysis_outputpath1'            => $full_outputpath1,
+      'tempstylometricanalysis_outputpath2'            => $full_outputpath2,
+       ),__METHOD__,
+       'IGNORE' );
+    if (!$dbw->affectedRows()){
+      throw new Exception('stylometricanalysis-error-database');
+    }
+    
+    return true; 
   }
 }
