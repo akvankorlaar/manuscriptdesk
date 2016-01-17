@@ -124,8 +124,8 @@ class stylometricAnalysisWrapper{
     $res = $dbr->select(
         'tempstylometricanalysis', //from
       array(
-        'tempstylometricanalysis_user',//values
-        'tempstylometricanalysis_time',
+        'tempstylometricanalysis_time',//values
+        'tempstylometricanalysis_user',
         'tempstylometricanalysis_fulloutputpath1',
         'tempstylometricanalysis_fulloutputpath2',
          ),
@@ -191,8 +191,8 @@ class stylometricAnalysisWrapper{
     $dbw->delete( 
       'tempstylometricanalysis', //from
       array( 
+       'tempstylometricanalysis_time = ' . $dbw->addQuotes($old_time),
       'tempstylometricanalysis_user = ' . $dbw->addQuotes($user_name), //conditions
-      'tempstylometricanalysis_time = ' . $dbw->addQuotes($old_time),
         ),
       __METHOD__ );
     
@@ -220,12 +220,13 @@ class stylometricAnalysisWrapper{
     
     $dbw->insert('tempstylometricanalysis', //select table
       array( //insert values
-      'tempstylometricanalysis_user'                   => $user_name,
-      'tempstylometricanalysis_time'                   => $time,
-      'tempstylometricanalysis_outputpath1'            => $full_outputpath1,
-      'tempstylometricanalysis_outputpath2'            => $full_outputpath2,
+      'tempstylometricanalysis_time'                       => $time,
+      'tempstylometricanalysis_user'                       => $user_name,
+      'tempstylometricanalysis_fulloutputpath1'            => $full_outputpath1,
+      'tempstylometricanalysis_fulloutputpath2'            => $full_outputpath2,
        ),__METHOD__,
        'IGNORE' );
+    
     if (!$dbw->affectedRows()){
       throw new Exception('stylometricanalysis-error-database');
     }

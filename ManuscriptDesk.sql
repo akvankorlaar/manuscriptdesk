@@ -103,3 +103,10 @@ CREATE TABLE IF NOT EXISTS `tempcollate` (
   `tempcollate_collatex` TEXT NOT NULL,
   PRIMARY KEY (`tempcollate_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=binary;
+
+CREATE TABLE IF NOT EXISTS `tempstylometricanalysis` (
+  `tempstylometricanalysis_time` bigint(20) unsigned NOT NULL,
+  `tempstylometricanalysis_user` varbinary(255) NOT NULL,
+  `tempstylometricanalysis_fulloutputpath1` varbinary(500) NOT NULL,
+  `tempstylometricanalysis_fulloutputpath2` varbinary(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=binary;

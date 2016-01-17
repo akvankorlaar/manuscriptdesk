@@ -1,5 +1,9 @@
 <?php
 /**  
+ * Create the tempstylometricanalysis databasee
+ * 
+ * Give users the option to save their results
+ * 
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
