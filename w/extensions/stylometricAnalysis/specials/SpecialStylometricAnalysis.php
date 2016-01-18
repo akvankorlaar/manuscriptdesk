@@ -4,6 +4,12 @@
  * 
  * Give users the option to save their results
  * 
+ * Implement type hinting
+ * 
+ * Check alternative exception names
+ * 
+ * step size cannot be larger than segment size, or larger than any of the collections
+ * 
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
@@ -39,22 +45,14 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $error_message;
   private $manuscripts_namespace_url;
   private $max_length;
-  private $variable_validated;
   private $web_root; 
   private $python_path; 
   private $initial_analysis_dir;
-  private $collection_name_array; 
-  
+  private $collection_name_array;  
   private $full_linkpath1;
   private $full_linkpath2; 
-    
-  //basic validation variables for stylometric analysis options form
-  private $variable_validated_number;
-  private $variable_validated_empty; 
-  private $variable_validated_max_length;
   
-  //min number of most frequent items to extract. Errors will occur with mfi < 5
-  private $min_mfi; 
+  private $min_mfi; //min number of most frequent items to extract. Errors will occur with mfi < 5
   
   //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
   //the reason for this variable is that the analysis does not work when a collection has a very small number of tokens
@@ -87,10 +85,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private $base_outputpath;
   private $full_outputpath1;
   private $full_outputpath2; 
-  
-  //step size cannot be larger than segment size, or larger than any of the collections
-   
-  //class constructor
+     
   public function __construct(){
     
     global $wgNewManuscriptOptions, $wgArticleUrl, $wgStylometricAnalysisOptions, $wgWebsiteRoot;  
@@ -101,45 +96,36 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections']; 
     $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
     $this->python_path = $wgStylometricAnalysisOptions['python_path'];
-    $this->initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
-    
-    $this->error_message = false; //default value     
-    $this->variable_validated = true; //default value
-    $this->variable_validated_number = true;//default value
-    $this->variable_validated_empty = true;//default value 
-    $this->variable_validated_max_length = true;//default value
-        
-    $this->max_length = 50;
-    
+    $this->initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];    
     $this->min_mfi = $wgStylometricAnalysisOptions['min_mfi'];     
     $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
-    
-    $this->collection_array = array();
-    
     $this->web_root = $wgWebsiteRoot; 
+
+    $this->collection_array = array();     
+    $this->max_length = 50;
     
     parent::__construct('StylometricAnalysis');
   }
   
   /**
-   * This function loads requests when a user submits the StylometricAnalysis form
-   * 
-   * @return boolean
+   * This function processes form 1
    */
-  private function loadAndProcessRequest(){ 
-      
-    $edit_token = $this->getEditToken();  
-        
-    if($edit_token === ''){
-      $this->form = 'Form1';
-      $this->loadForm1();
-      $this->showStylometricAnalysisForm();
-      return true;       
-    }
-    
+  private function processForm1(){      
+    $this->form = 'Form1';
+    $this->loadForm1();
+    $this->checkForm1();
+    $this->showStylometricAnalysisForm();
+    return true;       
+  }
+   
+  /**
+   * This function processes form 2
+   */
+  private function processForm2(){
     $this->form = 'Form2';  
-    $this->checkEditToken($edit_token);
+    $this->checkEditToken();
     $this->loadForm2();
+    $this->checkForm2();
     $texts = $this->getPageTexts();   
     $this->setOutputPaths();
     $this->prepareTempstylometricanalysis();    
@@ -148,10 +134,21 @@ class SpecialStylometricAnalysis extends SpecialPage {
     return true;      
   }
   
+  /**
+   * This function checks if the edit token was posted
+   */
+  private function tokenWasPosted(){ 
+    $edit_token = $this->getEditToken(); 
+    
+    if($edit_token === ''){
+      return false;    
+    }
+    
+    return true;
+  }
+  
  /**
   * This function gets the edit token
-  * 
-  * @return type String $edit_token
   */
   private function getEditToken(){       
     $request = $this->getRequest();
@@ -161,8 +158,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
   /**
    * This function checks the edit token
    */
-  private function checkEditToken($edit_token){
-    //check if edit token is ok
+  private function checkEditToken(){
+    $edit_token = $this->getEditToken();   
     if($this->getUser()->matchEditToken($edit_token) === false){ 
       $this->form = 'Form1';  
       throw new Exception('stylometricanalysis-error-edittoken');
@@ -185,10 +182,18 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $checkbox_without_numbers = trim(str_replace(range(0,9),'',$checkbox));
 
       if($checkbox_without_numbers === 'collection'){
-        $this->collection_array[$checkbox] = (array)$this->validateInput(json_decode($request->getText($checkbox)));                      
+        $this->collection_array[$checkbox] = (array)$this->validateString(json_decode($request->getText($checkbox)));                      
       }   
     }
-    
+     
+    return true;   
+  }
+  
+  /**
+   * This function checks form 1
+   */
+  private function checkForm1(){
+      
     if(count($this->collection_array) < $this->minimum_collections){        
       throw new Exception('stylometricanalysis-error-fewcollections');   
     }
@@ -197,14 +202,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
       throw new Exception('stylometricanalysis-error-manycollections');   
     }
     
-    return true;   
+    return true; 
   }
   
   /**
    * This function loads the variables in Form 2
-   * 
-   * @param type $request
-   * @return boolean
    */
   private function loadForm2(){
       
@@ -213,25 +215,25 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->removenonalpha = $request->getText('wpremovenonalpha');
     $this->lowercase = $request->getText('wplowercase');
 
-    $this->tokenizer = $this->validateInput($request->getText('wptokenizer'));
+    $this->tokenizer = $this->validateString($request->getText('wptokenizer'));
     $this->minimumsize = (int)$this->validateNumber($request->getText('wpminimumsize'));
     $this->maximumsize = (int)$this->validateNumber($request->getText('wpmaximumsize'));
     $this->segmentsize = (int)$this->validateNumber($request->getText('wpsegmentsize'));
     $this->stepsize = (int)$this->validateNumber($request->getText('wpstepsize'));
     $this->removepronouns = $request->getText('wpremovepronouns');
 
-    $this->vectorspace = $this->validateInput($request->getText('wpvectorspace'));
-    $this->featuretype = $this->validateInput($request->getText('wpfeaturetype'));
+    $this->vectorspace = $this->validateString($request->getText('wpvectorspace'));
+    $this->featuretype = $this->validateString($request->getText('wpfeaturetype'));
 
     $this->ngramsize = (int)$this->validateNumber($request->getText('wpngramsize'));
     $this->mfi = (int)$this->validateNumber($request->getText('wpmfi'));
     $this->minimumdf = floatval($this->validateNumber($request->getText('wpminimumdf')));
     $this->maximumdf = floatval($this->validateNumber($request->getText('wpmaximumdf')));
 
-    $this->visualization1 = $this->validateInput($request->getText('wpvisualization1'));
-    $this->visualization2 = $this->validateInput($request->getText('wpvisualization2'));
+    $this->visualization1 = $this->validateString($request->getText('wpvisualization1'));
+    $this->visualization2 = $this->validateString($request->getText('wpvisualization2'));
 
-    $this->collection_array = (array)$this->validateInput(json_decode($request->getText('collection_array')));
+    $this->collection_array = (array)$this->validateString(json_decode($request->getText('collection_array')));
 
     foreach($this->collection_array as $index=>&$value){
       //cast everything in collection_array to an array
@@ -241,36 +243,37 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->removenonalpha = empty($this->removenonalpha) ? 0 : 1; 
     $this->lowercase = empty($this->lowercase) ? 0 : 1;
     $this->removepronouns = empty($this->removepronouns) ? 0 : 1;
-    
-    //$this->minimumsize cannot be larger or equal to $this->maximumsize
-    if($this->minimumsize >= $this->maximumsize){
-      throw new Exception('stylometricanalysis-error-minmax');   
-    }
-    
-    //$this->stepsize cannot be larger or equal to $this->segmentsize
-    if($this->stepsize > $this->segmentsize){
-      throw new Exception('stylometricanalysis-error-stepsizesegmentsize');   
-    }
-    
-    //mfi has to be at least $this->min_mfi (errors will occur with mfi less than 5)
-    if($this->mfi < $this->min_mfi){
-      throw new Exception('stylometricanalysis-error-mfi');   
-    } 
-    
+        
     return true; 
   }
   
   /**
-   * This function checks if basic form conditions are met 
-   * 
-   * @param type $input
+   * This function checks form 2 
    */
-  private function validateInput($input){
+  private function checkForm2(){
+        
+    if($this->minimumsize >= $this->maximumsize){
+      throw new Exception('stylometricanalysis-error-minmax');   
+    }
+    
+    if($this->stepsize > $this->segmentsize){
+      throw new Exception('stylometricanalysis-error-stepsizesegmentsize');   
+    }
+    
+    if($this->mfi < $this->min_mfi){
+      throw new Exception('stylometricanalysis-error-mfi');   
+    } 
+  }
+  
+  /**
+   * This function validates strings inside an array or an object 
+   */
+  private function validateString($input){
     
     if(is_array($input) || is_object($input)){
       
       foreach($input as $index => $value){
-        $status = $this->validateInput($value);
+        $status = $this->validateString($value);
       }
       
       return $input; 
@@ -301,12 +304,10 @@ class SpecialStylometricAnalysis extends SpecialPage {
       throw new Exception('stylometricanalysis-error-number');  
     }
     
-    //check for empty variables 
     if(empty($input) && $input !== '0'){
       throw new Exception('stylometricanalysis-error-empty');  
     }
     
-    //check if the input is not longer than $max_length
     if(strlen($input) > $max_length){
       throw new Exception('stylometricanalysis-error-maxlength');  
     }
@@ -323,13 +324,16 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $this->setVariables();   
       $this->checkPermission();
       
-      if($this->checkRequests()){
-        return $this->loadAndProcessRequest();  
+      if($this->requestWasPosted()){
+        if($this->tokenWasPosted()){
+           return $this->processForm1(); 
+        }
+        
+        return $this->processForm2();
       }
       
       $this->getDefaultPage();
                     
-    //handle errors
     }catch(Exception $e){
       $this->handleErrors($e);     
       return true; 
@@ -338,8 +342,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   
   /**
    * This function gets the default page
-   * 
-   * @return boolean
    */
   private function getDefaultPage(){
     $user_collections = $this->getUserCollections();
@@ -350,9 +352,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   
   /**
    * This function handles errors
-   * 
-   * @param type $e
-   * @return type
    */
   private function handleErrors($e){
     $error_message = $e->getMessage();   
@@ -387,9 +386,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   }
   
   /**
-   * This function sets some class variables
-   * 
-   * @return type
+   * This function sets some class variables 
    */
   private function setVariables(){
     $user_object = $this->getUser(); 
@@ -400,9 +397,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   
   /**
    * This function checks if the user has the appropriate permissions
-   * 
-   * @return boolean
-   * @throws Exception
    */
   private function checkPermission(){
     $out = $this->getOutput();
@@ -417,14 +411,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
   
   /**
    * This function checks if a request was posted
-   * 
-   * @return boolean
    */
-  private function checkRequests(){
+  private function requestWasPosted(){
       
     $request = $this->getRequest();
         
-    //if the request was not posted, return false
     if(!$request->wasPosted()){
       return false;   
     }  
@@ -494,10 +485,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   
   /**
    * This function inserts data of the new analysis in 'tempstylometricanalysis, and deletes old analysis values from 'tempstylometricanalysis' and analysis images
-   * 
-   * @param type $full_outputpath1
-   * @param type $full_outputpath2
-   * @return \type
    */
   private function prepareTempstylometricanalysis(){
       
@@ -521,13 +508,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
   
   /**
    * This function shows the output page after the stylometric analysis has completed
-   * 
-   * @return type
    */
   private function showResult(){
-      
-    //show results, and give the option to save the results.
-    
+          
     $out = $this->getOutput();
     $article_url = $this->article_url;
     $full_outputpath1 = $this->full_outputpath1;
@@ -626,8 +609,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   /**
    * This function loops through all the posted collections, and
    * retrieves the text from the corresponding pages 
-   * 
-   * @return type
    */
   private function getPageTexts(){
     
@@ -699,10 +680,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   }
   
   /**
-   * This function retrieves the wiki text from a page url
-   * 
-   * @param type $title_object
-   * @return type
+   * This function retrieves the wiki text from a page
    */
   private function getSinglePageText($title_object){
     
@@ -758,7 +736,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
    */
   
   private function checkUserCollections($user_collections){
-    //check if the total number of collections is less than the minimum
     if(count($user_collections) < $this->minimum_collections){
       throw new \Exception ('stylometricanalysis-error-fewcollections');                     
     }
@@ -768,8 +745,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   
   /**
    * This function gets the user collections
-   * 
-   * @return type
    */
   private function getUserCollections(){
     
@@ -780,8 +755,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
     
  /**
   * This function adds html used for the stylometricanalysis loader
-  * 
-  * Source of the gif: http://preloaders.net/en/circular
   */
   private function addStylometricAnalysisLoader(){
     
@@ -998,9 +971,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   
     /**
      * Callback function. Makes sure the page is redisplayed in case there was an error. 
-     * 
-     * @param type $formData
-     * @return string|boolean
      */
   static function processInput($form_data){ 
     return false; 
@@ -1008,9 +978,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
   
   /**
    * This function constructs the collections message
-   * 
-   * @param type $collection_array
-   * @return type
    */
   private function constructCollectionsMessage($collection_array){
     
@@ -1025,8 +992,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
    
   /**
    * This function constructs the HTML for the default page
-   * 
-   * @param type $user_collections
    */
   private function showDefaultPage($user_collections){
       
