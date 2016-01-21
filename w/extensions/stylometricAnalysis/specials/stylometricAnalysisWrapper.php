@@ -47,6 +47,7 @@ class stylometricAnalysisWrapper{
     $this->web_root = $wgWebsiteRoot; 
     $this->initial_stylometricanalysis_dir = 'initialStylometricAnalysis';
   }
+  
   /**
    * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
    * 
@@ -119,6 +120,8 @@ class stylometricAnalysisWrapper{
     $user_name = $this->user_name;
     $current_time = $this->time; 
     $time_array = array();
+    $fulloutputpath1_array = array();
+    $fulloutputpath2_array = array();
         
     //Database query
     $res = $dbr->select(
@@ -141,15 +144,17 @@ class stylometricAnalysisWrapper{
     //while there are still titles in this query
     while ($s = $res->fetchObject()){
        
-      $time_array[] = $s->tempstylometricanalysis_time;    
+      $time_array[] = $s->tempstylometricanalysis_time; 
+      $fulloutputpath1_array[] = $s->tempstylometricanalysis_fulloutputpath1;
+      $fulloutputpath2_array[] = $s->tempstylometricanalysis_fulloutputpath2; 
     }
     
     foreach($time_array as $index=>$old_time){
       
       if($current_time - $old_time > ($this->hours_before_delete * 3600)){  
         
-        $old_full_outputpath1 = $s->tempstylometricanalysis_fulloutputpath1;
-        $old_full_outputpath2 = $s->tempstylometricanalysis_fulloutputpath2; 
+        $old_full_outputpath1 = $fulloutputpath1_array[$index];
+        $old_full_outputpath2 = $fulloutputpath2_array[$index]; 
          
         $this->deleteOutputImages($old_full_outputpath1, $old_full_outputpath2);          
         $this->deleteTempStylometricAnalysis($old_time);       

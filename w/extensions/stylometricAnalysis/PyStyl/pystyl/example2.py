@@ -6,57 +6,36 @@ from pystyl.corpus import Corpus
 from pystyl.analysis import pca, tsne, distance_matrix, hierarchical_clustering, vnc_clustering, bootstrapped_distance_matrices, bootstrap_consensus_tree
 from pystyl.visualization import scatterplot, scatterplot_3d, clustermap, scipy_dendrogram, ete_dendrogram, bct_dendrogram
 
-#import the data
-try:
-    full_textfilepath = ast.literal_eval(sys.argv[1])
-    data = open(full_textfilepath)
-    data = data.read()
-    data = ast.literal_eval(data)
+removenonalpha = 0
+lowercase = 0
+tokenizer = 'whitespace'
+minimumsize = 0
+maximumsize = 10000
+segmentsize = 0
+stepsize = 0
+removepronouns = 0
+vectorspace = 'tf'
+featuretype = 'word' #not available yet
+ngramsize = 1
+mfi = 100
+minimumdf = 0
+maximumdf = 0.9
 
-    removenonalpha = data['tokenizer']
-    lowercase = data['lowercase']
-    tokenizer = data['tokenizer']
-    minimumsize = data['minimumsize']
-    maximumsize = data['maximumsize']
-    segmentsize = data['segmentsize']
-    stepsize = data['stepsize']
-    removepronouns = data['removepronouns']
-    vectorspace = data['vectorspace']
-    featuretype = data['featuretype'] #not available yet
-    ngramsize = data['ngramsize']
-    mfi = data['mfi']
-    minimumdf = data['minimumdf']
-    maximumdf = data['maximumdf']
+full_outputpath1 = 'C:/test/test9.jpg'
+full_outputpath2 = 'C:/test/test10.jpg'
 
-    base_outputpath = data['base_outputpath']
-    full_outputpath1 = data['full_outputpath1']
-    full_outputpath2 = data['full_outputpath2']
+visualization1 = 'dendrogram'
+visualization2 = 'dendrogram'
 
-    visualization1 = data['visualization1']
-    visualization2 = data['visualization2']
-
-    texts_information_dict = data['texts']
-
-except:
-    exc_type, exc_obj, exc_tb = sys.exc_info()
-    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-    print(exc_type, fname, exc_tb.tb_lineno, data['tokenizer'])
+#error if destination files already exist
+if os.path.isfile(full_outputpath1) or os.path.isfile(full_outputpath2):
+    print 'stylometricanalysis-error-path'
     sys.exit(1)
 
+#do the analysis and save the output
 try:
-    #error if destination files already exist
-    if os.path.isfile(full_outputpath1) or os.path.isfile(full_outputpath2):
-        print 'stylometricanalysis-error-path'
-        sys.exit(1)
-
-    #make the base directory if it does not already exist
-    if not os.path.exists(base_outputpath):
-        os.makedirs(base_outputpath)
-
-    #do the analysis and save the output
-
     corpus = Corpus(language='en')
-    corpus.add_texts_manuscriptdesk(texts_information_dict = texts_information_dict)
+    corpus.add_directory(directory='data/dummy')
     corpus.preprocess(alpha_only=removenonalpha, lowercase=lowercase)
 
     corpus.tokenize(min_size=minimumsize, max_size=maximumsize, tokenizer_option=tokenizer) #defaults can be used

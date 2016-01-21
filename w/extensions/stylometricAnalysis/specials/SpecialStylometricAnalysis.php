@@ -1,12 +1,6 @@
 <?php
-/**  
- * Create the tempstylometricanalysis databasee
- * 
+/**   
  * Give users the option to save their results
- * 
- * Implement type hinting
- * 
- * Check alternative exception names
  * 
  * step size cannot be larger than segment size, or larger than any of the collections
  * 
@@ -124,7 +118,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $this->checkPermission();
       
       if($this->requestWasPosted()){
-        if($this->tokenWasPosted()){
+        if(!$this->tokenWasPosted()){
            return $this->processForm1(); 
         }
         
@@ -163,15 +157,20 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $this->constructFileNames();
     $this->constructFullOutputPath();
     $this->constructFullLinkPath();
-    $config_array = $this->constructConfigArray($texts);
-    $output = $this->callPystyl($config_array); 
+    
+    $config_array = $this->constructConfigArray($texts); 
+    $full_textfilepath = $this->constructFullTextfilePath();
+    $this->insertIntoTextfile($full_textfilepath, $config_array);   
+    $command = $this->constructCommand();  
+    $output = $this->callPystyl($command, $full_textfilepath);
+    $this->deleteTextfile($full_textfilepath);
     $this->checkPystylOutput($output);
+    $this->showResult($output);
     
     $database_wrapper = $this->newDatabaseWrapper();
     $database_wrapper->clearOldValues();
     $database_wrapper->storeTempStylometricAnalysis();
     
-    $this->showResult();
     return true;      
   }
   
@@ -249,7 +248,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
       throw new Exception('stylometricanalysis-error-fewcollections');   
     }
 
-    if(count($this->collection_array) > $this->minimum_collections){
+    if(count($this->collection_array) > $this->maximum_collections){
       throw new Exception('stylometricanalysis-error-manycollections');   
     }
     
@@ -434,45 +433,89 @@ class SpecialStylometricAnalysis extends SpecialPage {
                 
     //to be able to send array data to python via the command line, strings must be double quoted, and integers must be single quoted
     $config_array = array(
-      "'removenonalpha'" => "$this->removenonalpha",
-      "'lowercase'" => "$this->lowercase", 
-      "'tokenizer'" => "'$this->tokenizer'",
-      "'minimumsize'" => "$this->minimumsize",
-      "'maximumsize'" => "$this->maximumsize",
-      "'segmentsize'" => "$this->segmentsize",
-      "'stepsize'" => "$this->stepsize",
-      "'removepronouns'" => "$this->removepronouns",
-      "'vectorspace'" => "'$this->vectorspace'", 
-      "'featuretype'" => "'$this->featuretype'",
-      "'ngramsize'" => "$this->ngramsize", 
-      "'mfi'" => "$this->mfi", 
-      "'minimumdf'" => "$this->minimumdf", 
-      "'maximumdf'" => "$this->maximumdf",
-      "'base_outputpath'" => "'$this->base_outputpath'",
-      "'full_outputpath1'" => "'$this->full_outputpath1'",
-      "'full_outputpath2'" => "'$this->full_outputpath2'",
-      "'visualization1'" => "'$this->visualization1'",
-      "'visualization2'" => "'$this->visualization2'",
-      "'texts'" => $texts, 
+      "removenonalpha" => $this->removenonalpha,
+      "lowercase" => $this->lowercase, 
+      "tokenizer" => $this->tokenizer,
+      "minimumsize" => $this->minimumsize,
+      "maximumsize" => $this->maximumsize,
+      "segmentsize" => $this->segmentsize,
+      "stepsize" => $this->stepsize,
+      "removepronouns" => $this->removepronouns,
+      "vectorspace" => $this->vectorspace, 
+      "featuretype" => $this->featuretype,
+      "ngramsize" => $this->ngramsize, 
+      "mfi" => $this->mfi, 
+      "minimumdf" => $this->minimumdf, 
+      "maximumdf" => $this->maximumdf,
+      "base_outputpath" => $this->base_outputpath,
+      "full_outputpath1" => $this->full_outputpath1,
+      "full_outputpath2" => $this->full_outputpath2,
+      "visualization1" => $this->visualization1,
+      "visualization2" => $this->visualization2,
+      "texts" => $texts, 
     );
-    
+        
     return $config_array; 
+  }
+  
+  /**
+   * This function insert data into the textfile which will be used to call Pystyl
+   */
+  private function insertIntoTextfile($full_textfilepath, $config_array){
+   
+    if(is_file($full_textfilepath)){
+      throw new Exception('stylometricanalysis-error-textfile');
+      //bad error, should be reported.. 
+    }
+      
+    $textfile = fopen($full_textfilepath, 'w');
+    fwrite($textfile, json_encode($config_array));
+    fclose($textfile);
+    
+    if(!is_file($full_textfilepath)){
+      throw new Exception('stylometricanalysis-error-textfile');    
+    }
+    
+    return true; 
+  }
+  
+  /**
+   * This function deletes a textfile
+   */
+  private function deleteTextfile($full_textfilepath){
+    
+    if(!is_file($full_textfilepath)){
+      throw new Exception('stylometricanalysis-error-textfiledelete');
+    }
+    
+    unlink($full_textfilepath);
+    
+    if(is_file($full_textfilepath)){
+      throw new Exception('stylometricanalysis-error-textfiledelete');  
+    }
+  }
+  
+  /**
+   * This function constructs a temporary textfile in which the data for the analysis will be placed later on. Initially, this was done through the command line,
+   * but due to some instabilities, this approach is chosen. 
+   */
+  private function constructFullTextfilePath(){
+    return $this->base_outputpath . '/' . 'temptextfile.txt';  
   }
    
   /**
-   * This function sends data to Pystyl, and returns the output
+   * This function calls Pystyl through the command line
    */
-  private function callPystyl($config_array){
-        
-    $data = escapeshellarg(json_encode($config_array));
-    return system(escapeshellcmd($this->constructCommand() . ' ' . $data));
+  private function callPystyl($command, $full_textfilepath){  
+    $full_textfilepath = "'$full_textfilepath'";
+    return system(escapeshellcmd($command . ' ' . $full_textfilepath));
   }
   
   /**
    * This function checks Pystyl output
    */
   private function checkPystylOutput($output){
-    
+      
     //something went wrong when importing data into PyStyl
     if (strpos($output, 'stylometricanalysis-error-import') !== false){
       throw new Exception('stylometricanalysis-error-import');   
@@ -488,13 +531,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
       throw new Exception('stylometricanalysis-error-analysis');   
     }
     
-    //keep this here for now.. later you can remove it if it is certain that analysiscomplete always follows
-    if (strpos($output, 'analysiscomplete') === true){
-             
-    //also check for analysis of more than 2 collections ...
-        
-     return true;         
+    if(!is_file($this->full_outputpath1) || !is_file($this->full_outputpath2)){
+      throw new Exception('stylometricanalysis-error-outputpath');  
     }
+      
+    return true;         
   }
   
   /**
@@ -503,7 +544,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private function newDatabaseWrapper(){
       
     if(!isset($this->full_outputpath1) || !isset($this->full_outputpath2)){
-      throw new \Exception('stylometricanalysis-error-pathsnotset');
+      throw new Exception('stylometricanalysis-error-pathsnotset');
     }  
                 
     //time format (Unix Timestamp). This timestamp is used to see how old values are
@@ -515,7 +556,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   /**
    * This function shows the output page after the stylometric analysis has completed
    */
-  private function showResult(){
+  private function showResult($output){
           
     $out = $this->getOutput();
     $article_url = $this->article_url;
@@ -566,6 +607,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $html .= "Maximum DF:" . $this->maximumdf;
     $html .= "</div>";
     
+    $html .= "This is the output of Pystyl: $output";
+    
     return $out->addHTML($html);
   }
   
@@ -611,11 +654,9 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * This function constructs the shell command in order to call PyStyl
    */
   private function constructCommand(){
-    
     $python_path = $this->python_path;            
     $dir = dirname( dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'example.py';  
-    //test.py
-        
+    //test.py      
     return $python_path . ' ' . $dir; 
   }
   
@@ -663,10 +704,10 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $collection_name = isset($url_array['collection_name']) ? $url_array['collection_name'] : 'collection' . $a; 
 
       //add the combined texts of one collection to $texts
-      $texts["'collection" . $a . "'"] = array(
-        "'title'" => "'" . $collection_name . "'",
-        "'target_name'" => "'" . $collection_name . "'",
-        "'text'" => "'" . $all_texts_for_one_collection . "'",
+      $texts["collection" . $a] = array(
+        "title" => "$collection_name",
+        "target_name" => "$collection_name",
+        "text" => "$all_texts_for_one_collection",
       );
       
       $a += 1; 
@@ -681,6 +722,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
   private function checkForCollectionErrors($collection_n_words){
             
     if($collection_n_words < $this->min_words_collection){
+      $this->form = 'Form1';  
       throw new Exception('stylometricanalysis-error-toosmall');  
     }
         
@@ -752,12 +794,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * 
    * @param type $user_collections
    * @return boolean
-   * @throws \Exception
+   * @throws Exception
    */
-  
   private function checkUserCollections($user_collections){
     if(count($user_collections) < $this->minimum_collections){
-      throw new \Exception ('stylometricanalysis-error-fewcollections');                     
+      throw new Exception ('stylometricanalysis-error-fewcollections');                     
     }
     
     return true; 
