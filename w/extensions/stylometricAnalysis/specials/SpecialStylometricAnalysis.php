@@ -301,7 +301,7 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * This function checks form 2 
    */
   private function checkForm2(){
-        
+              
     if($this->minimumsize >= $this->maximumsize){
       throw new Exception('stylometricanalysis-error-minmax');   
     }
@@ -578,13 +578,13 @@ class SpecialStylometricAnalysis extends SpecialPage {
     $html .= "<div id='visualization-wrap1'>";
     $html .= "<h2>Analysis One </h2>";
     $html .= "<p>Information about the plot</p>";
-    $html .= "<img src='" . $full_linkpath1 . "' alt='Visualization1' height='455' width='455'>";  
+    $html .= "<img src='" . $full_linkpath1 . "' alt='Visualization1' height='650' width='650'>";  
     $html .= "</div>";
     
     $html .= "<div id='visualization-wrap2'>";
     $html .= "<h2>Analysis Two </h2>";
     $html .= "<p>Information about the plot</p>";
-    $html .= "<img src='" . $full_linkpath2 . "' alt='Visualization2' height='455' width='455'>";  
+    $html .= "<img src='" . $full_linkpath2 . "' alt='Visualization2' height='650' width='650'>";  
     $html .= "</div>"; 
     
     $html .= "</div>";
@@ -616,6 +616,11 @@ class SpecialStylometricAnalysis extends SpecialPage {
    * This function constructs the file names
    */
   private function constructFileNames(){
+      
+    if(!isset($this->collection_name_array)){
+      $this->form = 'Form1';  
+      throw new Exception('stylometricanalysis-error-collectionnamearray');    
+    }  
        
     $imploded_collection_name_array = implode('',$this->collection_name_array);             
     $year_month_day = date('Ymd');   
@@ -700,7 +705,6 @@ class SpecialStylometricAnalysis extends SpecialPage {
       $collection_n_words = str_word_count($all_texts_for_one_collection);     
       $this->checkForCollectionErrors($collection_n_words);
                         
-      $this->collection_name_array = $collection_name_array;       
       $collection_name = isset($url_array['collection_name']) ? $url_array['collection_name'] : 'collection' . $a; 
 
       //add the combined texts of one collection to $texts
@@ -712,6 +716,8 @@ class SpecialStylometricAnalysis extends SpecialPage {
       
       $a += 1; 
     }
+    
+    $this->collection_name_array = $collection_name_array;       
      
     return $texts; 
   }
