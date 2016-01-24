@@ -51,10 +51,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
   
   private $min_mfi; //min number of most frequent items to extract. Errors will occur with mfi < 5
   
-  //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
-  //the reason for this variable is that the analysis does not work when a collection has a very small number of tokens
-  private $min_words_collection;
-  
+  private $min_words_collection;  //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
+ 
   /*
    * User Stylometric Analysis Options. The option descriptions are from PyStyl
    */
@@ -125,7 +123,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
   }
   
   /**
-   * 
+   * Process all requests
    */
   private function processRequest(){
       
@@ -141,7 +139,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
   }
   
   /**
-   * 
+   * Check if form 1 was posted
    */
   private function form1WasPosted(){
     $request = $this->getRequest();  
@@ -153,7 +151,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
   }
   
   /**
-   * 
+   * Check if form 2 was posted
    */
   private function form2WasPosted(){
     $request = $this->getRequest();  
@@ -165,7 +163,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
   }
   
   /**
-   * 
+   * Process when the user wants to save the current analysis results
    */
   private function processSaveTable(){
       
