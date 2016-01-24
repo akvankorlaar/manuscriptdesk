@@ -31,6 +31,7 @@ w/*
 !w/skins
 w/extensions/*
 w/skins/*
+!w/extensions/ManuscriptDeskBase
 !w/extensions/collate
 !w/extensions/newManuscript
 !w/extensions/JBTEIToolbar
@@ -39,6 +40,7 @@ w/skins/*
 !w/extensions/stylometricAnalysis
 !w/skins/CbpTranscriptionEnhanced
 
+!w/extensions/ManuscriptDeskBase/*
 !w/extensions/collate/*
 !w/extensions/newManuscript/*
 !w/extensions/JBTEIToolbar/*

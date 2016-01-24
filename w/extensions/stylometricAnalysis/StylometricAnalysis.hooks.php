@@ -22,7 +22,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class stylometricAnalysisHooks {
+class StylometricAnalysisHooks {
   
 /**
  * Hooks for the stylometricAnalysis extension 

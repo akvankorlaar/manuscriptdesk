@@ -22,7 +22,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class stylometricAnalysisWrapper{
+class StylometricAnalysisWrapper{
   
   private $user_name; 
   private $minimum_pages_per_collection;

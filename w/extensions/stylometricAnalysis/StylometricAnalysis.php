@@ -24,7 +24,7 @@
 
 /**
  * Usage: Add the following line in LocalSettings.php:
- * require_once( "$IP/extensions/stylometricAnalysis/stylometricAnalysis.php" );
+ * require_once( "$IP/extensions/StylometricAnalysis/StylometricAnalysis.php" );
  */
 
 // Check environment
@@ -41,7 +41,7 @@ $wgExtensionCredits['parserhook'][] = array(
   'name'           => 'stylometricAnalysis',
   'author'         => 'Arent van Korlaar',
   'version'        => '0.0.1',
-  'url'            => '',
+  'url'            => 'https://manuscriptdesk.uantwerpen.be',
   'description'    => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
   'descriptionmsg' => 'stylometricanalysis-desc'
 );
@@ -50,9 +50,9 @@ $wgExtensionCredits['parserhook'][] = array(
 $dir = __DIR__ . '/';
 
 //Auto load classes 
-$wgAutoloadClasses['stylometricAnalysisHooks']    = $dir . '/stylometricAnalysis.hooks.php';
-$wgAutoloadClasses['stylometricAnalysisWrapper'] = $dir . '/specials/stylometricAnalysisWrapper.php';
-$wgExtensionMessagesFiles['stylometricAnalysis']  = $dir . '/stylometricAnalysis.i18n.php';
+$wgAutoloadClasses['StylometricAnalysisHooks']    = $dir . '/StylometricAnalysis.hooks.php';
+$wgAutoloadClasses['StylometricAnalysisWrapper'] = $dir . '/specials/StylometricAnalysisWrapper.php';
+$wgExtensionMessagesFiles['StylometricAnalysis']  = $dir . '/StylometricAnalysis.i18n.php';
 
 ////Register auto load for the special page classes and register special pages
 $wgAutoloadClasses['SpecialStylometricAnalysis'] = $dir . '/specials/SpecialStylometricAnalysis.php';
@@ -74,7 +74,7 @@ $wgResourceModules['ext.stylometricanalysisloader' ] = array(
 );
 
 //Instantiate the stylometricAnalysisHooks class and register the hooks
-$stylometricAnalysisHooks = new stylometricAnalysisHooks();
+$StylometricAnalysisHooks = new StylometricAnalysisHooks();
 
-$wgHooks['BeforePageDisplay'][] = array($stylometricAnalysisHooks, 'onBeforePageDisplay');
-$wgHooks['ResourceLoaderGetConfigVars'][] = array($stylometricAnalysisHooks, 'onResourceLoaderGetConfigVars');
+$wgHooks['BeforePageDisplay'][] = array($StylometricAnalysisHooks, 'onBeforePageDisplay');
+$wgHooks['ResourceLoaderGetConfigVars'][] = array($StylometricAnalysisHooks, 'onResourceLoaderGetConfigVars');
