@@ -23,30 +23,26 @@
  */
 
 class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
-  
-  public $article_url; 
-  
+    
   private $minimum_pages_per_collection; 
   private $user_name;  
   private $error_message;
-  private $web_root; 
   private $python_path; 
-  private $initial_analysis_dir;
   private $collection_name_array; 
   
   private $form;
-  private $file_name1;
-  private $file_name2;
   private $base_outputpath;
   private $base_linkpath; 
   private $full_outputpath1;
   private $full_outputpath2; 
-  private $full_linkpath1;
-  private $full_linkpath2; 
     
   private $min_words_collection;  //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
  
-  private $config_array; 
+  private $collection_array; 
+  private $config_array;
+  
+  //PyStyl $config_array information: 
+  
   //removenonalpha : wheter or not to keep alphabetical symbols
   //lowercase : wheter or not to lowercase all charachters
   
@@ -73,15 +69,15 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     
     $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
     $this->python_path = $wgStylometricAnalysisOptions['python_path'];
-    $this->initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];    
     $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
-    $this->web_root = $wgWebsiteRoot; 
+    $web_root = $wgWebsiteRoot; 
     
     $user_object = $this->getUser(); 
     $this->user_name = $user_object->getName();
-          
-    $this->base_outputpath = $this->web_root . '/' . $this->initial_analysis_dir . '/' . $this->user_name;
-    $this->base_linkpath = $this->initial_analysis_dir . '/' . $this->user_name; 
+	
+	$initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];          
+    $this->base_outputpath = $web_root . '/' . $initial_analysis_dir. '/' . $this->user_name;
+    $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name; 
     
     parent::__construct('StylometricAnalysis');
   }
@@ -115,7 +111,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 	  $this->form = 'Form1';	
       $validator = new ManuscriptDeskBaseValidator();		
       $form_processor = new Form1Processor($this->getRequest(), $validator);
-	  $collection_array = $form_processor->processForm1();
+	  $this->collection_array = $collection_array = $form_processor->processForm1();
 	  $viewer = new StylometricAnalysisViewer();
 	  return $viewer->showForm2($collection_array);
     }
@@ -125,27 +121,28 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 	  $this->checkEditToken();
 	  $validator = new ManuscriptDeskBaseValidator();		
       $form_processor = new Form2Processor($this->getRequest(), $validator);
-	  $this->config_array = $form_processor->processForm2();
+	  $this->config_array = $config_array = $form_processor->processForm2();
 	  
       $texts = $this->getPageTexts();
 	  	  
-      $this->constructFileNames();
-      $this->constructFullOutputPath();
-      $this->constructFullLinkPath();
+      list($file_name1, $file_name2) = $this->constructFileNames();
+      $this->constructFullOutputPath($file_name1, $file_name2);
 	  
       $this->setAdditionalConfigArrayValues($texts); 
       $full_textfilepath = $this->constructFullTextfilePath();
       $this->insertConfigArrayIntoTextfile($full_textfilepath, $config_array);   
       $command = $this->constructShellCommand();  
-      $output = $this->callPystyl($command, $full_textfilepath);
+      $pystyl_output = $this->callPystyl($command, $full_textfilepath);
       $this->deleteTextfile($full_textfilepath);
-      $this->checkPystylOutput($output);
+      $this->checkPystylOutput($pystyl_output);
 	      
       $database_wrapper = $this->newDatabaseWrapper();
       $database_wrapper->clearOldValues();
       $database_wrapper->storeTempStylometricAnalysis();
+	  
+	  list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPath($file_name1, $file_name2);
       $viewer = new StylometricAnalysisViewer();
-	  return $viewer->showResult($data);
+	  return $viewer->showResult($pystyl_output, $config_array, $full_linkpath1, $full_linkpath2);
     }
         
     return $this->processSaveTable();
@@ -186,7 +183,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     return true;   
   }
   
-    /**
+  /**
    * This function loops through all the posted collections, and
    * retrieves the text from the corresponding pages 
    */
@@ -246,13 +243,13 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
   }
   
   /**
-   * This function checks for collection errors
+   * This function checks for collection errors based on the number of words in the collection
    */  
   private function checkForCollectionErrors($collection_n_words){
             
 	$config_array = $this->config_array;   
 	  
-    if($collection_n_words < $config_array['min_words_collection']){
+    if($collection_n_words < $this->min_words_collection){
       $this->form = 'Form1';  
       throw new Exception('stylometricanalysis-error-toosmall');  
     }
@@ -272,7 +269,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     return true; 
   }
   
-    /**
+  /**
    * This function constructs the file names
    */
   private function constructFileNames(){
@@ -285,19 +282,19 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     $imploded_collection_name_array = implode('',$this->collection_name_array);             
     $year_month_day = date('Ymd');   
     $hours_minutes_seconds = date('his');
+	    
+    $file_name1 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . '.jpg';
+    $file_name2 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . 2 . '.jpg'; 
     
-    $this->file_name1 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . '.jpg';
-    $this->file_name2 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . 2 . '.jpg'; 
-    
-    return true; 
+	return array($file_name1, $file_name2);
   }
   
   /**
    * This function constructs the output paths for the output images
    */ 
-  private function constructFullOutputPath(){
-    $this->full_outputpath1 = $this->base_outputpath . '/' . $this->file_name1;
-    $this->full_outputpath2 = $this->base_outputpath . '/' . $this->file_name2;
+  private function constructFullOutputPath($file_name1, $file_name2){
+    $this->full_outputpath1 = $this->base_outputpath . '/' . $file_name1;
+    $this->full_outputpath2 = $this->base_outputpath . '/' . $file_name2;
         
     if(is_file($this->full_outputpath1) || is_file($this->full_outputpath2)){
       throw new Exception('stylometricanalysis-error-outputpath');   
@@ -306,13 +303,13 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     return true; 
   }
   
-   /**
+  /**
    * This function constructs the full link paths for the output images
    */
-  private function constructFullLinkPath(){    
-    $this->full_linkpath1 = '/' . $this->base_linkpath . '/' . $this->file_name1;
-    $this->full_linkpath2 = '/' . $this->base_linkpath . '/' . $this->file_name2; 
-    return true; 
+  private function constructFullLinkPath($file_name1, $file_name2){    
+    $full_linkpath1 = '/' . $this->base_linkpath . '/' . $file_name1;
+    $full_linkpath2 = '/' . $this->base_linkpath . '/' . $file_name2; 
+    return array($full_linkpath1, $full_linkpath2); 
   }
   
   /**
@@ -471,31 +468,25 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
    */
   private function handleErrors($e){
       
-    $error_message = $this->error_message = $e->getMessage();   
-   
+    $error_message = $this->error_message = $e->getMessage();
+	$out = $this->getOutput();
+	
     if($error_message === 'stylometricanalysis-nopermission'){
-      return $out->addHTML($this->msg('stylometricanalysis-nopermission')); 
+	  $viewer = new StylometricAnalysisViewer($out);
+	  return $viewer->showNoPermissionError();
     }
     
     if($error_message === 'stylometricanalysis-error-fewcollections'){
-        
-      $article_url = $this->article_url;
-      
-      $html = "";
-      $html .= $this->msg('stylometricanalysis-fewcollections');    
-      $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
-      
-      return $out->addHTML($html);     
+	  $viewer = new StylometricAnalysisViewer($out);
+	  return $viewer->showFewCollectionsError();  
     }
     
     if($this->form === 'Form1'){
-      $this->getDefaultpage();
-      return true; 
+      return $this->getDefaultpage();
       
     }elseif($this->form === 'Form2'){
-        
-     //show form 2....
-      return $this->showForm2();
+	  $collection_array = $this->collection_array; 	
+      return $this->showForm2($collection_array);
     }    
   }
 }

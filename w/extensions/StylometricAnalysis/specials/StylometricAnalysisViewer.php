@@ -339,14 +339,10 @@ class StylometricAnalysisViewer{
   /**
    * This function shows the output page after the stylometric analysis has completed
    */
-  private function showResult($output){
+  public function showResult($pystyl_output, $config_array, $full_linkpath1, $full_linkpath2){
           
-    $out = $this->getOutput();
+    $out = $this->out; 
     $article_url = $this->article_url;
-    $full_outputpath1 = $this->full_outputpath1;
-    $full_outputpath2 = $this->full_outputpath2; 
-    $full_linkpath1 = $this->full_linkpath1;
-    $full_linkpath2 = $this->full_linkpath2;
     
     $out->setPageTitle($this->msg('stylometricanalysis-output'));
         
@@ -374,25 +370,42 @@ class StylometricAnalysisViewer{
     
     $html .= "<div id='visualization-wrap3'>";    
     $html .= "<h2>Analysis Variables</h2><br>";
-    $html .= "Remove non-alpha:" . $this->removenonalpha . "<br>";
-    $html .= "Lowercase:" . $this->lowercase . "<br>";
-    $html .= "Tokenizer:" . $this->tokenizer . "<br>";
-    $html .= "Minimum Size:" . $this->minimumsize . "<br>";
-    $html .= "Maximum Size:" . $this->maximumsize . "<br>"; 
-    $html .= "Segment Size:" . $this->segmentsize . "<br>";
-    $html .= "Step Size:" . $this->stepsize . "<br>";
-    $html .= "Remove Pronouns:" . $this->removepronouns . "<br>";
-    $html .= "Vectorspace:" . $this->vectorspace . "<br>";
-    $html .= "Featuretype:" . $this->featuretype . "<br>";
-    $html .= "Ngram Size:" . $this->ngramsize . "<br>";
-    $html .= "MFI:" . $this->mfi . "<br>";
-    $html .= "Minimum DF:" . $this->minimumdf . "<br>";
-    $html .= "Maximum DF:" . $this->maximumdf;
+    $html .= "Remove non-alpha:" . $config_array['removenonalpha'] . "<br>";
+    $html .= "Lowercase:" . $config_array['lowercase'] . "<br>";
+    $html .= "Tokenizer:" . $config_array['tokenizer'] . "<br>";
+    $html .= "Minimum Size:" . $config_array['minimumsize'] . "<br>";
+    $html .= "Maximum Size:" . $config_array['maximumsize'] . "<br>"; 
+    $html .= "Segment Size:" . $config_array['segmentsize'] . "<br>";
+    $html .= "Step Size:" . $config_array['stepsize'] . "<br>";
+    $html .= "Remove Pronouns:" . $config_array['removepronouns'] . "<br>";
+    $html .= "Vectorspace:" . $config_array['vectorspace'] . "<br>";
+    $html .= "Featuretype:" . $config_array['featuretype'] . "<br>";
+    $html .= "Ngram Size:" . $config_array['ngramsize'] . "<br>";
+    $html .= "MFI:" . $config_array['mfi'] . "<br>";
+    $html .= "Minimum DF:" . $config_array['minimumdf'] . "<br>";
+    $html .= "Maximum DF:" . $config_array['maximumdf'];
     $html .= "</div>";
     
-    $html .= "This is the output of Pystyl: $output";
+    $html .= "This is the output of Pystyl: $pystyl_output";
     
     return $out->addHTML($html);
   }	
+  
+  public function showNoPermissionError(){
+	$out = $this->out;   
+	return $out->addHTML($this->msg('stylometricanalysis-nopermission')); 
+  }
+  
+  public function showFewCollectionsError(){
+	  
+	  $out = $this->out; 
+      $article_url = $this->article_url;
+      
+      $html = "";
+      $html .= $this->msg('stylometricanalysis-fewcollections');    
+      $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
+      
+      return $out->addHTML($html);   
+  }
 }
 
