@@ -28,7 +28,7 @@ class Form1Processor {
     private $request;
     private $validator;
 
-    public function __construct(Request $request, ManuscriptDeskBaseValidator $validator) {
+    public function __construct(Request $request, ManuscriptDeskBaseValidator $validator, $minimum_collections, $maximum_collections) {
         $this->request = $request;
         $this->validator = $validator;
     }
@@ -38,8 +38,6 @@ class Form1Processor {
      */
     public function processForm1() {
         global $wgStylometricAnalysisOptions;
-        $minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
-        $maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
         $collection_array = $this->loadForm1();
         $this->checkForm1($collection_array, $minimum_collections, $maximum_collections);
         return $collection_array;
@@ -68,9 +66,6 @@ class Form1Processor {
         return $collection_array;
     }
 
-    /**
-     * This function checks form 1
-     */
     private function checkForm1(array $collection_array, $minimum_collections, $maximum_collections) {
 
         if (empty($collection_array)) {
@@ -87,5 +82,4 @@ class Form1Processor {
 
         return true;
     }
-
 }

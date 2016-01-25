@@ -32,9 +32,6 @@ class Form2Processor {
         $this->validator = $validator;
     }
 
-    /**
-     * This function processes form 2
-     */
     public function processForm2() {
         global $wgStylometricAnalysisOptions;
         $min_mfi = $wgStylometricAnalysisOptions['min_mfi'];
@@ -44,7 +41,7 @@ class Form2Processor {
     }
 
     /**
-     * This function loads the variables in Form 2
+     * This function loads the config array of Form 2 (data that will be sent to PyStyl)
      */
     private function loadForm2() {
         $validator = $this->validator;
@@ -87,9 +84,6 @@ class Form2Processor {
         return $config_array;
     }
 
-    /**
-     * This function checks form 2 
-     */
     private function checkForm2($config_array, $min_mfi) {
 
         if ($config_array['minimumsize'] >= $config_array['maximumsize']) {

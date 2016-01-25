@@ -25,6 +25,8 @@
 class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     private $minimum_pages_per_collection;
+    private $minimum_collections;
+    private $maximum_collections;
     private $user_name;
     private $error_message;
     private $python_path;
@@ -71,6 +73,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
         $this->base_outputpath = $web_root . '/' . $initial_analysis_dir . '/' . $this->user_name;
         $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name;
+        
+        $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
+        $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
+        
+        $this->error_message = '';
 
         parent::__construct('StylometricAnalysis');
     }
@@ -87,8 +94,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
                 return $this->processRequest();
             }
 
-            $viewer = new StylometricAnalysisViewer();
-            $viewer->getDefaultPage();
+            $this->getDefaultPage();
         } catch (Exception $e) {
             return $this->handleErrors($e);
         }
@@ -102,7 +108,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         if ($this->form1WasPosted()) {
             $this->form = 'Form1';
             $validator = new ManuscriptDeskBaseValidator();
-            $form_processor = new Form1Processor($this->getRequest(), $validator);
+            $form_processor = new Form1Processor($this->getRequest(), $validator, $this->minimum_collections, $this->maximum_collections);
             $this->collection_array = $collection_array = $form_processor->processForm1();
             $viewer = new StylometricAnalysisViewer();
             return $viewer->showForm2($collection_array);
@@ -164,15 +170,12 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return false;
     }
 
-    /**
-     * This function gets the default page
-     */
     private function getDefaultPage() {
         $user_collections = $this->getUserCollections();
         $this->checkUserCollections($user_collections);
-        $viewer = new StylometricAnalysisViewer();
-        $viewer->showForm1($user_collections);
-        return true;
+        $out = $this->getOutput();
+        $viewer = new StylometricAnalysisViewer($out);
+        return $viewer->showForm1($user_collections, $this->error_message);
     }
 
     /**
@@ -262,9 +265,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    /**
-     * This function constructs the file names
-     */
     private function constructFileNames() {
 
         if (!isset($this->collection_name_array)) {
@@ -283,7 +283,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * This function constructs the output paths for the output images
+     * This function constructs the output paths for the output images produced by PyStyl
      */
     private function constructFullOutputPath($file_name1, $file_name2) {
         $this->full_outputpath1 = $this->base_outputpath . '/' . $file_name1;
@@ -434,10 +434,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     /**
      * This function checks if the user collections are less than the minimum
-     * 
-     * @param type $user_collections
-     * @return boolean
-     * @throws Exception
      */
     private function checkUserCollections($user_collections) {
         if (count($user_collections) < $this->minimum_collections) {

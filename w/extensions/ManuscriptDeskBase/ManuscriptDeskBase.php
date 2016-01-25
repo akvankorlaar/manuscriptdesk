@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
@@ -21,28 +22,26 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 /**
  * Usage: Add the following line in LocalSettings.php:
  * require_once( "$IP/extensions/ManuscriptDeskBase/ManuscriptDeskBase.php" );
  */
-
 // Check environment
-if (!defined( 'MEDIAWIKI')){
-  echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
-  die( -1 );
+if (!defined('MEDIAWIKI')) {
+    echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
+    die(-1);
 }
 
 /* Configuration */
 
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
-  'path'           => __FILE__,
-  'name'           => 'ManuscriptDeskBase',
-  'author'         => 'Arent van Korlaar',
-  'version'        => '0.0.1',
-  'url'            => 'https://manuscriptdesk.uantwerpen.be',
-  'description'    => 'This extension provides base classes and messages for the Manuscript Desk',
+  'path' => __FILE__,
+  'name' => 'ManuscriptDeskBase',
+  'author' => 'Arent van Korlaar',
+  'version' => '0.0.1',
+  'url' => 'https://manuscriptdesk.uantwerpen.be',
+  'description' => 'This extension provides base classes and messages for the Manuscript Desk',
   'descriptionmsg' => 'manuscriptdeskbase-desc'
 );
 
@@ -50,6 +49,6 @@ $wgExtensionCredits['parserhook'][] = array(
 $dir = __DIR__ . '/';
 
 //Auto load classes 
-$wgAutoloadClasses['ManuscriptDeskBaseSpecials']    = $dir . 'ManuscriptDeskBaseSpecials.php';
-$wgAutoloadClasses['ManuscriptDeskBaseValidator']    = $dir . 'ManuscriptDeskBaseValidator.php';
-$wgExtensionMessagesFiles['ManuscriptDeskBaseMessages']  = $dir . '/ManuscriptDeskBaseMessages.i18n.php';
+$wgAutoloadClasses['ManuscriptDeskBaseSpecials'] = $dir . 'ManuscriptDeskBaseSpecials.php';
+$wgAutoloadClasses['ManuscriptDeskBaseValidator'] = $dir . 'ManuscriptDeskBaseValidator.php';
+$wgExtensionMessagesFiles['ManuscriptDeskBaseMessages'] = $dir . '/ManuscriptDeskBaseMessages.i18n.php';

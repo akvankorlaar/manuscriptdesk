@@ -63,15 +63,17 @@ class StylometricAnalysisWrapper {
 
         //Database query
         $res = $dbr->select(
-            'manuscripts', //from
+          'manuscripts', //from
             array(
           'manuscripts_title', //values
           'manuscripts_url',
           'manuscripts_collection',
-            ), array(
+            ), 
+            array(
           'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
           'manuscripts_collection != ' . $dbr->addQuotes("none"),
-            ), __METHOD__, array(
+            ), __METHOD__, 
+            array(
           'ORDER BY' => 'manuscripts_lowercase_collection',
             )
         );
@@ -86,9 +88,8 @@ class StylometricAnalysisWrapper {
                       'manuscripts_url' => array($s->manuscripts_url),
                       'manuscripts_title' => array($s->manuscripts_title),
                     );
-
-                    //if the collection already has been added, append the new manuscripts_url to the current array
                 }
+                //if the collection already has been added, append the new manuscripts_url to the current array
                 else {
                     end($collection_urls);
                     $key = key($collection_urls);
@@ -122,15 +123,18 @@ class StylometricAnalysisWrapper {
 
         //Database query
         $res = $dbr->select(
-            'tempstylometricanalysis', //from
+           'tempstylometricanalysis', //from
             array(
           'tempstylometricanalysis_time', //values
           'tempstylometricanalysis_user',
           'tempstylometricanalysis_fulloutputpath1',
           'tempstylometricanalysis_fulloutputpath2',
-            ), array(
+            ), 
+            array(
           'tempstylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
-            ), __METHOD__, array(
+            ),
+            __METHOD__, 
+            array(
           'ORDER BY' => 'tempstylometricanalysis_time',
             )
         );
@@ -188,7 +192,7 @@ class StylometricAnalysisWrapper {
         $user_name = $this->user_name;
 
         $dbw->delete(
-            'tempstylometricanalysis', //from
+           'tempstylometricanalysis', //from
             array(
           'tempstylometricanalysis_time = ' . $dbw->addQuotes($old_time),
           'tempstylometricanalysis_user = ' . $dbw->addQuotes($user_name), //conditions
@@ -216,13 +220,17 @@ class StylometricAnalysisWrapper {
         $full_outputpath1 = $this->full_outputpath1;
         $full_outputpath2 = $this->full_outputpath2;
 
-        $dbw->insert('tempstylometricanalysis', //select table
+        $dbw->insert(
+           'tempstylometricanalysis', //select table
             array(//insert values
           'tempstylometricanalysis_time' => $time,
           'tempstylometricanalysis_user' => $user_name,
           'tempstylometricanalysis_fulloutputpath1' => $full_outputpath1,
           'tempstylometricanalysis_fulloutputpath2' => $full_outputpath2,
-            ), __METHOD__, 'IGNORE');
+            ), 
+            __METHOD__, 
+            'IGNORE'
+        );
 
         if (!$dbw->affectedRows()) {
             throw new Exception('stylometricanalysis-error-database');
@@ -230,5 +238,4 @@ class StylometricAnalysisWrapper {
 
         return true;
     }
-
 }

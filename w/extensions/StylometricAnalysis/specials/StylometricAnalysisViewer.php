@@ -55,9 +55,9 @@ class StylometricAnalysisViewer {
     /**
      * This function constructs the HTML for the default page
      */
-    public function showForm1($user_collections) {
+    public function showForm1($user_collections, $error_message = '') {
 
-        $out = $this->getOutput();
+        $out = $this->out; 
         $article_url = $this->article_url;
 
         $out->setPageTitle($this->msg('stylometricanalysis-welcome'));
@@ -79,8 +79,7 @@ class StylometricAnalysisViewer {
         $html .= "<div id='javascript-error'></div>";
 
         //display the error 
-        if ($this->error_message) {
-            $error_message = $this->error_message;
+        if (!empty($error_message)) {
             $html .= "<div class = 'error'>" . $error_message . "</div>";
         }
 
@@ -143,7 +142,7 @@ class StylometricAnalysisViewer {
     /**
      * This function constructs and shows the stylometric analysis form
      */
-    public function showForm2() {
+    public function showForm2($error_message = '') {
 
         $article_url = $this->article_url;
         $collection_array = $this->collection_array;
@@ -169,8 +168,7 @@ class StylometricAnalysisViewer {
         $html .= "<br><br>";
 
         //display the error 
-        if ($this->error_message) {
-            $error_message = $this->error_message;
+        if (!empty($error_message)) {
             $html .= "<div class = 'error'>" . $error_message . "</div>";
         }
 
@@ -430,4 +428,10 @@ class StylometricAnalysisViewer {
         return $out->addHTML($html);
     }
 
+    /**
+     * This function retrieves the message from the i18n file for String $identifier
+     */
+    public function msg($identifier) {
+        return wfMessage($identifier)->text();
+    }
 }

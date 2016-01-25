@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
@@ -21,87 +22,87 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
+class ManuscriptDeskBaseValidator {
 
-class ManuscriptDeskBaseValidator{
-    
-  private $max_length;   
-    
-  public function __construct(){
-    $this->max_length = 50;   
-  }    
-  
-  /**
-   * This function validates strings inside an array or an object 
-   */
-  public function validateStringUrl($input){
-    
-    if(is_array($input) || is_object($input)){
-      
-      foreach($input as $index => $value){
-        $status = $this->validateStringUrl($value);
-      }
-      
-      return $input; 
+    private $max_length;
+
+    public function __construct() {
+        $this->max_length = 50;
     }
-    
-    //check if all charachters are alphanumeric, or '/' or ':' (in case of url)
-    if(!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)){
-      throw new Exception('validation-charachters');
+
+    /**
+     * This function validates strings inside an array or an object 
+     */
+    public function validateStringUrl($input) {
+
+        if (is_array($input) || is_object($input)) {
+
+            foreach ($input as $index => $value) {
+                $status = $this->validateStringUrl($value);
+            }
+
+            return $input;
+        }
+
+        //check if all charachters are alphanumeric, or '/' or ':' (in case of url)
+        if (!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)) {
+            throw new Exception('validation-charachters');
+        }
+
+        //check for empty variables or unusually long string lengths
+        if (empty($input) || strlen($input) > ($this->max_length * 10)) {
+            throw new Exception('validation-charlength');
+        }
+
+        return $input;
     }
-    
-    //check for empty variables or unusually long string lengths
-    if(empty($input) || strlen($input) > ($this->max_length * 10)){
-      throw new Exception('validation-charlength');
+
+    /**
+     * This function validates strings inside an array or an object 
+     */
+    public function validateString($input) {
+
+        if (is_array($input) || is_object($input)) {
+
+            foreach ($input as $index => $value) {
+                $status = $this->validateString($value);
+            }
+
+            return $input;
+        }
+
+        //check if all charachters are alphanumeric
+        if (!preg_match('/^[a-zA-Z0-9]*$/', $input)) {
+            throw new Exception('validation-charachters');
+        }
+
+        //check for empty variables or unusually long string lengths
+        if (empty($input) || strlen($input) > ($this->max_length * 10)) {
+            throw new Exception('validation-charlength');
+        }
+
+        return $input;
     }
-    
-    return $input; 
-  }
-  
-  /**
-   * This function validates strings inside an array or an object 
-   */
-  public function validateString($input){
-    
-    if(is_array($input) || is_object($input)){
-      
-      foreach($input as $index => $value){
-        $status = $this->validateString($value);
-      }
-      
-      return $input; 
+
+    /**
+     * This function checks if basic form conditions are met for numbers. Field specific validation is done later 
+     */
+    public function validateNumber($input) {
+
+        //check if all the input consists of numbers or '.'
+        if (!preg_match('/^[0-9.]*$/', $input)) {
+            throw new Exception('validation-number');
+        }
+
+        if (empty($input) && $input !== '0') {
+            throw new Exception('validation-empty');
+        }
+
+        if (strlen($input) > $this->max_length) {
+            throw new Exception('validation-maxlength');
+        }
+
+        return $input;
     }
-    
-    //check if all charachters are alphanumeric
-    if(!preg_match('/^[a-zA-Z0-9]*$/', $input)){
-      throw new Exception('validation-charachters');
-    }
-    
-    //check for empty variables or unusually long string lengths
-    if(empty($input) || strlen($input) > ($this->max_length*10)){
-      throw new Exception('validation-charlength');
-    }
-    
-    return $input; 
-  }
-  
-  /**
-   * This function checks if basic form conditions are met for numbers. Field specific validation is done later 
-   */
-  public function validateNumber($input){
-        
-    //check if all the input consists of numbers or '.'
-    if(!preg_match('/^[0-9.]*$/', $input)){
-      throw new Exception('validation-number');  
-    }
-    
-    if(empty($input) && $input !== '0'){
-      throw new Exception('validation-empty');  
-    }
-    
-    if(strlen($input) > $this->max_length){
-      throw new Exception('validation-maxlength');  
-    }
-    
-    return $input; 
-  } 
+
 }
