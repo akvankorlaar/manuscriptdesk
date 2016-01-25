@@ -13,7 +13,7 @@ try:
     data = data.read()
     data = ast.literal_eval(data)
 
-    removenonalpha = data['tokenizer']
+    removenonalpha = data['removenonalpha']
     lowercase = data['lowercase']
     tokenizer = data['tokenizer']
     minimumsize = data['minimumsize']

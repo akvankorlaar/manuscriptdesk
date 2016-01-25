@@ -349,13 +349,6 @@ class StylometricAnalysisViewer {
     }
 
     /**
-     * Callback function. Makes sure the page is redisplayed in case there was an error. 
-     */
-    static function processInput($form_data) {
-        return false;
-    }
-
-    /**
      * This function shows the output page after the stylometric analysis has completed
      */
     public function showResult($pystyl_output, $config_array, $full_linkpath1, $full_linkpath2) {

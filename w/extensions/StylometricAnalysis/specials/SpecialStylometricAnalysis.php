@@ -120,7 +120,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             $this->checkEditToken();
             $validator = new ManuscriptDeskBaseValidator();
             $form_processor = new Form2Processor($this->getRequest(), $validator);
-            $this->config_array = $config_array = $form_processor->processForm2();
+            $this->config_array = $form_processor->processForm2();
 
             $texts = $this->getPageTexts();
 
@@ -129,7 +129,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
             $this->setAdditionalConfigArrayValues($texts);
             $full_textfilepath = $this->constructFullTextfilePath();
-            $this->insertConfigArrayIntoTextfile($full_textfilepath, $config_array);
+            $this->insertConfigArrayIntoTextfile($full_textfilepath, $this->config_array);
             $command = $this->constructShellCommand();
             $pystyl_output = $this->callPystyl($command, $full_textfilepath);
             $this->deleteTextfile($full_textfilepath);
@@ -140,8 +140,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             $database_wrapper->storeTempStylometricAnalysis();
 
             list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPath($file_name1, $file_name2);
-            $viewer = new StylometricAnalysisViewer();
-            return $viewer->showResult($pystyl_output, $config_array, $full_linkpath1, $full_linkpath2);
+            $out = $this->getOutput();
+            $viewer = new StylometricAnalysisViewer($out);
+            return $viewer->showResult($pystyl_output, $this->config_array, $full_linkpath1, $full_linkpath2);
         }
 
         return $this->processSaveTable();
@@ -336,6 +337,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->config_array['texts'] = $texts;
         $this->config_array['full_outputpath1'] = $this->full_outputpath1;
         $this->config_array['full_outputpath2'] = $this->full_outputpath2;
+        $this->config_array['base_outputpath'] = $this->base_outputpath;
+        return true; 
     }
 
     /**
@@ -460,14 +463,13 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         $error_message = $this->error_message = $e->getMessage();
         $out = $this->getOutput();
+        $viewer = new StylometricAnalysisViewer($out);
 
         if ($error_message === 'stylometricanalysis-nopermission') {
-            $viewer = new StylometricAnalysisViewer($out);
             return $viewer->showNoPermissionError();
         }
 
         if ($error_message === 'stylometricanalysis-error-fewcollections') {
-            $viewer = new StylometricAnalysisViewer($out);
             return $viewer->showFewCollectionsError();
         }
 
@@ -475,8 +477,15 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return $this->getDefaultpage();
         }
         elseif ($this->form === 'Form2') {
-            $collection_array = $this->collection_array;
-            return $this->showForm2($collection_array);
+            $collection_array = $this->config_array['collection_array'];
+            return $viewer->showForm2($collection_array, $this->getContext(), $error_message);
         }
+    }
+    
+    /**
+     * Callback function. Makes sure the page is redisplayed in case there was an error. 
+     */
+    static function processInput($form_data) {
+        return false;
     }
 }
