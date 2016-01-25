@@ -108,10 +108,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         if ($this->form1WasPosted()) {
             $this->form = 'Form1';
             $validator = new ManuscriptDeskBaseValidator();
-            $form_processor = new Form1Processor($this->getRequest(), $validator, $this->minimum_collections, $this->maximum_collections);
-            $this->collection_array = $collection_array = $form_processor->processForm1();
-            $viewer = new StylometricAnalysisViewer();
-            return $viewer->showForm2($collection_array);
+            $form_processor = new Form1Processor($this->getRequest(), $validator);
+            $this->collection_array = $collection_array = $form_processor->processForm1($this->minimum_collections, $this->maximum_collections);
+            $out = $this->getOutput();
+            $viewer = new StylometricAnalysisViewer($out);
+            return $viewer->showForm2($collection_array, $this->getContext(), $this->error_message);
         }
 
         if ($this->form2WasPosted()) {

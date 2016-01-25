@@ -27,7 +27,7 @@ class Form2Processor {
     private $request;
     private $validator;
 
-    public function __construct(Request $request, ManuscriptDeskBaseValidator $validator) {
+    public function __construct(WebRequest $request, ManuscriptDeskBaseValidator $validator) {
         $this->request = $request;
         $this->validator = $validator;
     }

@@ -28,7 +28,7 @@ class Form1Processor {
     private $request;
     private $validator;
 
-    public function __construct(Request $request, ManuscriptDeskBaseValidator $validator, $minimum_collections, $maximum_collections) {
+    public function __construct(WebRequest $request, ManuscriptDeskBaseValidator $validator) {
         $this->request = $request;
         $this->validator = $validator;
     }
@@ -36,7 +36,7 @@ class Form1Processor {
     /**
      * This function processes form 1
      */
-    public function processForm1() {
+    public function processForm1($minimum_collections, $maximum_collections) {
         global $wgStylometricAnalysisOptions;
         $collection_array = $this->loadForm1();
         $this->checkForm1($collection_array, $minimum_collections, $maximum_collections);
@@ -72,11 +72,11 @@ class Form1Processor {
             throw new Exception('stylometricanalysis-error-request');
         }
 
-        if (count($this->collection_array) < $minimum_collections) {
+        if (count($collection_array) < $minimum_collections) {
             throw new Exception('stylometricanalysis-error-fewcollections');
         }
 
-        if (count($this->collection_array) > $maximum_collections) {
+        if (count($collection_array) > $maximum_collections) {
             throw new Exception('stylometricanalysis-error-manycollections');
         }
 

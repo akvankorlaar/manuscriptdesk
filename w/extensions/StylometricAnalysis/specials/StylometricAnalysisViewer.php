@@ -142,10 +142,9 @@ class StylometricAnalysisViewer {
     /**
      * This function constructs and shows the stylometric analysis form
      */
-    public function showForm2($error_message = '') {
+    public function showForm2($collection_array, $context, $error_message = '') {
 
         $article_url = $this->article_url;
-        $collection_array = $this->collection_array;
         $max_length = $this->max_length;
         $out = $this->out;
 
@@ -339,7 +338,7 @@ class StylometricAnalysisViewer {
           'section' => 'stylometricanalysis-section-visualization',
         );
 
-        $html_form = new HTMLForm($descriptor, $this->getContext());
+        $html_form = new HTMLForm($descriptor, $context);
         $html_form->setSubmitText($this->msg('stylometricanalysis-submit'));
         $html_form->addHiddenField('collection_array', json_encode($collection_array));
         $html_form->addHiddenField('form2Posted', 'form2Posted');
