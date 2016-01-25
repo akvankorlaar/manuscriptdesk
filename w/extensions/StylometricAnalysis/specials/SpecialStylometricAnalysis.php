@@ -1,5 +1,6 @@
 <?php
-/**  
+
+/**
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
@@ -21,472 +22,464 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
-    
-  private $minimum_pages_per_collection; 
-  private $user_name;  
-  private $error_message;
-  private $python_path; 
-  private $collection_name_array; 
-  
-  private $form;
-  private $base_outputpath;
-  private $base_linkpath; 
-  private $full_outputpath1;
-  private $full_outputpath2; 
-    
-  private $min_words_collection;  //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
- 
-  private $collection_array; 
-  private $config_array;
-  
-  //PyStyl $config_array information: 
-  
-  //removenonalpha : wheter or not to keep alphabetical symbols
-  //lowercase : wheter or not to lowercase all charachters
-  
-  //tokenizer : str, default=None select the `nltk` tokenizer to be used. Currentlysupports: 'whitespace' (split on whitespace) and 'words' (alphabetic series of characters)
-  //minimumsize : minimum size of texts (in tokens), to be included in the set of tokenized texts
-  //maximumsize : maximum size of texts (in tokens). Longer texts will be truncated to max_size after tokenization
-  //segmentsize : segment_size : int, default=0 The size of the segments to be extracted (in tokens). If `segment_size`=0, no segmentation will be applied to the tokenized texts
-  //stepsize : The nb of words in between two consecutive segments (in tokens). If `step_size`=zero, non-overlapping segments will be created. Else, segments will partially overlap
-  //removepronouns : Whether to remove personal pronouns. If the `corpus.language` is supported, we will load the relevant list from under `pystyl/pronouns`. The pronoun lists are identical to those for 'Stylometry with R'
-  
-  //vectorspace : Which vector space to use. Must be one of: 'tf', 'tf_scaled', 'tf_std', 'tf_idf', 'bin'
-  //featuretype
-  //ngramsize : The length of the ngrams to be extracted
-  //mfi : The nb of most frequent items (words or ngrams) to extract
-  //minimumdf : Proportion of documents in which a feature should minimally occur. Useful to ignore low-frequency features
-  //maximumdf : Proportion of documents in which a feature should maximally occur. Useful for 'culling' and ignoring features which don't appear in enough texts
-  
-  //private $visualization1;
-  //private $visualization2; 
- 
-  public function __construct(){
-          
-    global $wgStylometricAnalysisOptions, $wgWebsiteRoot;  
-    
-    $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
-    $this->python_path = $wgStylometricAnalysisOptions['python_path'];
-    $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
-    $web_root = $wgWebsiteRoot; 
-    
-    $user_object = $this->getUser(); 
-    $this->user_name = $user_object->getName();
-	
-	$initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];          
-    $this->base_outputpath = $web_root . '/' . $initial_analysis_dir. '/' . $this->user_name;
-    $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name; 
-    
-    parent::__construct('StylometricAnalysis');
-  }
-  
-  /**
-   * Main entry point for the page
-   */
-  public function execute(){
-      
-    try{  
-      $this->checkPermission();
-      
-      if($this->requestWasPosted()){
-        return $this->processRequest(); 
-      }
-      
-	  $viewer = new StylometricAnalysisViewer();
-	  $viewer->getDefaultPage();
-                    
-    }catch(Exception $e){
-      return $this->handleErrors($e);     
-    }
-  }
-  
-  /**
-   * Process all requests
-   */
-  private function processRequest(){
-      
-    if($this->form1WasPosted()){
-	  $this->form = 'Form1';	
-      $validator = new ManuscriptDeskBaseValidator();		
-      $form_processor = new Form1Processor($this->getRequest(), $validator);
-	  $this->collection_array = $collection_array = $form_processor->processForm1();
-	  $viewer = new StylometricAnalysisViewer();
-	  return $viewer->showForm2($collection_array);
-    }
-        
-    if($this->form2WasPosted()){
-	  $this->form = 'Form2';
-	  $this->checkEditToken();
-	  $validator = new ManuscriptDeskBaseValidator();		
-      $form_processor = new Form2Processor($this->getRequest(), $validator);
-	  $this->config_array = $config_array = $form_processor->processForm2();
-	  
-      $texts = $this->getPageTexts();
-	  	  
-      list($file_name1, $file_name2) = $this->constructFileNames();
-      $this->constructFullOutputPath($file_name1, $file_name2);
-	  
-      $this->setAdditionalConfigArrayValues($texts); 
-      $full_textfilepath = $this->constructFullTextfilePath();
-      $this->insertConfigArrayIntoTextfile($full_textfilepath, $config_array);   
-      $command = $this->constructShellCommand();  
-      $pystyl_output = $this->callPystyl($command, $full_textfilepath);
-      $this->deleteTextfile($full_textfilepath);
-      $this->checkPystylOutput($pystyl_output);
-	      
-      $database_wrapper = $this->newDatabaseWrapper();
-      $database_wrapper->clearOldValues();
-      $database_wrapper->storeTempStylometricAnalysis();
-	  
-	  list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPath($file_name1, $file_name2);
-      $viewer = new StylometricAnalysisViewer();
-	  return $viewer->showResult($pystyl_output, $config_array, $full_linkpath1, $full_linkpath2);
-    }
-        
-    return $this->processSaveTable();
-  }
 
-  /**
-   * Check if form 1 was posted
-   */
-  private function form1WasPosted(){
-    $request = $this->getRequest();  
-    if($request->getText('form1Posted') !== ''){
-      return true;      
+    private $minimum_pages_per_collection;
+    private $user_name;
+    private $error_message;
+    private $python_path;
+    private $collection_name_array;
+    private $form;
+    private $base_outputpath;
+    private $base_linkpath;
+    private $full_outputpath1;
+    private $full_outputpath2;
+    private $min_words_collection;  //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
+    private $collection_array;
+    private $config_array;
+
+    //PyStyl $config_array information: 
+    //removenonalpha : wheter or not to keep alphabetical symbols
+    //lowercase : wheter or not to lowercase all charachters
+    //tokenizer : str, default=None select the `nltk` tokenizer to be used. Currentlysupports: 'whitespace' (split on whitespace) and 'words' (alphabetic series of characters)
+    //minimumsize : minimum size of texts (in tokens), to be included in the set of tokenized texts
+    //maximumsize : maximum size of texts (in tokens). Longer texts will be truncated to max_size after tokenization
+    //segmentsize : segment_size : int, default=0 The size of the segments to be extracted (in tokens). If `segment_size`=0, no segmentation will be applied to the tokenized texts
+    //stepsize : The nb of words in between two consecutive segments (in tokens). If `step_size`=zero, non-overlapping segments will be created. Else, segments will partially overlap
+    //removepronouns : Whether to remove personal pronouns. If the `corpus.language` is supported, we will load the relevant list from under `pystyl/pronouns`. The pronoun lists are identical to those for 'Stylometry with R'
+    //vectorspace : Which vector space to use. Must be one of: 'tf', 'tf_scaled', 'tf_std', 'tf_idf', 'bin'
+    //featuretype
+    //ngramsize : The length of the ngrams to be extracted
+    //mfi : The nb of most frequent items (words or ngrams) to extract
+    //minimumdf : Proportion of documents in which a feature should minimally occur. Useful to ignore low-frequency features
+    //maximumdf : Proportion of documents in which a feature should maximally occur. Useful for 'culling' and ignoring features which don't appear in enough texts
+    //private $visualization1;
+    //private $visualization2; 
+
+    public function __construct() {
+
+        global $wgStylometricAnalysisOptions, $wgWebsiteRoot;
+
+        $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
+        $this->python_path = $wgStylometricAnalysisOptions['python_path'];
+        $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
+        $web_root = $wgWebsiteRoot;
+
+        $user_object = $this->getUser();
+        $this->user_name = $user_object->getName();
+
+        $initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
+        $this->base_outputpath = $web_root . '/' . $initial_analysis_dir . '/' . $this->user_name;
+        $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name;
+
+        parent::__construct('StylometricAnalysis');
     }
-    
-    return false; 
-  }
-  
-  /**
-   * Check if form 2 was posted
-   */
-  private function form2WasPosted(){
-    $request = $this->getRequest();  
-    if($request->getText('form2Posted') !== '' && $this->tokenWasPosted()){
-      return true;    
-    }
-    
-    return false; 
-  }
-  
-  /**
-   * This function gets the default page
-   */
-  private function getDefaultPage(){
-    $user_collections = $this->getUserCollections();
-    $this->checkUserCollections($user_collections);
-	$viewer = new StylometricAnalysisViewer();
-    $viewer->showForm1($user_collections);   
-    return true;   
-  }
-  
-  /**
-   * This function loops through all the posted collections, and
-   * retrieves the text from the corresponding pages 
-   */
-  private function getPageTexts(){
-    
-	$collection_array = $this->config_array['collection_array']; 
-	  
-    //in $texts combined collection texts will be stored 
-    $texts = array();
-    $collection_name_array = array();
-    $a = 1; 
-  
-    //for collections, collect all single pages of a collection and merge them together
-    foreach($collection_array as $collection_index => $url_array){
 
-      $all_texts_for_one_collection = "";
+    /**
+     * Main entry point for the page
+     */
+    public function execute() {
 
-      //go through all urls of a collection
-      foreach($url_array as $index => $file_url){
-          
-        if($index === 'collection_name'){
-          $collection_name_array[] = $url_array['collection_name'];
-        }else{
-            
-          $title_object = Title::newFromText($file_url);
+        try {
+            $this->checkPermission();
 
-          if(!$title_object->exists()){
-            wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log'); 
-            $this->form = 'Form1';
-            throw new Exception('stylometricanalysis-error-notexists');    
-          }
+            if ($this->requestWasPosted()) {
+                return $this->processRequest();
+            }
 
-          $single_page_text = $this->getSinglePageText($title_object);
-          //add $single_page_text to $single_page_texts
-          $all_texts_for_one_collection .= $single_page_text; 
+            $viewer = new StylometricAnalysisViewer();
+            $viewer->getDefaultPage();
+        } catch (Exception $e) {
+            return $this->handleErrors($e);
         }
-      }
-        
-      $collection_n_words = str_word_count($all_texts_for_one_collection);     
-      $this->checkForCollectionErrors($collection_n_words);
-                        
-      $collection_name = isset($url_array['collection_name']) ? $url_array['collection_name'] : 'collection' . $a; 
+    }
 
-      //add the combined texts of one collection to $texts
-      $texts["collection" . $a] = array(
-        "title" => "$collection_name",
-        "target_name" => "$collection_name",
-        "text" => "$all_texts_for_one_collection",
-      );
-      
-      $a += 1; 
+    /**
+     * Process all requests
+     */
+    private function processRequest() {
+
+        if ($this->form1WasPosted()) {
+            $this->form = 'Form1';
+            $validator = new ManuscriptDeskBaseValidator();
+            $form_processor = new Form1Processor($this->getRequest(), $validator);
+            $this->collection_array = $collection_array = $form_processor->processForm1();
+            $viewer = new StylometricAnalysisViewer();
+            return $viewer->showForm2($collection_array);
+        }
+
+        if ($this->form2WasPosted()) {
+            $this->form = 'Form2';
+            $this->checkEditToken();
+            $validator = new ManuscriptDeskBaseValidator();
+            $form_processor = new Form2Processor($this->getRequest(), $validator);
+            $this->config_array = $config_array = $form_processor->processForm2();
+
+            $texts = $this->getPageTexts();
+
+            list($file_name1, $file_name2) = $this->constructFileNames();
+            $this->constructFullOutputPath($file_name1, $file_name2);
+
+            $this->setAdditionalConfigArrayValues($texts);
+            $full_textfilepath = $this->constructFullTextfilePath();
+            $this->insertConfigArrayIntoTextfile($full_textfilepath, $config_array);
+            $command = $this->constructShellCommand();
+            $pystyl_output = $this->callPystyl($command, $full_textfilepath);
+            $this->deleteTextfile($full_textfilepath);
+            $this->checkPystylOutput($pystyl_output);
+
+            $database_wrapper = $this->newDatabaseWrapper();
+            $database_wrapper->clearOldValues();
+            $database_wrapper->storeTempStylometricAnalysis();
+
+            list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPath($file_name1, $file_name2);
+            $viewer = new StylometricAnalysisViewer();
+            return $viewer->showResult($pystyl_output, $config_array, $full_linkpath1, $full_linkpath2);
+        }
+
+        return $this->processSaveTable();
     }
-       
-    $this->collection_name_array = $collection_name_array;       
-     
-    return $texts; 
-  }
-  
-  /**
-   * This function checks for collection errors based on the number of words in the collection
-   */  
-  private function checkForCollectionErrors($collection_n_words){
-            
-	$config_array = $this->config_array;   
-	  
-    if($collection_n_words < $this->min_words_collection){
-      $this->form = 'Form1';  
-      throw new Exception('stylometricanalysis-error-toosmall');  
+
+    /**
+     * Check if form 1 was posted
+     */
+    private function form1WasPosted() {
+        $request = $this->getRequest();
+        if ($request->getText('form1Posted') !== '') {
+            return true;
+        }
+
+        return false;
     }
-        
-    if($collection_n_words < $config_array['minimumsize']){
-      throw new Exception('stylometricanalysis-error-minsize');    
+
+    /**
+     * Check if form 2 was posted
+     */
+    private function form2WasPosted() {
+        $request = $this->getRequest();
+        if ($request->getText('form2Posted') !== '' && $this->tokenWasPosted()) {
+            return true;
+        }
+
+        return false;
     }
-        
-    if($collection_n_words < ($config_array['segmentsize']+$config_array['stepsize'])){
-      throw new Exception('stylometricanalysis-error-segmentsize');  
+
+    /**
+     * This function gets the default page
+     */
+    private function getDefaultPage() {
+        $user_collections = $this->getUserCollections();
+        $this->checkUserCollections($user_collections);
+        $viewer = new StylometricAnalysisViewer();
+        $viewer->showForm1($user_collections);
+        return true;
     }
-        
-    if($collection_n_words < $config_array['ngramsize']){
-      throw new Exception('stylometricanalysis-error-ngramsize');  
+
+    /**
+     * This function loops through all the posted collections, and
+     * retrieves the text from the corresponding pages 
+     */
+    private function getPageTexts() {
+
+        $collection_array = $this->config_array['collection_array'];
+
+        //in $texts combined collection texts will be stored 
+        $texts = array();
+        $collection_name_array = array();
+        $a = 1;
+
+        //for collections, collect all single pages of a collection and merge them together
+        foreach ($collection_array as $collection_index => $url_array) {
+
+            $all_texts_for_one_collection = "";
+
+            //go through all urls of a collection
+            foreach ($url_array as $index => $file_url) {
+
+                if ($index === 'collection_name') {
+                    $collection_name_array[] = $url_array['collection_name'];
+                }
+                else {
+
+                    $title_object = Title::newFromText($file_url);
+
+                    if (!$title_object->exists()) {
+                        wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
+                        $this->form = 'Form1';
+                        throw new Exception('stylometricanalysis-error-notexists');
+                    }
+
+                    $single_page_text = $this->getSinglePageText($title_object);
+                    //add $single_page_text to $single_page_texts
+                    $all_texts_for_one_collection .= $single_page_text;
+                }
+            }
+
+            $collection_n_words = str_word_count($all_texts_for_one_collection);
+            $this->checkForCollectionErrors($collection_n_words);
+
+            $collection_name = isset($url_array['collection_name']) ? $url_array['collection_name'] : 'collection' . $a;
+
+            //add the combined texts of one collection to $texts
+            $texts["collection" . $a] = array(
+              "title" => "$collection_name",
+              "target_name" => "$collection_name",
+              "text" => "$all_texts_for_one_collection",
+            );
+
+            $a += 1;
+        }
+
+        $this->collection_name_array = $collection_name_array;
+
+        return $texts;
     }
-    
-    return true; 
-  }
-  
-  /**
-   * This function constructs the file names
-   */
-  private function constructFileNames(){
-      
-    if(!isset($this->collection_name_array)){
-      $this->form = 'Form1';  
-      throw new Exception('stylometricanalysis-error-collectionnamearray');    
-    }  
-       
-    $imploded_collection_name_array = implode('',$this->collection_name_array);             
-    $year_month_day = date('Ymd');   
-    $hours_minutes_seconds = date('his');
-	    
-    $file_name1 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . '.jpg';
-    $file_name2 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . 2 . '.jpg'; 
-    
-	return array($file_name1, $file_name2);
-  }
-  
-  /**
-   * This function constructs the output paths for the output images
-   */ 
-  private function constructFullOutputPath($file_name1, $file_name2){
-    $this->full_outputpath1 = $this->base_outputpath . '/' . $file_name1;
-    $this->full_outputpath2 = $this->base_outputpath . '/' . $file_name2;
-        
-    if(is_file($this->full_outputpath1) || is_file($this->full_outputpath2)){
-      throw new Exception('stylometricanalysis-error-outputpath');   
-    } 
-    
-    return true; 
-  }
-  
-  /**
-   * This function constructs the full link paths for the output images
-   */
-  private function constructFullLinkPath($file_name1, $file_name2){    
-    $full_linkpath1 = '/' . $this->base_linkpath . '/' . $file_name1;
-    $full_linkpath2 = '/' . $this->base_linkpath . '/' . $file_name2; 
-    return array($full_linkpath1, $full_linkpath2); 
-  }
-  
-  /**
-   * This function constructs the shell command in order to call PyStyl
-   */
-  private function constructShellCommand(){
-    $python_path = $this->python_path;            
-    $dir = dirname( dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'example.py';  
-    //test.py      
-    return $python_path . ' ' . $dir; 
-  }
-  
-  /**
-   * Process when the user wants to save the current analysis results
-   */
-  private function processSaveTable(){
-      
+
+    /**
+     * This function checks for collection errors based on the number of words in the collection
+     */
+    private function checkForCollectionErrors($collection_n_words) {
+
+        $config_array = $this->config_array;
+
+        if ($collection_n_words < $this->min_words_collection) {
+            $this->form = 'Form1';
+            throw new Exception('stylometricanalysis-error-toosmall');
+        }
+
+        if ($collection_n_words < $config_array['minimumsize']) {
+            throw new Exception('stylometricanalysis-error-minsize');
+        }
+
+        if ($collection_n_words < ($config_array['segmentsize'] + $config_array['stepsize'])) {
+            throw new Exception('stylometricanalysis-error-segmentsize');
+        }
+
+        if ($collection_n_words < $config_array['ngramsize']) {
+            throw new Exception('stylometricanalysis-error-ngramsize');
+        }
+
+        return true;
+    }
+
+    /**
+     * This function constructs the file names
+     */
+    private function constructFileNames() {
+
+        if (!isset($this->collection_name_array)) {
+            $this->form = 'Form1';
+            throw new Exception('stylometricanalysis-error-collectionnamearray');
+        }
+
+        $imploded_collection_name_array = implode('', $this->collection_name_array);
+        $year_month_day = date('Ymd');
+        $hours_minutes_seconds = date('his');
+
+        $file_name1 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . '.jpg';
+        $file_name2 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . 2 . '.jpg';
+
+        return array($file_name1, $file_name2);
+    }
+
+    /**
+     * This function constructs the output paths for the output images
+     */
+    private function constructFullOutputPath($file_name1, $file_name2) {
+        $this->full_outputpath1 = $this->base_outputpath . '/' . $file_name1;
+        $this->full_outputpath2 = $this->base_outputpath . '/' . $file_name2;
+
+        if (is_file($this->full_outputpath1) || is_file($this->full_outputpath2)) {
+            throw new Exception('stylometricanalysis-error-outputpath');
+        }
+
+        return true;
+    }
+
+    /**
+     * This function constructs the full link paths for the output images
+     */
+    private function constructFullLinkPath($file_name1, $file_name2) {
+        $full_linkpath1 = '/' . $this->base_linkpath . '/' . $file_name1;
+        $full_linkpath2 = '/' . $this->base_linkpath . '/' . $file_name2;
+        return array($full_linkpath1, $full_linkpath2);
+    }
+
+    /**
+     * This function constructs the shell command in order to call PyStyl
+     */
+    private function constructShellCommand() {
+        $python_path = $this->python_path;
+        $dir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'example.py';
+        //test.py      
+        return $python_path . ' ' . $dir;
+    }
+
+    /**
+     * Process when the user wants to save the current analysis results
+     */
+    private function processSaveTable() {
+
 // * Saving table: Repost
 // * Save table mode..
 // * Transfer data from tempstylometricanalysis -> stylometricanalysis table
 // * Delete old entries tempstylometricanalysis table
 // * Make new page with appropriate data
 // * Redirect User      
-  }
-  
-  /**
-   * This function constructs the config array that will be sent to Pystyl
-   */ 
-  private function setAdditionalConfigArrayValues($texts){	  
-	$this->config_array['texts'] = $texts;
-	$this->config_array['full_outputpath1'] = $this->full_outputpath1;
-	$this->config_array['full_outputpath2'] = $this->full_outputpath2;                
-  }
-  
-  /**
-   * This function insert data into the textfile which will be used to call Pystyl
-   */
-  private function insertConfigArrayIntoTextfile($full_textfilepath, $config_array){
-   
-    if(is_file($full_textfilepath)){
-      throw new Exception('stylometricanalysis-error-textfile');
-      //bad error, should be reported.. 
     }
-      
-    $textfile = fopen($full_textfilepath, 'w');
-    fwrite($textfile, json_encode($config_array));
-    fclose($textfile);
-    
-    if(!is_file($full_textfilepath)){
-      throw new Exception('stylometricanalysis-error-textfile');    
+
+    /**
+     * This function constructs the config array that will be sent to Pystyl
+     */
+    private function setAdditionalConfigArrayValues($texts) {
+        $this->config_array['texts'] = $texts;
+        $this->config_array['full_outputpath1'] = $this->full_outputpath1;
+        $this->config_array['full_outputpath2'] = $this->full_outputpath2;
     }
-    
-    return true; 
-  }
-  
-  /**
-   * This function deletes a textfile
-   */
-  private function deleteTextfile($full_textfilepath){
-    
-    if(!is_file($full_textfilepath)){
-      throw new Exception('stylometricanalysis-error-textfiledelete');
+
+    /**
+     * This function insert data into the textfile which will be used to call Pystyl
+     */
+    private function insertConfigArrayIntoTextfile($full_textfilepath, $config_array) {
+
+        if (is_file($full_textfilepath)) {
+            throw new Exception('stylometricanalysis-error-textfile');
+            //bad error, should be reported.. 
+        }
+
+        $textfile = fopen($full_textfilepath, 'w');
+        fwrite($textfile, json_encode($config_array));
+        fclose($textfile);
+
+        if (!is_file($full_textfilepath)) {
+            throw new Exception('stylometricanalysis-error-textfile');
+        }
+
+        return true;
     }
-    
-    unlink($full_textfilepath);
-    
-    if(is_file($full_textfilepath)){
-      throw new Exception('stylometricanalysis-error-textfiledelete');  
+
+    /**
+     * This function deletes a textfile
+     */
+    private function deleteTextfile($full_textfilepath) {
+
+        if (!is_file($full_textfilepath)) {
+            throw new Exception('stylometricanalysis-error-textfiledelete');
+        }
+
+        unlink($full_textfilepath);
+
+        if (is_file($full_textfilepath)) {
+            throw new Exception('stylometricanalysis-error-textfiledelete');
+        }
     }
-  } 
-  
-  /**
-   * This function constructs a temporary textfile in which the data for the analysis will be placed later on. Initially, this was done through the command line,
-   * but due to some instabilities, this approach is chosen. 
-   */
-  private function constructFullTextfilePath(){
-    return $this->base_outputpath . '/' . 'temptextfile.txt';  
-  }
-   
-  /**
-   * This function calls Pystyl through the command line
-   */
-  private function callPystyl($command, $full_textfilepath){  
-    $full_textfilepath = "'$full_textfilepath'";
-    return system(escapeshellcmd($command . ' ' . $full_textfilepath));
-  }
-  
-  /**
-   * This function checks Pystyl output
-   */
-  private function checkPystylOutput($output){
-      
-    //something went wrong when importing data into PyStyl
-    if (strpos($output, 'stylometricanalysis-error-import') !== false){
-      throw new Exception('stylometricanalysis-error-import');   
+
+    /**
+     * This function constructs a temporary textfile in which the data for the analysis will be placed later on. Initially, this was done through the command line,
+     * but due to some instabilities, this approach is chosen. 
+     */
+    private function constructFullTextfilePath() {
+        return $this->base_outputpath . '/' . 'temptextfile.txt';
     }
-    
-    //the path already exists
-    if (strpos($output, 'stylometricanalysis-error-path') !== false){
-      throw new Exception('stylometricanalysis-error-path');   
+
+    /**
+     * This function calls Pystyl through the command line
+     */
+    private function callPystyl($command, $full_textfilepath) {
+        $full_textfilepath = "'$full_textfilepath'";
+        return system(escapeshellcmd($command . ' ' . $full_textfilepath));
     }
-    
-    //something went wrong when doing the analysis in PyStyl
-    if (strpos($output, 'stylometricanalysis-error-analysis') !== false){
-      throw new Exception('stylometricanalysis-error-analysis');   
+
+    /**
+     * This function checks Pystyl output
+     */
+    private function checkPystylOutput($output) {
+
+        //something went wrong when importing data into PyStyl
+        if (strpos($output, 'stylometricanalysis-error-import') !== false) {
+            throw new Exception('stylometricanalysis-error-import');
+        }
+
+        //the path already exists
+        if (strpos($output, 'stylometricanalysis-error-path') !== false) {
+            throw new Exception('stylometricanalysis-error-path');
+        }
+
+        //something went wrong when doing the analysis in PyStyl
+        if (strpos($output, 'stylometricanalysis-error-analysis') !== false) {
+            throw new Exception('stylometricanalysis-error-analysis');
+        }
+
+        if (!is_file($this->full_outputpath1) || !is_file($this->full_outputpath2)) {
+            throw new Exception('stylometricanalysis-error-noimages');
+        }
+
+        return true;
     }
-    
-    if(!is_file($this->full_outputpath1) || !is_file($this->full_outputpath2)){
-      throw new Exception('stylometricanalysis-error-noimages');  
+
+    /**
+     * This function creates a new database wrapper
+     */
+    private function newDatabaseWrapper() {
+
+        if (!isset($this->full_outputpath1) || !isset($this->full_outputpath2)) {
+            throw new Exception('stylometricanalysis-error-pathsnotset');
+        }
+
+        //time format (Unix Timestamp). This timestamp is used to see how old values are
+        $time = idate('U');
+
+        return new StylometricAnalysisWrapper($this->user_name, 0, $time, $this->full_outputpath1, $this->full_outputpath2);
     }
-      
-    return true;         
-  }	
-      
-  /**
-   * This function creates a new database wrapper
-   */
-  private function newDatabaseWrapper(){
-      
-    if(!isset($this->full_outputpath1) || !isset($this->full_outputpath2)){
-      throw new Exception('stylometricanalysis-error-pathsnotset');
-    }  
-                
-    //time format (Unix Timestamp). This timestamp is used to see how old values are
-    $time = idate('U');
-     
-    return new StylometricAnalysisWrapper($this->user_name,0, $time, $this->full_outputpath1, $this->full_outputpath2);      
-  }
-   
-  /**
-   * This function checks if the user collections are less than the minimum
-   * 
-   * @param type $user_collections
-   * @return boolean
-   * @throws Exception
-   */
-  private function checkUserCollections($user_collections){
-    if(count($user_collections) < $this->minimum_collections){
-      throw new Exception ('stylometricanalysis-error-fewcollections');                     
+
+    /**
+     * This function checks if the user collections are less than the minimum
+     * 
+     * @param type $user_collections
+     * @return boolean
+     * @throws Exception
+     */
+    private function checkUserCollections($user_collections) {
+        if (count($user_collections) < $this->minimum_collections) {
+            throw new Exception('stylometricanalysis-error-fewcollections');
+        }
+
+        return true;
     }
-    
-    return true; 
-  }
-  
-  /**
-   * This function gets the user collections
-   */
-  private function getUserCollections(){  
-    $out = $this->getOutput();  
-    $stylometric_analysis_wrapper = new StylometricAnalysisWrapper($this->user_name, $this->minimum_pages_per_collection);   
-    return $stylometric_analysis_wrapper->checkForManuscriptCollections();      
-  }
-  
-  /**
-   * This function handles errors
-   */
-  private function handleErrors($e){
-      
-    $error_message = $this->error_message = $e->getMessage();
-	$out = $this->getOutput();
-	
-    if($error_message === 'stylometricanalysis-nopermission'){
-	  $viewer = new StylometricAnalysisViewer($out);
-	  return $viewer->showNoPermissionError();
+
+    /**
+     * This function gets the user collections
+     */
+    private function getUserCollections() {
+        $out = $this->getOutput();
+        $stylometric_analysis_wrapper = new StylometricAnalysisWrapper($this->user_name, $this->minimum_pages_per_collection);
+        return $stylometric_analysis_wrapper->checkForManuscriptCollections();
     }
-    
-    if($error_message === 'stylometricanalysis-error-fewcollections'){
-	  $viewer = new StylometricAnalysisViewer($out);
-	  return $viewer->showFewCollectionsError();  
+
+    /**
+     * This function handles errors
+     */
+    private function handleErrors($e) {
+
+        $error_message = $this->error_message = $e->getMessage();
+        $out = $this->getOutput();
+
+        if ($error_message === 'stylometricanalysis-nopermission') {
+            $viewer = new StylometricAnalysisViewer($out);
+            return $viewer->showNoPermissionError();
+        }
+
+        if ($error_message === 'stylometricanalysis-error-fewcollections') {
+            $viewer = new StylometricAnalysisViewer($out);
+            return $viewer->showFewCollectionsError();
+        }
+
+        if ($this->form === 'Form1') {
+            return $this->getDefaultpage();
+        }
+        elseif ($this->form === 'Form2') {
+            $collection_array = $this->collection_array;
+            return $this->showForm2($collection_array);
+        }
     }
-    
-    if($this->form === 'Form1'){
-      return $this->getDefaultpage();
-      
-    }elseif($this->form === 'Form2'){
-	  $collection_array = $this->collection_array; 	
-      return $this->showForm2($collection_array);
-    }    
-  }
 }

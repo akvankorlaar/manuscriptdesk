@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
@@ -21,46 +22,46 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 class StylometricAnalysisHooks {
-  
-/**
- * Hooks for the stylometricAnalysis extension 
- */
-   
-  //class constructor 
-  public function __construct(){    
-  }
-  
-  /**
-	 * This function sends configuration variables to javascript. In javascript they are accessed through 'mw.config.get('..') 
-	 */
-  public function onResourceLoaderGetConfigVars(&$vars){
-    
-    global $wgStylometricAnalysisOptions;
-    
-    $vars['wgmin_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
-    $vars['wgmax_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
-    
-    return true;
-  }
 
-  /**
-   * This function loads additional modules containing CSS before the page is displayed
-   * 
-   * @param OutputPage $out
-   * @param Skin $ski
-   */
-  public function onBeforePageDisplay(OutputPage &$out, Skin &$ski ){
-
-    $title_object = $out->getTitle();
-    $page_title = $title_object->getPrefixedURL();
-    
-    if($page_title === 'Special:StylometricAnalysis'){    
-      $out->addModuleStyles('ext.stylometricanalysis');
-      $out->addModules('ext.stylometricanalysisloader');
+    /**
+     * Hooks for the stylometricAnalysis extension 
+     */
+    //class constructor 
+    public function __construct() {
+        
     }
 
-    return true; 
-  }
+    /**
+     * This function sends configuration variables to javascript. In javascript they are accessed through 'mw.config.get('..') 
+     */
+    public function onResourceLoaderGetConfigVars(&$vars) {
+
+        global $wgStylometricAnalysisOptions;
+
+        $vars['wgmin_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
+        $vars['wgmax_stylometricanalysis_collections'] = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
+
+        return true;
+    }
+
+    /**
+     * This function loads additional modules containing CSS before the page is displayed
+     * 
+     * @param OutputPage $out
+     * @param Skin $ski
+     */
+    public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
+
+        $title_object = $out->getTitle();
+        $page_title = $title_object->getPrefixedURL();
+
+        if ($page_title === 'Special:StylometricAnalysis') {
+            $out->addModuleStyles('ext.stylometricanalysis');
+            $out->addModules('ext.stylometricanalysisloader');
+        }
+
+        return true;
+    }
+
 }

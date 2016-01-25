@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
@@ -21,28 +22,26 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 /**
  * Usage: Add the following line in LocalSettings.php:
  * require_once( "$IP/extensions/StylometricAnalysis/StylometricAnalysis.php" );
  */
-
 // Check environment
-if (!defined( 'MEDIAWIKI')){
-  echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
-  die( -1 );
+if (!defined('MEDIAWIKI')) {
+    echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
+    die(-1);
 }
 
 /* Configuration */
 
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
-  'path'           => __FILE__,
-  'name'           => 'stylometricAnalysis',
-  'author'         => 'Arent van Korlaar',
-  'version'        => '0.0.1',
-  'url'            => 'https://manuscriptdesk.uantwerpen.be',
-  'description'    => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
+  'path' => __FILE__,
+  'name' => 'stylometricAnalysis',
+  'author' => 'Arent van Korlaar',
+  'version' => '0.0.1',
+  'url' => 'https://manuscriptdesk.uantwerpen.be',
+  'description' => 'This extension permits users to perform Stylometric Analysis on texts for the Manuscript Desk.',
   'descriptionmsg' => 'stylometricanalysis-desc'
 );
 
@@ -50,9 +49,9 @@ $wgExtensionCredits['parserhook'][] = array(
 $dir = __DIR__ . '/';
 
 //Auto load classes 
-$wgAutoloadClasses['StylometricAnalysisHooks']    = $dir . '/StylometricAnalysis.hooks.php';
+$wgAutoloadClasses['StylometricAnalysisHooks'] = $dir . '/StylometricAnalysis.hooks.php';
 $wgAutoloadClasses['StylometricAnalysisWrapper'] = $dir . '/specials/StylometricAnalysisWrapper.php';
-$wgExtensionMessagesFiles['StylometricAnalysis']  = $dir . '/StylometricAnalysis.i18n.php';
+$wgExtensionMessagesFiles['StylometricAnalysis'] = $dir . '/StylometricAnalysis.i18n.php';
 
 ////Register auto load for the special page classes and register special pages
 $wgAutoloadClasses['SpecialStylometricAnalysis'] = $dir . '/specials/SpecialStylometricAnalysis.php';
@@ -60,14 +59,14 @@ $wgAutoloadClasses['SpecialStylometricAnalysis'] = $dir . '/specials/SpecialStyl
 $wgSpecialPages['StylometricAnalysis'] = 'SpecialStylometricAnalysis';
 
 //Extra file loaded later 
-$wgResourceModules['ext.stylometricanalysis' ] = array(
-  'localBasePath' => dirname( __FILE__ ) . '/css',
-  'styles'  => '/ext.stylometricanalysis.css',
+$wgResourceModules['ext.stylometricanalysis'] = array(
+  'localBasePath' => dirname(__FILE__) . '/css',
+  'styles' => '/ext.stylometricanalysis.css',
 );
 
-$wgResourceModules['ext.stylometricanalysisloader' ] = array(
-  'localBasePath' => dirname( __FILE__ ) . '/js',
-  'scripts'  => '/ext.stylometricanalysisloader.js',
+$wgResourceModules['ext.stylometricanalysisloader'] = array(
+  'localBasePath' => dirname(__FILE__) . '/js',
+  'scripts' => '/ext.stylometricanalysisloader.js',
   'messages' => array(
     'stylometricanalysis-error-manycollections',
   ),
