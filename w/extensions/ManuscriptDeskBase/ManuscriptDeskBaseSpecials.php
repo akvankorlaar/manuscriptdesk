@@ -26,6 +26,8 @@ class ManuscriptDeskBaseSpecials extends SpecialPage{
     
   public function __construct($page_name){
       
+      //turn the used objects into instance variables? 
+      
     parent::__construct($page_name);    
   }  
   

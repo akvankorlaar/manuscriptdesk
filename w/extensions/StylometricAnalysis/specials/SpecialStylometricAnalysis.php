@@ -77,6 +77,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
   private $visualization2; 
  
   public function __construct(){
+      
+    $request = $this->getRequest();
+    $user = $this->getUser();
     
     global $wgNewManuscriptOptions, $wgArticleUrl, $wgStylometricAnalysisOptions, $wgWebsiteRoot;  
     
@@ -167,7 +170,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
    */
   private function processSaveTable(){
       
-//    * Saving table: Repost
+// * Saving table: Repost
 // * Save table mode..
 // * Transfer data from tempstylometricanalysis -> stylometricanalysis table
 // * Delete old entries tempstylometricanalysis table
