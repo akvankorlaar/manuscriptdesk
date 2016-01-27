@@ -98,4 +98,5 @@ class Form2Processor {
             throw new Exception('stylometricanalysis-error-mfi');
         }
     }
+    
 }

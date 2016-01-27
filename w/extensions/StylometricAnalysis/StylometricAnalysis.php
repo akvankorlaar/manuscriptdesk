@@ -81,3 +81,4 @@ $StylometricAnalysisHooks = new StylometricAnalysisHooks();
 
 $wgHooks['BeforePageDisplay'][] = array($StylometricAnalysisHooks, 'onBeforePageDisplay');
 $wgHooks['ResourceLoaderGetConfigVars'][] = array($StylometricAnalysisHooks, 'onResourceLoaderGetConfigVars');
+$wgHooks['UnitTestsList'][] = array($StylometricAnalysisHooks, 'onUnitTestsList');

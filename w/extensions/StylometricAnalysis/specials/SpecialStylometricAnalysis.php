@@ -24,11 +24,12 @@
  */
 class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
+    public $error_message;
+
     private $minimum_pages_per_collection;
     private $minimum_collections;
     private $maximum_collections;
     private $user_name;
-    private $error_message;
     private $python_path;
     private $collection_name_array;
     private $form;
@@ -59,7 +60,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     //private $visualization2; 
 
     public function __construct() {
+        parent::__construct('StylometricAnalysis');
+    }
 
+    private function setVariables() {
         global $wgStylometricAnalysisOptions, $wgWebsiteRoot;
 
         $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
@@ -73,30 +77,35 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
         $this->base_outputpath = $web_root . '/' . $initial_analysis_dir . '/' . $this->user_name;
         $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name;
-        
+
         $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
         $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
-        
-        $this->error_message = '';
 
-        parent::__construct('StylometricAnalysis');
+        $this->error_message = '';
+        
+        return true; 
     }
 
     /**
      * Main entry point for the page
      */
     public function execute() {
+        
+        $this->setVariables();
 
         try {
             $this->checkPermission();
 
             if ($this->requestWasPosted()) {
-                return $this->processRequest();
+                $this->processRequest();
+                return true; 
             }
 
             $this->getDefaultPage();
+            return true; 
         } catch (Exception $e) {
-            return $this->handleErrors($e);
+            $this->handleErrors($e);
+            return true; 
         }
     }
 
@@ -321,6 +330,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * Process when the user wants to save the current analysis results
      */
     private function processSaveTable() {
+        
+        throw new Exception('test');
 
 // * Saving table: Repost
 // * Save table mode..
@@ -488,4 +499,5 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     static function processInput($form_data) {
         return false;
     }
+
 }

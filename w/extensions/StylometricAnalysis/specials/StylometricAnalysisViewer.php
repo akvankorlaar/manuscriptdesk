@@ -400,12 +400,15 @@ class StylometricAnalysisViewer {
 
         $html .= "This is the output of Pystyl: $pystyl_output";
 
-        return $out->addHTML($html);
+        $out->addHTML($html);
+        
+        return true; 
     }
 
     public function showNoPermissionError() {
         $out = $this->out;
-        return $out->addHTML($this->msg('stylometricanalysis-nopermission'));
+        $out->addHTML($this->msg('stylometricanalysis-nopermission'));
+        return true; 
     }
 
     public function showFewCollectionsError() {
@@ -417,7 +420,8 @@ class StylometricAnalysisViewer {
         $html .= $this->msg('stylometricanalysis-fewcollections');
         $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
 
-        return $out->addHTML($html);
+        $out->addHTML($html);
+        return true; 
     }
 
     /**
@@ -426,4 +430,5 @@ class StylometricAnalysisViewer {
     public function msg($identifier) {
         return wfMessage($identifier)->text();
     }
+    
 }

@@ -134,4 +134,5 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
 
         return $raw_text;
     }
+    
 }

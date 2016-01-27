@@ -27,7 +27,6 @@ class StylometricAnalysisHooks {
     /**
      * Hooks for the stylometricAnalysis extension 
      */
-    //class constructor 
     public function __construct() {
         
     }
@@ -61,6 +60,11 @@ class StylometricAnalysisHooks {
             $out->addModules('ext.stylometricanalysisloader');
         }
 
+        return true;
+    }
+
+    public function onUnitTestsList(&$files) {
+        $files = array_merge($files, glob(__DIR__ . '/tests/phpunit/*Test.php'));
         return true;
     }
 

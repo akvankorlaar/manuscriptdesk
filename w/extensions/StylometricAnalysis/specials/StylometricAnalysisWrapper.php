@@ -238,4 +238,5 @@ class StylometricAnalysisWrapper {
 
         return true;
     }
+    
 }
