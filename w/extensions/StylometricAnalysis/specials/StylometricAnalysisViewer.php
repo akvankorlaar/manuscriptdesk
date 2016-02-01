@@ -22,24 +22,17 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 class StylometricAnalysisViewer {
 
     private $out;
-    private $max_length;
-    private $article_url;
+    private $max_length = 50; 
 
     public function __construct(Outputpage $out) {
-
-        global $wgArticleUrl;
-
         $this->out = $out;
-        $this->article_url = $wgArticleUrl;
-        $this->max_length = 50;
     }
 
     /**
-     * This function adds html used for the stylometricanalysis loader
+     * This function adds html used for the gif loader image
      */
     private function addStylometricAnalysisLoader() {
 
@@ -57,8 +50,10 @@ class StylometricAnalysisViewer {
      */
     public function showForm1($user_collections, $error_message = '') {
 
-        $out = $this->out; 
-        $article_url = $this->article_url;
+        global $wgArticleUrl;
+
+        $out = $this->out;
+        $article_url = $wgArticleUrl;
 
         $out->setPageTitle($this->msg('stylometricanalysis-welcome'));
 
@@ -127,8 +122,12 @@ class StylometricAnalysisViewer {
         $submit_hover_message = $this->msg('stylometricanalysis-hover');
         $submit_message = $this->msg('stylometricanalysis-submit');
 
+        $edit_token = $out->getUser()->getEditToken();
+
         $html .= "<input type='submit' disabled id='stylometricanalysis-submitbutton' title = $submit_hover_message value=$submit_message>";
         $html .= "<input type='hidden' name='form1Posted' value='form1Posted'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+
         $html .="</form>";
         $html .= "<br>";
 
@@ -144,7 +143,9 @@ class StylometricAnalysisViewer {
      */
     public function showForm2($collection_array, $context, $error_message = '') {
 
-        $article_url = $this->article_url;
+        global $wgArticleUrl;
+
+        $article_url = $wgArticleUrl;
         $max_length = $this->max_length;
         $out = $this->out;
 
@@ -342,7 +343,7 @@ class StylometricAnalysisViewer {
         $html_form->setSubmitText($this->msg('stylometricanalysis-submit'));
         $html_form->addHiddenField('collection_array', json_encode($collection_array));
         $html_form->addHiddenField('form2Posted', 'form2Posted');
-        $html_form->setSubmitCallback(array('SpecialStylometricAnalysis', 'processInput'));
+        $html_form->setSubmitCallback(array('SpecialStylometricAnalysis', 'callbackForm2'));
         $html_form->show();
 
         return true;
@@ -353,8 +354,10 @@ class StylometricAnalysisViewer {
      */
     public function showResult($pystyl_output, $config_array, $full_linkpath1, $full_linkpath2) {
 
+        global $wgArticleUrl;
+
         $out = $this->out;
-        $article_url = $this->article_url;
+        $article_url = $wgARticleUrl;
 
         $out->setPageTitle($this->msg('stylometricanalysis-output'));
 
@@ -401,27 +404,29 @@ class StylometricAnalysisViewer {
         $html .= "This is the output of Pystyl: $pystyl_output";
 
         $out->addHTML($html);
-        
-        return true; 
+
+        return true;
     }
 
     public function showNoPermissionError() {
         $out = $this->out;
         $out->addHTML($this->msg('stylometricanalysis-nopermission'));
-        return true; 
+        return true;
     }
 
     public function showFewCollectionsError() {
 
+        global $wgArticleUrl;
+
         $out = $this->out;
-        $article_url = $this->article_url;
+        $article_url = $wgArticleUrl;
 
         $html = "";
         $html .= $this->msg('stylometricanalysis-fewcollections');
         $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
 
         $out->addHTML($html);
-        return true; 
+        return true;
     }
 
     /**
@@ -430,5 +435,5 @@ class StylometricAnalysisViewer {
     public function msg($identifier) {
         return wfMessage($identifier)->text();
     }
-    
+
 }

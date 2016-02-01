@@ -24,7 +24,7 @@
  */
 class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
-    public $error_message;
+    public $error_message = ''; 
 
     private $minimum_pages_per_collection;
     private $minimum_collections;
@@ -80,8 +80,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
         $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
-
-        $this->error_message = '';
         
         return true; 
     }
@@ -104,7 +102,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             $this->getDefaultPage();
             return true; 
         } catch (Exception $e) {
-            $this->handleErrors($e);
+            $this->handleExceptions($e);
             return true; 
         }
     }
@@ -113,50 +111,27 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * Process all requests
      */
     private function processRequest() {
+        
+        $this->checkEditToken();
 
         if ($this->form1WasPosted()) {
-            $this->form = 'Form1';
-            $validator = new ManuscriptDeskBaseValidator();
-            $form_processor = new Form1Processor($this->getRequest(), $validator);
-            $this->collection_array = $collection_array = $form_processor->processForm1($this->minimum_collections, $this->maximum_collections);
-            $out = $this->getOutput();
-            $viewer = new StylometricAnalysisViewer($out);
-            return $viewer->showForm2($collection_array, $this->getContext(), $this->error_message);
+            $this->processForm1();
+            return true; 
         }
 
         if ($this->form2WasPosted()) {
-            $this->form = 'Form2';
-            $this->checkEditToken();
-            $validator = new ManuscriptDeskBaseValidator();
-            $form_processor = new Form2Processor($this->getRequest(), $validator);
-            $this->config_array = $form_processor->processForm2();
-
-            $texts = $this->getPageTexts();
-
-            list($file_name1, $file_name2) = $this->constructFileNames();
-            $this->constructFullOutputPath($file_name1, $file_name2);
-
-            $this->setAdditionalConfigArrayValues($texts);
-            $full_textfilepath = $this->constructFullTextfilePath();
-            $this->insertConfigArrayIntoTextfile($full_textfilepath, $this->config_array);
-            $command = $this->constructShellCommand();
-            $pystyl_output = $this->callPystyl($command, $full_textfilepath);
-            $this->deleteTextfile($full_textfilepath);
-            $this->checkPystylOutput($pystyl_output);
-
-            $database_wrapper = $this->newDatabaseWrapper();
-            $database_wrapper->clearOldValues();
-            $database_wrapper->storeTempStylometricAnalysis();
-
-            list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPath($file_name1, $file_name2);
-            $out = $this->getOutput();
-            $viewer = new StylometricAnalysisViewer($out);
-            return $viewer->showResult($pystyl_output, $this->config_array, $full_linkpath1, $full_linkpath2);
+            $this->processForm2();
+            return true; 
         }
 
-        return $this->processSaveTable();
-    }
+        if ($this->savePageWasRequested()) {
+            $this->processSavePage();
+            return true; 
+        }
 
+        throw new Exception('stylometricanalysis-error-request');
+    }
+    
     /**
      * Check if form 1 was posted
      */
@@ -187,6 +162,44 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $out = $this->getOutput();
         $viewer = new StylometricAnalysisViewer($out);
         return $viewer->showForm1($user_collections, $this->error_message);
+    }
+
+    private function processForm1() {
+        $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        $this->form = 'Form1';
+        $this->collection_array = $collection_array = $form_data_getter->getForm1Data();
+        $viewer = new StylometricAnalysisViewer($this->getOutput());
+        return $viewer->showForm2($collection_array, $this->getContext(), $this->error_message);
+    }
+
+    private function processForm2() {
+        $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+
+        $this->form = 'Form2';
+        $this->config_array = $form_data_getter->getForm2Data();
+
+        $texts = $this->getPageTexts();
+
+        list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames();
+        $this->constructFullOutputPathOfPystylOutputImages($output_file_name1, $output_file_name2);
+
+        $this->setAdditionalConfigArrayValues($texts);
+        $full_textfilepath = $this->constructFullTextfilePath();
+        $this->insertConfigArrayIntoTextfile($full_textfilepath, $this->config_array);
+        $command = $this->constructShellCommandToCallPystyl();
+        $pystyl_output = $this->callPystyl($command, $full_textfilepath);
+        $this->deleteTextfile($full_textfilepath);
+        $this->checkPystylOutput($pystyl_output);
+
+        $this->updateDatabase();
+
+        list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPathOfPystylOutputImages($output_file_name1, $output_file_name2);
+        $viewer = new StylometricAnalysisViewer($this->getOutput());
+        return $viewer->showResult($pystyl_output, $this->config_array, $full_linkpath1, $full_linkpath2);
+    }
+
+    private function processSavePage() {
+        $information_array = $form_data_getter->getSavePageInformationArray();
     }
 
     /**
@@ -276,7 +289,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function constructFileNames() {
+    private function constructPystylOutputFileNames() {
 
         if (!isset($this->collection_name_array)) {
             $this->form = 'Form1';
@@ -293,10 +306,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return array($file_name1, $file_name2);
     }
 
-    /**
-     * This function constructs the output paths for the output images produced by PyStyl
-     */
-    private function constructFullOutputPath($file_name1, $file_name2) {
+    private function constructFullOutputPathOfPystylOutputImages($file_name1, $file_name2) {
         $this->full_outputpath1 = $this->base_outputpath . '/' . $file_name1;
         $this->full_outputpath2 = $this->base_outputpath . '/' . $file_name2;
 
@@ -307,38 +317,27 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    /**
-     * This function constructs the full link paths for the output images
-     */
-    private function constructFullLinkPath($file_name1, $file_name2) {
+    private function constructFullLinkPathOfPystylOutputImages($file_name1, $file_name2) {
         $full_linkpath1 = '/' . $this->base_linkpath . '/' . $file_name1;
         $full_linkpath2 = '/' . $this->base_linkpath . '/' . $file_name2;
         return array($full_linkpath1, $full_linkpath2);
     }
 
-    /**
-     * This function constructs the shell command in order to call PyStyl
-     */
-    private function constructShellCommand() {
+
+    private function constructShellCommandToCallPystyl() {
         $python_path = $this->python_path;
         $dir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'example.py';
         //test.py      
         return $python_path . ' ' . $dir;
     }
+    
+    private function savePageWasRequested() {
+        $request = $this->getRequest();
+        if ($request->getText('save_current_page') === '') {
+            return false;
+        }
 
-    /**
-     * Process when the user wants to save the current analysis results
-     */
-    private function processSaveTable() {
-        
-        throw new Exception('test');
-
-// * Saving table: Repost
-// * Save table mode..
-// * Transfer data from tempstylometricanalysis -> stylometricanalysis table
-// * Delete old entries tempstylometricanalysis table
-// * Make new page with appropriate data
-// * Redirect User      
+        return true;
     }
 
     /**
@@ -432,6 +431,13 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
+    private function updateDatabase() {
+        $database_wrapper = $this->newDatabaseWrapper();
+        $database_wrapper->clearOldPystylOutput();
+        $database_wrapper->storeTempStylometricAnalysis();
+        return true; 
+    }
+
     /**
      * This function creates a new database wrapper
      */
@@ -470,7 +476,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     /**
      * This function handles errors
      */
-    private function handleErrors($e) {
+    private function handleExceptions($e) {
 
         $error_message = $this->error_message = $e->getMessage();
         $out = $this->getOutput();
@@ -483,6 +489,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         if ($error_message === 'stylometricanalysis-error-fewcollections') {
             return $viewer->showFewCollectionsError();
         }
+        
+        if($error_message === 'manuscriptdesk-error-edittoken'){
+            return $this->getDefaultPage();
+        }
 
         if ($this->form === 'Form1') {
             return $this->getDefaultpage();
@@ -494,9 +504,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
     
     /**
-     * Callback function. Makes sure the page is redisplayed in case there was an error. 
+     * Callback function. Makes sure the page is redisplayed in case there was an error in Form 2 
      */
-    static function processInput($form_data) {
+    static function callbackForm2($form_data) {
         return false;
     }
 

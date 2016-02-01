@@ -26,8 +26,6 @@ class StylometricAnalysisWrapper {
 
     private $user_name;
     private $minimum_pages_per_collection;
-    private $hours_before_delete;
-    private $web_root;
     private $initial_stylometricanalysis_dir;
     private $time;
     private $full_outputpath1;
@@ -35,24 +33,16 @@ class StylometricAnalysisWrapper {
 
     //class constructor
     public function __construct($user_name, $minimum_pages_per_collection = 0, $time = 0, $full_outputpath1 = '', $full_outputpath2 = '') {
-
-        global $wgStylometricAnalysisOptions, $wgWebsiteRoot;
-
         $this->user_name = $user_name;
         $this->minimum_pages_per_collection = $minimum_pages_per_collection;
         $this->time = $time;
         $this->full_outputpath1 = $full_outputpath1;
         $this->full_outputpath2 = $full_outputpath2;
-        $this->hours_before_delete = $wgStylometricAnalysisOptions['tempstylometricanalysis_hours_before_delete'];
-        $this->web_root = $wgWebsiteRoot;
         $this->initial_stylometricanalysis_dir = 'initialStylometricAnalysis';
     }
 
     /**
      * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
-     * 
-     * @param type $collection_urls
-     * @return type
      */
     public function checkForManuscriptCollections() {
 
@@ -63,17 +53,15 @@ class StylometricAnalysisWrapper {
 
         //Database query
         $res = $dbr->select(
-          'manuscripts', //from
+            'manuscripts', //from
             array(
           'manuscripts_title', //values
           'manuscripts_url',
           'manuscripts_collection',
-            ), 
-            array(
+            ), array(
           'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
           'manuscripts_collection != ' . $dbr->addQuotes("none"),
-            ), __METHOD__, 
-            array(
+            ), __METHOD__, array(
           'ORDER BY' => 'manuscripts_lowercase_collection',
             )
         );
@@ -112,7 +100,9 @@ class StylometricAnalysisWrapper {
     /**
      * This function checks if values should be removed from the 'tempstylometricanalysis' table
      */
-    public function clearOldValues() {
+    public function clearOldPystylOutput() {
+
+        global $wgStylometricAnalysisOptions;
 
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
@@ -120,21 +110,19 @@ class StylometricAnalysisWrapper {
         $time_array = array();
         $fulloutputpath1_array = array();
         $fulloutputpath2_array = array();
+        $hours_before_delete = $wgStylometricAnalysisOptions['tempstylometricanalysis_hours_before_delete'];
 
         //Database query
         $res = $dbr->select(
-           'tempstylometricanalysis', //from
+            'tempstylometricanalysis', //from
             array(
           'tempstylometricanalysis_time', //values
           'tempstylometricanalysis_user',
           'tempstylometricanalysis_fulloutputpath1',
           'tempstylometricanalysis_fulloutputpath2',
-            ), 
-            array(
+            ), array(
           'tempstylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
-            ),
-            __METHOD__, 
-            array(
+            ), __METHOD__, array(
           'ORDER BY' => 'tempstylometricanalysis_time',
             )
         );
@@ -149,27 +137,20 @@ class StylometricAnalysisWrapper {
 
         foreach ($time_array as $index => $old_time) {
 
-            if ($current_time - $old_time > ($this->hours_before_delete * 3600)) {
+            if ($current_time - $old_time > ($hours_before_delete * 3600)) {
 
                 $old_full_outputpath1 = $fulloutputpath1_array[$index];
                 $old_full_outputpath2 = $fulloutputpath2_array[$index];
 
-                $this->deleteOutputImages($old_full_outputpath1, $old_full_outputpath2);
-                $this->deleteTempStylometricAnalysis($old_time);
+                $this->deleteOldPystylOutputImages($old_full_outputpath1, $old_full_outputpath2);
+                $this->deleteOldEntriesFromTempstylometricanalysisTable($old_time);
             }
         }
 
         return true;
     }
 
-    /**
-     * 
-     * @param type $old_full_outputpath1
-     * @param type $old_full_outputpath2
-     * @return boolean
-     * @throws Exception
-     */
-    private function deleteOutputImages($old_full_outputpath1, $old_full_outputpath2) {
+    private function deleteOldPystylOutputImages($old_full_outputpath1, $old_full_outputpath2) {
 
         if (!is_file($old_full_outputpath1) || !is_file($old_full_outputpath2)) {
             throw new Exception('stylometricanalysis-error-database');
@@ -181,18 +162,13 @@ class StylometricAnalysisWrapper {
         return true;
     }
 
-    /**
-     * This function removes values from the 'tempstylometricanalysis' table
-     * 
-     * @param type $old_time
-     */
-    private function deleteTempStylometricAnalysis($old_time) {
+    private function deleteOldEntriesFromTempstylometricanalysisTable($old_time) {
 
         $dbw = wfGetDB(DB_MASTER);
         $user_name = $this->user_name;
 
         $dbw->delete(
-           'tempstylometricanalysis', //from
+            'tempstylometricanalysis', //from
             array(
           'tempstylometricanalysis_time = ' . $dbw->addQuotes($old_time),
           'tempstylometricanalysis_user = ' . $dbw->addQuotes($user_name), //conditions
@@ -205,12 +181,6 @@ class StylometricAnalysisWrapper {
         return true;
     }
 
-    /**
-     * This function inserts data into the 'tempstylometricanalysis' table
-     * 
-     * @return boolean
-     * @throws Exception
-     */
     public function storeTempStylometricAnalysis() {
 
         $dbw = wfGetDB(DB_MASTER);
@@ -221,15 +191,13 @@ class StylometricAnalysisWrapper {
         $full_outputpath2 = $this->full_outputpath2;
 
         $dbw->insert(
-           'tempstylometricanalysis', //select table
+            'tempstylometricanalysis', //select table
             array(//insert values
           'tempstylometricanalysis_time' => $time,
           'tempstylometricanalysis_user' => $user_name,
           'tempstylometricanalysis_fulloutputpath1' => $full_outputpath1,
           'tempstylometricanalysis_fulloutputpath2' => $full_outputpath2,
-            ), 
-            __METHOD__, 
-            'IGNORE'
+            ), __METHOD__, 'IGNORE'
         );
 
         if (!$dbw->affectedRows()) {
@@ -238,5 +206,5 @@ class StylometricAnalysisWrapper {
 
         return true;
     }
-    
+
 }

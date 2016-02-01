@@ -24,9 +24,6 @@
  */
 class StylometricAnalysisHooks {
 
-    /**
-     * Hooks for the stylometricAnalysis extension 
-     */
     public function __construct() {
         
     }
@@ -46,9 +43,6 @@ class StylometricAnalysisHooks {
 
     /**
      * This function loads additional modules containing CSS before the page is displayed
-     * 
-     * @param OutputPage $out
-     * @param Skin $ski
      */
     public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
 

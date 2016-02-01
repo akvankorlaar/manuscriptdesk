@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
@@ -21,10 +22,9 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
+class FormDataGetter {
 
-class Form2Processor {
-
-    private $request;
+    public $request;
     private $validator;
 
     public function __construct(WebRequest $request, ManuscriptDeskBaseValidator $validator) {
@@ -32,7 +32,59 @@ class Form2Processor {
         $this->validator = $validator;
     }
 
-    public function processForm2() {
+    /**
+     * This function processes form 1
+     */
+    public function getForm1Data() {
+        global $wgStylometricAnalysisOptions;
+        $minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
+        $maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
+        $collection_array = $this->loadForm1();
+        $this->checkForm1($collection_array, $minimum_collections, $maximum_collections);
+        return $collection_array;
+    }
+
+    /**
+     * This function loads the variables in Form 1
+     */
+    private function loadForm1() {
+
+        $request = $this->request;
+        $validator = $this->validator;
+        $posted_names = $request->getValueNames();
+        $collection_array = array();
+
+        //identify the button pressed
+        foreach ($posted_names as $key => $checkbox) {
+            //remove the numbers from $checkbox to see if it matches to 'collection'
+            $checkbox_without_numbers = trim(str_replace(range(0, 9), '', $checkbox));
+
+            if ($checkbox_without_numbers === 'collection') {
+                $collection_array[$checkbox] = (array) $validator->validateStringUrl(json_decode($request->getText($checkbox)));
+            }
+        }
+        
+        return $collection_array;
+    }
+
+    private function checkForm1(array $collection_array, $minimum_collections, $maximum_collections) {
+
+        if (empty($collection_array)) {
+            throw new Exception('stylometricanalysis-error-request');
+        }
+
+        if (count($collection_array) < $minimum_collections) {
+            throw new Exception('stylometricanalysis-error-fewcollections');
+        }
+
+        if (count($collection_array) > $maximum_collections) {
+            throw new Exception('stylometricanalysis-error-manycollections');
+        }
+
+        return true;
+    }
+
+    public function getForm2Data() {
         global $wgStylometricAnalysisOptions;
         $min_mfi = $wgStylometricAnalysisOptions['min_mfi'];
         $config_array = $this->loadForm2();
@@ -99,4 +151,26 @@ class Form2Processor {
         }
     }
     
+    public function getSavePageInformationArray() {
+        $save_page_array = $this->loadSavePageInformationArray();
+        $this->checkSavePageInformationArray($save_page_array);
+        return true;
+    }
+
+    private function loadSavePageInformationArray() {
+        $request = $this->request;
+        $validator = $this->validator;
+        return $validator->validateString(json_decode($request->getText('save_current_page')));
+    }
+
+    private function checkSavePageInformationArray($save_page_array) {
+        if (count($save_page_array) !== 3) {
+            throw new Exception('stylometricanalysis-error-request');
+        }
+
+        if (!isset($save_page_array['save_current_page']) || !isset($save_page_array['full_outputpath1']) || !isset($save_page_array['full_outputpath2'])) {
+            throw new Exception('stylometricanalysis-error-request');
+        }
+    }
+
 }
