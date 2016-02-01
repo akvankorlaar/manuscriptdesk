@@ -48,7 +48,7 @@ class StylometricAnalysisViewer {
     /**
      * This function constructs the HTML for the default page
      */
-    public function showForm1($user_collections, $error_message = '') {
+    public function showForm1(array $user_collections, $error_message = '') {
 
         global $wgArticleUrl;
 
@@ -141,7 +141,7 @@ class StylometricAnalysisViewer {
     /**
      * This function constructs and shows the stylometric analysis form
      */
-    public function showForm2($collection_array, $context, $error_message = '') {
+    public function showForm2(array $collection_array, RequestContext $context, $error_message = '') {
 
         global $wgArticleUrl;
 
@@ -352,7 +352,7 @@ class StylometricAnalysisViewer {
     /**
      * This function shows the output page after the stylometric analysis has completed
      */
-    public function showResult($pystyl_output, $config_array, $full_linkpath1, $full_linkpath2) {
+    public function showResult(array $config_array, $pystyl_output, $full_linkpath1, $full_linkpath2) {
 
         global $wgArticleUrl;
 

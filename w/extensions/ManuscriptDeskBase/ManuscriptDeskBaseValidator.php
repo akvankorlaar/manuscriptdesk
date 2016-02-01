@@ -24,10 +24,10 @@
  */
 class ManuscriptDeskBaseValidator {
 
-    private $max_length;
+    private $max_length = 50;
 
     public function __construct() {
-        $this->max_length = 50;
+        
     }
 
     /**

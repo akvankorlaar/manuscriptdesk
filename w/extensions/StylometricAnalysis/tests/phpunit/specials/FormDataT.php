@@ -1,6 +1,6 @@
 <?php
 
-//// * Transfer data from tempstylometricanalysis -> stylometricanalysis table
+// * Transfer data from tempstylometricanalysis -> stylometricanalysis table
 //// * Delete old entries tempstylometricanalysis table
 //// * Make new page with appropriate data
 //// * Redirect User      
@@ -31,7 +31,7 @@ class FormDataGetterTest extends MediaWikiTestCase {
     
     public function testgetForm2Data(){
         //dataprovider for form2 .... 
-        $output = $this->t->getForm2Data();
+        $output = $this->t->getForm2PystylConfigurationData();
         //assert count ... 
     }
     

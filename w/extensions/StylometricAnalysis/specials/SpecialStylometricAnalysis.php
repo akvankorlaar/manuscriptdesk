@@ -56,8 +56,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     //mfi : The nb of most frequent items (words or ngrams) to extract
     //minimumdf : Proportion of documents in which a feature should minimally occur. Useful to ignore low-frequency features
     //maximumdf : Proportion of documents in which a feature should maximally occur. Useful for 'culling' and ignoring features which don't appear in enough texts
-    //private $visualization1;
-    //private $visualization2; 
+    //visualization1: The chosen visualization. This could be for example a dendrogram
+    //visualization2: THe second chosen visualization
 
     public function __construct() {
         parent::__construct('StylometricAnalysis');
@@ -113,7 +113,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private function processRequest() {
         
         $this->checkEditToken();
-
+        
         if ($this->form1WasPosted()) {
             $this->processForm1();
             return true; 
@@ -158,7 +158,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     private function getDefaultPage() {
         $user_collections = $this->getUserCollections();
-        $this->checkUserCollections($user_collections);
+        $this->checkWhetherUserHasEnoughCollections($user_collections);
         $out = $this->getOutput();
         $viewer = new StylometricAnalysisViewer($out);
         return $viewer->showForm1($user_collections, $this->error_message);
@@ -176,7 +176,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
 
         $this->form = 'Form2';
-        $this->config_array = $form_data_getter->getForm2Data();
+        $this->collection_array = $form_data_getter->getForm2CollectionArray();
+        $this->config_array = $form_data_getter->getForm2PystylConfigurationData();
 
         $texts = $this->getPageTexts();
 
@@ -348,6 +349,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->config_array['full_outputpath1'] = $this->full_outputpath1;
         $this->config_array['full_outputpath2'] = $this->full_outputpath2;
         $this->config_array['base_outputpath'] = $this->base_outputpath;
+        $this->config_array['collection_array'] = $this->collection_array; 
         return true; 
     }
 
@@ -372,9 +374,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    /**
-     * This function deletes a textfile
-     */
     private function deleteTextfile($full_textfilepath) {
 
         if (!is_file($full_textfilepath)) {
@@ -404,9 +403,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return system(escapeshellcmd($command . ' ' . $full_textfilepath));
     }
 
-    /**
-     * This function checks Pystyl output
-     */
     private function checkPystylOutput($output) {
 
         //something went wrong when importing data into PyStyl
@@ -438,9 +434,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true; 
     }
 
-    /**
-     * This function creates a new database wrapper
-     */
     private function newDatabaseWrapper() {
 
         if (!isset($this->full_outputpath1) || !isset($this->full_outputpath2)) {
@@ -453,10 +446,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return new StylometricAnalysisWrapper($this->user_name, 0, $time, $this->full_outputpath1, $this->full_outputpath2);
     }
 
-    /**
-     * This function checks if the user collections are less than the minimum
-     */
-    private function checkUserCollections($user_collections) {
+    private function checkWhetherUserHasEnoughCollections($user_collections) {
         if (count($user_collections) < $this->minimum_collections) {
             throw new Exception('stylometricanalysis-error-fewcollections');
         }
@@ -464,20 +454,14 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    /**
-     * This function gets the user collections
-     */
     private function getUserCollections() {
         $out = $this->getOutput();
         $stylometric_analysis_wrapper = new StylometricAnalysisWrapper($this->user_name, $this->minimum_pages_per_collection);
         return $stylometric_analysis_wrapper->checkForManuscriptCollections();
     }
 
-    /**
-     * This function handles errors
-     */
     private function handleExceptions($e) {
-
+        
         $error_message = $this->error_message = $e->getMessage();
         $out = $this->getOutput();
         $viewer = new StylometricAnalysisViewer($out);
@@ -490,19 +474,26 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return $viewer->showFewCollectionsError();
         }
         
-        if($error_message === 'manuscriptdesk-error-edittoken'){
+        if ($error_message === 'manuscriptdesk-error-edittoken') {
             return $this->getDefaultPage();
         }
 
         if ($this->form === 'Form1') {
             return $this->getDefaultpage();
         }
-        elseif ($this->form === 'Form2') {
-            $collection_array = $this->config_array['collection_array'];
-            return $viewer->showForm2($collection_array, $this->getContext(), $error_message);
+
+        if ($this->form === 'Form2') {
+            if (isset($this->collection_array)) {
+                $collection_array = $this->collection_array;
+                return $viewer->showForm2($collection_array, $this->getContext(), $error_message);
+            }
+
+            return $this->getDefaultPage();
         }
+
+        return true;
     }
-    
+
     /**
      * Callback function. Makes sure the page is redisplayed in case there was an error in Form 2 
      */

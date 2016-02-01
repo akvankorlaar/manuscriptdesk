@@ -2,99 +2,248 @@
 
 //php phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\StylometricAnalysis\tests\phpunit\specials
 //https://jtreminio.com/2013/03/unit-testing-tutorial-part-3-testing-protected-private-methods-coverage-reports-and-crap/
-
 //check how exceptions are handled
 
 class SpecialStylometricAnalysisTest extends MediaWikiTestCase {
 
-    private $sa;
-    private $context; 
+    private $t;
+    private $context;
 
     protected function setUp() {
         parent::setUp();
-        
+
         $faux_user = User::newFromName('Root');
         $this->context = new RequestContext;
         $this->context->setUser($faux_user);
-        
-        $this->sa = $this->mockStylometricAnalysis();
-        $this->sa->setContext($this->context);
         $faux_title = Title::newFromText('StylometricAnalysis');
         $this->context->setTitle($faux_title);
-
+        $this->t = $this->mockStylometricAnalysis();
+        $this->t->setContext($this->context);
     }
 
     protected function tearDown() {
-        unset($this->sa);
+        unset($this->t);
         parent::tearDown();
     }
 
     private function mockStylometricAnalysis() {
-        //create a mock object, and make the checkEditToken method a stub
-        //callPystyl,, checkPystylOutput,, updateDatabase,,showResult
         $mockStylometricAnalysis = $this->getMockBuilder('SpecialStylometricAnalysis')
             ->setConstructorArgs(array())
-            ->setMethods(array('checkEditToken'))
+            ->setMethods(array('checkEditToken', 'callPystyl', 'checkPystylOutput', 'updateDatabase', 'showResult'))
             ->getMock();
-        
+
         return $mockStylometricAnalysis;
     }
 
-    public function testFakeForm1() {
-        $fake_formdata = $this->getFakeForm1Data();
-        $this->setRequest($fake_formdata);
-        $this->assertEquals($this->sa->execute(), true);
+    public function testDefaultPage() {
+        $this->assertEquals($this->t->execute(), true);
     }
 
-//    public function testFakeForm2() {
-//        $fake_formdata = $this->getFakeForm2Data();
+    /**
+     * @dataProvider getFakeForm1Data
+     */
+    public function testFakeForm1($fake_formdata) {
+        $this->setRequest($fake_formdata);
+        //this data throws an internal exception, but should be handled 
+        $this->assertEquals($this->t->execute(), true);
+    }
+
+    /**
+     * @dataProvider getFakeForm1ExceptionData
+     */
+    public function testFakeForm1Exceptions($fake_formdata) {
+        $this->setRequest($fake_formdata);
+        $this->assertEquals($this->t->execute(), true);
+    }
+
+//    /**
+//     * @dataProvider getFakeForm2Data
+//     */
+//    public function testFakeForm2($fake_formdata) {
 //        $this->setRequest($fake_formdata);
-//        $output = $this->sa->execute();
-//        echo 'HERE IS YOUR PYSTYL OUTPUT' . $output . 'ERROR MESSAGE' . $this->sa->error_message;
-//        $this->assertEquals($output, 1);
+//        $this->assertEquals($this->t->execute(), true);
+//    }
+//
+//    /**
+//     * @dataProvider getFakeForm2ExceptionData
+//     */
+//    public function testFakeForm2Exceptions($fake_formdata) {
+//        $this->setRequest($fake_formdata);
+//        $this->assertEquals($this->t->execute(), true);
 //    }
 
-    public function testSavePageWasRequestedTrue() {
-        $fake_savepageArray =  array('save_current_page' => json_encode(array('save_current_page','full_outputpath1', 'full_outputpath2')));
-        $this->setRequest($fake_savepageArray);
-        $this->assertEquals($this->invokeMethod($this->sa,'savePageWasRequested'),true);
-    }
+    //probably will have to stub some methods when testing this
+//    public function testProcessSavePage() {
+//        $fake_savepageArray = array('save_current_page' => json_encode(array('save_current_page', 'full_outputpath1', 'full_outputpath2')));
+//        $this->setRequest($fake_savepageArray);
+//        $this->assertEquals($this->invokeMethod($this->t, 'savePageWasRequested'), true);
+//        $fake_formdata = $this->getFakeForm2Data();
+//        $this->setRequest($fake_formdata);
+//        $this->assertEquals($this->t->execute(), true);
+//    }
 
-    private function setRequest($data) {
+    private function setRequest(array $data) {
         $faux_request = new FauxRequest($data, true);
         $this->context->setRequest($faux_request);
     }
 
-    private function getFakeForm1Data(){
-        
-        return array(
-            'form1Posted' => 'form1Posted',
-            'collection0' => '{"0":"Manuscripts:Root\/test1","1":"Manuscripts:Root\/testpage2","2":"Manuscripts:Root\/testpage3","collection_name":"collection1"}',
-            'collection1' => '{"0":"Manuscripts:Root\/test2","1":"Manuscripts:Root\/bla","2":"Manuscripts:Root\/bla2","collection_name":"collection2"}',
-        );
-        
-    }
-    
-    private function getFakeForm2Data() {
+    public function getFakeForm1Data() {
 
-        return array(
-          'wptokenizer' => 'whitespace',
-          'wpminimumsize' => '0',
-          'wpmaximumsize' => '10000',
-          'wpsegmentsize' => '0',
-          'wpstepsize' => '0',
-          'wpvectorspace' => 'tf',
-          'wpfeaturetype' => 'word',
-          'wpngramsize' => '1',
-          'wpmfi' => '100',
-          'wpminimumdf' => '0',
-          'wpmaximumdf' => '0.9',
-          'wpvisualization1' => 'dendrogram',
-          'wpvisualization2' => 'dendrogram',
-          'wpEditToken' => '6d4e494aaccbdeeeadea655f447f0d2b+',
-          'title' => 'Special:StylometricAnalysis',
-          'collection_array' => '{"collection0":{"0":"Manuscripts:Root\/test1","1":"Manuscripts:Root\/testpage2","2":"Manuscripts:Root\/testpage3","collection_name":"collection1"},"collection1":{"0":"Manuscripts:Root\/test2","1":"Manuscripts:Root\/bla","2":"Manuscripts:Root\/bla2","collection_name":"collection2"}}',
-          'form2Posted' => 'form2Posted',
+        $form1_data = array(
+          array(
+            array(
+              'form1Posted' => 'form1Posted',
+              'collection0' => '{"0":"Manuscripts:Root\/test1","1":"Manuscripts:Root\/testpage2","2":"Manuscripts:Root\/testpage3","collection_name":"collection1"}',
+              'collection1' => '{"0":"Manuscripts:Root\/test2","1":"Manuscripts:Root\/bla","2":"Manuscripts:Root\/bla2","collection_name":"collection2"}',
+            )
+          ),
         );
+
+        return $form1_data;
     }
+
+    public function getFakeForm1ExceptionData() {
+
+        $form1_data = array(
+          array(
+            array(
+              //no data
+              'form1Posted' => 'form1Posted',
+            )),
+          array(
+            array(
+              //not enough data
+              'form1Posted' => 'form1Posted',
+              'collection1' => '{"0":"Manuscripts:Root\/test2","1":"Manuscripts:Root\/bla","2":"Manuscripts:Root\/bla2","collection_name":"collection2"}',
+            )),
+          array(
+            array(
+              //data with invalid charachters
+              'form1Posted' => 'form1Posted',
+              'collection0' => '{"0":"Manuscrip(*)&%$ts:Root\/test1","1":"Manuscripts:Root\/testpage2","2":"Manuscripts:Root\/testpage3","collection_name":"collection1"}',
+              'collection1' => '{"0":"Manuscripts:Root\/test2","1":"Manuscripts:Root\/bla","2":"Manuscripts:Root\/bla2","collection_name":"collection2"}',
+            )),
+        );
+
+        return $form1_data;
+    }
+
+    public function getFakeForm2Data() {
+
+        $form2_data = array(
+          array(
+            array(
+              'wptokenizer' => 'whitespace',
+              'wpminimumsize' => '0',
+              'wpmaximumsize' => '10000',
+              'wpsegmentsize' => '0',
+              'wpstepsize' => '0',
+              'wpvectorspace' => 'tf',
+              'wpfeaturetype' => 'word',
+              'wpngramsize' => '1',
+              'wpmfi' => '100',
+              'wpminimumdf' => '0',
+              'wpmaximumdf' => '0.9',
+              'wpvisualization1' => 'dendrogram',
+              'wpvisualization2' => 'dendrogram',
+              'title' => 'Special:StylometricAnalysis',
+              'collection_array' => '{"collection0":{"0":"Manuscripts:Root\/test1","1":"Manuscripts:Root\/testpage2","2":"Manuscripts:Root\/testpage3","collection_name":"collection1"},"collection1":{"0":"Manuscripts:Root\/test2","1":"Manuscripts:Root\/bla","2":"Manuscripts:Root\/bla2","collection_name":"collection2"}}',
+              'form2Posted' => 'form2Posted',
+            )),
+        );
+
+        return $form2_data;
+    }
+
+    public function getFakeForm2ExceptionData() {
+
+        $form2_data = array(
+          //data missing
+          array(
+            array(
+            'wpminimumsize' => '0',
+            'wpmaximumsize' => '10000',
+            'wpsegmentsize' => '0',
+            'wpstepsize' => '0',
+            'wpvectorspace' => 'tf',
+            'wpfeaturetype' => 'word',
+            'wpngramsize' => '1',
+            'wpmfi' => '100',
+            'wpminimumdf' => '0',
+            'wpmaximumdf' => '0.9',
+            'wpvisualization1' => 'dendrogram',
+            'wpvisualization2' => 'dendrogram',
+            'title' => 'Special:StylometricAnalysis',
+            'collection_array' => '{"collection0":{"0":"Manuscripts:Root\/test1","1":"Manuscripts:Root\/testpage2","2":"Manuscripts:Root\/testpage3","collection_name":"collection1"},"collection1":{"0":"Manuscripts:Root\/test2","1":"Manuscripts:Root\/bla","2":"Manuscripts:Root\/bla2","collection_name":"collection2"}}',
+            'form2Posted' => 'form2Posted',
+          )),
+          //data with invalid charachters
+          array(
+            array(
+            'wptokenizer' => 'whitespace',
+            'wpminimumsize' => '0',
+            'wpmaximumsize' => '10000',
+            'wpsegmentsize' => '0',
+            'wpstepsize' => '0',
+            'wpvectorspace' => 'tf^&&^(*',
+            'wpfeaturetype' => 'word',
+            'wpngramsize' => '1',
+            'wpmfi' => '100',
+            'wpminimumdf' => '0',
+            'wpmaximumdf' => '0.9',
+            'wpvisualization1' => 'dendrogram',
+            'wpvisualization2' => 'dendrogram',
+            'title' => 'Special:StylometricAnalysis',
+            'collection_array' => '{"collection0":{"0":"Manuscripts:Root\/test1","1":"Manuscripts:Root\/testpage2","2":"Manuscripts:Root\/testpage3","collection_name":"collection1"},"collection1":{"0":"Manuscripts:Root\/test2","1":"Manuscripts:Root\/bla","2":"Manuscripts:Root\/bla2","collection_name":"collection2"}}',
+            'form2Posted' => 'form2Posted',
+          )),
+          //data with invalid values
+          array(
+            array(
+            'wptokenizer' => 'whitespace',
+            'wpminimumsize' => '0',
+            'wpmaximumsize' => '10000',
+            'wpsegmentsize' => '0',
+            'wpstepsize' => '0',
+            'wpvectorspace' => 'tf',
+            'wpfeaturetype' => 'word',
+            'wpngramsize' => '1',
+            'wpmfi' => '100',
+            'wpminimumdf' => '-50',
+            'wpmaximumdf' => '0.9',
+            'wpvisualization1' => 'dendrogram',
+            'wpvisualization2' => 'dendrogram',
+            'title' => 'Special:StylometricAnalysis',
+            'collection_array' => '{"collection0":{"0":"Manuscripts:Root\/test1","1":"Manuscripts:Root\/testpage2","2":"Manuscripts:Root\/testpage3","collection_name":"collection1"},"collection1":{"0":"Manuscripts:Root\/test2","1":"Manuscripts:Root\/bla","2":"Manuscripts:Root\/bla2","collection_name":"collection2"}}',
+            'form2Posted' => 'form2Posted',
+          )),
+          //data missing
+          array(
+            array(
+            'form2Posted' => 'form2Posted',
+          )),
+          //collection array missing
+          array(
+            array(
+            'wptokenizer' => 'whitespace',
+            'wpminimumsize' => '0',
+            'wpmaximumsize' => '10000',
+            'wpsegmentsize' => '0',
+            'wpstepsize' => '0',
+            'wpvectorspace' => 'tf',
+            'wpfeaturetype' => 'word',
+            'wpngramsize' => '1',
+            'wpmfi' => '100',
+            'wpminimumdf' => '0',
+            'wpmaximumdf' => '0.9',
+            'wpvisualization1' => 'dendrogram',
+            'wpvisualization2' => 'dendrogram',
+            'title' => 'Special:StylometricAnalysis',
+            'form2Posted' => 'form2Posted',
+          )),
+        );
+
+        return $form2_data;
+    }
+
 }
