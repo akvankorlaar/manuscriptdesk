@@ -31,7 +31,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private $maximum_collections;
     private $user_name;
     private $python_path;
-    private $collection_name_array;
     private $form;
     private $base_outputpath;
     private $base_linkpath;
@@ -103,7 +102,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return true; 
         } catch (Exception $e) {
             $this->handleExceptions($e);
-            return true; 
+            return false; 
         }
     }
 
@@ -179,9 +178,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->collection_array = $form_data_getter->getForm2CollectionArray();
         $this->config_array = $form_data_getter->getForm2PystylConfigurationData();
 
-        $texts = $this->getPageTexts();
+        list($texts, $collection_name_array) = $this->getPageTextsFromWikiPages();
 
-        list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames();
+        list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames($collection_name_array);
         $this->constructFullOutputPathOfPystylOutputImages($output_file_name1, $output_file_name2);
 
         $this->setAdditionalConfigArrayValues($texts);
@@ -200,16 +199,18 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function processSavePage() {
-        $information_array = $form_data_getter->getSavePageInformationArray();
+        $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        list($this->full_outputpath1, $this->full_outputpath2) = $form_data_getter->getSavePageData();
+        $this->transferDataFromTempstylometricanalysisTableToStylometricanalysistable(); 
     }
 
     /**
      * This function loops through all the posted collections, and
      * retrieves the text from the corresponding pages 
      */
-    private function getPageTexts() {
+    private function getPageTextsFromWikiPages() {
 
-        $collection_array = $this->config_array['collection_array'];
+        $collection_array = $this->collection_array;
 
         //in $texts combined collection texts will be stored 
         $texts = array();
@@ -258,9 +259,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             $a += 1;
         }
 
-        $this->collection_name_array = $collection_name_array;
-
-        return $texts;
+        return array($texts, $collection_name_array);
     }
 
     /**
@@ -290,14 +289,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function constructPystylOutputFileNames() {
+    private function constructPystylOutputFileNames(array $collection_name_array) {
 
-        if (!isset($this->collection_name_array)) {
-            $this->form = 'Form1';
-            throw new Exception('stylometricanalysis-error-collectionnamearray');
-        }
-
-        $imploded_collection_name_array = implode('', $this->collection_name_array);
+        $imploded_collection_name_array = implode('', $collection_name_array);
         $year_month_day = date('Ymd');
         $hours_minutes_seconds = date('his');
 
@@ -436,10 +430,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     private function newDatabaseWrapper() {
 
-        if (!isset($this->full_outputpath1) || !isset($this->full_outputpath2)) {
-            throw new Exception('stylometricanalysis-error-pathsnotset');
-        }
-
         //time format (Unix Timestamp). This timestamp is used to see how old values are
         $time = idate('U');
 
@@ -461,7 +451,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function handleExceptions($e) {
-        
+                
         $error_message = $this->error_message = $e->getMessage();
         $out = $this->getOutput();
         $viewer = new StylometricAnalysisViewer($out);

@@ -157,26 +157,12 @@ class FormDataGetter {
         }
     }
 
-    public function getSavePageInformationArray() {
-        $save_page_array = $this->loadSavePageInformationArray();
-        $this->checkSavePageInformationArray($save_page_array);
-        return true;
-    }
-
-    private function loadSavePageInformationArray() {
+    public function getSavePageData() {
         $request = $this->request;
         $validator = $this->validator;
-        return $validator->validateString(json_decode($request->getText('save_current_page')));
-    }
-
-    private function checkSavePageInformationArray($save_page_array) {
-        if (count($save_page_array) !== 3) {
-            throw new Exception('stylometricanalysis-error-request');
-        }
-
-        if (!isset($save_page_array['save_current_page']) || !isset($save_page_array['full_outputpath1']) || !isset($save_page_array['full_outputpath2'])) {
-            throw new Exception('stylometricanalysis-error-request');
-        }
+        $full_outputpath1 = $validator->validateStringUrl(json_decode($request->getText('full_outputpath1')));
+        $full_outputpath2 = $validator->validateStringUrl(json_decode($request->getText('full_outputpath2')));
+        return array($full_outputpath1, $full_outputpath2);
     }
 
 }
