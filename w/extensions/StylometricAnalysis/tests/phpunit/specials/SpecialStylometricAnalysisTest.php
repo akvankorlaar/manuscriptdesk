@@ -257,8 +257,7 @@ class SpecialStylometricAnalysisTest extends MediaWikiTestCase {
           array(
             array(
               'save_current_page' => 'save_current_page',
-              'full_outputpath1' => 'C:/Full/outputpath/to/some/file.jpg',
-              'full_outputpath2' => 'C:/Full/outputpath/to/some/other/file.jpg',
+              'time' => '012345678987654321',
             )),
         );
 
@@ -266,32 +265,25 @@ class SpecialStylometricAnalysisTest extends MediaWikiTestCase {
     }
 
     public function getFakeSaveExceptionData() {
-
+        
         $data = array(
-        //data missing  
-        array(
+          //data missing  
           array(
-        'save_current_page' => 'save_current_page',
-        )),
-        //data missing 
-        array(
+            array(
+              'save_current_page' => 'save_current_page',
+            )),
+          //data missing 
           array(
-        'save_current_page' => 'save_current_page',
-        'full_outputpath2' => 'C:/Full/outputpath/to/some/other/file.jpg',
-        )), 
-        //data missing
-        array(
+            array(
+              'save_current_page' => 'save_current_page',
+              'time' => '',            
+              )),
+          //invalid charachters  
           array(
-        'save_current_page' => 'save_current_page',
-        'full_outputpath1' => 'C:/Ful/outputpath/to/some/file.jpg',
-        )), 
-        //invalid charachters  
-        array(
-          array(
-        'save_current_page' => 'save_current_page',
-        'full_outputpath1' => 'C:/Fu*(&^%ll/outputpath/to/some/file.jpg',
-        'full_outputpath2' => 'C:/Full/outputpath/to/some/other/file.jpg',
-        )),
+            array(
+              'save_current_page' => 'save_current_page',
+              'time' => '0123456789876abc54321', 
+            )),
         );
 
         return $data;

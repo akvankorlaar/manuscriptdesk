@@ -21,6 +21,8 @@
  * @subpackage Extensions
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
+ * 
+ * Todo: Exceptions should have a database exception type, and should indicate the problem in the exception message. Users should not be able to see this message
  */
 class StylometricAnalysisWrapper {
 
@@ -30,14 +32,16 @@ class StylometricAnalysisWrapper {
     private $time;
     private $full_outputpath1;
     private $full_outputpath2;
+    private $config_array;
 
     //class constructor
-    public function __construct($user_name, $minimum_pages_per_collection = 0, $time = 0, $full_outputpath1 = '', $full_outputpath2 = '') {
+    public function __construct(string $user_name, $minimum_pages_per_collection = 0, $time = 0, array $config_array, string $full_outputpath1 = '', string $full_outputpath2 = '') {
         $this->user_name = $user_name;
         $this->minimum_pages_per_collection = $minimum_pages_per_collection;
         $this->time = $time;
         $this->full_outputpath1 = $full_outputpath1;
         $this->full_outputpath2 = $full_outputpath2;
+        $this->config_array = $config_array;
         $this->initial_stylometricanalysis_dir = 'initialStylometricAnalysis';
     }
 
@@ -189,6 +193,7 @@ class StylometricAnalysisWrapper {
         $time = $this->time;
         $full_outputpath1 = $this->full_outputpath1;
         $full_outputpath2 = $this->full_outputpath2;
+        $config_array = $this->config_array;
 
         $dbw->insert(
             'tempstylometricanalysis', //select table
@@ -197,6 +202,59 @@ class StylometricAnalysisWrapper {
           'tempstylometricanalysis_user' => $user_name,
           'tempstylometricanalysis_fulloutputpath1' => $full_outputpath1,
           'tempstylometricanalysis_fulloutputpath2' => $full_outputpath2,
+          'tempstylometricanalysis_config_array' => $config_array,
+            ), __METHOD__, 'IGNORE'
+        );
+
+        if (!$dbw->affectedRows()) {
+            throw new Exception('stylometricanalysis-error-database');
+        }
+
+        return true;
+    }
+
+    public function transferDataFromTempstylometricanalysisTableToStylometricanalysistable() {
+
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $user_name = $this->user_name;
+        $time = $this->time;
+
+        //Database query
+        $res = $dbr->select(
+           'tempstylometricanalysis', //from
+            array(
+          'tempstylometricanalysis_time',
+          'tempstylometricanalysis_user',
+          'tempstylometricanalysis_fulloutputpath1',
+          'tempstylometricanalysis_fulloutputpath2',
+          'tempstylometricanalysis_config_array',
+            ), array(
+          'tempstylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
+          'tempstylometricanalysis_time =' . $dbr->addQuotes($time),
+            ), __METHOD__
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \UnexpectedvalueException('stylometricanalysis-error-database');
+        }
+
+        $s = $res->fetchObject();
+
+        $full_outputpath1 = $s->tempstylometricanalysis_fulloutputpath1;
+        $full_outputpath2 = $s->tempstylometricanalysis_fulloutputpath2;
+        $config_array = $s->tempstylometricanalysis_config_array;
+
+        $dbw = wfGetDB(DB_MASTER);
+
+        $dbw->insert(
+            'stylometricanalysis', //select table
+            array(//insert values
+          'stylometricanalysis_time' => $time,
+          'stylometricanalysis_user' => $user_name,
+          'stylometricanalysis_fulloutputpath1' => $full_outputpath1,
+          'stylometricanalysis_fulloutputpath2' => $full_outputpath2,
+          'stylometricanalysis_config_array' => $config_array,
             ), __METHOD__, 'IGNORE'
         );
 

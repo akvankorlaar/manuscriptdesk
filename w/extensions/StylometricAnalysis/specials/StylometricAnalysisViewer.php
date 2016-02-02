@@ -352,20 +352,25 @@ class StylometricAnalysisViewer {
     /**
      * This function shows the output page after the stylometric analysis has completed
      */
-    public function showResult(array $config_array, $pystyl_output, $full_linkpath1, $full_linkpath2) {
+    public function showResult(array $config_array, $time, $pystyl_output, string $full_linkpath1, string $full_linkpath2) {
 
         global $wgArticleUrl;
-
+        
         $out = $this->out;
+        $edit_token = $out->getUser()->getEditToken();
         $article_url = $wgARticleUrl;
-
+                
         $out->setPageTitle($this->msg('stylometricanalysis-output'));
-
+        
         $html = "";
 
         $html .= "<a href='" . $article_url . "Special:StylometricAnalysis' class='link-transparent' title='Perform New Analysis'>Perform New Analysis</a>";
-
-        //save current analysis button
+        
+        $html .= "<form class='' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
+        $html .= "<input type='submit' class='' name='save_current_page' title='Click to save page' value='save_current_page>";  
+        $html .= "<input type='hidden' name='time' value=$time>";  
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>"; 
 
         $html .= "<div style='display:block;'>";
 

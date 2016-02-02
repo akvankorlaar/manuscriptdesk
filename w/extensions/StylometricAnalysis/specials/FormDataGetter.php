@@ -160,9 +160,8 @@ class FormDataGetter {
     public function getSavePageData() {
         $request = $this->request;
         $validator = $this->validator;
-        $full_outputpath1 = $validator->validateStringUrl(json_decode($request->getText('full_outputpath1')));
-        $full_outputpath2 = $validator->validateStringUrl(json_decode($request->getText('full_outputpath2')));
-        return array($full_outputpath1, $full_outputpath2);
+        $time = $validator->validateNumber(json_decode($request->getText('time')));
+        return $time; 
     }
 
 }

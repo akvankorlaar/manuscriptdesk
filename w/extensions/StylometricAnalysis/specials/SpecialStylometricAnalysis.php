@@ -191,17 +191,19 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->deleteTextfile($full_textfilepath);
         $this->checkPystylOutput($pystyl_output);
 
-        $this->updateDatabase();
+        //time format (Unix Timestamp). This timestamp is used to see how old values are
+        $time = idate('U');
+        $this->updateDatabase($time);
 
         list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPathOfPystylOutputImages($output_file_name1, $output_file_name2);
         $viewer = new StylometricAnalysisViewer($this->getOutput());
-        return $viewer->showResult($pystyl_output, $this->config_array, $full_linkpath1, $full_linkpath2);
+        return $viewer->showResult($this->config_array, $time, $pystyl_output, $full_linkpath1, $full_linkpath2);
     }
 
     private function processSavePage() {
         $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
-        list($this->full_outputpath1, $this->full_outputpath2) = $form_data_getter->getSavePageData();
-        $this->transferDataFromTempstylometricanalysisTableToStylometricanalysistable(); 
+        $time = $form_data_getter->getSavePageData();
+        $this->transferDatabaseData(); 
     }
 
     /**
@@ -421,19 +423,15 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function updateDatabase() {
-        $database_wrapper = $this->newDatabaseWrapper();
+    private function updateDatabase($time) {
+        $database_wrapper = $this->newDatabaseWrapper($time);
         $database_wrapper->clearOldPystylOutput();
         $database_wrapper->storeTempStylometricAnalysis();
         return true; 
     }
 
-    private function newDatabaseWrapper() {
-
-        //time format (Unix Timestamp). This timestamp is used to see how old values are
-        $time = idate('U');
-
-        return new StylometricAnalysisWrapper($this->user_name, 0, $time, $this->full_outputpath1, $this->full_outputpath2);
+    private function newDatabaseWrapper($time = 0) {
+        return new StylometricAnalysisWrapper($this->user_name, 0, $time, $this->full_outputpath1, $this->full_outputpath2, $this->config_array);
     }
 
     private function checkWhetherUserHasEnoughCollections($user_collections) {
@@ -450,8 +448,17 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $stylometric_analysis_wrapper->checkForManuscriptCollections();
     }
 
+    private function transferDatabaseData($time = 0) {
+        $database_wrapper = $this->newDatabaseWrapper($time);
+        $database_wrapper->transferDataFromTempstylometricanalysisTableToStylometricanalysistable();
+
+        //Transfer data from tempstylometricanalysis -> stylometricanalysis table
+        //Make new page with appropriate data
+        //Redirect User     
+    }
+
     private function handleExceptions($e) {
-                
+
         $error_message = $this->error_message = $e->getMessage();
         $out = $this->getOutput();
         $viewer = new StylometricAnalysisViewer($out);

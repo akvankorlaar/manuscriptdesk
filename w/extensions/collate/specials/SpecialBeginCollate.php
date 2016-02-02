@@ -626,11 +626,6 @@ class SpecialBeginCollate extends SpecialPage {
   
   /**
    * This function constructs the HTML for the default page
-   * 
-   * @param type $url_array
-   * @param type $title_array
-   * @param type $collection_urls
-   * @param type $out
    */
   private function showDefaultPage($url_array,$title_array,$collection_urls, $out){
     
