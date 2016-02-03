@@ -201,17 +201,17 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private function processSavePageRequest() {
         $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
         $time = $form_data_getter->getSavePageData();
-        $new_page_url = $this->transferDatabaseDataAndGetNewPageUrl();
+        $new_page_url = $this->transferDatabaseDataAndGetNewPageUrl($time);
         $local_url = $this->createNewWikiPage($new_page_url);
         return $this->getOutput()->redirect($local_url);
     }
 
     private function createNewPageUrl(array $collection_name_array) {
         $user_name = $this->user_name;
-        $collection_name_array = implode('', $collection_name_array);
+        $imploded_collection_name_array = implode('', $collection_name_array);
         $year_month_day = date('Ymd');
         $hours_minutes_seconds = date('his');
-        return 'Stylometricanalysis:' . $user_name . "/" . $imploded_title_array . "/" . $year_month_day . "/" . $hours_minutes_seconds;
+        return 'Stylometricanalysis:' . $user_name . "/" . $imploded_collection_name_array . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
 
     /**
@@ -443,7 +443,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $database_wrapper->checkForManuscriptCollections($this->minimum_pages_per_collection, $this->minimum_collections);
     }
 
-    private function transferDatabaseDataAndGetNewPageUrl() {
+    private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
         $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
         $database_wrapper->transferDataFromTempstylometricanalysisTableToStylometricanalysistable($time);
         return $database_wrapper->getNewPageUrl($time);  

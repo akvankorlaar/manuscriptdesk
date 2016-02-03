@@ -22,13 +22,12 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  * 
- * Todo: Exceptions should have a database exception type, and should indicate the problem in the exception message. Users should not be able to see this message
  */
+
 class StylometricAnalysisWrapper {
 
     private $user_name;
 
-    //class constructor
     public function __construct($user_name) {
         $this->user_name = $user_name;
     }
@@ -131,7 +130,7 @@ class StylometricAnalysisWrapper {
 
         foreach ($time_array as $index => $old_time) {
 
-            if ($current_time - $old_time > ($hours_before_delete * 3600)) {
+            if ($time - $old_time > ($hours_before_delete * 3600)) {
 
                 $old_full_outputpath1 = $full_outputpath1_array[$index];
                 $old_full_outputpath2 = $full_outputpath2_array[$index];
@@ -147,7 +146,7 @@ class StylometricAnalysisWrapper {
     private function deleteOldPystylOutputImages($old_full_outputpath1, $old_full_outputpath2) {
 
         if (!is_file($old_full_outputpath1) || !is_file($old_full_outputpath2)) {
-            throw new \mysqli_sql_exception(__FUNCTION__);
+            throw new Exception('stylometricanalysis-error-database');
         }
 
         unlink($old_full_outputpath1);
@@ -190,6 +189,7 @@ class StylometricAnalysisWrapper {
           'tempstylometricanalysis_full_outputpath1' => $full_outputpath1,
           'tempstylometricanalysis_full_outputpath2' => $full_outputpath2,
           'tempstylometricanalysis_json_config_array' => $json_config_array,
+          'tempstylometricanalysis_new_page_url' => $new_page_url,        
           'tempstylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
         );
@@ -336,10 +336,10 @@ class StylometricAnalysisWrapper {
         );
 
         if (!$dbw->affectedRows()) {
-            return false;
+            throw new Exception('stylometricanalysis-error-database');
         }
-        
-        return true;       
+
+        return true;
     }
 
 }

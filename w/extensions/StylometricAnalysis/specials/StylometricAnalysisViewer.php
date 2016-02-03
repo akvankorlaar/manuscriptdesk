@@ -358,7 +358,7 @@ class StylometricAnalysisViewer {
         
         $out = $this->out;
         $edit_token = $out->getUser()->getEditToken();
-        $article_url = $wgARticleUrl;
+        $article_url = $wgArticleUrl;
                 
         $out->setPageTitle($this->msg('stylometricanalysis-output'));
         
@@ -367,8 +367,8 @@ class StylometricAnalysisViewer {
         $html .= "<a href='" . $article_url . "Special:StylometricAnalysis' class='link-transparent' title='Perform New Analysis'>Perform New Analysis</a>";
         
         $html .= "<form class='' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
-        $html .= "<input type='submit' class='' name='save_current_page' title='Click to save page' value='save_current_page>";  
-        $html .= "<input type='hidden' name='time' value=$time>";  
+        $html .= "<input type='submit' class='' name='save_current_page' title='Click to save page' value='Click here to save the current analysis'>";  
+        $html .= "<input type='hidden' name='time' value='$time'>";  
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>"; 
 

@@ -41,7 +41,7 @@ class StylometricAnalysisHooks {
             $database_wrapper = new StylometricAnalysisWrapper($user->getName());
             $data = $database_wrapper->getStylometricanalysisData($page_title_with_namespace);
 
-            $page = new StylometricanalysisNamespacePage();
+            $page = new StylometricAnalysisNamespacePage();
             $html_output = $page->renderPage($data);
 
             $output->addHTML($html_output);
