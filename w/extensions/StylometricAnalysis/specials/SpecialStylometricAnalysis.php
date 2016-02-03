@@ -124,7 +124,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         }
 
         if ($this->savePageWasRequested()) {
-            $this->processSavePage();
+            $this->processSavePageRequest();
             return true; 
         }
 
@@ -157,9 +157,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     private function getDefaultPage() {
         $user_collections = $this->getUserCollections();
-        $this->checkWhetherUserHasEnoughCollections($user_collections);
-        $out = $this->getOutput();
-        $viewer = new StylometricAnalysisViewer($out);
+        $viewer = new StylometricAnalysisViewer($this->getOutput());
         return $viewer->showForm1($user_collections, $this->error_message);
     }
 
@@ -173,7 +171,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     private function processForm2() {
         $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
-
         $this->form = 'Form2';
         $this->collection_array = $form_data_getter->getForm2CollectionArray();
         $this->config_array = $form_data_getter->getForm2PystylConfigurationData();
@@ -190,20 +187,31 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $pystyl_output = $this->callPystyl($command, $full_textfilepath);
         $this->deleteTextfile($full_textfilepath);
         $this->checkPystylOutput($pystyl_output);
-
-        //time format (Unix Timestamp). This timestamp is used to see how old values are
-        $time = idate('U');
-        $this->updateDatabase($time);
+        
+        $new_page_url = $this->createNewPageUrl($collection_name_array);
+        $time = idate('U'); //time format integer (Unix Timestamp). This timestamp is used to see how old values are
+        $date = date("d-m-Y H:i:s"); 
+        $this->updateDatabase($time, $new_page_url, $date);
 
         list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPathOfPystylOutputImages($output_file_name1, $output_file_name2);
         $viewer = new StylometricAnalysisViewer($this->getOutput());
         return $viewer->showResult($this->config_array, $time, $pystyl_output, $full_linkpath1, $full_linkpath2);
     }
 
-    private function processSavePage() {
+    private function processSavePageRequest() {
         $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
         $time = $form_data_getter->getSavePageData();
-        $this->transferDatabaseData(); 
+        $new_page_url = $this->transferDatabaseDataAndGetNewPageUrl();
+        $local_url = $this->createNewWikiPage($new_page_url);
+        return $this->getOutput()->redirect($local_url);
+    }
+
+    private function createNewPageUrl(array $collection_name_array) {
+        $user_name = $this->user_name;
+        $collection_name_array = implode('', $collection_name_array);
+        $year_month_day = date('Ymd');
+        $hours_minutes_seconds = date('his');
+        return 'Stylometricanalysis:' . $user_name . "/" . $imploded_title_array . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
 
     /**
@@ -352,7 +360,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     /**
      * This function insert data into the textfile which will be used to call Pystyl
      */
-    private function insertConfigArrayIntoTextfile($full_textfilepath, $config_array) {
+    private function insertConfigArrayIntoTextfile($full_textfilepath, array $config_array) {
 
         if (is_file($full_textfilepath)) {
             throw new Exception('stylometricanalysis-error-textfile');
@@ -423,38 +431,22 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function updateDatabase($time) {
-        $database_wrapper = $this->newDatabaseWrapper($time);
-        $database_wrapper->clearOldPystylOutput();
-        $database_wrapper->storeTempStylometricAnalysis();
+    private function updateDatabase($time = 0, $new_page_url, $date) {
+        $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
+        $database_wrapper->clearOldPystylOutput($time);
+        $database_wrapper->storeTempStylometricAnalysis($time, $new_page_url, $date, $this->full_outputpath1, $this->full_outputpath2, $this->config_array);
         return true; 
     }
 
-    private function newDatabaseWrapper($time = 0) {
-        return new StylometricAnalysisWrapper($this->user_name, 0, $time, $this->full_outputpath1, $this->full_outputpath2, $this->config_array);
-    }
-
-    private function checkWhetherUserHasEnoughCollections($user_collections) {
-        if (count($user_collections) < $this->minimum_collections) {
-            throw new Exception('stylometricanalysis-error-fewcollections');
-        }
-
-        return true;
-    }
-
     private function getUserCollections() {
-        $out = $this->getOutput();
-        $stylometric_analysis_wrapper = new StylometricAnalysisWrapper($this->user_name, $this->minimum_pages_per_collection);
-        return $stylometric_analysis_wrapper->checkForManuscriptCollections();
+        $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
+        return $database_wrapper->checkForManuscriptCollections($this->minimum_pages_per_collection, $this->minimum_collections);
     }
 
-    private function transferDatabaseData($time = 0) {
-        $database_wrapper = $this->newDatabaseWrapper($time);
-        $database_wrapper->transferDataFromTempstylometricanalysisTableToStylometricanalysistable();
-
-        //Transfer data from tempstylometricanalysis -> stylometricanalysis table
-        //Make new page with appropriate data
-        //Redirect User     
+    private function transferDatabaseDataAndGetNewPageUrl() {
+        $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
+        $database_wrapper->transferDataFromTempstylometricanalysisTableToStylometricanalysistable($time);
+        return $database_wrapper->getNewPageUrl($time);  
     }
 
     private function handleExceptions($e) {

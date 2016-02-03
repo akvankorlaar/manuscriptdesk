@@ -50,6 +50,7 @@ $dir = __DIR__ . '/';
 
 //Auto load classes 
 $wgAutoloadClasses['StylometricAnalysisHooks'] = $dir . '/StylometricAnalysis.hooks.php';
+$wgAutoloadClasses['StylometricAnalysisNamespacePage'] = $dir . '/StylometricAnalysisNamespacePage.php';
 $wgExtensionMessagesFiles['StylometricAnalysis'] = $dir . '/StylometricAnalysis.i18n.php';
 $wgAutoloadClasses['StylometricAnalysisViewer'] = $dir . '/specials/StylometricAnalysisViewer.php';
 $wgAutoloadClasses['FormDataGetter'] = $dir . '/specials/FormDataGetter.php';
@@ -77,6 +78,8 @@ $wgResourceModules['ext.stylometricanalysisloader'] = array(
 //Instantiate the stylometricAnalysisHooks class and register the hooks
 $StylometricAnalysisHooks = new StylometricAnalysisHooks();
 
+$wgHooks['MediaWikiPerformAction'][] = array($StylometricAnalysisHooks, 'onMediaWikiPerformAction');
+$wgHooks['AbortMove'][] = array($StylometricAnalysisHooks, 'onAbortMove');
 $wgHooks['BeforePageDisplay'][] = array($StylometricAnalysisHooks, 'onBeforePageDisplay');
 $wgHooks['ResourceLoaderGetConfigVars'][] = array($StylometricAnalysisHooks, 'onResourceLoaderGetConfigVars');
 $wgHooks['UnitTestsList'][] = array($StylometricAnalysisHooks, 'onUnitTestsList');

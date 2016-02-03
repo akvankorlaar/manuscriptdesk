@@ -27,33 +27,20 @@
 class StylometricAnalysisWrapper {
 
     private $user_name;
-    private $minimum_pages_per_collection;
-    private $initial_stylometricanalysis_dir;
-    private $time;
-    private $full_outputpath1;
-    private $full_outputpath2;
-    private $config_array;
 
     //class constructor
-    public function __construct(string $user_name, $minimum_pages_per_collection = 0, $time = 0, array $config_array, string $full_outputpath1 = '', string $full_outputpath2 = '') {
+    public function __construct($user_name) {
         $this->user_name = $user_name;
-        $this->minimum_pages_per_collection = $minimum_pages_per_collection;
-        $this->time = $time;
-        $this->full_outputpath1 = $full_outputpath1;
-        $this->full_outputpath2 = $full_outputpath2;
-        $this->config_array = $config_array;
-        $this->initial_stylometricanalysis_dir = 'initialStylometricAnalysis';
     }
 
     /**
      * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
      */
-    public function checkForManuscriptCollections() {
+    public function checkForManuscriptCollections($minimum_pages_per_collection = 0, $minimum_collections = 0) {
 
-        $user_name = $this->user_name;
-        $minimum_pages_per_collection = $this->minimum_pages_per_collection;
         $dbr = wfGetDB(DB_SLAVE);
         $collection_urls = array();
+        $user_name = $this->user_name;
 
         //Database query
         $res = $dbr->select(
@@ -98,22 +85,25 @@ class StylometricAnalysisWrapper {
             }
         }
 
+        if (count($collection_urls) < $minimum_collections) {
+            throw new Exception('stylometricanalysis-error-fewcollections');
+        }
+
         return $collection_urls;
     }
 
     /**
      * This function checks if values should be removed from the 'tempstylometricanalysis' table
      */
-    public function clearOldPystylOutput() {
+    public function clearOldPystylOutput($time = 0) {
 
         global $wgStylometricAnalysisOptions;
 
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
-        $current_time = $this->time;
         $time_array = array();
-        $fulloutputpath1_array = array();
-        $fulloutputpath2_array = array();
+        $full_outputpath1_array = array();
+        $full_outputpath2_array = array();
         $hours_before_delete = $wgStylometricAnalysisOptions['tempstylometricanalysis_hours_before_delete'];
 
         //Database query
@@ -122,8 +112,8 @@ class StylometricAnalysisWrapper {
             array(
           'tempstylometricanalysis_time', //values
           'tempstylometricanalysis_user',
-          'tempstylometricanalysis_fulloutputpath1',
-          'tempstylometricanalysis_fulloutputpath2',
+          'tempstylometricanalysis_full_outputpath1',
+          'tempstylometricanalysis_full_outputpath2',
             ), array(
           'tempstylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
             ), __METHOD__, array(
@@ -135,16 +125,16 @@ class StylometricAnalysisWrapper {
         while ($s = $res->fetchObject()) {
 
             $time_array[] = $s->tempstylometricanalysis_time;
-            $fulloutputpath1_array[] = $s->tempstylometricanalysis_fulloutputpath1;
-            $fulloutputpath2_array[] = $s->tempstylometricanalysis_fulloutputpath2;
+            $full_outputpath1_array[] = $s->tempstylometricanalysis_full_outputpath1;
+            $full_outputpath2_array[] = $s->tempstylometricanalysis_full_outputpath2;
         }
 
         foreach ($time_array as $index => $old_time) {
 
             if ($current_time - $old_time > ($hours_before_delete * 3600)) {
 
-                $old_full_outputpath1 = $fulloutputpath1_array[$index];
-                $old_full_outputpath2 = $fulloutputpath2_array[$index];
+                $old_full_outputpath1 = $full_outputpath1_array[$index];
+                $old_full_outputpath2 = $full_outputpath2_array[$index];
 
                 $this->deleteOldPystylOutputImages($old_full_outputpath1, $old_full_outputpath2);
                 $this->deleteOldEntriesFromTempstylometricanalysisTable($old_time);
@@ -157,7 +147,7 @@ class StylometricAnalysisWrapper {
     private function deleteOldPystylOutputImages($old_full_outputpath1, $old_full_outputpath2) {
 
         if (!is_file($old_full_outputpath1) || !is_file($old_full_outputpath2)) {
-            throw new Exception('stylometricanalysis-error-database');
+            throw new \mysqli_sql_exception(__FUNCTION__);
         }
 
         unlink($old_full_outputpath1);
@@ -185,24 +175,21 @@ class StylometricAnalysisWrapper {
         return true;
     }
 
-    public function storeTempStylometricAnalysis() {
+    public function storeTempStylometricAnalysis($time = 0, $new_page_url, $date, $full_outputpath1, $full_outputpath2, array $config_array) {
 
         $dbw = wfGetDB(DB_MASTER);
 
         $user_name = $this->user_name;
-        $time = $this->time;
-        $full_outputpath1 = $this->full_outputpath1;
-        $full_outputpath2 = $this->full_outputpath2;
-        $config_array = $this->config_array;
 
         $dbw->insert(
             'tempstylometricanalysis', //select table
             array(//insert values
           'tempstylometricanalysis_time' => $time,
           'tempstylometricanalysis_user' => $user_name,
-          'tempstylometricanalysis_fulloutputpath1' => $full_outputpath1,
-          'tempstylometricanalysis_fulloutputpath2' => $full_outputpath2,
+          'tempstylometricanalysis_full_outputpath1' => $full_outputpath1,
+          'tempstylometricanalysis_full_outputpath2' => $full_outputpath2,
           'tempstylometricanalysis_config_array' => $config_array,
+          'tempstylometricanalysis_date' => $date,     
             ), __METHOD__, 'IGNORE'
         );
 
@@ -213,37 +200,40 @@ class StylometricAnalysisWrapper {
         return true;
     }
 
-    public function transferDataFromTempstylometricanalysisTableToStylometricanalysistable() {
+    public function transferDataFromTempstylometricanalysisTableToStylometricanalysistable($time = 0) {
 
         $dbr = wfGetDB(DB_SLAVE);
 
         $user_name = $this->user_name;
-        $time = $this->time;
 
         //Database query
         $res = $dbr->select(
-           'tempstylometricanalysis', //from
+            'tempstylometricanalysis', //from
             array(
           'tempstylometricanalysis_time',
           'tempstylometricanalysis_user',
-          'tempstylometricanalysis_fulloutputpath1',
-          'tempstylometricanalysis_fulloutputpath2',
+          'tempstylometricanalysis_full_outputpath1',
+          'tempstylometricanalysis_full_outputpath2',
           'tempstylometricanalysis_config_array',
+          'tempstylometricanalysis_new_page_url',
+          'tempstylometricanalysis_date'    
             ), array(
-          'tempstylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
           'tempstylometricanalysis_time =' . $dbr->addQuotes($time),
+          'tempstylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
             ), __METHOD__
         );
 
         if ($res->numRows() !== 1) {
-            throw new \UnexpectedvalueException('stylometricanalysis-error-database');
+            throw new Exception('stylometricanalysis-error-database');
         }
 
         $s = $res->fetchObject();
 
-        $full_outputpath1 = $s->tempstylometricanalysis_fulloutputpath1;
-        $full_outputpath2 = $s->tempstylometricanalysis_fulloutputpath2;
+        $full_outputpath1 = $s->tempstylometricanalysis_full_outputpath1;
+        $full_outputpath2 = $s->tempstylometricanalysis_full_outputpath2;
         $config_array = $s->tempstylometricanalysis_config_array;
+        $new_page_url = $s->tempstylometricanalysis_new_page_url;
+        $date = $s->tempstylometricanalysis_date; 
 
         $dbw = wfGetDB(DB_MASTER);
 
@@ -252,9 +242,11 @@ class StylometricAnalysisWrapper {
             array(//insert values
           'stylometricanalysis_time' => $time,
           'stylometricanalysis_user' => $user_name,
-          'stylometricanalysis_fulloutputpath1' => $full_outputpath1,
-          'stylometricanalysis_fulloutputpath2' => $full_outputpath2,
+          'stylometricanalysis_full_outputpath1' => $full_outputpath1,
+          'stylometricanalysis_full_outputpath2' => $full_outputpath2,
           'stylometricanalysis_config_array' => $config_array,
+          'stylometricanalysis_new_page_url' => $new_page_url,
+          'stylometricanalysis_date' => $date,            
             ), __METHOD__, 'IGNORE'
         );
 
@@ -263,6 +255,72 @@ class StylometricAnalysisWrapper {
         }
 
         return true;
+    }
+
+    public function getNewPageUrl($time = 0) {
+
+        $dbr = wfGetDB(DB_SLAVE);
+        $user_name = $this->user_name;
+
+        //Database query
+        $res = $dbr->select(
+            'stylometricanalysis', //from
+            array(
+          'stylometricanalysis_time',
+          'stylometricanalysis_user',
+          'stylometricanalysis_new_page_url',
+            ), array(
+          'stylometricanalysis_time =' . $dbr->addQuotes($time),
+          'stylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
+            ), __METHOD__
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new Exception('stylometricanalysis-error-database');
+        }
+
+        $s = $res->fetchObject();
+
+        return $s->stylometricanalysis_new_page_url;
+    }
+
+    public function getStylometricanalysisData($url_with_namespace) {
+
+        $dbr = wfGetDB(DB_SLAVE);
+        $data = array();
+        $user_name = $this->user_name;
+
+        //Database query
+        $res = $dbr->select(
+            'stylometricanalysis', //from
+            array(
+          'stylometricanalysis_time',
+          'stylometricanalysis_user',
+          'stylometricanalysis_full_outputpath1',
+          'stylometricanalysis_full_outputpath2',
+          'stylometricanalysis_config_array',
+          'stylometricanalysis_new_page_url',
+          'stylometricanalysis_date',    
+            ), array(
+          'stylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
+          'stylometricanalysis_new_page_url = ' . $dbr->addQuotes($url_with_namespace),
+            ), __METHOD__
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new Exception('stylometricanalysis-error-database');
+        }
+
+        $s = $res->fetchObject();
+
+        $data['time'] = $s->stylometricanalysis_time;
+        $data['user'] = $s->stylometricanalysis_user; 
+        $data['full_outputpath1'] = $s->stylometricanalysis_full_outputpath1;
+        $data['full_outputpath2'] = $s->stylometricanalysis_full_outputpath2;
+        $data['config_array'] = $s->stylometricanalysis_config_array;
+        $date['date'] = $s->stylometricanalysis_date; 
+
+        return $data;
     }
 
 }

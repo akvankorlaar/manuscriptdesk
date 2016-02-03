@@ -352,7 +352,7 @@ class StylometricAnalysisViewer {
     /**
      * This function shows the output page after the stylometric analysis has completed
      */
-    public function showResult(array $config_array, $time, $pystyl_output, string $full_linkpath1, string $full_linkpath2) {
+    public function showResult(array $config_array, $time, $pystyl_output, $full_linkpath1, $full_linkpath2) {
 
         global $wgArticleUrl;
         

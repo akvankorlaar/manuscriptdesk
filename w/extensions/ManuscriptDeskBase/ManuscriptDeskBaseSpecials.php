@@ -135,4 +135,25 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         return $raw_text;
     }
     
+  protected function createNewWikiPage($new_url){
+    
+    $title_object = Title::newFromText($new_url);
+    $local_url = $title_object->getLocalURL();
+    $context = $this->getContext();   
+    $article = Article::newFromTitle($title_object, $context);
+       
+    //make a new page
+    $editor_object = new EditPage($article);
+    $content_new = new wikitextcontent('<!--' . $this->msg('newmanuscript-newpage') . '-->');
+    $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97,
+                        false, null, $editor_object->contentFormat);
+    
+    if (!$doEditStatus->isOK() ) {
+        throw new \Exception('newmanuscript-error-newpage');
+        //$errors = $doEditStatus->getErrorsArray();
+    }
+    
+    return $local_url;
+  }
+    
 }

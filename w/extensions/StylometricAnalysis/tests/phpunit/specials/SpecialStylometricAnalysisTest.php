@@ -3,6 +3,8 @@
 //php phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\StylometricAnalysis\tests\phpunit\specials
 //https://jtreminio.com/2013/03/unit-testing-tutorial-part-3-testing-protected-private-methods-coverage-reports-and-crap/
 
+//todo: some methods will probably have to be stubbed when processing the save page form
+
 class SpecialStylometricAnalysisTest extends MediaWikiTestCase {
 
     private $t;

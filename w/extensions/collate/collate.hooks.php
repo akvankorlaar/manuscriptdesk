@@ -28,25 +28,18 @@ class collateHooks {
  * Hooks for the collate extension 
  */
     
-  private $collate_wrapper;   
+  private $database_wrapper;   
    
   //class constructor 
-  public function __construct(){ 
+  public function __construct(collateWrapper $collate_wrapper){ 
   
-    $this->collate_wrapper = new collateWrapper();   
+    $this->database_wrapper = $collate_wrapper;   
   }
 
   /**
    * This function retrieves the collatex output from the database, renders the table, and adds it to the output
-   * 
-   * @param type $output
-   * @param type $article
-   * @param type $title
-   * @param type $user
-   * @param type $request
-   * @param type $wiki
    */
-  public function onMediaWikiPerformAction($output, $article, $title, $user, $request, $wiki){
+  public function onMediaWikiPerformAction(OutputPage $output, Article $article, Title $title, User $user, WebRequest $request, MediaWiki $wiki){
 
     if($wiki->getAction($request) !== 'view' ){
       return true; 
@@ -61,7 +54,7 @@ class collateHooks {
 
     $page_title_with_namespace = $title->getPrefixedUrl();    
 
-    $status = $this->collate_wrapper->getCollations($page_title_with_namespace);
+    $status = $this->database_wrapper->getCollations($page_title_with_namespace);
 
     //something went wrong when retrieving the values from the database 
     if(!$status){
@@ -183,8 +176,8 @@ class collateHooks {
     
     $main_title_lowercase = isset($page_title_array[1]) ? $page_title_array[1] : null; 
     
-    $this->collate_wrapper->deleteDatabaseEntry($title_object->getPrefixedURL());
-    $this->collate_wrapper->subtractAlphabetnumbers($main_title_lowercase); 
+    $this->database_wrapper->deleteDatabaseEntry($title_object->getPrefixedURL());
+    $this->database_wrapper->subtractAlphabetnumbers($main_title_lowercase); 
     
     return true; 
   }

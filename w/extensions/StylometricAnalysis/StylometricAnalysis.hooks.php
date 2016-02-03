@@ -25,8 +25,63 @@
 class StylometricAnalysisHooks {
 
     public function __construct() {
-        
+
     }
+
+    public function onMediaWikiPerformAction($output, $article, $title, $user, $request, $wiki) {
+
+        try {
+
+            if (!$this->StylometricanalysisDataShouldBeLoaded($title, $request, $wiki)) {
+                return true;
+            }
+
+            $page_title_with_namespace = $title->getPrefixedUrl();
+            
+            $database_wrapper = new StylometricAnalysisWrapper($user->getName());           
+            $data = $database_wrapper->getStylometricanalysisData($page_title_with_namespace);
+
+            $page = new StylometricanalysisNamespacePage();
+            $html_output = $page->renderPage($data);
+
+            $output->addHTML($html_output);
+
+            return true;
+            
+        } catch (Exception $e) {
+            return true;
+        }
+    }
+
+    private function StylometricanalysisDataShouldBeLoaded(Title $title, WebRequest $request, MediaWiki $wiki) {
+
+        if ($wiki->getAction($request) !== 'view') {
+            return false;
+        }
+
+        $namespace = $title->getNamespace();
+
+        if ($namespace !== NS_STYLOMETRICANALYSIS) {
+            return false;
+        }
+        
+        return true; 
+    }
+    
+       
+  /**
+   * This function prevents users from moving a stylometricanalysis page
+   */
+  public function onAbortMove( Title $oldTitle, Title $newTitle, User $user, &$error, $reason ) {
+    
+    if($oldTitle->getNamespace() !== NS_COLLATIONS){
+      return true; 
+    }
+    
+    $error = $this->getMessage('collatehooks-move');
+    
+    return false; 
+  }
 
     /**
      * This function sends configuration variables to javascript. In javascript they are accessed through 'mw.config.get('..') 
