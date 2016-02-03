@@ -80,10 +80,8 @@ $wgResourceModules['ext.collateloader' ] = array(
   ),
 );
 
-$database_wrapper = new collateWrapper();
-
 //Instantiate the collateHooks class and register the hooks
-$collateHooks = new collateHooks($database_wrapper);
+$collateHooks = new collateHooks();
 
 $wgHooks['MediaWikiPerformAction'][] = array($collateHooks, 'onMediaWikiPerformAction');
 $wgHooks['AbortMove'][] = array($collateHooks, 'onAbortMove');

@@ -108,5 +108,18 @@ CREATE TABLE IF NOT EXISTS `tempstylometricanalysis` (
   `tempstylometricanalysis_time` bigint(20) unsigned NOT NULL,
   `tempstylometricanalysis_user` varbinary(255) NOT NULL,
   `tempstylometricanalysis_fulloutputpath1` varbinary(500) NOT NULL,
-  `tempstylometricanalysis_fulloutputpath2` varbinary(500) NOT NULL
+  `tempstylometricanalysis_fulloutputpath2` varbinary(500) NOT NULL,
+  `tempstylometricanalysis_json_config_array` TEXT NOT NULL,
+  `tempstylometricanalysis_new_page_url` varbinary(500) NOT NULL,
+  `tempstylometricanalysis_date` varbinary(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=binary;
+
+CREATE TABLE IF NOT EXISTS `stylometricanalysis` (
+  `stylometricanalysis_time` bigint(20) unsigned NOT NULL,
+  `stylometricanalysis_user` varbinary(255) NOT NULL,
+  `stylometricanalysis_fulloutputpath1` varbinary(500) NOT NULL,
+  `stylometricanalysis_fulloutputpath2` varbinary(500) NOT NULL,
+  `stylometricanalysis_json_config_array` TEXT NOT NULL,
+  `stylometricanalysis_new_page_url` varbinary(500) NOT NULL,
+  `stylometricanalysis_date` varbinary(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=binary;

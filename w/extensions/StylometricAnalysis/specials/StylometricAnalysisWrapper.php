@@ -180,6 +180,7 @@ class StylometricAnalysisWrapper {
         $dbw = wfGetDB(DB_MASTER);
 
         $user_name = $this->user_name;
+        $json_config_array = json_encode($config_array);
 
         $dbw->insert(
             'tempstylometricanalysis', //select table
@@ -188,8 +189,8 @@ class StylometricAnalysisWrapper {
           'tempstylometricanalysis_user' => $user_name,
           'tempstylometricanalysis_full_outputpath1' => $full_outputpath1,
           'tempstylometricanalysis_full_outputpath2' => $full_outputpath2,
-          'tempstylometricanalysis_config_array' => $config_array,
-          'tempstylometricanalysis_date' => $date,     
+          'tempstylometricanalysis_json_config_array' => $json_config_array,
+          'tempstylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
         );
 
@@ -214,9 +215,9 @@ class StylometricAnalysisWrapper {
           'tempstylometricanalysis_user',
           'tempstylometricanalysis_full_outputpath1',
           'tempstylometricanalysis_full_outputpath2',
-          'tempstylometricanalysis_config_array',
+          'tempstylometricanalysis_json_config_array',
           'tempstylometricanalysis_new_page_url',
-          'tempstylometricanalysis_date'    
+          'tempstylometricanalysis_date'
             ), array(
           'tempstylometricanalysis_time =' . $dbr->addQuotes($time),
           'tempstylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
@@ -231,9 +232,9 @@ class StylometricAnalysisWrapper {
 
         $full_outputpath1 = $s->tempstylometricanalysis_full_outputpath1;
         $full_outputpath2 = $s->tempstylometricanalysis_full_outputpath2;
-        $config_array = $s->tempstylometricanalysis_config_array;
+        $json_config_array = $s->tempstylometricanalysis_json_config_array;
         $new_page_url = $s->tempstylometricanalysis_new_page_url;
-        $date = $s->tempstylometricanalysis_date; 
+        $date = $s->tempstylometricanalysis_date;
 
         $dbw = wfGetDB(DB_MASTER);
 
@@ -244,9 +245,9 @@ class StylometricAnalysisWrapper {
           'stylometricanalysis_user' => $user_name,
           'stylometricanalysis_full_outputpath1' => $full_outputpath1,
           'stylometricanalysis_full_outputpath2' => $full_outputpath2,
-          'stylometricanalysis_config_array' => $config_array,
+          'stylometricanalysis_json_config_array' => $json_config_array,
           'stylometricanalysis_new_page_url' => $new_page_url,
-          'stylometricanalysis_date' => $date,            
+          'stylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
         );
 
@@ -298,9 +299,9 @@ class StylometricAnalysisWrapper {
           'stylometricanalysis_user',
           'stylometricanalysis_full_outputpath1',
           'stylometricanalysis_full_outputpath2',
-          'stylometricanalysis_config_array',
+          'stylometricanalysis_json_config_array',
           'stylometricanalysis_new_page_url',
-          'stylometricanalysis_date',    
+          'stylometricanalysis_date',
             ), array(
           'stylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
           'stylometricanalysis_new_page_url = ' . $dbr->addQuotes($url_with_namespace),
@@ -314,13 +315,31 @@ class StylometricAnalysisWrapper {
         $s = $res->fetchObject();
 
         $data['time'] = $s->stylometricanalysis_time;
-        $data['user'] = $s->stylometricanalysis_user; 
+        $data['user'] = $s->stylometricanalysis_user;
         $data['full_outputpath1'] = $s->stylometricanalysis_full_outputpath1;
         $data['full_outputpath2'] = $s->stylometricanalysis_full_outputpath2;
-        $data['config_array'] = $s->stylometricanalysis_config_array;
-        $date['date'] = $s->stylometricanalysis_date; 
+        $data['config_array'] = json_decode($s->stylometricanalysis_json_config_array);
+        $date['date'] = $s->stylometricanalysis_date;
 
         return $data;
+    }
+
+    public function deleteDatabaseEntry($page_title_with_namespace) {
+
+        $dbw = wfGetDB(DB_MASTER);
+
+        $dbw->delete(
+            'stylometricanalysis', //from
+            array(
+          'stylometricanalysis_new_page_url' => $page_title_with_namespace //conditions
+            ), __METHOD__
+        );
+
+        if (!$dbw->affectedRows()) {
+            return false;
+        }
+        
+        return true;       
     }
 
 }

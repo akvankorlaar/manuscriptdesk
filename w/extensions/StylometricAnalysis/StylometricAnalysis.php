@@ -80,6 +80,8 @@ $StylometricAnalysisHooks = new StylometricAnalysisHooks();
 
 $wgHooks['MediaWikiPerformAction'][] = array($StylometricAnalysisHooks, 'onMediaWikiPerformAction');
 $wgHooks['AbortMove'][] = array($StylometricAnalysisHooks, 'onAbortMove');
+$wgHooks['ArticleDelete'][] = array($StylometricAnalysisHooks, 'onArticleDelete');
+$wgHooks['PageContentSave'][] = array($StylometricAnalysisHooks,'onPageContentSave');
 $wgHooks['BeforePageDisplay'][] = array($StylometricAnalysisHooks, 'onBeforePageDisplay');
 $wgHooks['ResourceLoaderGetConfigVars'][] = array($StylometricAnalysisHooks, 'onResourceLoaderGetConfigVars');
 $wgHooks['UnitTestsList'][] = array($StylometricAnalysisHooks, 'onUnitTestsList');
