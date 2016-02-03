@@ -179,6 +179,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames($collection_name_array);
         $this->constructFullOutputPathOfPystylOutputImages($output_file_name1, $output_file_name2);
+        list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPathOfPystylOutputImages($output_file_name1, $output_file_name2);
 
         $this->setAdditionalConfigArrayValues($texts);
         $full_textfilepath = $this->constructFullTextfilePath();
@@ -191,9 +192,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $new_page_url = $this->createNewPageUrl($collection_name_array);
         $time = idate('U'); //time format integer (Unix Timestamp). This timestamp is used to see how old values are
         $date = date("d-m-Y H:i:s"); 
-        $this->updateDatabase($time, $new_page_url, $date);
+        $this->updateDatabase($time, $new_page_url, $date, $full_linkpath1, $full_linkpath2);
 
-        list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPathOfPystylOutputImages($output_file_name1, $output_file_name2);
         $viewer = new StylometricAnalysisViewer($this->getOutput());
         return $viewer->showResult($this->config_array, $time, $pystyl_output, $full_linkpath1, $full_linkpath2);
     }
@@ -431,10 +431,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function updateDatabase($time = 0, $new_page_url, $date) {
+    private function updateDatabase($time = 0, $new_page_url, $date, $full_linkpath1, $full_linkpath2) {
         $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
         $database_wrapper->clearOldPystylOutput($time);
-        $database_wrapper->storeTempStylometricAnalysis($time, $new_page_url, $date, $this->full_outputpath1, $this->full_outputpath2, $this->config_array);
+        $database_wrapper->storeTempStylometricAnalysis($time, $this->full_outputpath1, $this->full_outputpath2, $full_linkpath1, $full_linkpath2, $this->config_array, $new_page_url, $date);
         return true; 
     }
 

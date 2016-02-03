@@ -174,7 +174,7 @@ class StylometricAnalysisWrapper {
         return true;
     }
 
-    public function storeTempStylometricAnalysis($time = 0, $new_page_url, $date, $full_outputpath1, $full_outputpath2, array $config_array) {
+    public function storeTempStylometricAnalysis($time = 0, $full_outputpath1, $full_outputpath2, $full_linkpath1, $full_linkpath2, array $config_array, $new_page_url, $date) {
 
         $dbw = wfGetDB(DB_MASTER);
 
@@ -188,6 +188,8 @@ class StylometricAnalysisWrapper {
           'tempstylometricanalysis_user' => $user_name,
           'tempstylometricanalysis_full_outputpath1' => $full_outputpath1,
           'tempstylometricanalysis_full_outputpath2' => $full_outputpath2,
+          'tempstylometricanalysis_full_linkpath1' => $full_linkpath1,
+          'tempstylometricanalysis_full_linkpath2' => $full_linkpath2,     
           'tempstylometricanalysis_json_config_array' => $json_config_array,
           'tempstylometricanalysis_new_page_url' => $new_page_url,        
           'tempstylometricanalysis_date' => $date,
@@ -215,6 +217,8 @@ class StylometricAnalysisWrapper {
           'tempstylometricanalysis_user',
           'tempstylometricanalysis_full_outputpath1',
           'tempstylometricanalysis_full_outputpath2',
+          'tempstylometricanalysis_full_linkpath1',
+          'tempstylometricanalysis_full_linkpath2',    
           'tempstylometricanalysis_json_config_array',
           'tempstylometricanalysis_new_page_url',
           'tempstylometricanalysis_date'
@@ -232,6 +236,8 @@ class StylometricAnalysisWrapper {
 
         $full_outputpath1 = $s->tempstylometricanalysis_full_outputpath1;
         $full_outputpath2 = $s->tempstylometricanalysis_full_outputpath2;
+        $full_linkpath1 = $s->tempstylometricanalysis_full_linkpath1;
+        $full_linkpath2 = $s->tempstylometricanalysis_full_linkpath2; 
         $json_config_array = $s->tempstylometricanalysis_json_config_array;
         $new_page_url = $s->tempstylometricanalysis_new_page_url;
         $date = $s->tempstylometricanalysis_date;
@@ -245,6 +251,8 @@ class StylometricAnalysisWrapper {
           'stylometricanalysis_user' => $user_name,
           'stylometricanalysis_full_outputpath1' => $full_outputpath1,
           'stylometricanalysis_full_outputpath2' => $full_outputpath2,
+          'stylometricanalysis_full_linkpath1' => $full_linkpath1,
+          'stylometricanalysis_full_linkpath2' => $full_linkpath2,     
           'stylometricanalysis_json_config_array' => $json_config_array,
           'stylometricanalysis_new_page_url' => $new_page_url,
           'stylometricanalysis_date' => $date,
@@ -299,6 +307,8 @@ class StylometricAnalysisWrapper {
           'stylometricanalysis_user',
           'stylometricanalysis_full_outputpath1',
           'stylometricanalysis_full_outputpath2',
+          'stylometricanalysis_full_linkpath1',
+          'stylometricanalysis_full_linkpath2',    
           'stylometricanalysis_json_config_array',
           'stylometricanalysis_new_page_url',
           'stylometricanalysis_date',
@@ -318,8 +328,10 @@ class StylometricAnalysisWrapper {
         $data['user'] = $s->stylometricanalysis_user;
         $data['full_outputpath1'] = $s->stylometricanalysis_full_outputpath1;
         $data['full_outputpath2'] = $s->stylometricanalysis_full_outputpath2;
+        $data['full_linkpath1'] = $s->stylometricanalysis_full_linkpath1;
+        $data['full_linkpath2'] = $s->stylometricanalysis_full_linkpath2; 
         $data['config_array'] = json_decode($s->stylometricanalysis_json_config_array);
-        $date['date'] = $s->stylometricanalysis_date;
+        $data['date'] = $s->stylometricanalysis_date;
 
         return $data;
     }
