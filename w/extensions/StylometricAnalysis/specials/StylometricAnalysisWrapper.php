@@ -28,7 +28,7 @@ class StylometricAnalysisWrapper {
 
     private $user_name;
 
-    public function __construct($user_name) {
+    public function __construct($user_name = '') {
         $this->user_name = $user_name;
     }
 
@@ -203,7 +203,7 @@ class StylometricAnalysisWrapper {
         return true;
     }
 
-    public function transferDataFromTempstylometricanalysisTableToStylometricanalysistable($time = 0) {
+    public function transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time = 0) {
 
         $dbr = wfGetDB(DB_SLAVE);
 

@@ -21,8 +21,8 @@ mfi = 100
 minimumdf = 0
 maximumdf = 0.9
 
-full_outputpath1 = 'C:/test/test9.jpg'
-full_outputpath2 = 'C:/test/test10.jpg'
+full_outputpath1 = 'C:/test/test17.jpg'
+full_outputpath2 = 'C:/test/test18.jpg'
 
 visualization1 = 'dendrogram'
 visualization2 = 'dendrogram'

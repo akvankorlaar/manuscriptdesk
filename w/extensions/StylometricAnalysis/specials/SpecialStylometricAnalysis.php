@@ -237,8 +237,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
                 if ($index === 'collection_name') {
                     $collection_name_array[] = $url_array['collection_name'];
-                }
-                else {
+                }else{
 
                     $title_object = Title::newFromText($file_url);
 
@@ -445,7 +444,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
         $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
-        $database_wrapper->transferDataFromTempstylometricanalysisTableToStylometricanalysistable($time);
+        $database_wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
         return $database_wrapper->getNewPageUrl($time);  
     }
 

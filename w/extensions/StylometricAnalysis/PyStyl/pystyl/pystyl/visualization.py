@@ -485,7 +485,7 @@ def bct_dendrogram(corpus, tree, outputfile=None,
     if show:
         tree.show(tree_style=ts) 
     if return_svg: # return the SVG as a string
-        return tree.render("%%return")[0]
+        return 
         
 
 

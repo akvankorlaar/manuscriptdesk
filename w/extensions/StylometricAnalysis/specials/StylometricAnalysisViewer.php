@@ -25,7 +25,7 @@
 class StylometricAnalysisViewer {
 
     private $out;
-    private $max_length = 50; 
+    private $max_length = 50;
 
     public function __construct(Outputpage $out) {
         $this->out = $out;
@@ -355,22 +355,37 @@ class StylometricAnalysisViewer {
     public function showResult(array $config_array, $time, $pystyl_output, $full_linkpath1, $full_linkpath2) {
 
         global $wgArticleUrl;
-        
+
         $out = $this->out;
         $edit_token = $out->getUser()->getEditToken();
         $article_url = $wgArticleUrl;
-                
+
+        $removenonalpha = isset($config_array['removenonalpha']) ? $config_array['removenonalpha'] : '';
+        $lowercase = isset($config_array['lowercase']) ? $config_array['lowercase'] : '';
+        $tokenizer = isset($config_array['tokenizer']) ? $config_array['tokenizer'] : '';
+        $minimumsize = isset($config_array['minimumsize']) ? $config_array['minimumsize'] : '';
+        $maximumsize = isset($config_array['maximumsize']) ? $config_array['maximumsize'] : '';
+        $segmentsize = isset($config_array['segmentsize']) ? $config_array['segmentsize'] : '';
+        $stepsize = isset($config_array['stepsize']) ? $config_array['stepsize'] : '';
+        $removepronouns = isset($config_array['removepronouns']) ? $config_array['removepronouns'] : '';
+        $vectorspace = isset($config_array['vectorspace']) ? $config_array['vectorspace'] : '';
+        $featuretype = isset($config_array['featuretype']) ? $config_array['featuretype'] : '';
+        $ngramsize = isset($config_array['ngramsize']) ? $config_array['ngramsize'] : '';
+        $mfi = isset($config_array['mfi']) ? $config_array['mfi'] : '';
+        $minimumdf = isset($config_array['minimumdf']) ? $config_array['minimumdf'] : '';
+        $maximumdf = isset($config_array['maximumdf']) ? $config_array['maximumdf'] : '';
+
         $out->setPageTitle($this->msg('stylometricanalysis-output'));
-        
+
         $html = "";
 
         $html .= "<a href='" . $article_url . "Special:StylometricAnalysis' class='link-transparent' title='Perform New Analysis'>Perform New Analysis</a>";
-        
+
         $html .= "<form class='' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
-        $html .= "<input type='submit' class='' name='save_current_page' title='Click to save page' value='Click here to save the current analysis'>";  
-        $html .= "<input type='hidden' name='time' value='$time'>";  
+        $html .= "<input type='submit' class='' name='save_current_page' title='Click to save page' value='Click here to save the current analysis'>";
+        $html .= "<input type='hidden' name='time' value='$time'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
-        $html .= "</form>"; 
+        $html .= "</form>";
 
         $html .= "<div style='display:block;'>";
 
@@ -390,20 +405,20 @@ class StylometricAnalysisViewer {
 
         $html .= "<div id='visualization-wrap3'>";
         $html .= "<h2>Analysis Variables</h2><br>";
-        $html .= "Remove non-alpha:" . $config_array['removenonalpha'] . "<br>";
-        $html .= "Lowercase:" . $config_array['lowercase'] . "<br>";
-        $html .= "Tokenizer:" . $config_array['tokenizer'] . "<br>";
-        $html .= "Minimum Size:" . $config_array['minimumsize'] . "<br>";
-        $html .= "Maximum Size:" . $config_array['maximumsize'] . "<br>";
-        $html .= "Segment Size:" . $config_array['segmentsize'] . "<br>";
-        $html .= "Step Size:" . $config_array['stepsize'] . "<br>";
-        $html .= "Remove Pronouns:" . $config_array['removepronouns'] . "<br>";
-        $html .= "Vectorspace:" . $config_array['vectorspace'] . "<br>";
-        $html .= "Featuretype:" . $config_array['featuretype'] . "<br>";
-        $html .= "Ngram Size:" . $config_array['ngramsize'] . "<br>";
-        $html .= "MFI:" . $config_array['mfi'] . "<br>";
-        $html .= "Minimum DF:" . $config_array['minimumdf'] . "<br>";
-        $html .= "Maximum DF:" . $config_array['maximumdf'];
+        $html .= "Remove non-alpha:" . $removenonalpha . "<br>";
+        $html .= "Lowercase:" . $lowercase . "<br>";
+        $html .= "Tokenizer:" . $tokenizer . "<br>";
+        $html .= "Minimum Size:" . $minimumsize . "<br>";
+        $html .= "Maximum Size:" . $maximumsize . "<br>";
+        $html .= "Segment Size:" . $segmentsize . "<br>";
+        $html .= "Step Size:" . $stepsize . "<br>";
+        $html .= "Remove Pronouns:" . $removepronouns . "<br>";
+        $html .= "Vectorspace:" . $vectorspace . "<br>";
+        $html .= "Featuretype:" . $featuretype . "<br>";
+        $html .= "Ngram Size:" . $ngramsize . "<br>";
+        $html .= "MFI:" . $mfi . "<br>";
+        $html .= "Minimum DF:" . $minimumdf . "<br>";
+        $html .= "Maximum DF:" . $maximumdf;
         $html .= "</div>";
 
         $html .= "This is the output of Pystyl: $pystyl_output";
