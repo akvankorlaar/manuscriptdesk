@@ -343,7 +343,7 @@ def clustermap(corpus, distance_matrix=None, color_leafs=True,
 
 def scipy_dendrogram(corpus, tree, outputfile=None,
                      fontsize=5, color_leafs=True,
-                     show=True, save=False, return_svg=True):
+                     show=False, save=False, return_svg=True):
     """
     Draw a dendrogram of the texts in the corpus using scipy.
     
@@ -485,7 +485,7 @@ def bct_dendrogram(corpus, tree, outputfile=None,
     if show:
         tree.show(tree_style=ts) 
     if return_svg: # return the SVG as a string
-        return 
+        return
         
 
 

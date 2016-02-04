@@ -330,7 +330,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     private function constructShellCommandToCallPystyl() {
         $python_path = $this->python_path;
-        $dir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'example.py';
+        $dir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'ManuscriptDeskAnalysis.py';
         //test.py      
         return $python_path . ' ' . $dir;
     }

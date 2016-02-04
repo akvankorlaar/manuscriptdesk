@@ -318,7 +318,6 @@ class StylometricAnalysisViewer {
             'PCA Scatterplot' => 'pcascatterplot',
             'TNSE Scatterplot' => 'tnsescatterplot',
             'Distance Matrix Clustering' => 'distancematrix',
-            'Hierarchical Clustering' => 'hierarchicalclustering',
             'Variability Based Neighbour Clustering' => 'neighbourclustering',
           ),
           'default' => 'dendrogram',
@@ -374,6 +373,8 @@ class StylometricAnalysisViewer {
         $mfi = isset($config_array['mfi']) ? $config_array['mfi'] : '';
         $minimumdf = isset($config_array['minimumdf']) ? $config_array['minimumdf'] : '';
         $maximumdf = isset($config_array['maximumdf']) ? $config_array['maximumdf'] : '';
+        $visualization1 = isset($config_array['visualization1']) ? $config_array['visualization1'] : '';
+        $visualization2 = isset($config_array['visualization2']) ? $config_array['visualization2'] : '';
 
         $out->setPageTitle($this->msg('stylometricanalysis-output'));
 
@@ -418,7 +419,9 @@ class StylometricAnalysisViewer {
         $html .= "Ngram Size:" . $ngramsize . "<br>";
         $html .= "MFI:" . $mfi . "<br>";
         $html .= "Minimum DF:" . $minimumdf . "<br>";
-        $html .= "Maximum DF:" . $maximumdf;
+        $html .= "Maximum DF:" . $maximumdf . "<br>";
+        $html .= "Visualization 1:" . $visualization1 . "<br>";
+        $html .= "Visualization 2:" . $visualization2; 
         $html .= "</div>";
 
         $html .= "This is the output of Pystyl: $pystyl_output";
