@@ -569,6 +569,10 @@ class collateWrapper{
       $s = $res->fetchObject();
       $intvalue = (int)(($s->$first_char)-1);
       
+      if($intvalue < 0){
+        $intvalue = 0; 
+      }
+      
       $dbw = wfGetDB(DB_MASTER);
 
       $dbw->update(

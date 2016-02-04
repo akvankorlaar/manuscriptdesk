@@ -66,7 +66,12 @@ class SpecialSingleManuscriptPages extends baseSummaryPage {
       }
       
       $name = $lowercase_alphabet[$key];
-      $alphabet_number = isset($alphabet_numbers[$key]) ? $alphabet_numbers[$key] : '';
+      
+      if(isset($alphabet_numbers[$key]) && $alphabet_numbers[$key] > 0){
+        $alphabet_number = $alphabet_numbers[$key];  
+      }else{
+        $alphabet_number = '';  
+      }  
       
       if($this->button_name === $name){   
         $html .= "<td>";
@@ -196,7 +201,12 @@ class SpecialSingleManuscriptPages extends baseSummaryPage {
       }
       
       $name = $lowercase_alphabet[$key];
-      $alphabet_number = isset($alphabet_numbers[$key]) ? $alphabet_numbers[$key] : '';
+      
+      if(isset($alphabet_numbers[$key]) && $alphabet_numbers[$key] > 0){
+        $alphabet_number = $alphabet_numbers[$key];  
+      }else{
+        $alphabet_number = '';  
+      }  
       
       $html .= "<td>";
       $html .= "<div class='letter-div-initial' style='display:inline-block;'>";

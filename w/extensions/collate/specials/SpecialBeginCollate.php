@@ -224,7 +224,7 @@ class SpecialBeginCollate extends SpecialPage {
       return $this->showError('collate-error-notexists');
     }
     
-    $text_converter = new textConverter();
+    $text_converter = new textConverter();//rename this class
       
     //convert $texts to json, in a format that it can be accepted by Collatex
     $texts_converted = $text_converter->convertJson($texts);
@@ -319,8 +319,6 @@ class SpecialBeginCollate extends SpecialPage {
  
   /**
    * This function creates a new wikipage with preloaded wikitext
-   * 
-   * @param type $new_url
    */
   private function createNewPage($new_url){
     
@@ -532,16 +530,10 @@ class SpecialBeginCollate extends SpecialPage {
    
   /**
    * This function makes a new URL, which will be used when the user saves the current table
-   * 
-   * @global type $wgUser
-   * @param type $title_array
-   * @return type
    */  
   private function makeURL($title_array){
       
-    global $wgUser;  
-    $user_name = $this->user_name;
-    
+    $user_name = $this->user_name;   
     $imploded_title_array = implode('',$title_array);
                 
     $year_month_day = date('Ymd');   
@@ -626,11 +618,6 @@ class SpecialBeginCollate extends SpecialPage {
   
   /**
    * This function constructs the HTML for the default page
-   * 
-   * @param type $url_array
-   * @param type $title_array
-   * @param type $collection_urls
-   * @param type $out
    */
   private function showDefaultPage($url_array,$title_array,$collection_urls, $out){
     

@@ -79,7 +79,8 @@ class newManuscriptHooks {
     
   //class constructor
   public function __construct(){
-                
+             
+     //initialise the newManuscriptWrapper class to be able to do database calls 
     $this->new_manuscript_wrapper = new newManuscriptWrapper();    
   }
    
@@ -743,7 +744,7 @@ class newManuscriptHooks {
     
     //this is a manuscript page, there is a corresponding file in the database, and $max_charachters_manuscript has not been reached, so allow saving
     return true;
-    }
+  }
     
   /**
    * This function adds additional modules containing CSS before the page is displayed
@@ -791,6 +792,8 @@ class newManuscriptHooks {
     
     //look for stray </del> tags, and replace them with a tei-del span element  
     $text = preg_replace('/<\/span><\/span>(.*?)&lt;\/del&gt;/','</span></span><span class="tei-del">$1</span>', $text);
+    
+    $text = preg_replace('/<\/span><\/span>(.*?)&lt;\/hi&gt;/','</span></span><span class="tei-hi superscript">$1</span>', $text);
   
     //look for any other escaped tags, and remove them
     $text = preg_replace('/&lt;(.*?)&gt;/s','', $text);

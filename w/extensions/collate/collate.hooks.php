@@ -27,26 +27,16 @@ class collateHooks {
 /**
  * Hooks for the collate extension 
  */
-    
-  private $collate_wrapper;   
-   
+       
   //class constructor 
   public function __construct(){ 
   
-    $this->collate_wrapper = new collateWrapper();   
   }
 
   /**
    * This function retrieves the collatex output from the database, renders the table, and adds it to the output
-   * 
-   * @param type $output
-   * @param type $article
-   * @param type $title
-   * @param type $user
-   * @param type $request
-   * @param type $wiki
    */
-  public function onMediaWikiPerformAction($output, $article, $title, $user, $request, $wiki){
+  public function onMediaWikiPerformAction(OutputPage $output, Article $article, Title $title, User $user, WebRequest $request, MediaWiki $wiki){
 
     if($wiki->getAction($request) !== 'view' ){
       return true; 
@@ -61,7 +51,8 @@ class collateHooks {
 
     $page_title_with_namespace = $title->getPrefixedUrl();    
 
-    $status = $this->collate_wrapper->getCollations($page_title_with_namespace);
+    $database_wrapper = new CollateWrapper();
+    $status = $database_wrapper->getCollations($page_title_with_namespace);
 
     //something went wrong when retrieving the values from the database 
     if(!$status){
@@ -115,7 +106,7 @@ class collateHooks {
     
     $page_title_with_namespace = $title_object->getPrefixedUrl();    
     
-    $title_object = Title::newFromText($page_title_with_namespace);
+    $title_object = Title::newFromText($page_title_with_namespace); //this can be deleted? 
             
     //do not allow to make a new page if title object does not exist and 'save_current_table' was not posted. Leave it like this for now, but in future
     //maybe check if you can also use mediawiki's edit token for example.. 
@@ -152,11 +143,6 @@ class collateHooks {
    /**
    * This function runs every time mediawiki gets a delete request. This function prevents
    * users from deleting collations they have not uploaded
-   * 
-   * @param WikiPage $article
-   * @param User $user
-   * @param type $reason
-   * @param type $error
    */
   public function onArticleDelete( WikiPage &$article, User &$user, &$reason, &$error ){
             
@@ -183,8 +169,9 @@ class collateHooks {
     
     $main_title_lowercase = isset($page_title_array[1]) ? $page_title_array[1] : null; 
     
-    $this->collate_wrapper->deleteDatabaseEntry($title_object->getPrefixedURL());
-    $this->collate_wrapper->subtractAlphabetnumbers($main_title_lowercase); 
+    $database_wrapper = new CollateWrapper();
+    $database_wrapper->deleteDatabaseEntry($title_object->getPrefixedURL());
+    $database_wrapper->subtractAlphabetnumbers($main_title_lowercase); 
     
     return true; 
   }
