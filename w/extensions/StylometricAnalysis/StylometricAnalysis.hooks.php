@@ -205,7 +205,7 @@ class StylometricAnalysisHooks {
             $out->addModuleStyles('ext.stylometricanalysis');
             $out->addModules('ext.stylometricanalysisloader');
         }
-
+        
         return true;
     }
 

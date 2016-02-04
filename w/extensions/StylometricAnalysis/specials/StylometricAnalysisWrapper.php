@@ -330,7 +330,7 @@ class StylometricAnalysisWrapper {
         $data['full_outputpath2'] = $s->stylometricanalysis_full_outputpath2;
         $data['full_linkpath1'] = $s->stylometricanalysis_full_linkpath1;
         $data['full_linkpath2'] = $s->stylometricanalysis_full_linkpath2; 
-        $data['config_array'] = json_decode($s->stylometricanalysis_json_config_array);
+        $data['config_array'] = (array) json_decode($s->stylometricanalysis_json_config_array);
         $data['date'] = $s->stylometricanalysis_date;
 
         return $data;

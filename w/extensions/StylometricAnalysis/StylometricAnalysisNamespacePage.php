@@ -94,8 +94,6 @@ class StylometricAnalysisNamespacePage {
         $html .= "Maximum DF:" . $maximumdf;
         $html .= "</div>";
 
-        $html .= "This is the output of Pystyl: $pystyl_output";
-
         return $html;
     }
 
