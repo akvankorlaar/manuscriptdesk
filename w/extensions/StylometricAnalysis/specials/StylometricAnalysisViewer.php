@@ -65,8 +65,8 @@ class StylometricAnalysisViewer {
         $html = "<table id='stylometricanalysis-infobox'>";
         $html .= "<tr><th>$about_message</th></tr>";
         $html .= "<tr><td>$version_message</td></tr>";
-        $html .= "<tr><td>$software_message <a href= '' target='_blank'>    </a>.</td></tr>";
-        $html .= "<tr><td id='stylometricanalysis-td'><small>$lastedit_message</small></td></tr>";
+        $html .= "<tr><td>$software_message <a href= '' target='_blank'>Pystyl</a>.</td></tr>";
+        $html .= "<tr><td id='stylometricanalysis-infobox-lasttd'><small>$lastedit_message</small></td></tr>";
         $html .= "</table>";
 
         $html .= "<p>" . $this->msg('stylometricanalysis-instruction1') . '</p>';
@@ -124,7 +124,7 @@ class StylometricAnalysisViewer {
 
         $edit_token = $out->getUser()->getEditToken();
 
-        $html .= "<input type='submit' disabled id='stylometricanalysis-submitbutton' title = $submit_hover_message value=$submit_message>";
+        $html .= "<input type='submit' id='stylometricanalysis-submitbutton' title = $submit_hover_message value=$submit_message>";
         $html .= "<input type='hidden' name='form1Posted' value='form1Posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
 
@@ -351,7 +351,7 @@ class StylometricAnalysisViewer {
     /**
      * This function shows the output page after the stylometric analysis has completed
      */
-    public function showResult(array $config_array, $time, $pystyl_output, $full_linkpath1, $full_linkpath2) {
+    public function showResult(array $config_array, $time, $full_linkpath1, $full_linkpath2) {
 
         global $wgArticleUrl;
 
@@ -377,27 +377,32 @@ class StylometricAnalysisViewer {
         $visualization2 = isset($config_array['visualization2']) ? $config_array['visualization2'] : '';
 
         $out->setPageTitle($this->msg('stylometricanalysis-output'));
+        
+        $save_button_value = $this->msg('stylometricanalysis-savevalue');
+        $save_button_title = $this->msg('stylometricanalysis-savetitle');
 
         $html = "";
 
         $html .= "<a href='" . $article_url . "Special:StylometricAnalysis' class='link-transparent' title='Perform New Analysis'>Perform New Analysis</a>";
 
         $html .= "<form class='' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
-        $html .= "<input type='submit' class='' name='save_current_page' title='Click to save page' value='Click here to save the current analysis'>";
+        $html .= "<input type='submit' id='stylometricanalysis-submitbutton-two' title='$save_button_title' value='$save_button_value'>";
         $html .= "<input type='hidden' name='time' value='$time'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
         $html .= "<div style='display:block;'>";
+        
+        $html .= 'The analysis was performed using the following collections:'; 
 
         $html .= "<div id='visualization-wrap1'>";
-        $html .= "<h2>Analysis One </h2>";
+        $html .= "<h2>$visualization1</h2>";
         $html .= "<p>Information about the plot</p>";
         $html .= "<img src='" . $full_linkpath1 . "' alt='Visualization1' height='650' width='650'>";
         $html .= "</div>";
 
         $html .= "<div id='visualization-wrap2'>";
-        $html .= "<h2>Analysis Two </h2>";
+        $html .= "<h2>$visualization2</h2>";
         $html .= "<p>Information about the plot</p>";
         $html .= "<img src='" . $full_linkpath2 . "' alt='Visualization2' height='650' width='650'>";
         $html .= "</div>";
@@ -405,7 +410,7 @@ class StylometricAnalysisViewer {
         $html .= "</div>";
 
         $html .= "<div id='visualization-wrap3'>";
-        $html .= "<h2>Analysis Variables</h2><br>";
+        $html .= "<h2>Analysis Configuration</h2><br>";
         $html .= "Remove non-alpha:" . $removenonalpha . "<br>";
         $html .= "Lowercase:" . $lowercase . "<br>";
         $html .= "Tokenizer:" . $tokenizer . "<br>";
@@ -419,15 +424,10 @@ class StylometricAnalysisViewer {
         $html .= "Ngram Size:" . $ngramsize . "<br>";
         $html .= "MFI:" . $mfi . "<br>";
         $html .= "Minimum DF:" . $minimumdf . "<br>";
-        $html .= "Maximum DF:" . $maximumdf . "<br>";
-        $html .= "Visualization 1:" . $visualization1 . "<br>";
-        $html .= "Visualization 2:" . $visualization2; 
+        $html .= "Maximum DF:" . $maximumdf;
         $html .= "</div>";
 
-        $html .= "This is the output of Pystyl: $pystyl_output";
-
         $out->addHTML($html);
-
         return true;
     }
 

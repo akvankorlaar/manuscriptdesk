@@ -41,6 +41,14 @@
   background-color: #F2FCFF;
 }
 
+#stylometricanalysis-submitbutton-two {
+  width: 30em; 
+  height: 1.5em; 
+  cursor: pointer; 
+  position: relative; 
+  background-color: #F2FCFF;
+}
+
 #stylometricanalysis-form {
   overflow-y: auto;  
   position: relative;
@@ -67,7 +75,7 @@
   font-size: 1.1em;  
 }
 
-#stylometricanalysis-infobox-td {
+#stylometricanalysis-infobox-lasttd {
   background: #F2FCFF; 
   padding: 0.3em; 
   color: black;

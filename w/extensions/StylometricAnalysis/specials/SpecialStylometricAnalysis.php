@@ -194,7 +194,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->updateDatabase($time, $new_page_url, $date, $full_linkpath1, $full_linkpath2);
 
         $viewer = new StylometricAnalysisViewer($this->getOutput());
-        return $viewer->showResult($this->config_array, $time, $pystyl_output, $full_linkpath1, $full_linkpath2);
+        return $viewer->showResult($this->config_array, $time, $full_linkpath1, $full_linkpath2);
     }
 
     private function processSavePageRequest() {

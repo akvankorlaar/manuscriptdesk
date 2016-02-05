@@ -85,6 +85,11 @@
     });
     
     //call the function changeSubmit on change
-    $('.stylometricanalysis-checkbox').change(changeSubmit);  
+    $('.stylometricanalysis-checkbox').change(changeSubmit); 
+    
+    $(document).ready(function(){
+      $("#stylometricanalysis-submitbutton").attr("disabled","disabled");
+    });
+    
        
 }(mediaWiki, jQuery));

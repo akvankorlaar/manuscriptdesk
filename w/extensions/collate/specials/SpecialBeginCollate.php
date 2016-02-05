@@ -634,7 +634,7 @@ class SpecialBeginCollate extends SpecialPage {
     $html .= "<tr><th>$about_message</th></tr>";
     $html .= "<tr><td>$version_message</td></tr>";
     $html .= "<tr><td>$software_message <a href= 'http://collatex.net' target='_blank'> Collatex Tools 1.7.0</a>.</td></tr>";
-    $html .= "<tr><td id='begincollate-infobox-td'><small>$lastedit_message</small></td></tr>";
+    $html .= "<tr><td id='begincollate-infobox-lasttd'><small>$lastedit_message</small></td></tr>";
     $html .= "</table>";
     
     $html .= "<p>" . $this->msg('collate-instruction1') . "</p>";
