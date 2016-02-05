@@ -42,7 +42,6 @@ $wgExtensionCredits['parserhook'][] = array(
   'version' => '0.0.1',
   'url' => 'https://manuscriptdesk.uantwerpen.be',
   'description' => 'This extension provides base classes and messages for the Manuscript Desk',
-  'descriptionmsg' => 'manuscriptdeskbase-desc'
 );
 
 //Shortcut to this extension directory

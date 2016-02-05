@@ -46,12 +46,12 @@ class ManuscriptDeskBaseValidator {
 
         //check if all charachters are alphanumeric, or '/' or ':' (in case of url)
         if (!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)) {
-            throw new Exception('validation-charachters');
+            throw new \Exception('validation-notalphanumeric');
         }
 
         //check for empty variables or unusually long string lengths
         if (empty($input) || strlen($input) > ($this->max_length * 10)) {
-            throw new Exception('validation-charlength');
+            throw new \Exception('validation-toolongstring');
         }
 
         return $input;
@@ -70,15 +70,18 @@ class ManuscriptDeskBaseValidator {
 
             return $input;
         }
+        
+        if(empty($input)){
+            throw new \Exception('validation-empty');
+        }
 
         //check if all charachters are alphanumeric
         if (!preg_match('/^[a-zA-Z0-9]*$/', $input)) {
-            throw new Exception('validation-charachters');
+            throw new \Exception('validation-notalphanumberic');
         }
 
-        //check for empty variables or unusually long string lengths
-        if (empty($input) || strlen($input) > ($this->max_length * 10)) {
-            throw new Exception('validation-charlength');
+        if (strlen($input) > ($this->max_length * 10)) {
+            throw new \Exception('validation-morethanfiftycharachters');
         }
 
         return $input;
@@ -91,15 +94,15 @@ class ManuscriptDeskBaseValidator {
 
         //check if all the input consists of numbers or '.'
         if (!preg_match('/^[0-9.]*$/', $input)) {
-            throw new Exception('validation-number');
+            throw new \Exception('validation-notanumber');
         }
 
         if (empty($input) && $input !== '0') {
-            throw new Exception('validation-empty');
+            throw new \Exception('validation-empty');
         }
 
         if (strlen($input) > $this->max_length) {
-            throw new Exception('validation-maxlength');
+            throw new \Exception('validation-morethanfiftycharachters');
         }
 
         return $input;

@@ -54,7 +54,7 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
     protected function checkEditToken() {
         $edit_token = $this->getEditToken();
         if ($this->getUser()->matchEditToken($edit_token) === false) {
-            throw new Exception('manuscriptdesk-error-edittoken');
+            throw new \Exception('error-edittoken');
         }
 
         return true;
@@ -68,7 +68,7 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         $user_object = $out->getUser();
         //user does not have permission
         if (!in_array('ManuscriptEditors', $user_object->getGroups())) {
-            throw new Exception('manuscriptdesk-nopermission');
+            throw new \Exception('error-nopermission');
         }
 
         return true;
@@ -149,7 +149,7 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
                         false, null, $editor_object->contentFormat);
     
     if (!$doEditStatus->isOK() ) {
-        throw new \Exception('newmanuscript-error-newpage');
+        throw new \Exception('error-newpage');
         //$errors = $doEditStatus->getErrorsArray();
     }
     

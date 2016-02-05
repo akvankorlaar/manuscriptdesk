@@ -431,13 +431,13 @@ class StylometricAnalysisViewer {
         return true;
     }
 
-    public function showNoPermissionError() {
+    public function showNoPermissionError($error_message) {
         $out = $this->out;
-        $out->addHTML($this->msg('stylometricanalysis-nopermission'));
+        $out->addHTML($error_message);
         return true;
     }
 
-    public function showFewCollectionsError() {
+    public function showFewCollectionsError($error_message) {
 
         global $wgArticleUrl;
 
@@ -445,7 +445,7 @@ class StylometricAnalysisViewer {
         $article_url = $wgArticleUrl;
 
         $html = "";
-        $html .= $this->msg('stylometricanalysis-fewcollections');
+        $html .= $error_message; 
         $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
 
         $out->addHTML($html);

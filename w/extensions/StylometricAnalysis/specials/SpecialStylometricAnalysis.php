@@ -24,8 +24,7 @@
  */
 class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
-    public $error_message = ''; 
-
+    public $error_message = '';
     private $minimum_pages_per_collection;
     private $minimum_collections;
     private $maximum_collections;
@@ -79,15 +78,15 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
         $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
-        
-        return true; 
+
+        return true;
     }
 
     /**
      * Main entry point for the page
      */
     public function execute() {
-        
+
         $this->setVariables();
 
         try {
@@ -95,14 +94,14 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
             if ($this->requestWasPosted()) {
                 $this->processRequest();
-                return true; 
+                return true;
             }
 
             $this->getDefaultPage();
-            return true; 
+            return true;
         } catch (Exception $e) {
             $this->handleExceptions($e);
-            return false; 
+            return false;
         }
     }
 
@@ -110,27 +109,27 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * Process all requests
      */
     private function processRequest() {
-        
+
         $this->checkEditToken();
-        
+
         if ($this->form1WasPosted()) {
             $this->processForm1();
-            return true; 
+            return true;
         }
 
         if ($this->form2WasPosted()) {
             $this->processForm2();
-            return true; 
+            return true;
         }
 
         if ($this->savePageWasRequested()) {
             $this->processSavePageRequest();
-            return true; 
+            return true;
         }
 
-        throw new Exception('stylometricanalysis-error-request');
+        throw new \Exception('stylometricanalysis-error-request');
     }
-    
+
     /**
      * Check if form 1 was posted
      */
@@ -155,10 +154,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return false;
     }
 
-    private function getDefaultPage() {
+    private function getDefaultPage($error_message = '') {
         $user_collections = $this->getUserCollections();
         $viewer = new StylometricAnalysisViewer($this->getOutput());
-        return $viewer->showForm1($user_collections, $this->error_message);
+        return $viewer->showForm1($user_collections, $error_message);
     }
 
     private function processForm1() {
@@ -166,7 +165,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->form = 'Form1';
         $this->collection_array = $collection_array = $form_data_getter->getForm1Data();
         $viewer = new StylometricAnalysisViewer($this->getOutput());
-        return $viewer->showForm2($collection_array, $this->getContext(), $this->error_message);
+        return $viewer->showForm2($collection_array, $this->getContext());
     }
 
     private function processForm2() {
@@ -188,10 +187,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $pystyl_output = $this->callPystyl($command, $full_textfilepath);
         $this->deleteTextfile($full_textfilepath);
         $this->checkPystylOutput($pystyl_output);
-        
+
         $new_page_url = $this->createNewPageUrl($collection_name_array);
         $time = idate('U'); //time format integer (Unix Timestamp). This timestamp is used to see how old values are
-        $date = date("d-m-Y H:i:s"); 
+        $date = date("d-m-Y H:i:s");
         $this->updateDatabase($time, $new_page_url, $date, $full_linkpath1, $full_linkpath2);
 
         $viewer = new StylometricAnalysisViewer($this->getOutput());
@@ -237,14 +236,15 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
                 if ($index === 'collection_name') {
                     $collection_name_array[] = $url_array['collection_name'];
-                }else{
+                }
+                else {
 
                     $title_object = Title::newFromText($file_url);
 
                     if (!$title_object->exists()) {
                         wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
                         $this->form = 'Form1';
-                        throw new Exception('stylometricanalysis-error-notexists');
+                        throw new \Exception('stylometricanalysis-error-notexists');
                     }
 
                     $single_page_text = $this->getSinglePageText($title_object);
@@ -280,19 +280,19 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         if ($collection_n_words < $this->min_words_collection) {
             $this->form = 'Form1';
-            throw new Exception('stylometricanalysis-error-toosmall');
+            throw new \Exception('stylometricanalysis-error-toosmall');
         }
 
         if ($collection_n_words < $config_array['minimumsize']) {
-            throw new Exception('stylometricanalysis-error-minsize');
+            throw new \Exception('stylometricanalysis-error-minsize');
         }
 
         if ($collection_n_words < ($config_array['segmentsize'] + $config_array['stepsize'])) {
-            throw new Exception('stylometricanalysis-error-segmentsize');
+            throw new \Exception('stylometricanalysis-error-segmentsize');
         }
 
         if ($collection_n_words < $config_array['ngramsize']) {
-            throw new Exception('stylometricanalysis-error-ngramsize');
+            throw new \Exception('stylometricanalysis-error-ngramsize');
         }
 
         return true;
@@ -315,7 +315,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->full_outputpath2 = $this->base_outputpath . '/' . $file_name2;
 
         if (is_file($this->full_outputpath1) || is_file($this->full_outputpath2)) {
-            throw new Exception('stylometricanalysis-error-outputpath');
+            throw new \Exception('stylometricanalysis-error-internal');
         }
 
         return true;
@@ -327,14 +327,13 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return array($full_linkpath1, $full_linkpath2);
     }
 
-
     private function constructShellCommandToCallPystyl() {
         $python_path = $this->python_path;
         $dir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'ManuscriptDeskAnalysis.py';
         //test.py      
         return $python_path . ' ' . $dir;
     }
-    
+
     private function savePageWasRequested() {
         $request = $this->getRequest();
         if ($request->getText('save_current_page') === '') {
@@ -352,42 +351,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->config_array['full_outputpath1'] = $this->full_outputpath1;
         $this->config_array['full_outputpath2'] = $this->full_outputpath2;
         $this->config_array['base_outputpath'] = $this->base_outputpath;
-        $this->config_array['collection_array'] = $this->collection_array; 
-        return true; 
-    }
-
-    /**
-     * This function insert data into the textfile which will be used to call Pystyl
-     */
-    private function insertConfigArrayIntoTextfile($full_textfilepath, array $config_array) {
-
-        if (is_file($full_textfilepath)) {
-            throw new Exception('stylometricanalysis-error-textfile');
-            //bad error, should be reported.. 
-        }
-
-        $textfile = fopen($full_textfilepath, 'w');
-        fwrite($textfile, json_encode($config_array));
-        fclose($textfile);
-
-        if (!is_file($full_textfilepath)) {
-            throw new Exception('stylometricanalysis-error-textfile');
-        }
-
+        $this->config_array['collection_array'] = $this->collection_array;
         return true;
-    }
-
-    private function deleteTextfile($full_textfilepath) {
-
-        if (!is_file($full_textfilepath)) {
-            throw new Exception('stylometricanalysis-error-textfiledelete');
-        }
-
-        unlink($full_textfilepath);
-
-        if (is_file($full_textfilepath)) {
-            throw new Exception('stylometricanalysis-error-textfiledelete');
-        }
     }
 
     /**
@@ -396,6 +361,40 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      */
     private function constructFullTextfilePath() {
         return $this->base_outputpath . '/' . 'temptextfile.txt';
+    }
+
+    /**
+     * This function insert data into the textfile which will be used to call Pystyl
+     */
+    private function insertConfigArrayIntoTextfile($full_textfilepath, array $config_array) {
+
+        if (is_file($full_textfilepath)) {
+            throw new \Exception('stylometricanalysis-error-internal');
+            //bad error, should be reported.. 
+        }
+
+        $textfile = fopen($full_textfilepath, 'w');
+        fwrite($textfile, json_encode($config_array));
+        fclose($textfile);
+
+        if (!is_file($full_textfilepath)) {
+            throw new \Exception('stylometricanalysis-error-internal');
+        }
+
+        return true;
+    }
+
+    private function deleteTextfile($full_textfilepath) {
+
+        if (!is_file($full_textfilepath)) {
+            return true; 
+        }
+
+        unlink($full_textfilepath);
+
+        if (is_file($full_textfilepath)) {
+            throw new \Exception('stylometricanalysis-error-internal');
+        }
     }
 
     /**
@@ -410,21 +409,21 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         //something went wrong when importing data into PyStyl
         if (strpos($output, 'stylometricanalysis-error-import') !== false) {
-            throw new Exception('stylometricanalysis-error-import');
+            throw new \Exception('stylometricanalysis-error-import');
         }
 
         //the path already exists
         if (strpos($output, 'stylometricanalysis-error-path') !== false) {
-            throw new Exception('stylometricanalysis-error-path');
+            throw new \Exception('stylometricanalysis-error-path');
         }
 
         //something went wrong when doing the analysis in PyStyl
         if (strpos($output, 'stylometricanalysis-error-analysis') !== false) {
-            throw new Exception('stylometricanalysis-error-analysis');
+            throw new \Exception('stylometricanalysis-error-analysis');
         }
 
         if (!is_file($this->full_outputpath1) || !is_file($this->full_outputpath2)) {
-            throw new Exception('stylometricanalysis-error-noimages');
+            throw new \Exception('stylometricanalysis-error-internal');
         }
 
         return true;
@@ -434,40 +433,36 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
         $database_wrapper->clearOldPystylOutput($time);
         $database_wrapper->storeTempStylometricAnalysis($time, $this->full_outputpath1, $this->full_outputpath2, $full_linkpath1, $full_linkpath2, $this->config_array, $new_page_url, $date);
-        return true; 
+        return true;
     }
 
     private function getUserCollections() {
         $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
-        return $database_wrapper->checkForManuscriptCollections($this->minimum_pages_per_collection, $this->minimum_collections);
+        return $database_wrapper->checkForManuscriptCollections($this->minimum_pages_per_collection, $this->minimum_collections, $this->maximum_collections);
     }
 
     private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
         $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
         $database_wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
-        return $database_wrapper->getNewPageUrl($time);  
+        return $database_wrapper->getNewPageUrl($time);
     }
 
-    private function handleExceptions($e) {
+    private function handleExceptions(Exception $exception_error) {
 
-        $error_message = $this->error_message = $e->getMessage();
-        $out = $this->getOutput();
-        $viewer = new StylometricAnalysisViewer($out);
+        $error_identifier = $this->error_message = $exception_error->getMessage();
+        $error_message = $this->msg($error_identifier);
+        $viewer = new StylometricAnalysisViewer($this->getOutput());
 
-        if ($error_message === 'stylometricanalysis-nopermission') {
-            return $viewer->showNoPermissionError();
+        if ($error_identifier === 'error-nopermission') {
+            return $viewer->showNoPermissionError($error_message);
         }
 
-        if ($error_message === 'stylometricanalysis-error-fewcollections') {
-            return $viewer->showFewCollectionsError();
-        }
-        
-        if ($error_message === 'manuscriptdesk-error-edittoken') {
-            return $this->getDefaultPage();
+        if ($error_identifier === 'stylometricanalysis-error-fewcollections') {
+            return $viewer->showFewCollectionsError($error_message);
         }
 
         if ($this->form === 'Form1') {
-            return $this->getDefaultpage();
+            return $this->getDefaultpage($error_message);
         }
 
         if ($this->form === 'Form2') {
