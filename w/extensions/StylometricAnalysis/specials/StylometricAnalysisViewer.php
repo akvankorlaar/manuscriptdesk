@@ -25,7 +25,7 @@
 class StylometricAnalysisViewer {
 
     private $out;
-    private $max_length = 50;
+    private $max_formfield_length = 5;
 
     public function __construct(Outputpage $out) {
         $this->out = $out;
@@ -35,20 +35,18 @@ class StylometricAnalysisViewer {
      * This function adds html used for the gif loader image
      */
     private function addStylometricAnalysisLoader() {
-
         //shows after submit has been clicked
         $html = "<div id='stylometricanalysis-loaderdiv'>";
         $html .= "<img id='stylometricanalysis-loadergif' src='/w/extensions/collate/specials/assets/362.gif' style='width: 64px; height: 64px;"
             . " position: relative; left: 50%;'>";
         $html .= "</div>";
-
         return $html;
     }
 
     /**
      * This function constructs the HTML for the default page
      */
-    public function showForm1(array $user_collections, $error_message = '') {
+    public function showForm1(array $user_collection_data, $error_message = '') {
 
         global $wgArticleUrl;
 
@@ -86,28 +84,28 @@ class StylometricAnalysisViewer {
         $a = 0;
         $html .= "<tr>";
 
-        foreach ($user_collections as $collection_name => $small_url_array) {
+        foreach ($user_collection_data as $collection_name => $collection_data) {
 
             if (($a % 4) === 0) {
                 $html .= "</tr>";
                 $html .= "<tr>";
             }
 
-            $manuscripts_urls = $small_url_array['manuscripts_url'];
-            $manuscripts_urls['collection_name'] = $collection_name;
+            $collection_post_data = $collection_data['manuscripts_url'];
+            $collection_post_data['collection_name'] = $collection_name;
 
-            foreach ($manuscripts_urls as $index => &$url) {
+            foreach ($collection_post_data as $index => &$url) {
                 $url = htmlspecialchars($url);
             }
 
             //encode the array into json to be able to place it in the checkbox value
-            $json_small_url_array = json_encode($manuscripts_urls);
-            $manuscript_pages_within_collection = htmlspecialchars(implode(', ', $small_url_array['manuscripts_title']));
+            $json_collection_post_data = json_encode($collection_post_data);
+            $manuscript_pages_within_collection = htmlspecialchars(implode(', ', $collection_data['manuscripts_title']));
             $collection_text = $this->msg('stylometricanalysis-contains') . $manuscript_pages_within_collection . '.';
 
             //add a checkbox for the collection
             $html .="<td>";
-            $html .="<input type='checkbox' class='stylometricanalysis-checkbox' name='collection$a' value='$json_small_url_array'>" . htmlspecialchars($collection_name);
+            $html .="<input type='checkbox' class='stylometricanalysis-checkbox' name='collection$a' value='$json_collection_post_data'>" . htmlspecialchars($collection_name);
             $html .= "<br>";
             $html .= "<span class='stylometricanalysis-span'>" . $collection_text . "</span>";
             $html .="</td>";
@@ -146,7 +144,7 @@ class StylometricAnalysisViewer {
         global $wgArticleUrl;
 
         $article_url = $wgArticleUrl;
-        $max_length = $this->max_length;
+        $max_formfield_length = $this->max_formfield_length;
         $out = $this->out;
 
         $collection_name_array = array();
@@ -208,7 +206,7 @@ class StylometricAnalysisViewer {
           'class' => 'HTMLTextField',
           'default' => 0,
           'size' => 5, //display size
-          'maxlength' => 5, //input size
+          'maxlength' => $max_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
 
@@ -217,7 +215,7 @@ class StylometricAnalysisViewer {
           'class' => 'HTMLTextField',
           'default' => 10000,
           'size' => 5, //display size
-          'maxlength' => 5, //input size
+          'maxlength' => $max_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
 
@@ -226,7 +224,7 @@ class StylometricAnalysisViewer {
           'class' => 'HTMLTextField',
           'default' => 0,
           'size' => 5, //display size
-          'maxlength' => 5, //input size
+          'maxlength' => $max_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
 
@@ -235,7 +233,7 @@ class StylometricAnalysisViewer {
           'class' => 'HTMLTextField',
           'default' => 0,
           'size' => 5, //display size
-          'maxlength' => 5, //input size
+          'maxlength' => $max_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
 
@@ -288,7 +286,7 @@ class StylometricAnalysisViewer {
           'class' => 'HTMLTextField',
           'default' => 100,
           'size' => 5, //display size
-          'maxlength' => 5, //input size
+          'maxlength' => $max_formfield_length, //input size
           'section' => 'stylometricanalysis-section-feature',
         );
 
@@ -297,7 +295,7 @@ class StylometricAnalysisViewer {
           'label' => 'Minimum DF',
           'default' => 0.00,
           'size' => 5,
-          'maxlength' => 5,
+          'maxlength' => $max_formfield_length,
           'section' => 'stylometricanalysis-section-feature',
         );
 
@@ -306,7 +304,7 @@ class StylometricAnalysisViewer {
           'label' => 'Maximum DF',
           'default' => 0.90,
           'size' => 5,
-          'maxlength' => 5,
+          'maxlength' => $max_formfield_length,
           'section' => 'stylometricanalysis-section-feature',
         );
 
@@ -393,8 +391,8 @@ class StylometricAnalysisViewer {
 
         $html .= "<div style='display:block;'>";
         
-        $html .= 'The analysis was performed using the following collections:'; 
-
+        $html .= $this->msg('stylometricanalysis-collectionsused');
+        
         $html .= "<div id='visualization-wrap1'>";
         $html .= "<h2>$visualization1</h2>";
         $html .= "<p>Information about the plot</p>";
@@ -431,31 +429,29 @@ class StylometricAnalysisViewer {
         return true;
     }
 
-    public function showNoPermissionError($error_message) {
-        $out = $this->out;
-        $out->addHTML($error_message);
+    public function showNoPermissionError($error_message = '') {
+        $this->out->addHTML($error_message);
         return true;
     }
 
-    public function showFewCollectionsError($error_message) {
+    public function showFewCollectionsError($error_message = '') {
 
         global $wgArticleUrl;
 
-        $out = $this->out;
         $article_url = $wgArticleUrl;
 
         $html = "";
         $html .= $error_message; 
         $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
 
-        $out->addHTML($html);
+        $this->out->addHTML($html);
         return true;
     }
 
     /**
      * This function retrieves the message from the i18n file for String $identifier
      */
-    public function msg($identifier) {
+    public function msg($identifier = '') {
         return wfMessage($identifier)->text();
     }
 

@@ -52,6 +52,7 @@ $messages['en'] = array(
   'stylometricanalysis-output' => 'Stylometric Analysis Output',
   'stylometricanalysis-savevalue' => 'Click to save the current analysis',
   'stylometricanalysis-savetitle' => 'Save Current Analysis',
+  'stylometricanalysis-collectionsused' => 'The analysis was performed using the following collections:',
   'stylometricanalysis-error-manycollections' => 'You can only select up to 5 collections',
   'stylometricanalysis-error-fewcollections' => 'You need to select at least 2 collections',
   'stylometricanalysis-error-notexists' => 'Something went wrong when retrieving the wiki page texts.',

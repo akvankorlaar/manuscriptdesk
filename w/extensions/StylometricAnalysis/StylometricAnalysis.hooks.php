@@ -100,7 +100,7 @@ class StylometricAnalysisHooks {
 
         try {
             $database_wrapper = new StylometricAnalysisWrapper($user->getName());
-            $database_wrapper->deleteDatabaseEntry($title_object->getPrefixedURL());
+            $database_wrapper->deleteStylometricAnalysisDatabaseEntry($title_object->getPrefixedURL());
         } catch (Exception $e) {
             return true;
         }

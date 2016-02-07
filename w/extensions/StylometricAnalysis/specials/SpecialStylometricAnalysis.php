@@ -97,7 +97,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
                 return true;
             }
 
-            $this->getDefaultPage();
+            $this->getForm1();
             return true;
         } catch (Exception $e) {
             $this->handleExceptions($e);
@@ -154,10 +154,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return false;
     }
 
-    private function getDefaultPage($error_message = '') {
-        $user_collections = $this->getUserCollections();
+    private function getForm1($error_message = '') {
+        $user_collection_data = $this->getUserCollectionData();
         $viewer = new StylometricAnalysisViewer($this->getOutput());
-        return $viewer->showForm1($user_collections, $error_message);
+        return $viewer->showForm1($user_collection_data, $error_message);
     }
 
     private function processForm1() {
@@ -436,9 +436,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function getUserCollections() {
+    private function getUserCollectionData() {
         $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
-        return $database_wrapper->checkForManuscriptCollections($this->minimum_pages_per_collection, $this->minimum_collections, $this->maximum_collections);
+        return $database_wrapper->getManuscriptsCollectionData($this->minimum_pages_per_collection, $this->minimum_collections, $this->maximum_collections);
     }
 
     private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
@@ -462,7 +462,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         }
 
         if ($this->form === 'Form1') {
-            return $this->getDefaultpage($error_message);
+            return $this->getForm1($error_message);
         }
 
         if ($this->form === 'Form2') {
@@ -471,7 +471,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
                 return $viewer->showForm2($collection_array, $this->getContext(), $error_message);
             }
 
-            return $this->getDefaultPage();
+            return $this->getForm1();
         }
 
         return true;

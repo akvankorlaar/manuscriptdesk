@@ -34,7 +34,7 @@ class StylometricAnalysisWrapper {
     /**
      * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
      */
-    public function checkForManuscriptCollections($minimum_pages_per_collection = 0, $minimum_collections = 0, $maximum_collections = 0) {
+    public function getManuscriptsCollectionData($minimum_pages_per_collection = 0, $minimum_collections = 0, $maximum_collections = 0) {
 
         $dbr = wfGetDB(DB_SLAVE);
         $collection_urls = array();
@@ -56,7 +56,6 @@ class StylometricAnalysisWrapper {
         );
 
         if ($res->numRows() > 0) {
-            //while there are still titles in this query
             while ($s = $res->fetchObject()) {
 
                 //check if the current collection has been added
@@ -87,7 +86,7 @@ class StylometricAnalysisWrapper {
             throw new \Exception('stylometricanalysis-error-fewcollections');
         }
 
-        if (count($collection_urls) < $minimum_collections) {
+        if (count($collection_urls) > $maximum_collections) {
             throw new \Exception('stylometricanalysis-error-manycollections');
         }
 
@@ -339,7 +338,7 @@ class StylometricAnalysisWrapper {
         return $data;
     }
 
-    public function deleteDatabaseEntry($page_title_with_namespace) {
+    public function deleteStylometricAnalysisDatabaseEntry($page_title_with_namespace) {
 
         $dbw = wfGetDB(DB_MASTER);
 
