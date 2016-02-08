@@ -29,67 +29,67 @@
  * @param {type} $
  * @returns {undefined}
  */
-(function (mw, $){
-     
-    /**
-     * This function disables or enables the submit button, depending on how many checkboxes are checked
-     */
-    function changeSubmit(){
-            
-      var min_number_checked = mw.config.get('wgmin_stylometricanalysis_collections');
-      var max_number_checked = mw.config.get('wgmax_stylometricanalysis_collections');
-      
-      //count the number of checked checkboxes
-      var collection_checked = $("input[class='stylometricanalysis-checkbox']:checked").length;
-                                    
-      //enable the submit button if at least min_number_pages are checked                            
-      if(collection_checked >= min_number_checked && collection_checked <= max_number_checked){
-        $("#stylometricanalysis-submitbutton").removeAttr("disabled");
-        $("#stylometricanalysis-submitbutton").css("cursor", "pointer");
+(function (mw, $) {
+
+  /**
+   * This function disables or enables the submit button, depending on how many checkboxes are checked
+   */
+  function changeSubmit() {
+
+    var min_number_checked = mw.config.get('wgmin_stylometricanalysis_collections');
+    var max_number_checked = mw.config.get('wgmax_stylometricanalysis_collections');
+
+    //count the number of checked checkboxes
+    var collection_checked = $("input[class='stylometricanalysis-checkbox']:checked").length;
+
+    //enable the submit button if at least min_number_pages are checked                            
+    if (collection_checked >= min_number_checked && collection_checked <= max_number_checked) {
+      $("#stylometricanalysis-submitbutton").removeAttr("disabled");
+      $("#stylometricanalysis-submitbutton").css("cursor", "pointer");
+      $("#javascript-error").empty();
+
+    } else {
+      $("#stylometricanalysis-submitbutton").attr("disabled", "disabled");
+      $("#stylometricanalysis-submitbutton").css("cursor", "default");
+
+      if (collection_checked < min_number_checked) {
         $("#javascript-error").empty();
-        
-      }else{
-        $("#stylometricanalysis-submitbutton").attr("disabled","disabled");
-        $("#stylometricanalysis-submitbutton").css("cursor", "default"); 
-        
-        if(collection_checked < min_number_checked){
-          $("#javascript-error").empty();
+      }
+
+      if ($('#javascript-error').is(':empty')) {
+        if (collection_checked > max_number_checked) {
+          $("#javascript-error").append(mw.msg('stylometricanalysis-error-manycollections'));
         }
-        
-        if ($('#javascript-error').is(':empty')){
-          if(collection_checked > max_number_checked){
-            $("#javascript-error").append(mw.msg('stylometricanalysis-error-manycollections'));
-          }
-        }  
       }
     }
-    
-   /**
-    * This function shows #stylometricanalysis-loaderdiv, the loader gif, and hides p elements, #stylometricanalysis-infobox, .error, and #stylometricanalysis-form after clicking submit
-    */
-    $('#stylometricanalysis-form').submit(function() {
-      $('#stylometricanalysis-infobox').hide();
-      $('p').hide();    
-      $('.error').hide();
-      $('#stylometricanalysis-form').hide();
-      $('#stylometricanalysis-loaderdiv').show();
-    });
-   
-   /**
-    * This function shows #stylometricanalysis-loaderdiv, the loader gif, and hides .stylometricanalysis-form-two, p elements after clicking submit
-    */
-    $('.visualClear').submit(function() {
-      $('#stylometricanalysis-wrap').hide();
-      $('.visualClear').hide();
-      $('#stylometricanalysis-loaderdiv').show();
-    });
-    
-    //call the function changeSubmit on change
-    $('.stylometricanalysis-checkbox').change(changeSubmit); 
-    
-    $(document).ready(function(){
-      $("#stylometricanalysis-submitbutton").attr("disabled","disabled");
-    });
-    
-       
+  }
+
+  $('#stylometricanalysis-form').submit(function () {
+    $('#stylometricanalysis-infobox').hide();
+    $('p').hide();
+    $('.error').hide();
+    $('#stylometricanalysis-form').hide();
+    $('#stylometricanalysis-loaderdiv').show();
+  });
+
+  $('.visualClear').submit(function () {
+    $('#stylometricanalysis-wrap').hide();
+    $('.visualClear').hide();
+    $('#stylometricanalysis-loaderdiv').show();
+  });
+  
+  $('.stylometricanalysis-form-two').submit(function () {
+    $('#stylometricanalysis-buttons').hide();
+    $('#visualization-wrap').hide();
+    $('#analysisconfiguration').hide();
+    $('#stylometricanalysis-loaderdiv').show();
+  });
+
+  //call the function changeSubmit on change
+  $('.stylometricanalysis-checkbox').change(changeSubmit);
+
+  $(document).ready(function () {
+    $("#stylometricanalysis-submitbutton").attr("disabled", "disabled");
+  });
+
 }(mediaWiki, jQuery));

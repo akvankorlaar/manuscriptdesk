@@ -176,11 +176,12 @@ class StylometricAnalysisWrapper {
         return true;
     }
 
-    public function storeTempStylometricAnalysis($time = 0, $full_outputpath1, $full_outputpath2, $full_linkpath1, $full_linkpath2, array $config_array, $new_page_url, $date) {
+    public function storeTempStylometricAnalysis(array $collection_name_array, $time = 0, $new_page_url = '', $date = 0, $full_linkpath1 = '', $full_linkpath2 = '',  $full_outputpath1 = '', $full_outputpath2 = '',array $config_array) {
 
         $dbw = wfGetDB(DB_MASTER);
 
         $user_name = $this->user_name;
+        $json_collection_name_array = json_encode($collection_name_array);
         $json_config_array = json_encode($config_array);
 
         $dbw->insert(
@@ -193,6 +194,7 @@ class StylometricAnalysisWrapper {
           'tempstylometricanalysis_full_linkpath1' => $full_linkpath1,
           'tempstylometricanalysis_full_linkpath2' => $full_linkpath2,
           'tempstylometricanalysis_json_config_array' => $json_config_array,
+          'tempstylometricanalysis_json_collection_name_array' => $json_collection_name_array,     
           'tempstylometricanalysis_new_page_url' => $new_page_url,
           'tempstylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
@@ -222,6 +224,7 @@ class StylometricAnalysisWrapper {
           'tempstylometricanalysis_full_linkpath1',
           'tempstylometricanalysis_full_linkpath2',
           'tempstylometricanalysis_json_config_array',
+          'tempstylometricanalysis_json_collection_name_array',    
           'tempstylometricanalysis_new_page_url',
           'tempstylometricanalysis_date'
             ), array(
@@ -241,6 +244,7 @@ class StylometricAnalysisWrapper {
         $full_linkpath1 = $s->tempstylometricanalysis_full_linkpath1;
         $full_linkpath2 = $s->tempstylometricanalysis_full_linkpath2;
         $json_config_array = $s->tempstylometricanalysis_json_config_array;
+        $json_collection_name_array = $s->tempstylometricanalysis_json_collection_name_array; 
         $new_page_url = $s->tempstylometricanalysis_new_page_url;
         $date = $s->tempstylometricanalysis_date;
 
@@ -256,6 +260,7 @@ class StylometricAnalysisWrapper {
           'stylometricanalysis_full_linkpath1' => $full_linkpath1,
           'stylometricanalysis_full_linkpath2' => $full_linkpath2,
           'stylometricanalysis_json_config_array' => $json_config_array,
+          'stylometricanalysis_json_collection_name_array' => $json_collection_name_array,    
           'stylometricanalysis_new_page_url' => $new_page_url,
           'stylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
@@ -312,6 +317,7 @@ class StylometricAnalysisWrapper {
           'stylometricanalysis_full_linkpath1',
           'stylometricanalysis_full_linkpath2',
           'stylometricanalysis_json_config_array',
+          'stylometricanalysis_json_collection_name_array',    
           'stylometricanalysis_new_page_url',
           'stylometricanalysis_date',
             ), array(
@@ -333,6 +339,7 @@ class StylometricAnalysisWrapper {
         $data['full_linkpath1'] = $s->stylometricanalysis_full_linkpath1;
         $data['full_linkpath2'] = $s->stylometricanalysis_full_linkpath2;
         $data['config_array'] = (array) json_decode($s->stylometricanalysis_json_config_array);
+        $data['collection_name_array'] = (array) json_decode($s->stylometricanalysis_json_collection_name_array);
         $data['date'] = $s->stylometricanalysis_date;
 
         return $data;

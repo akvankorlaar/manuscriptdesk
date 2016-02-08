@@ -127,7 +127,21 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return true;
         }
 
+        if ($this->redirectBackWasRequested()) {
+            $this->getForm1();
+            return true;
+        }
+
         throw new \Exception('stylometricanalysis-error-request');
+    }
+
+    private function redirectBackWasRequested() {
+        $request = $this->getRequest();
+        if ($request->getText('redirect') !== '') {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -164,8 +178,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
         $this->form = 'Form1';
         $this->collection_array = $collection_array = $form_data_getter->getForm1Data();
+        $collection_name_array = $this->constructCollectionNameArray();
         $viewer = new StylometricAnalysisViewer($this->getOutput());
-        return $viewer->showForm2($collection_array, $this->getContext());
+        return $viewer->showForm2($collection_array, $collection_name_array, $this->getContext());
     }
 
     private function processForm2() {
@@ -174,7 +189,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->collection_array = $form_data_getter->getForm2CollectionArray();
         $this->config_array = $form_data_getter->getForm2PystylConfigurationData();
 
-        list($texts, $collection_name_array) = $this->getPageTextsFromWikiPages();
+        $texts = $this->getPageTextsFromWikiPages();
+        $collection_name_array = $this->constructCollectionNameArray();
 
         list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames($collection_name_array);
         $this->constructFullOutputPathOfPystylOutputImages($output_file_name1, $output_file_name2);
@@ -191,10 +207,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $new_page_url = $this->createNewPageUrl($collection_name_array);
         $time = idate('U'); //time format integer (Unix Timestamp). This timestamp is used to see how old values are
         $date = date("d-m-Y H:i:s");
-        $this->updateDatabase($time, $new_page_url, $date, $full_linkpath1, $full_linkpath2);
+        $this->updateDatabase($collection_name_array, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2);
 
         $viewer = new StylometricAnalysisViewer($this->getOutput());
-        return $viewer->showResult($this->config_array, $time, $full_linkpath1, $full_linkpath2);
+        return $viewer->showResult($this->config_array, $collection_name_array, $full_linkpath1, $full_linkpath2, $time);
     }
 
     private function processSavePageRequest() {
@@ -213,31 +229,33 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return 'Stylometricanalysis:' . $user_name . "/" . $imploded_collection_name_array . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
 
+    private function constructCollectionNameArray() {
+        $collection_name_array = array();
+        foreach ($this->collection_array as $index => $collection_information) {
+            $collection_name_array[] = $collection_information['collection_name'];
+        }
+        return $collection_name_array;
+    }
+
     /**
      * This function loops through all the posted collections, and
      * retrieves the text from the corresponding pages 
      */
     private function getPageTextsFromWikiPages() {
 
-        $collection_array = $this->collection_array;
-
         //in $texts combined collection texts will be stored 
         $texts = array();
-        $collection_name_array = array();
         $a = 1;
 
         //for collections, collect all single pages of a collection and merge them together
-        foreach ($collection_array as $collection_index => $url_array) {
+        foreach ($this->collection_array as $index => $collection_information) {
 
             $all_texts_for_one_collection = "";
 
             //go through all urls of a collection
-            foreach ($url_array as $index => $file_url) {
+            foreach ($collection_information as $index => $file_url) {
 
-                if ($index === 'collection_name') {
-                    $collection_name_array[] = $url_array['collection_name'];
-                }
-                else {
+                if ($index !== 'collection_name') {
 
                     $title_object = Title::newFromText($file_url);
 
@@ -256,7 +274,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             $collection_n_words = str_word_count($all_texts_for_one_collection);
             $this->checkForCollectionErrors($collection_n_words);
 
-            $collection_name = isset($url_array['collection_name']) ? $url_array['collection_name'] : 'collection' . $a;
+            $collection_name = isset($collection_information['collection_name']) ? $collection_information['collection_name'] : 'collection' . $a;
 
             //add the combined texts of one collection to $texts
             $texts["collection" . $a] = array(
@@ -268,7 +286,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             $a += 1;
         }
 
-        return array($texts, $collection_name_array);
+        return $texts;
     }
 
     /**
@@ -351,7 +369,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->config_array['full_outputpath1'] = $this->full_outputpath1;
         $this->config_array['full_outputpath2'] = $this->full_outputpath2;
         $this->config_array['base_outputpath'] = $this->base_outputpath;
-        $this->config_array['collection_array'] = $this->collection_array;
         return true;
     }
 
@@ -387,7 +404,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private function deleteTextfile($full_textfilepath) {
 
         if (!is_file($full_textfilepath)) {
-            return true; 
+            return true;
         }
 
         unlink($full_textfilepath);
@@ -429,10 +446,12 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function updateDatabase($time = 0, $new_page_url, $date, $full_linkpath1, $full_linkpath2) {
+    private function updateDatabase(array $collection_name_array, $time = 0, $new_page_url, $date, $full_linkpath1, $full_linkpath2) {
         $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
         $database_wrapper->clearOldPystylOutput($time);
-        $database_wrapper->storeTempStylometricAnalysis($time, $this->full_outputpath1, $this->full_outputpath2, $full_linkpath1, $full_linkpath2, $this->config_array, $new_page_url, $date);
+        $database_wrapper->storeTempStylometricAnalysis($collection_name_array, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $this->full_outputpath1, $this->full_outputpath2, $this->config_array
+        );
+
         return true;
     }
 
@@ -461,20 +480,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return $viewer->showFewCollectionsError($error_message);
         }
 
-        if ($this->form === 'Form1') {
-            return $this->getForm1($error_message);
+        if ($this->form === 'Form2' && isset($this->collection_array)) {
+            return $viewer->showForm2($this->collection_array, $this->getContext(), $error_message);
         }
 
-        if ($this->form === 'Form2') {
-            if (isset($this->collection_array)) {
-                $collection_array = $this->collection_array;
-                return $viewer->showForm2($collection_array, $this->getContext(), $error_message);
-            }
-
-            return $this->getForm1();
-        }
-
-        return true;
+        return $this->getForm1($error_message);
     }
 
     /**

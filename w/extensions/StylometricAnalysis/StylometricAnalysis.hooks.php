@@ -41,10 +41,8 @@ class StylometricAnalysisHooks {
             $database_wrapper = new StylometricAnalysisWrapper($user->getName());
             $data = $database_wrapper->getStylometricanalysisData($page_title_with_namespace);
 
-            $page = new StylometricAnalysisNamespacePage();
-            $html_output = $page->renderPage($data);
-
-            $output->addHTML($html_output);
+            $page = new StylometricAnalysisNamespacePage($output);
+            $page->renderPage($data);
 
             return true;
         } catch (Exception $e) {
@@ -104,7 +102,7 @@ class StylometricAnalysisHooks {
         } catch (Exception $e) {
             return true;
         }
-        
+
         return true;
     }
 
@@ -148,9 +146,13 @@ class StylometricAnalysisHooks {
         return true;
     }
 
-    private function isStylometricAnalysisNamespace(WikiPage $wikiPage) {
-        $title_object = $wikiPage->getTitle();
-        $namespace = $title_object->getNamespace();
+    private function isStylometricAnalysisNamespace($object) {
+
+        if ($object instanceof WikiPage) {
+            $namespace = $object->getTitle()->getNamespace();
+        }elseif($object instanceof OutputPage) {
+            $namespace = $object->getTitle()->getNamespace();
+        }
 
         if ($namespace !== NS_STYLOMETRICANALYSIS) {
             return false;
@@ -198,12 +200,13 @@ class StylometricAnalysisHooks {
      */
     public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
 
-        $title_object = $out->getTitle();
-        $page_title = $title_object->getPrefixedURL();
+        $page_title = $out->getTitle()->getPrefixedURL();
 
         if ($page_title === 'Special:StylometricAnalysis') {
             $out->addModuleStyles('ext.stylometricanalysis');
             $out->addModules('ext.stylometricanalysisloader');
+        }elseif($this->isStylometricAnalysisNamespace($out)){
+            $out->addModuleStyles('ext.stylometricanalysis');
         }
         
         return true;

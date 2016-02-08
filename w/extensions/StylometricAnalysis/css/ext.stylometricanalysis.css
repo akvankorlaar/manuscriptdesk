@@ -55,6 +55,11 @@
   width: 100%;
 }
 
+.stylometricanalysis-form-two {
+  position: relative;
+  display: inline-block;
+}
+
 #stylometricanalysis-infobox {
   padding: 0.3em;
   float: right; 
@@ -118,6 +123,6 @@
   right: 100px; 
 }
 
-#visualization-wrap3{
+#analysisconfiguration{
   display: block;
 }

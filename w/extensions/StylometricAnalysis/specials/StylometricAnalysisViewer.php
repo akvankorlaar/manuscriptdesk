@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class StylometricAnalysisViewer {
+class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
 
     private $out;
     private $max_formfield_length = 5;
@@ -34,7 +34,7 @@ class StylometricAnalysisViewer {
     /**
      * This function adds html used for the gif loader image
      */
-    private function addStylometricAnalysisLoader() {
+    private function addStylometricAnalysisLoaderImage() {
         //shows after submit has been clicked
         $html = "<div id='stylometricanalysis-loaderdiv'>";
         $html .= "<img id='stylometricanalysis-loadergif' src='/w/extensions/collate/specials/assets/362.gif' style='width: 64px; height: 64px;"
@@ -52,13 +52,14 @@ class StylometricAnalysisViewer {
 
         $out = $this->out;
         $article_url = $wgArticleUrl;
+        $user_collection_data = $this->HTMLSpecialCharachtersArray($user_collection_data);
 
-        $out->setPageTitle($this->msg('stylometricanalysis-welcome'));
+        $out->setPageTitle($out->msg('stylometricanalysis-welcome'));
 
-        $about_message = $this->msg('stylometricanalysis-about');
-        $version_message = $this->msg('stylometricanalysis-version');
-        $software_message = $this->msg('stylometricanalysis-software');
-        $lastedit_message = $this->msg('stylometricanalysis-lastedit');
+        $about_message = $out->msg('stylometricanalysis-about');
+        $version_message = $out->msg('stylometricanalysis-version');
+        $software_message = $out->msg('stylometricanalysis-software');
+        $lastedit_message = $out->msg('stylometricanalysis-lastedit');
 
         $html = "<table id='stylometricanalysis-infobox'>";
         $html .= "<tr><th>$about_message</th></tr>";
@@ -67,7 +68,7 @@ class StylometricAnalysisViewer {
         $html .= "<tr><td id='stylometricanalysis-infobox-lasttd'><small>$lastedit_message</small></td></tr>";
         $html .= "</table>";
 
-        $html .= "<p>" . $this->msg('stylometricanalysis-instruction1') . '</p>';
+        $html .= "<p>" . $out->msg('stylometricanalysis-instruction1') . '</p>';
 
         $html .= "<div id='javascript-error'></div>";
 
@@ -77,7 +78,7 @@ class StylometricAnalysisViewer {
         }
 
         $html .= "<form id='stylometricanalysis-form' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
-        $html .= "<h3>" . $this->msg('stylometricanalysis-collectionheader') . "</h3>";
+        $html .= "<h3>" . $out->msg('stylometricanalysis-collectionheader') . "</h3>";
 
         $html .= "<table class='stylometricanalysis-table'>";
 
@@ -94,18 +95,14 @@ class StylometricAnalysisViewer {
             $collection_post_data = $collection_data['manuscripts_url'];
             $collection_post_data['collection_name'] = $collection_name;
 
-            foreach ($collection_post_data as $index => &$url) {
-                $url = htmlspecialchars($url);
-            }
-
             //encode the array into json to be able to place it in the checkbox value
             $json_collection_post_data = json_encode($collection_post_data);
-            $manuscript_pages_within_collection = htmlspecialchars(implode(', ', $collection_data['manuscripts_title']));
-            $collection_text = $this->msg('stylometricanalysis-contains') . $manuscript_pages_within_collection . '.';
+            $manuscript_pages_within_collection = implode(', ', $collection_data['manuscripts_title']);
+            $collection_text = $out->msg('stylometricanalysis-contains') . $manuscript_pages_within_collection . '.';
 
             //add a checkbox for the collection
             $html .="<td>";
-            $html .="<input type='checkbox' class='stylometricanalysis-checkbox' name='collection$a' value='$json_collection_post_data'>" . htmlspecialchars($collection_name);
+            $html .="<input type='checkbox' class='stylometricanalysis-checkbox' name='collection$a' value='$json_collection_post_data'>" . $collection_name;
             $html .= "<br>";
             $html .= "<span class='stylometricanalysis-span'>" . $collection_text . "</span>";
             $html .="</td>";
@@ -117,8 +114,8 @@ class StylometricAnalysisViewer {
 
         $html .= "<br><br>";
 
-        $submit_hover_message = $this->msg('stylometricanalysis-hover');
-        $submit_message = $this->msg('stylometricanalysis-submit');
+        $submit_hover_message = $out->msg('stylometricanalysis-hover');
+        $submit_message = $out->msg('stylometricanalysis-submit');
 
         $edit_token = $out->getUser()->getEditToken();
 
@@ -129,7 +126,7 @@ class StylometricAnalysisViewer {
         $html .="</form>";
         $html .= "<br>";
 
-        $html .= $this->addStylometricAnalysisLoader();
+        $html .= $this->addStylometricAnalysisLoaderImage();
 
         $out->addHTML($html);
 
@@ -139,30 +136,26 @@ class StylometricAnalysisViewer {
     /**
      * This function constructs and shows the stylometric analysis form
      */
-    public function showForm2(array $collection_array, RequestContext $context, $error_message = '') {
+    public function showForm2(array $collection_array, array $collection_name_array, RequestContext $context, $error_message = '') {
 
         global $wgArticleUrl;
 
         $article_url = $wgArticleUrl;
         $max_formfield_length = $this->max_formfield_length;
         $out = $this->out;
-
-        $collection_name_array = array();
-
-        foreach ($collection_array as $index => $small_url_array) {
-            $collection_name_array[] = $small_url_array['collection_name'];
-        }
+        $collection_array = $this->HTMLSpecialCharachtersArray($collection_array);
+        $collection_name_array = $this->HTMLSpecialCharachtersArray($collection_name_array);
 
         $collections_message = implode(', ', $collection_name_array) . ".";
 
-        $out->setPageTitle($this->msg('stylometricanalysis-options'));
+        $out->setPageTitle($out->msg('stylometricanalysis-options'));
 
         $html = "";
         $html .= "<div id='stylometricanalysis-wrap'>";
         $html .= "<a href='" . $article_url . "Special:StylometricAnalysis' class='link-transparent' title='Go Back'>Go Back</a>";
         $html .= "<br><br>";
-        $html .= $this->msg('stylometricanalysis-chosencollections') . $collections_message . "<br>";
-        $html .= $this->msg('stylometricanalysis-chosencollection2');
+        $html .= $out->msg('stylometricanalysis-chosencollections') . $collections_message . "<br>";
+        $html .= $out->msg('stylometricanalysis-chosencollection2');
         $html .= "<br><br>";
 
         //display the error 
@@ -172,7 +165,7 @@ class StylometricAnalysisViewer {
 
         $html .= "</div>";
 
-        $html .= $this->addStylometricAnalysisLoader();
+        $html .= $this->addStylometricAnalysisLoaderImage();
 
         $out->addHTML($html);
 
@@ -205,7 +198,7 @@ class StylometricAnalysisViewer {
           'label' => 'Minimum Size',
           'class' => 'HTMLTextField',
           'default' => 0,
-          'size' => 5, //display size
+          'size' => $max_formfield_length, 
           'maxlength' => $max_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
@@ -214,7 +207,7 @@ class StylometricAnalysisViewer {
           'label' => 'Maximum Size',
           'class' => 'HTMLTextField',
           'default' => 10000,
-          'size' => 5, //display size
+          'size' => $max_formfield_length, 
           'maxlength' => $max_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
@@ -223,7 +216,7 @@ class StylometricAnalysisViewer {
           'label' => 'Segment Size',
           'class' => 'HTMLTextField',
           'default' => 0,
-          'size' => 5, //display size
+          'size' => $max_formfield_length, 
           'maxlength' => $max_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
@@ -232,7 +225,7 @@ class StylometricAnalysisViewer {
           'label' => 'Step Size',
           'class' => 'HTMLTextField',
           'default' => 0,
-          'size' => 5, //display size
+          'size' => $max_formfield_length, 
           'maxlength' => $max_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
@@ -242,9 +235,6 @@ class StylometricAnalysisViewer {
           'class' => 'HTMLCheckField',
           'section' => 'stylometricanalysis-section-preprocess',
         );
-
-
-        //add field for 'remove these items too'
 
         $descriptor['vectorspace'] = array(
           'label' => 'Vector Space',
@@ -276,8 +266,8 @@ class StylometricAnalysisViewer {
           'label' => 'Ngram Size',
           'class' => 'HTMLTextField',
           'default' => 1,
-          'size' => 5, //display size
-          'maxlength' => 5, //input size
+          'size' => $max_formfield_length, 
+          'maxlength' => $max_formfield_length, 
           'section' => 'stylometricanalysis-section-feature',
         );
 
@@ -285,8 +275,8 @@ class StylometricAnalysisViewer {
           'label' => 'MFI',
           'class' => 'HTMLTextField',
           'default' => 100,
-          'size' => 5, //display size
-          'maxlength' => $max_formfield_length, //input size
+          'size' => $max_formfield_length, 
+          'maxlength' => $max_formfield_length, 
           'section' => 'stylometricanalysis-section-feature',
         );
 
@@ -294,7 +284,7 @@ class StylometricAnalysisViewer {
           'class' => 'HTMLTextField',
           'label' => 'Minimum DF',
           'default' => 0.00,
-          'size' => 5,
+          'size' => $max_formfield_length,
           'maxlength' => $max_formfield_length,
           'section' => 'stylometricanalysis-section-feature',
         );
@@ -303,7 +293,7 @@ class StylometricAnalysisViewer {
           'class' => 'HTMLTextField',
           'label' => 'Maximum DF',
           'default' => 0.90,
-          'size' => 5,
+          'size' => $max_formfield_length,
           'maxlength' => $max_formfield_length,
           'section' => 'stylometricanalysis-section-feature',
         );
@@ -337,7 +327,7 @@ class StylometricAnalysisViewer {
         );
 
         $html_form = new HTMLForm($descriptor, $context);
-        $html_form->setSubmitText($this->msg('stylometricanalysis-submit'));
+        $html_form->setSubmitText($out->msg('stylometricanalysis-submit'));
         $html_form->addHiddenField('collection_array', json_encode($collection_array));
         $html_form->addHiddenField('form2Posted', 'form2Posted');
         $html_form->setSubmitCallback(array('SpecialStylometricAnalysis', 'callbackForm2'));
@@ -349,13 +339,15 @@ class StylometricAnalysisViewer {
     /**
      * This function shows the output page after the stylometric analysis has completed
      */
-    public function showResult(array $config_array, $time, $full_linkpath1, $full_linkpath2) {
+    public function showResult(array $config_array, array $collection_name_array, $full_linkpath1 = '', $full_linkpath2 = '', $time = null) {
 
         global $wgArticleUrl;
 
         $out = $this->out;
         $edit_token = $out->getUser()->getEditToken();
         $article_url = $wgArticleUrl;
+        $config_array = $this->HTMLSpecialCharachtersArray($config_array);
+        $collection_name_array = $this->HTMLSpecialCharachtersArray($collection_name_array);
 
         $removenonalpha = isset($config_array['removenonalpha']) ? $config_array['removenonalpha'] : '';
         $lowercase = isset($config_array['lowercase']) ? $config_array['lowercase'] : '';
@@ -373,57 +365,69 @@ class StylometricAnalysisViewer {
         $maximumdf = isset($config_array['maximumdf']) ? $config_array['maximumdf'] : '';
         $visualization1 = isset($config_array['visualization1']) ? $config_array['visualization1'] : '';
         $visualization2 = isset($config_array['visualization2']) ? $config_array['visualization2'] : '';
-
-        $out->setPageTitle($this->msg('stylometricanalysis-output'));
         
-        $save_button_value = $this->msg('stylometricanalysis-savevalue');
-        $save_button_title = $this->msg('stylometricanalysis-savetitle');
+        $imploded_collection_name_array = implode(', ', $collection_name_array);
+
+        $out->setPageTitle($out->msg('stylometricanalysis-output'));
+        
+        $perform_new_analysis = $out->msg('stylometricanalysis-performnewanalysis');
+        $save_button_value = $out->msg('stylometricanalysis-savevalue');
+        $save_button_title = $out->msg('stylometricanalysis-savetitle');
 
         $html = "";
-
-        $html .= "<a href='" . $article_url . "Special:StylometricAnalysis' class='link-transparent' title='Perform New Analysis'>Perform New Analysis</a>";
-
-        $html .= "<form class='' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
-        $html .= "<input type='submit' id='stylometricanalysis-submitbutton-two' title='$save_button_title' value='$save_button_value'>";
-        $html .= "<input type='hidden' name='time' value='$time'>";
+        $html .= "<div id='stylometricanalysis-buttons'>";
+        
+        $html .= "<form class='stylometricanalysis-form-two' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
+        $html .= "<input type='submit' id='stylometricanalysis-submitbutton-two' title='$perform_new_analysis' value='$perform_new_analysis'>";
+        $html .= "<input type='hidden' name='redirect' value='redirect'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
-        $html .= "<div style='display:block;'>";
+        $html .= "<form class='stylometricanalysis-form-two' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
+        $html .= "<input type='submit' id='stylometricanalysis-submitbutton-two' title='$save_button_title' value='$save_button_value'>";
+        $html .= "<input type='hidden' name='save_current_page' value='save_current_page'>";
+        $html .= "<input type='hidden' name='time' value='$time'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
         
-        $html .= $this->msg('stylometricanalysis-collectionsused');
+        $html .= "</div>";
         
+        $html .= "</br>";
+
+        $html .= "<div id='visualization-wrap' style='display:block;'>";
+             
         $html .= "<div id='visualization-wrap1'>";
-        $html .= "<h2>$visualization1</h2>";
-        $html .= "<p>Information about the plot</p>";
+        $html .= $out->msg('stylometricanalysis-collectionsused') . $imploded_collection_name_array;
+        $html .= "<h2>" . ucfirst($visualization1) . "</h2>";
         $html .= "<img src='" . $full_linkpath1 . "' alt='Visualization1' height='650' width='650'>";
         $html .= "</div>";
 
         $html .= "<div id='visualization-wrap2'>";
-        $html .= "<h2>$visualization2</h2>";
-        $html .= "<p>Information about the plot</p>";
+        $html .= "<h2>" . ucfirst($visualization2) . "</h2>";
         $html .= "<img src='" . $full_linkpath2 . "' alt='Visualization2' height='650' width='650'>";
         $html .= "</div>";
 
         $html .= "</div>";
 
-        $html .= "<div id='visualization-wrap3'>";
-        $html .= "<h2>Analysis Configuration</h2><br>";
-        $html .= "Remove non-alpha:" . $removenonalpha . "<br>";
-        $html .= "Lowercase:" . $lowercase . "<br>";
-        $html .= "Tokenizer:" . $tokenizer . "<br>";
-        $html .= "Minimum Size:" . $minimumsize . "<br>";
-        $html .= "Maximum Size:" . $maximumsize . "<br>";
-        $html .= "Segment Size:" . $segmentsize . "<br>";
-        $html .= "Step Size:" . $stepsize . "<br>";
-        $html .= "Remove Pronouns:" . $removepronouns . "<br>";
-        $html .= "Vectorspace:" . $vectorspace . "<br>";
-        $html .= "Featuretype:" . $featuretype . "<br>";
-        $html .= "Ngram Size:" . $ngramsize . "<br>";
-        $html .= "MFI:" . $mfi . "<br>";
-        $html .= "Minimum DF:" . $minimumdf . "<br>";
-        $html .= "Maximum DF:" . $maximumdf;
+        $html .= "<div id='analysisconfiguration'>";
+        $html .= "<h2>" . $out->msg('stylometricanalysis-analysisconfiguration') . "</h2><br>";
+        $html .= "Remove non-alpha: " . $removenonalpha . "<br>";
+        $html .= "Lowercase: " . $lowercase . "<br>";
+        $html .= "Tokenizer: " . $tokenizer . "<br>";
+        $html .= "Minimum Size: " . $minimumsize . "<br>";
+        $html .= "Maximum Size: " . $maximumsize . "<br>";
+        $html .= "Segment Size: " . $segmentsize . "<br>";
+        $html .= "Step Size: " . $stepsize . "<br>";
+        $html .= "Remove Pronouns: " . $removepronouns . "<br>";
+        $html .= "Vectorspace: " . $vectorspace . "<br>";
+        $html .= "Featuretype: " . $featuretype . "<br>";
+        $html .= "Ngram Size: " . $ngramsize . "<br>";
+        $html .= "MFI: " . $mfi . "<br>";
+        $html .= "Minimum DF: " . $minimumdf . "<br>";
+        $html .= "Maximum DF: " . $maximumdf;
         $html .= "</div>";
+        
+        $html .= $this->addStylometricAnalysisLoaderImage();
 
         $out->addHTML($html);
         return true;
@@ -447,12 +451,4 @@ class StylometricAnalysisViewer {
         $this->out->addHTML($html);
         return true;
     }
-
-    /**
-     * This function retrieves the message from the i18n file for String $identifier
-     */
-    public function msg($identifier = '') {
-        return wfMessage($identifier)->text();
-    }
-
 }

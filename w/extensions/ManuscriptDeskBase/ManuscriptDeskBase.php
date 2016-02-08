@@ -22,6 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
+
 /**
  * Usage: Add the following line in LocalSettings.php:
  * require_once( "$IP/extensions/ManuscriptDeskBase/ManuscriptDeskBase.php" );
@@ -50,4 +51,5 @@ $dir = __DIR__ . '/';
 //Auto load classes 
 $wgAutoloadClasses['ManuscriptDeskBaseSpecials'] = $dir . 'ManuscriptDeskBaseSpecials.php';
 $wgAutoloadClasses['ManuscriptDeskBaseValidator'] = $dir . 'ManuscriptDeskBaseValidator.php';
+$wgAutoloadClasses['ManuscriptDeskBaseViewer'] = $dir . 'ManuscriptDeskBaseViewer.php'; 
 $wgExtensionMessagesFiles['ManuscriptDeskBaseMessages'] = $dir . '/ManuscriptDeskBaseMessages.i18n.php';

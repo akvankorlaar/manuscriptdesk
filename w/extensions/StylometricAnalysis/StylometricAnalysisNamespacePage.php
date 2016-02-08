@@ -22,21 +22,28 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class StylometricAnalysisNamespacePage {
+class StylometricAnalysisNamespacePage extends ManuscriptDeskBaseViewer {
 
-    public function __construct() {
-        
+    private $out;
+
+    public function __construct(OutputPage $out) {
+        $this->out = $out;
     }
 
     public function renderPage(array $data) {
+
+        $out = $this->out;
+
+        $data = $this->HTMLSpecialCharachtersArray($data);
 
         $user_name = isset($data['user']) ? $data['user'] : '';
         $time = isset($data['time']) ? $data['time'] : '';
         $full_outputpath1 = isset($data['full_outputpath1']) ? $data['full_outputpath1'] : '';
         $full_outputpath2 = isset($data['full_outputpath2']) ? $data['full_outputpath2'] : '';
         $full_linkpath1 = isset($data['full_linkpath1']) ? $data['full_linkpath1'] : '';
-        $full_linkpath2 = isset($data['full_linkpath2']) ? $data['full_linkpath2'] : ''; 
+        $full_linkpath2 = isset($data['full_linkpath2']) ? $data['full_linkpath2'] : '';
         $config_array = isset($data['config_array']) ? $data['config_array'] : '';
+        $collection_name_array = isset($data['collection_name_array']) ? $data['collection_name_array'] : '';
         $date = isset($data['date']) ? $data['date'] : '';
 
         $removenonalpha = isset($config_array['removenonalpha']) ? $config_array['removenonalpha'] : '';
@@ -53,48 +60,51 @@ class StylometricAnalysisNamespacePage {
         $mfi = isset($config_array['mfi']) ? $config_array['mfi'] : '';
         $minimumdf = isset($config_array['minimumdf']) ? $config_array['minimumdf'] : '';
         $maximumdf = isset($config_array['maximumdf']) ? $config_array['maximumdf'] : '';
+        $visualization1 = isset($config_array['visualization1']) ? $config_array['visualization1'] : '';
+        $visualization2 = isset($config_array['visualization2']) ? $config_array['visualization2'] : '';
 
         $html = "";
 
         if (!empty($user_name) && !empty($date)) {
-            $html .= "This page has been created by: " . htmlspecialchars($user_name) . "<br> Date: " . htmlspecialchars($date) . "<br> ";
+            $html .= "This page has been created by: " . $user_name . "<br> Date: " . $date . "<br> ";
         }
+        
+        $imploded_collection_name_array = implode(', ', $collection_name_array);
 
-        $html .= "<div style='display:block;'>";
+        $html .= "<div id='visualization-wrap' style='display:block;'>";
 
         $html .= "<div id='visualization-wrap1'>";
-        $html .= "<h2>Analysis One </h2>";
-        $html .= "<p>Information about the plot</p>";
+        $html .= $out->msg('stylometricanalysis-collectionsused') . $imploded_collection_name_array;
+        $html .= "<h2>" . ucfirst($visualization1) . "</h2>";
         $html .= "<img src='" . $full_linkpath1 . "' alt='Visualization1' height='650' width='650'>";
         $html .= "</div>";
 
         $html .= "<div id='visualization-wrap2'>";
-        $html .= "<h2>Analysis Two </h2>";
-        $html .= "<p>Information about the plot</p>";
+        $html .= "<h2>" . ucfirst($visualization2) . "</h2>";
         $html .= "<img src='" . $full_linkpath2 . "' alt='Visualization2' height='650' width='650'>";
         $html .= "</div>";
 
         $html .= "</div>";
 
-        $html .= "<div id='visualization-wrap3'>";
-        $html .= "<h2>Analysis Variables</h2><br>";
-        $html .= "Remove non-alpha:" . $removenonalpha . "<br>";
-        $html .= "Lowercase:" . $lowercase . "<br>";
-        $html .= "Tokenizer:" . $tokenizer . "<br>";
-        $html .= "Minimum Size:" . $minimumsize . "<br>";
-        $html .= "Maximum Size:" . $maximumsize . "<br>";
-        $html .= "Segment Size:" . $segmentsize . "<br>";
-        $html .= "Step Size:" . $stepsize . "<br>";
-        $html .= "Remove Pronouns:" . $removepronouns . "<br>";
-        $html .= "Vectorspace:" . $vectorspace . "<br>";
-        $html .= "Featuretype:" . $featuretype . "<br>";
-        $html .= "Ngram Size:" . $ngramsize . "<br>";
-        $html .= "MFI:" . $mfi . "<br>";
-        $html .= "Minimum DF:" . $minimumdf . "<br>";
-        $html .= "Maximum DF:" . $maximumdf;
+        $html .= "<div id='analysisconfiguration'>";
+        $html .= "<h2>" . $out->msg('stylometricanalysis-analysisconfiguration') . "</h2><br>";
+        $html .= "Remove non-alpha: " . $removenonalpha . "<br>";
+        $html .= "Lowercase: " . $lowercase . "<br>";
+        $html .= "Tokenizer: " . $tokenizer . "<br>";
+        $html .= "Minimum Size: " . $minimumsize . "<br>";
+        $html .= "Maximum Size: " . $maximumsize . "<br>";
+        $html .= "Segment Size: " . $segmentsize . "<br>";
+        $html .= "Step Size: " . $stepsize . "<br>";
+        $html .= "Remove Pronouns: " . $removepronouns . "<br>";
+        $html .= "Vectorspace: " . $vectorspace . "<br>";
+        $html .= "Featuretype: " . $featuretype . "<br>";
+        $html .= "Ngram Size: " . $ngramsize . "<br>";
+        $html .= "MFI: " . $mfi . "<br>";
+        $html .= "Minimum DF: " . $minimumdf . "<br>";
+        $html .= "Maximum DF: " . $maximumdf;
         $html .= "</div>";
 
-        return $html;
+        $out->addHTML($html);
     }
 
 }
