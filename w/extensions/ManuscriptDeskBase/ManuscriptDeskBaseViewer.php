@@ -24,6 +24,9 @@
  */
 class ManuscriptDeskBaseViewer {
 
+    public $out;
+    public $max_int_formfield_length = 5;
+
     public function __construct() {
         
     }
@@ -38,8 +41,8 @@ class ManuscriptDeskBaseViewer {
                 $this->HTMLSpecialCharachtersArray($value);
             }
         }
-        
-        return $array; 
+
+        return $array;
     }
 
 }

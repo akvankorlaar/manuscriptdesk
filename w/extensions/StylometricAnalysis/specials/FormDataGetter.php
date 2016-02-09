@@ -39,9 +39,9 @@ class FormDataGetter {
         global $wgStylometricAnalysisOptions;
         $minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
         $maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
-        $collection_array = $this->loadForm1Data();
-        $this->checkForm1($collection_array, $minimum_collections, $maximum_collections);
-        return $collection_array;
+        $collection_data = $this->loadForm1Data();
+        $this->checkForm1($collection_data, $minimum_collections, $maximum_collections);
+        return $collection_data;
     }
 
     /**
@@ -52,7 +52,7 @@ class FormDataGetter {
         $request = $this->request;
         $validator = $this->validator;
         $posted_names = $request->getValueNames();
-        $collection_array = array();
+        $collection_data = array();
 
         //identify the button pressed
         foreach ($posted_names as $key => $checkbox) {
@@ -60,41 +60,41 @@ class FormDataGetter {
             $checkbox_without_numbers = trim(str_replace(range(0, 9), '', $checkbox));
 
             if ($checkbox_without_numbers === 'collection') {
-                $collection_array[$checkbox] = (array) $validator->validateStringUrl(json_decode($request->getText($checkbox)));
+                $collection_data[$checkbox] = (array) $validator->validateStringUrl(json_decode($request->getText($checkbox)));
             }
         }
 
-        return $collection_array;
+        return $collection_data;
     }
 
-    private function checkForm1(array $collection_array, $minimum_collections, $maximum_collections) {
+    private function checkForm1(array $collection_data, $minimum_collections, $maximum_collections) {
 
-        if (empty($collection_array)) {
+        if (empty($collection_data)) {
             throw new Exception('stylometricanalysis-error-request');
         }
 
-        if (count($collection_array) < $minimum_collections) {
-            throw new Exception('stylometricanalysis-error-fewcollections');
+        if (count($collection_data) < $minimum_collections) {
+            throw new Exception('stylometricanalysis-error-fewcollectionschecked');
         }
 
-        if (count($collection_array) > $maximum_collections) {
-            throw new Exception('stylometricanalysis-error-manycollections');
+        if (count($collection_data) > $maximum_collections) {
+            throw new Exception('stylometricanalysis-error-manycollectionschecked');
         }
 
         return true;
     }
 
-    public function getForm2CollectionArray() {
+    public function getForm2CollectionData() {
         $validator = $this->validator;
         $request = $this->request;
-        $collection_array = (array) $validator->validateStringUrl(json_decode($request->getText('collection_array')));
+        $collection_data = (array) $validator->validateStringUrl(json_decode($request->getText('collection_data')));
 
-        foreach ($collection_array as $index => &$value) {
-            //cast everything in collection_array to an array
-            $collection_array[$index] = (array) $value;
+        foreach ($collection_data as $index => &$value) {
+            //cast everything in collection_data to an array
+            $collection_data[$index] = (array) $value;
         }
 
-        return $collection_array;
+        return $collection_data;
     }
 
     public function getForm2PystylConfigurationData() {

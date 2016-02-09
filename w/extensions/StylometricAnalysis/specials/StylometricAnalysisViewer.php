@@ -24,9 +24,6 @@
  */
 class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
 
-    private $out;
-    private $max_formfield_length = 5;
-
     public function __construct(Outputpage $out) {
         $this->out = $out;
     }
@@ -136,17 +133,17 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
     /**
      * This function constructs and shows the stylometric analysis form
      */
-    public function showForm2(array $collection_array, array $collection_name_array, RequestContext $context, $error_message = '') {
+    public function showForm2(array $collection_data, array $collection_name_data, RequestContext $context, $error_message = '') {
 
         global $wgArticleUrl;
 
         $article_url = $wgArticleUrl;
-        $max_formfield_length = $this->max_formfield_length;
+        $max_int_formfield_length = $this->max_int_formfield_length;
         $out = $this->out;
-        $collection_array = $this->HTMLSpecialCharachtersArray($collection_array);
-        $collection_name_array = $this->HTMLSpecialCharachtersArray($collection_name_array);
+        $collection_data = $this->HTMLSpecialCharachtersArray($collection_data);
+        $collection_name_data = $this->HTMLSpecialCharachtersArray($collection_name_data);
 
-        $collections_message = implode(', ', $collection_name_array) . ".";
+        $collections_message = implode(', ', $collection_name_data) . ".";
 
         $out->setPageTitle($out->msg('stylometricanalysis-options'));
 
@@ -198,8 +195,8 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
           'label' => 'Minimum Size',
           'class' => 'HTMLTextField',
           'default' => 0,
-          'size' => $max_formfield_length, 
-          'maxlength' => $max_formfield_length, //input size
+          'size' => $max_int_formfield_length,
+          'maxlength' => $max_int_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
 
@@ -207,8 +204,8 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
           'label' => 'Maximum Size',
           'class' => 'HTMLTextField',
           'default' => 10000,
-          'size' => $max_formfield_length, 
-          'maxlength' => $max_formfield_length, //input size
+          'size' => $max_int_formfield_length,
+          'maxlength' => $max_int_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
 
@@ -216,8 +213,8 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
           'label' => 'Segment Size',
           'class' => 'HTMLTextField',
           'default' => 0,
-          'size' => $max_formfield_length, 
-          'maxlength' => $max_formfield_length, //input size
+          'size' => $max_int_formfield_length,
+          'maxlength' => $max_int_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
 
@@ -225,8 +222,8 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
           'label' => 'Step Size',
           'class' => 'HTMLTextField',
           'default' => 0,
-          'size' => $max_formfield_length, 
-          'maxlength' => $max_formfield_length, //input size
+          'size' => $max_int_formfield_length,
+          'maxlength' => $max_int_formfield_length, //input size
           'section' => 'stylometricanalysis-section-preprocess',
         );
 
@@ -266,8 +263,8 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
           'label' => 'Ngram Size',
           'class' => 'HTMLTextField',
           'default' => 1,
-          'size' => $max_formfield_length, 
-          'maxlength' => $max_formfield_length, 
+          'size' => $max_int_formfield_length,
+          'maxlength' => $max_int_formfield_length,
           'section' => 'stylometricanalysis-section-feature',
         );
 
@@ -275,8 +272,8 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
           'label' => 'MFI',
           'class' => 'HTMLTextField',
           'default' => 100,
-          'size' => $max_formfield_length, 
-          'maxlength' => $max_formfield_length, 
+          'size' => $max_int_formfield_length,
+          'maxlength' => $max_int_formfield_length,
           'section' => 'stylometricanalysis-section-feature',
         );
 
@@ -284,8 +281,8 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
           'class' => 'HTMLTextField',
           'label' => 'Minimum DF',
           'default' => 0.00,
-          'size' => $max_formfield_length,
-          'maxlength' => $max_formfield_length,
+          'size' => $max_int_formfield_length,
+          'maxlength' => $max_int_formfield_length,
           'section' => 'stylometricanalysis-section-feature',
         );
 
@@ -293,8 +290,8 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
           'class' => 'HTMLTextField',
           'label' => 'Maximum DF',
           'default' => 0.90,
-          'size' => $max_formfield_length,
-          'maxlength' => $max_formfield_length,
+          'size' => $max_int_formfield_length,
+          'maxlength' => $max_int_formfield_length,
           'section' => 'stylometricanalysis-section-feature',
         );
 
@@ -328,7 +325,7 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
 
         $html_form = new HTMLForm($descriptor, $context);
         $html_form->setSubmitText($out->msg('stylometricanalysis-submit'));
-        $html_form->addHiddenField('collection_array', json_encode($collection_array));
+        $html_form->addHiddenField('collection_data', json_encode($collection_data));
         $html_form->addHiddenField('form2Posted', 'form2Posted');
         $html_form->setSubmitCallback(array('SpecialStylometricAnalysis', 'callbackForm2'));
         $html_form->show();
@@ -339,44 +336,44 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
     /**
      * This function shows the output page after the stylometric analysis has completed
      */
-    public function showResult(array $config_array, array $collection_name_array, $full_linkpath1 = '', $full_linkpath2 = '', $time = null) {
+    public function showResult(array $pystyl_config, array $collection_name_data, $full_linkpath1 = '', $full_linkpath2 = '', $time = null) {
 
         global $wgArticleUrl;
 
         $out = $this->out;
         $edit_token = $out->getUser()->getEditToken();
         $article_url = $wgArticleUrl;
-        $config_array = $this->HTMLSpecialCharachtersArray($config_array);
-        $collection_name_array = $this->HTMLSpecialCharachtersArray($collection_name_array);
+        $pystyl_config = $this->HTMLSpecialCharachtersArray($pystyl_config);
+        $collection_name_data = $this->HTMLSpecialCharachtersArray($collection_name_data);
 
-        $removenonalpha = isset($config_array['removenonalpha']) ? $config_array['removenonalpha'] : '';
-        $lowercase = isset($config_array['lowercase']) ? $config_array['lowercase'] : '';
-        $tokenizer = isset($config_array['tokenizer']) ? $config_array['tokenizer'] : '';
-        $minimumsize = isset($config_array['minimumsize']) ? $config_array['minimumsize'] : '';
-        $maximumsize = isset($config_array['maximumsize']) ? $config_array['maximumsize'] : '';
-        $segmentsize = isset($config_array['segmentsize']) ? $config_array['segmentsize'] : '';
-        $stepsize = isset($config_array['stepsize']) ? $config_array['stepsize'] : '';
-        $removepronouns = isset($config_array['removepronouns']) ? $config_array['removepronouns'] : '';
-        $vectorspace = isset($config_array['vectorspace']) ? $config_array['vectorspace'] : '';
-        $featuretype = isset($config_array['featuretype']) ? $config_array['featuretype'] : '';
-        $ngramsize = isset($config_array['ngramsize']) ? $config_array['ngramsize'] : '';
-        $mfi = isset($config_array['mfi']) ? $config_array['mfi'] : '';
-        $minimumdf = isset($config_array['minimumdf']) ? $config_array['minimumdf'] : '';
-        $maximumdf = isset($config_array['maximumdf']) ? $config_array['maximumdf'] : '';
-        $visualization1 = isset($config_array['visualization1']) ? $config_array['visualization1'] : '';
-        $visualization2 = isset($config_array['visualization2']) ? $config_array['visualization2'] : '';
-        
-        $imploded_collection_name_array = implode(', ', $collection_name_array);
+        $removenonalpha = isset($pystyl_config['removenonalpha']) ? $pystyl_config['removenonalpha'] : '';
+        $lowercase = isset($pystyl_config['lowercase']) ? $pystyl_config['lowercase'] : '';
+        $tokenizer = isset($pystyl_config['tokenizer']) ? $pystyl_config['tokenizer'] : '';
+        $minimumsize = isset($pystyl_config['minimumsize']) ? $pystyl_config['minimumsize'] : '';
+        $maximumsize = isset($pystyl_config['maximumsize']) ? $pystyl_config['maximumsize'] : '';
+        $segmentsize = isset($pystyl_config['segmentsize']) ? $pystyl_config['segmentsize'] : '';
+        $stepsize = isset($pystyl_config['stepsize']) ? $pystyl_config['stepsize'] : '';
+        $removepronouns = isset($pystyl_config['removepronouns']) ? $pystyl_config['removepronouns'] : '';
+        $vectorspace = isset($pystyl_config['vectorspace']) ? $pystyl_config['vectorspace'] : '';
+        $featuretype = isset($pystyl_config['featuretype']) ? $pystyl_config['featuretype'] : '';
+        $ngramsize = isset($pystyl_config['ngramsize']) ? $pystyl_config['ngramsize'] : '';
+        $mfi = isset($pystyl_config['mfi']) ? $pystyl_config['mfi'] : '';
+        $minimumdf = isset($pystyl_config['minimumdf']) ? $pystyl_config['minimumdf'] : '';
+        $maximumdf = isset($pystyl_config['maximumdf']) ? $pystyl_config['maximumdf'] : '';
+        $visualization1 = isset($pystyl_config['visualization1']) ? $pystyl_config['visualization1'] : '';
+        $visualization2 = isset($pystyl_config['visualization2']) ? $pystyl_config['visualization2'] : '';
+
+        $imploded_collection_name_data = implode(', ', $collection_name_data);
 
         $out->setPageTitle($out->msg('stylometricanalysis-output'));
-        
+
         $perform_new_analysis = $out->msg('stylometricanalysis-performnewanalysis');
         $save_button_value = $out->msg('stylometricanalysis-savevalue');
         $save_button_title = $out->msg('stylometricanalysis-savetitle');
 
         $html = "";
         $html .= "<div id='stylometricanalysis-buttons'>";
-        
+
         $html .= "<form class='stylometricanalysis-form-two' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
         $html .= "<input type='submit' id='stylometricanalysis-submitbutton-two' title='$perform_new_analysis' value='$perform_new_analysis'>";
         $html .= "<input type='hidden' name='redirect' value='redirect'>";
@@ -389,15 +386,15 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $html .= "<input type='hidden' name='time' value='$time'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
-        
+
         $html .= "</div>";
-        
+
         $html .= "</br>";
 
         $html .= "<div id='visualization-wrap' style='display:block;'>";
-             
+
         $html .= "<div id='visualization-wrap1'>";
-        $html .= $out->msg('stylometricanalysis-collectionsused') . $imploded_collection_name_array;
+        $html .= $out->msg('stylometricanalysis-collectionsused') . $imploded_collection_name_data;
         $html .= "<h2>" . ucfirst($visualization1) . "</h2>";
         $html .= "<img src='" . $full_linkpath1 . "' alt='Visualization1' height='650' width='650'>";
         $html .= "</div>";
@@ -426,7 +423,7 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $html .= "Minimum DF: " . $minimumdf . "<br>";
         $html .= "Maximum DF: " . $maximumdf;
         $html .= "</div>";
-        
+
         $html .= $this->addStylometricAnalysisLoaderImage();
 
         $out->addHTML($html);
@@ -445,10 +442,88 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $article_url = $wgArticleUrl;
 
         $html = "";
-        $html .= $error_message; 
+        $html .= $error_message;
         $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
 
         $this->out->addHTML($html);
         return true;
     }
+
+    public function showStylometricAnalysisNamespacePage(array $data) {
+
+        $out = $this->out;
+
+        $data = $this->HTMLSpecialCharachtersArray($data);
+
+        $user_name = isset($data['user']) ? $data['user'] : '';
+        $time = isset($data['time']) ? $data['time'] : '';
+        $full_outputpath1 = isset($data['full_outputpath1']) ? $data['full_outputpath1'] : '';
+        $full_outputpath2 = isset($data['full_outputpath2']) ? $data['full_outputpath2'] : '';
+        $full_linkpath1 = isset($data['full_linkpath1']) ? $data['full_linkpath1'] : '';
+        $full_linkpath2 = isset($data['full_linkpath2']) ? $data['full_linkpath2'] : '';
+        $pystyl_config = isset($data['pystyl_config']) ? $data['pystyl_config'] : '';
+        $collection_name_data = isset($data['collection_name_data']) ? $data['collection_name_data'] : '';
+        $date = isset($data['date']) ? $data['date'] : '';
+
+        $removenonalpha = isset($pystyl_config['removenonalpha']) ? $pystyl_config['removenonalpha'] : '';
+        $lowercase = isset($pystyl_config['lowercase']) ? $pystyl_config['lowercase'] : '';
+        $tokenizer = isset($pystyl_config['tokenizer']) ? $pystyl_config['tokenizer'] : '';
+        $minimumsize = isset($pystyl_config['minimumsize']) ? $pystyl_config['minimumsize'] : '';
+        $maximumsize = isset($pystyl_config['maximumsize']) ? $pystyl_config['maximumsize'] : '';
+        $segmentsize = isset($pystyl_config['segmentsize']) ? $pystyl_config['segmentsize'] : '';
+        $stepsize = isset($pystyl_config['stepsize']) ? $pystyl_config['stepsize'] : '';
+        $removepronouns = isset($pystyl_config['removepronouns']) ? $pystyl_config['removepronouns'] : '';
+        $vectorspace = isset($pystyl_config['vectorspace']) ? $pystyl_config['vectorspace'] : '';
+        $featuretype = isset($pystyl_config['featuretype']) ? $pystyl_config['featuretype'] : '';
+        $ngramsize = isset($pystyl_config['ngramsize']) ? $pystyl_config['ngramsize'] : '';
+        $mfi = isset($pystyl_config['mfi']) ? $pystyl_config['mfi'] : '';
+        $minimumdf = isset($pystyl_config['minimumdf']) ? $pystyl_config['minimumdf'] : '';
+        $maximumdf = isset($pystyl_config['maximumdf']) ? $pystyl_config['maximumdf'] : '';
+        $visualization1 = isset($pystyl_config['visualization1']) ? $pystyl_config['visualization1'] : '';
+        $visualization2 = isset($pystyl_config['visualization2']) ? $pystyl_config['visualization2'] : '';
+
+        $html = "";
+
+        if (!empty($user_name) && !empty($date)) {
+            $html .= "This page has been created by: " . $user_name . "<br> Date: " . $date . "<br> ";
+        }
+
+        $imploded_collection_name_data = implode(', ', $collection_name_data);
+
+        $html .= "<div id='visualization-wrap' style='display:block;'>";
+
+        $html .= "<div id='visualization-wrap1'>";
+        $html .= $out->msg('stylometricanalysis-collectionsused') . $imploded_collection_name_data;
+        $html .= "<h2>" . ucfirst($visualization1) . "</h2>";
+        $html .= "<img src='" . $full_linkpath1 . "' alt='Visualization1' height='650' width='650'>";
+        $html .= "</div>";
+
+        $html .= "<div id='visualization-wrap2'>";
+        $html .= "<h2>" . ucfirst($visualization2) . "</h2>";
+        $html .= "<img src='" . $full_linkpath2 . "' alt='Visualization2' height='650' width='650'>";
+        $html .= "</div>";
+
+        $html .= "</div>";
+
+        $html .= "<div id='analysisconfiguration'>";
+        $html .= "<h2>" . $out->msg('stylometricanalysis-analysisconfiguration') . "</h2><br>";
+        $html .= "Remove non-alpha: " . $removenonalpha . "<br>";
+        $html .= "Lowercase: " . $lowercase . "<br>";
+        $html .= "Tokenizer: " . $tokenizer . "<br>";
+        $html .= "Minimum Size: " . $minimumsize . "<br>";
+        $html .= "Maximum Size: " . $maximumsize . "<br>";
+        $html .= "Segment Size: " . $segmentsize . "<br>";
+        $html .= "Step Size: " . $stepsize . "<br>";
+        $html .= "Remove Pronouns: " . $removepronouns . "<br>";
+        $html .= "Vectorspace: " . $vectorspace . "<br>";
+        $html .= "Featuretype: " . $featuretype . "<br>";
+        $html .= "Ngram Size: " . $ngramsize . "<br>";
+        $html .= "MFI: " . $mfi . "<br>";
+        $html .= "Minimum DF: " . $minimumdf . "<br>";
+        $html .= "Maximum DF: " . $maximumdf;
+        $html .= "</div>";
+
+        $out->addHTML($html);
+    }
+
 }

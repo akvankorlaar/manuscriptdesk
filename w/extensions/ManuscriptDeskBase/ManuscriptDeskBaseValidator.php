@@ -44,13 +44,17 @@ class ManuscriptDeskBaseValidator {
             return $input;
         }
 
+        if (empty($input)) {
+            throw new \Exception('validation-empty');
+        }
+
         //check if all charachters are alphanumeric, or '/' or ':' (in case of url)
         if (!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)) {
             throw new \Exception('validation-notalphanumeric');
         }
 
         //check for empty variables or unusually long string lengths
-        if (empty($input) || strlen($input) > ($this->max_length * 10)) {
+        if (strlen($input) > ($this->max_length * 10)) {
             throw new \Exception('validation-toolongstring');
         }
 
@@ -70,8 +74,8 @@ class ManuscriptDeskBaseValidator {
 
             return $input;
         }
-        
-        if(empty($input)){
+
+        if (empty($input)) {
             throw new \Exception('validation-empty');
         }
 
@@ -92,13 +96,13 @@ class ManuscriptDeskBaseValidator {
      */
     public function validateNumber($input) {
 
+        if (empty($input)) {
+            throw new \Exception('validation-empty');
+        }
+
         //check if all the input consists of numbers or '.'
         if (!preg_match('/^[0-9.]*$/', $input)) {
             throw new \Exception('validation-notanumber');
-        }
-
-        if (empty($input) && $input !== '0') {
-            throw new \Exception('validation-empty');
         }
 
         if (strlen($input) > $this->max_length) {

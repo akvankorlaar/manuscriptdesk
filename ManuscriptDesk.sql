@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `tempstylometricanalysis` (
   `tempstylometricanalysis_full_outputpath2` varbinary(500) NOT NULL,
   `tempstylometricanalysis_full_linkpath1` varbinary(500) NOT NULL,
   `tempstylometricanalysis_full_linkpath2` varbinary(500) NOT NULL,
-  `tempstylometricanalysis_json_config_array` TEXT NOT NULL,
+  `tempstylometricanalysis_json_pystyl_config` TEXT NOT NULL,
   `tempstylometricanalysis_json_collection_name_array` TEXT NOT NULL,
   `tempstylometricanalysis_new_page_url` varbinary(500) NOT NULL,
   `tempstylometricanalysis_date` varbinary(255) NOT NULL
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `stylometricanalysis` (
   `stylometricanalysis_full_outputpath2` varbinary(500) NOT NULL,
   `stylometricanalysis_full_linkpath1` varbinary(500) NOT NULL,
   `stylometricanalysis_full_linkpath2` varbinary(500) NOT NULL,
-  `stylometricanalysis_json_config_array` TEXT NOT NULL,
+  `stylometricanalysis_json_pystyl_config` TEXT NOT NULL,
   `stylometricanalysis_json_collection_name_array` TEXT NOT NULL,
   `stylometricanalysis_new_page_url` varbinary(500) NOT NULL,
   `stylometricanalysis_date` varbinary(255) NOT NULL

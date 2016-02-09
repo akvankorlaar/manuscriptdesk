@@ -27,7 +27,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     public $error_message = '';
     private $minimum_pages_per_collection;
     private $minimum_collections;
-    private $maximum_collections;
     private $user_name;
     private $python_path;
     private $form;
@@ -36,8 +35,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private $full_outputpath1;
     private $full_outputpath2;
     private $min_words_collection;  //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
-    private $collection_array;
-    private $config_array;
+    private $collection_data;
+    private $collection_name_data; 
+    private $pystyl_config;
 
     //PyStyl $config_array information: 
     //removenonalpha : wheter or not to keep alphabetical symbols
@@ -77,7 +77,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name;
 
         $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
-        $this->maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
 
         return true;
     }
@@ -177,40 +176,40 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private function processForm1() {
         $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
         $this->form = 'Form1';
-        $this->collection_array = $collection_array = $form_data_getter->getForm1Data();
-        $collection_name_array = $this->constructCollectionNameArray();
+        $this->collection_data = $collection_data = $form_data_getter->getForm1Data();
+        $this->collection_name_data = $this->constructCollectionNameData();
         $viewer = new StylometricAnalysisViewer($this->getOutput());
-        return $viewer->showForm2($collection_array, $collection_name_array, $this->getContext());
+        return $viewer->showForm2($collection_data, $this->collection_name_data, $this->getContext());
     }
 
     private function processForm2() {
         $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
         $this->form = 'Form2';
-        $this->collection_array = $form_data_getter->getForm2CollectionArray();
-        $this->config_array = $form_data_getter->getForm2PystylConfigurationData();
+        $this->collection_data = $form_data_getter->getForm2CollectionData();
+        $this->collection_name_data = $this->constructCollectionNameData();
+        $this->pystyl_config = $form_data_getter->getForm2PystylConfigurationData();
 
         $texts = $this->getPageTextsFromWikiPages();
-        $collection_name_array = $this->constructCollectionNameArray();
 
-        list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames($collection_name_array);
+        list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames($this->collection_name_data);
         $this->constructFullOutputPathOfPystylOutputImages($output_file_name1, $output_file_name2);
         list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPathOfPystylOutputImages($output_file_name1, $output_file_name2);
 
-        $this->setAdditionalConfigArrayValues($texts);
+        $this->setAdditionalPystylConfigValues($texts);
         $full_textfilepath = $this->constructFullTextfilePath();
-        $this->insertConfigArrayIntoTextfile($full_textfilepath, $this->config_array);
+        $this->insertPystylConfigIntoTextfile($full_textfilepath);
         $command = $this->constructShellCommandToCallPystyl();
         $pystyl_output = $this->callPystyl($command, $full_textfilepath);
         $this->deleteTextfile($full_textfilepath);
         $this->checkPystylOutput($pystyl_output);
 
-        $new_page_url = $this->createNewPageUrl($collection_name_array);
+        $new_page_url = $this->createNewPageUrl();
         $time = idate('U'); //time format integer (Unix Timestamp). This timestamp is used to see how old values are
         $date = date("d-m-Y H:i:s");
-        $this->updateDatabase($collection_name_array, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2);
+        $this->updateDatabase($time, $new_page_url, $date, $full_linkpath1, $full_linkpath2);
 
         $viewer = new StylometricAnalysisViewer($this->getOutput());
-        return $viewer->showResult($this->config_array, $collection_name_array, $full_linkpath1, $full_linkpath2, $time);
+        return $viewer->showResult($this->pystyl_config, $this->collection_name_data, $full_linkpath1, $full_linkpath2, $time);
     }
 
     private function processSavePageRequest() {
@@ -221,20 +220,20 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $this->getOutput()->redirect($local_url);
     }
 
-    private function createNewPageUrl(array $collection_name_array) {
+    private function createNewPageUrl() {
         $user_name = $this->user_name;
-        $imploded_collection_name_array = implode('', $collection_name_array);
+        $imploded_collection_name_data = implode('', $this->collection_name_data);
         $year_month_day = date('Ymd');
         $hours_minutes_seconds = date('his');
-        return 'Stylometricanalysis:' . $user_name . "/" . $imploded_collection_name_array . "/" . $year_month_day . "/" . $hours_minutes_seconds;
+        return 'Stylometricanalysis:' . $user_name . "/" . $imploded_collection_name_data . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
 
-    private function constructCollectionNameArray() {
-        $collection_name_array = array();
-        foreach ($this->collection_array as $index => $collection_information) {
-            $collection_name_array[] = $collection_information['collection_name'];
+    private function constructCollectionNameData() {
+        $this->collection_name_data = array();
+        foreach ($this->collection_data as $index => $single_collection_data) {
+            $this->collection_name_data[] = $single_collection_data['collection_name'];
         }
-        return $collection_name_array;
+        return $this->collection_name_data;
     }
 
     /**
@@ -248,12 +247,12 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $a = 1;
 
         //for collections, collect all single pages of a collection and merge them together
-        foreach ($this->collection_array as $index => $collection_information) {
+        foreach ($this->collection_data as $index => $single_collection_data) {
 
             $all_texts_for_one_collection = "";
 
             //go through all urls of a collection
-            foreach ($collection_information as $index => $file_url) {
+            foreach ($single_collection_data as $index => $file_url) {
 
                 if ($index !== 'collection_name') {
 
@@ -274,7 +273,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             $collection_n_words = str_word_count($all_texts_for_one_collection);
             $this->checkForCollectionErrors($collection_n_words);
 
-            $collection_name = isset($collection_information['collection_name']) ? $collection_information['collection_name'] : 'collection' . $a;
+            $collection_name = isset($single_collection_data['collection_name']) ? $single_collection_data['collection_name'] : 'collection' . $a;
 
             //add the combined texts of one collection to $texts
             $texts["collection" . $a] = array(
@@ -294,36 +293,36 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      */
     private function checkForCollectionErrors($collection_n_words) {
 
-        $config_array = $this->config_array;
+        $pystyl_config = $this->pystyl_config;
 
         if ($collection_n_words < $this->min_words_collection) {
             $this->form = 'Form1';
             throw new \Exception('stylometricanalysis-error-toosmall');
         }
 
-        if ($collection_n_words < $config_array['minimumsize']) {
+        if ($collection_n_words < $pystyl_config['minimumsize']) {
             throw new \Exception('stylometricanalysis-error-minsize');
         }
 
-        if ($collection_n_words < ($config_array['segmentsize'] + $config_array['stepsize'])) {
+        if ($collection_n_words < ($pystyl_config['segmentsize'] + $pystyl_config['stepsize'])) {
             throw new \Exception('stylometricanalysis-error-segmentsize');
         }
 
-        if ($collection_n_words < $config_array['ngramsize']) {
+        if ($collection_n_words < $pystyl_config['ngramsize']) {
             throw new \Exception('stylometricanalysis-error-ngramsize');
         }
 
         return true;
     }
 
-    private function constructPystylOutputFileNames(array $collection_name_array) {
+    private function constructPystylOutputFileNames() {
 
-        $imploded_collection_name_array = implode('', $collection_name_array);
+        $imploded_collection_name_data = implode('', $this->collection_name_data);
         $year_month_day = date('Ymd');
         $hours_minutes_seconds = date('his');
 
-        $file_name1 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . '.jpg';
-        $file_name2 = $imploded_collection_name_array . $year_month_day . $hours_minutes_seconds . 2 . '.jpg';
+        $file_name1 = $imploded_collection_name_data . $year_month_day . $hours_minutes_seconds . '.jpg';
+        $file_name2 = $imploded_collection_name_data . $year_month_day . $hours_minutes_seconds . 2 . '.jpg';
 
         return array($file_name1, $file_name2);
     }
@@ -364,11 +363,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     /**
      * This function constructs the config array that will be sent to Pystyl
      */
-    private function setAdditionalConfigArrayValues($texts) {
-        $this->config_array['texts'] = $texts;
-        $this->config_array['full_outputpath1'] = $this->full_outputpath1;
-        $this->config_array['full_outputpath2'] = $this->full_outputpath2;
-        $this->config_array['base_outputpath'] = $this->base_outputpath;
+    private function setAdditionalPystylConfigValues($texts) {
+        $this->pystyl_config['texts'] = $texts;
+        $this->pystyl_config['full_outputpath1'] = $this->full_outputpath1;
+        $this->pystyl_config['full_outputpath2'] = $this->full_outputpath2;
+        $this->pystyl_config['base_outputpath'] = $this->base_outputpath;
         return true;
     }
 
@@ -383,7 +382,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     /**
      * This function insert data into the textfile which will be used to call Pystyl
      */
-    private function insertConfigArrayIntoTextfile($full_textfilepath, array $config_array) {
+    private function insertPystylConfigIntoTextfile($full_textfilepath) {
 
         if (is_file($full_textfilepath)) {
             throw new \Exception('stylometricanalysis-error-internal');
@@ -391,7 +390,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         }
 
         $textfile = fopen($full_textfilepath, 'w');
-        fwrite($textfile, json_encode($config_array));
+        fwrite($textfile, json_encode($this->pystyl_config));
         fclose($textfile);
 
         if (!is_file($full_textfilepath)) {
@@ -446,18 +445,16 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function updateDatabase(array $collection_name_array, $time = 0, $new_page_url, $date, $full_linkpath1, $full_linkpath2) {
+    private function updateDatabase($time = 0, $new_page_url, $date, $full_linkpath1, $full_linkpath2) {
         $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
         $database_wrapper->clearOldPystylOutput($time);
-        $database_wrapper->storeTempStylometricAnalysis($collection_name_array, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $this->full_outputpath1, $this->full_outputpath2, $this->config_array
-        );
-
+        $database_wrapper->storeTempStylometricAnalysis($this->collection_name_data, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $this->full_outputpath1, $this->full_outputpath2, $this->pystyl_config);
         return true;
     }
 
     private function getUserCollectionData() {
         $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
-        return $database_wrapper->getManuscriptsCollectionData($this->minimum_pages_per_collection, $this->minimum_collections, $this->maximum_collections);
+        return $database_wrapper->getManuscriptsCollectionData($this->minimum_pages_per_collection, $this->minimum_collections);
     }
 
     private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
@@ -480,8 +477,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return $viewer->showFewCollectionsError($error_message);
         }
 
-        if ($this->form === 'Form2' && isset($this->collection_array)) {
-            return $viewer->showForm2($this->collection_array, $this->getContext(), $error_message);
+        if ($this->form === 'Form2' && isset($this->collection_data) && isset($this->collection_name_data)) {
+            return $viewer->showForm2($this->collection_data, $this->collection_name_data, $this->getContext(), $error_message);
         }
 
         return $this->getForm1($error_message);

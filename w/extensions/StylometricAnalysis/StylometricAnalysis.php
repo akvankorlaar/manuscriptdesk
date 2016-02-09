@@ -50,7 +50,6 @@ $dir = __DIR__ . '/';
 
 //Auto load classes 
 $wgAutoloadClasses['StylometricAnalysisHooks'] = $dir . '/StylometricAnalysis.hooks.php';
-$wgAutoloadClasses['StylometricAnalysisNamespacePage'] = $dir . '/StylometricAnalysisNamespacePage.php';
 $wgExtensionMessagesFiles['StylometricAnalysis'] = $dir . '/StylometricAnalysis.i18n.php';
 $wgAutoloadClasses['StylometricAnalysisViewer'] = $dir . '/specials/StylometricAnalysisViewer.php';
 $wgAutoloadClasses['FormDataGetter'] = $dir . '/specials/FormDataGetter.php';
