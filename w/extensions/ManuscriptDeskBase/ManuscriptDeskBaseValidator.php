@@ -96,7 +96,8 @@ class ManuscriptDeskBaseValidator {
      */
     public function validateNumber($input) {
 
-        if (empty($input)) {
+        //string containting 0 is also seen as empty
+        if (empty($input) && $input !== '0') {
             throw new \Exception('validation-empty');
         }
 

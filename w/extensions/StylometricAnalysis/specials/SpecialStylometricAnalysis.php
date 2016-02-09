@@ -191,7 +191,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         $texts = $this->getPageTextsFromWikiPages();
 
-        list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames($this->collection_name_data);
+        list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames();
         $this->constructFullOutputPathOfPystylOutputImages($output_file_name1, $output_file_name2);
         list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPathOfPystylOutputImages($output_file_name1, $output_file_name2);
 
