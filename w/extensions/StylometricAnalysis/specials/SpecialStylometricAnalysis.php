@@ -160,7 +160,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      */
     private function form2WasPosted() {
         $request = $this->getRequest();
-        if ($request->getText('form2Posted') !== '' && $this->tokenWasPosted()) {
+        if ($request->getText('form2Posted') !== '') {
             return true;
         }
 

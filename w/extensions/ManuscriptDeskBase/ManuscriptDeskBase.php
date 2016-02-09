@@ -49,6 +49,7 @@ $wgExtensionCredits['parserhook'][] = array(
 $dir = __DIR__ . '/';
 
 //Auto load classes 
+$wgAutoloadClasses['ManuscriptDeskBaseHooks'] = $dir . 'ManuscriptDeskBaseHooks.php';
 $wgAutoloadClasses['ManuscriptDeskBaseSpecials'] = $dir . 'ManuscriptDeskBaseSpecials.php';
 $wgAutoloadClasses['ManuscriptDeskBaseValidator'] = $dir . 'ManuscriptDeskBaseValidator.php';
 $wgAutoloadClasses['ManuscriptDeskBaseViewer'] = $dir . 'ManuscriptDeskBaseViewer.php'; 

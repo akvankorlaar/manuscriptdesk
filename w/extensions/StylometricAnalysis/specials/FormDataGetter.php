@@ -100,9 +100,9 @@ class FormDataGetter {
     public function getForm2PystylConfigurationData() {
         global $wgStylometricAnalysisOptions;
         $min_mfi = $wgStylometricAnalysisOptions['min_mfi'];
-        $config_array = $this->loadForm2PystylConfigurationData();
-        $this->checkForm2PystylConfigurationData($config_array, $min_mfi);
-        return $config_array;
+        $pystyl_config = $this->loadForm2PystylConfigurationData();
+        $this->checkForm2PystylConfigurationData($pystyl_config, $min_mfi);
+        return $pystyl_config;
     }
 
     /**
@@ -142,17 +142,17 @@ class FormDataGetter {
         return $config_array;
     }
 
-    private function checkForm2PystylConfigurationData($config_array, $min_mfi) {
+    private function checkForm2PystylConfigurationData($pystyl_config, $min_mfi) {
 
-        if ($config_array['minimumsize'] >= $config_array['maximumsize']) {
+        if ($pystyl_config['minimumsize'] >= $pystyl_config['maximumsize']) {
             throw new Exception('stylometricanalysis-error-minmax');
         }
 
-        if ($config_array['stepsize'] > $config_array['segmentsize']) {
+        if ($pystyl_config['stepsize'] > $pystyl_config['segmentsize']) {
             throw new Exception('stylometricanalysis-error-stepsizesegmentsize');
         }
 
-        if ($config_array['mfi'] < $min_mfi) {
+        if ($pystyl_config['mfi'] < $min_mfi) {
             throw new Exception('stylometricanalysis-error-mfi');
         }
     }

@@ -23,7 +23,7 @@
  * Re-organises the editor to the correct layout after it has loaded
  * so that it can accomadate the Zoom Viewer frame
  * 
- * Sept 2015: Made some small changes @Arent van Korlaar
+ * 2015/2016: Modifications @ Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com>
  */
 
 .wikiEditor-ui {
@@ -47,8 +47,8 @@
   float: left;
 }
 
- // * Extend width to accomodate maximise/minimise buttons
- 
+// * Extend width to accomodate maximise/minimise buttons
+
 .toolbar,
 #toolbar {
   width:99%;
