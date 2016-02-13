@@ -82,19 +82,19 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $a = 0;
         $html .= "<tr>";
 
-        foreach ($user_collection_data as $collection_name => $collection_data) {
+        foreach ($user_collection_data as $collection_name => $single_collection_data) {
 
             if (($a % 4) === 0) {
                 $html .= "</tr>";
                 $html .= "<tr>";
             }
 
-            $collection_post_data = $collection_data['manuscripts_url'];
+            $collection_post_data = $single_collection_data['manuscripts_url'];
             $collection_post_data['collection_name'] = $collection_name;
 
             //encode the array into json to be able to place it in the checkbox value
             $json_collection_post_data = json_encode($collection_post_data);
-            $manuscript_pages_within_collection = implode(', ', $collection_data['manuscripts_title']);
+            $manuscript_pages_within_collection = implode(', ', $single_collection_data['manuscripts_title']);
             $collection_text = $out->msg('stylometricanalysis-contains') . $manuscript_pages_within_collection . '.';
 
             //add a checkbox for the collection

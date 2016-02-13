@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the collate extension
+ * This file is part of the Collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 /**
  * Usage: Add the following line in LocalSettings.php:
- * require_once( "$IP/extensions/collate/collate.php" );
+ * require_once( "$IP/extensions/Collate/Collate.php" );
  */
 
 // Check environment
@@ -38,10 +38,10 @@ if (!defined( 'MEDIAWIKI')){
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
   'path'           => __FILE__,
-  'name'           => 'collate',
+  'name'           => 'Collate',
   'author'         => 'Arent van Korlaar',
   'version'        => '0.0.1',
-  'url'            => '',
+  'url'            => 'https://manuscriptdesk.uantwerpen.be',
   'description'    => 'This extension permits users to collate texts for the Manuscript Desk.',
 );
 
@@ -52,16 +52,16 @@ $dir2 = dirname( __FILE__ );
 $dirbasename = basename( $dir2 );
 
 //Auto load classes 
-$wgAutoloadClasses['collateHooks']    = $dir . '/collate.hooks.php';
-$wgAutoloadClasses['collate'] = $dir . '/collate.classes.php';
-$wgAutoloadClasses['textConverter'] = $dir . '/specials/textConverter.php';
-$wgAutoloadClasses['collateWrapper'] = $dir . '/specials/collateWrapper.php';
-$wgExtensionMessagesFiles['collate']  = __DIR__ . '/collate.i18n.php';
+$wgAutoloadClasses['CollateHooks']    = $dir . '/Collate.hooks.php';
+$wgAutoloadClasses['TextConverter'] = $dir . '/specials/TextConverter.php';
+$wgAutoloadClasses['CollateWrapper'] = $dir . '/specials/CollateWrapper.php';
+$wgAutoloadClasses['CollateViewer'] = $dir . '/specials/CollateViewer.php';
+$wgExtensionMessagesFiles['Collate']  = __DIR__ . '/Collate.i18n.php';
 
 //Register auto load for the special page classes and register special pages
-$wgAutoloadClasses['SpecialBeginCollate'] = $dir . '/specials/SpecialBeginCollate.php';
+$wgAutoloadClasses['SpecialCollate'] = $dir . '/specials/SpecialCollate.php';
 
-$wgSpecialPages['BeginCollate'] = 'SpecialBeginCollate';
+$wgSpecialPages['Collate'] = 'SpecialCollate';
 
 //Extra file loaded later 
 $wgResourceModules['ext.collate' ] = array(
@@ -80,12 +80,12 @@ $wgResourceModules['ext.collateloader' ] = array(
   ),
 );
 
-//Instantiate the collateHooks class and register the hooks
-$collateHooks = new collateHooks();
+//Instantiate the CollateHooks class and register the hooks
+$CollateHooks = new CollateHooks();
 
-$wgHooks['MediaWikiPerformAction'][] = array($collateHooks, 'onMediaWikiPerformAction');
-$wgHooks['AbortMove'][] = array($collateHooks, 'onAbortMove');
-$wgHooks['ArticleDelete'][] = array($collateHooks, 'onArticleDelete');
-$wgHooks['PageContentSave'][] = array($collateHooks,'onPageContentSave');
-$wgHooks['BeforePageDisplay'][] = array($collateHooks, 'onBeforePageDisplay');
-$wgHooks['ResourceLoaderGetConfigVars'][] = array($collateHooks, 'onResourceLoaderGetConfigVars');
+$wgHooks['MediaWikiPerformAction'][] = array($CollateHooks, 'onMediaWikiPerformAction');
+$wgHooks['AbortMove'][] = array($CollateHooks, 'onAbortMove');
+$wgHooks['ArticleDelete'][] = array($CollateHooks, 'onArticleDelete');
+$wgHooks['PageContentSave'][] = array($CollateHooks,'onPageContentSave');
+$wgHooks['BeforePageDisplay'][] = array($CollateHooks, 'onBeforePageDisplay');
+$wgHooks['ResourceLoaderGetConfigVars'][] = array($CollateHooks, 'onResourceLoaderGetConfigVars');

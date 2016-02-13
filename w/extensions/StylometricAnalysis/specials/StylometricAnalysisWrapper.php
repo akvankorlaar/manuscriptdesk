@@ -23,9 +23,7 @@
  * @copyright 2015 Arent van Korlaar
  * 
  */
-class StylometricAnalysisWrapper {
-
-    private $user_name;
+class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
 
     public function __construct($user_name = '') {
         $this->user_name = $user_name;

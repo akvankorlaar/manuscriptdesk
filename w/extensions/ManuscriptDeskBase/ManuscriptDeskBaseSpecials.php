@@ -21,13 +21,15 @@
  * @subpackage Extensions
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
+ * 
+ * Idea: Refractor code and use interfaces. For example, there is some duplication in the execute and handleErrors methods
  */
 class ManuscriptDeskBaseSpecials extends SpecialPage {
 
     public function __construct($page_name) {
         parent::__construct($page_name);
     }
-
+    
     /**
      * This function checks if the edit token was posted
      */
@@ -63,10 +65,10 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
     /**
      * This function checks if the user has the appropriate permissions
      */
-    protected function checkPermission() {
+    protected function checkManuscriptDeskPermission() {
         $out = $this->getOutput();
         $user_object = $out->getUser();
-        //user does not have permission
+
         if (!in_array('ManuscriptEditors', $user_object->getGroups())) {
             throw new \Exception('error-nopermission');
         }
@@ -134,26 +136,24 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
 
         return $raw_text;
     }
-    
-  protected function createNewWikiPage($new_url){
-    
-    $title_object = Title::newFromText($new_url);
-    $local_url = $title_object->getLocalURL();
-    $context = $this->getContext();   
-    $article = Article::newFromTitle($title_object, $context);
-       
-    //make a new page
-    $editor_object = new EditPage($article);
-    $content_new = new wikitextcontent('<!--' . $this->msg('newmanuscript-newpage') . '-->');
-    $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97,
-                        false, null, $editor_object->contentFormat);
-    
-    if (!$doEditStatus->isOK() ) {
-        throw new \Exception('error-newpage');
-        //$errors = $doEditStatus->getErrorsArray();
+
+    protected function createNewWikiPage($new_url) {
+
+        $title_object = Title::newFromText($new_url);
+        $local_url = $title_object->getLocalURL();
+        $context = $this->getContext();
+        $article = Article::newFromTitle($title_object, $context);
+
+        $editor_object = new EditPage($article);
+        $content_new = new wikitextcontent('<!--' . $this->msg('newmanuscript-newpage') . '-->');
+        $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97, false, null, $editor_object->contentFormat);
+
+        if (!$doEditStatus->isOK()) {
+            throw new \Exception('error-newpage');
+            //$errors = $doEditStatus->getErrorsArray();
+        }
+
+        return $local_url;
     }
-    
-    return $local_url;
-  }
-    
+
 }

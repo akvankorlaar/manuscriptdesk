@@ -94,7 +94,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             if ($this->requestWasPosted()) {
                 $this->processRequest();
                 return true;
-            }
+    }
 
             $this->getForm1();
             return true;

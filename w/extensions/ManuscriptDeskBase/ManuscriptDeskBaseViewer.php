@@ -24,8 +24,8 @@
  */
 class ManuscriptDeskBaseViewer {
 
-    public $out;
-    public $max_int_formfield_length = 5;
+    protected $out;
+    protected $max_int_formfield_length = 5;
 
     public function __construct() {
         
