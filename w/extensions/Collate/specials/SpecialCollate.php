@@ -34,8 +34,6 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      * 
      */
     public $article_url;
-    private $minimum_manuscripts;
-    private $maximum_manuscripts;
     private $user_name;
     private $full_manuscripts_url;
     private $posted_titles_array = array();
@@ -56,10 +54,6 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         global $wgNewManuscriptOptions, $wgArticleUrl, $wgCollationOptions;
 
         $this->article_url = $wgArticleUrl;
-
-        //if $minimum_manuscripts, $maximum_manuscripts and $max_pages_collection is changed, remember to change the corresponding text in collate.i18n.php
-        $this->minimum_manuscripts = $wgCollationOptions['wgmin_collation_pages'];
-        $this->maximum_manuscripts = $wgCollationOptions['wgmax_collation_pages'];
         
         $user = $this->getUser();
         $this->user_name = $user->getName();
@@ -117,6 +111,11 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         if ($this->save_table) {
             return $this->processSaveTable();
         }
+    }
+    
+    private function processForm1(){
+       $form_data_getter = new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+       $data = $form_data_getter->getForm1Data();
     }
     
     private function temp(){

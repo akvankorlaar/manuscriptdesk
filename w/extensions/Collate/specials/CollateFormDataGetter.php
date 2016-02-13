@@ -1,78 +1,97 @@
 <?php
 
-class CollateFormDataGetter{
-    
-    public function __construct(){
-        
+//there should be a base formdatagetter........
+class CollateFormDataGetter {
+
+    public $request;
+    private $validator;
+
+    public function __construct(WebRequest $request, ManuscriptDeskBaseValidator $validator) {
+        $this->request = $request;
+        $this->validator = $validator;
     }
 
-  /**
-   * This function loads requests when a user submits the collate form
-   */
-  public function loadRequest(){
-    
-    $request = $this->getRequest();
-        
-    if(!$request->wasPosted()){
-      return false;  
+    /**
+     * This function processes form 1
+     */
+    public function getForm1Data() {
+        $data = $this->loadForm1Data();
+        $this->checkForm1($data);
+        return $data;
     }
-    
-    $posted_names = $request->getValueNames();    
-     
-    //identify the button pressed
-    foreach($posted_names as $key=>$checkbox){
-      
-      //remove the numbers from $checkbox to see if it matches to 'text', 'collection', 'collection_hidden', 'redirect_to_start', or 'save_current_table'
-      $checkbox_without_numbers = trim(str_replace(range(0,9),'',$checkbox));
 
-      if($checkbox_without_numbers === 'text'){
-        $this->posted_titles_array[$checkbox] = $this->validateInput($request->getText($checkbox)); 
+    private function loadForm1Data() {
 
-      }elseif($checkbox_without_numbers === 'collection'){
-        $this->collection_array[$checkbox] = $this->validateInput(json_decode($request->getText($checkbox)));    
-      
-      }elseif($checkbox_without_numbers === 'collection_hidden'){
-        $this->collection_hidden_array[$checkbox] = $this->validateInput($request->getText($checkbox));
-        
-      }elseif($checkbox_without_numbers === 'time'){
-        $this->time_identifier = $this->validateInput($request->getText('time'));
-                
-      }elseif($checkbox_without_numbers === 'save_current_table'){
-        $this->save_table = true;
-       
-      }elseif($checkbox_without_numbers === 'redirect_to_start'){
-        $this->redirect_to_start = true; 
-        break; 
-      }
-    }
-    
-    //return false if something went wrong during validation
-    if($this->variable_not_validated === true){
-      return false; 
-    }
-    
-    if($this->redirect_to_start){
-      return false; 
-    }
-        
-    return true; 
-  }
-  
-          //check if the user has checked too few boxes
-        if (count($this->posted_titles_array) + count($this->collection_array) < $this->minimum_manuscripts) {
-            return $this->showError('collate-error-fewtexts');
+        $request = $this->request;
+        $validator = $this->validator;
+
+        $posted_names = $request->getValueNames();
+
+        $manuscript_urls = array();
+        $collection_data = array();
+        $collection_titles = array();
+
+        foreach ($posted_names as $key => $checkbox) {
+
+            //remove the numbers from $checkbox
+            $checkbox_without_numbers = trim(str_replace(range(0, 9), '', $checkbox));
+
+            if ($checkbox_without_numbers === 'manuscripts_urls') {
+                $manuscript_urls[$checkbox] = $validator->validateStringUrl($request->getText($checkbox));
+            }
+            elseif ($checkbox_without_numbers === 'collection_urls') {
+                $collection_urls[$checkbox] = $validator->validateStringUrl(json_decode($request->getText($checkbox)));
+            }
+            elseif ($checkbox_without_numbers === 'collection_hidden') {
+                $collection_titles[$checkbox] = $validator->validateString($request->getText($checkbox));
+            }
         }
 
-        $collection_count = 0;
+        return array($manuscript_urls, $collection_data, $collection_titles);
+    }
 
-        foreach ($this->collection_array as $collection_name => $url_array) {
-            $collection_count += count($url_array);
+    private function checkForm1(array $data) {
+
+        global $wgCollationOptions;
+
+        $minimum_manuscripts = $wgCollationOptions['wgmin_collation_pages'];
+        $maximum_manuscripts = $wgCollationOptions['wgmax_collation_pages'];
+
+        if (count($data) !== 3) {
+            throw new \Exception('collate-error-internal');
         }
 
-        //check if the user has checked too many boxes
-        if (count($this->posted_titles_array) + $collection_count > $this->maximum_manuscripts) {
-            return $this->showError('collate-error-manytexts');
+        list($manuscript_urls, $collection_data, $collection_titles) = $data;
+
+        //check if the user has selected too few pages
+        if (count($manuscript_urls) + count($collection_data) < $minimum_manuscripts) {
+            throw new \Exception('collate-error-fewtexts');
         }
-  
+
+        $total_collection_urls = 0;
+
+        foreach ($collection_data as $collection_name => $single_collection_urls) {
+            $total_collection_urls += count($single_collection_urls);
+        }
+
+        //check if the user has selected too many pages
+        if (count($manuscript_urls) + $total_collection_urls > $maximum_manuscripts) {
+            throw new \Exception('collate-error-manytexts');
+        }
+    }
+
+    private function temp() {
+
+//            }elseif($checkbox_without_numbers === 'time'){
+//        $this->time_identifier = $this->validateInput($request->getText('time'));
+//                
+//      }elseif($checkbox_without_numbers === 'save_current_table'){
+//        $this->save_table = true;
+//       
+//      }elseif($checkbox_without_numbers === 'redirect_to_start'){
+//        $this->redirect_to_start = true; 
+//        break; 
+//      }
+    }
+
 }
-  

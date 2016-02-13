@@ -29,7 +29,7 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
     public function __construct($page_name) {
         parent::__construct($page_name);
     }
-    
+
     /**
      * This function checks if the edit token was posted
      */
@@ -154,6 +154,18 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         }
 
         return $local_url;
+    }
+
+    /**
+     * Check if form 1 was posted
+     */
+    protected function form1WasPosted() {
+        $request = $this->getRequest();
+        if ($request->getText('form1Posted') !== '') {
+            return true;
+        }
+
+        return false;
     }
 
 }

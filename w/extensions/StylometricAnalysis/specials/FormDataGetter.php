@@ -68,7 +68,7 @@ class FormDataGetter {
     }
 
     private function checkForm1(array $collection_data, $minimum_collections, $maximum_collections) {
-
+        
         if (empty($collection_data)) {
             throw new Exception('stylometricanalysis-error-request');
         }

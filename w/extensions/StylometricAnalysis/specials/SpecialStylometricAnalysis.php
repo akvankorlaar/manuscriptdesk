@@ -144,18 +144,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * Check if form 1 was posted
-     */
-    private function form1WasPosted() {
-        $request = $this->getRequest();
-        if ($request->getText('form1Posted') !== '') {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Check if form 2 was posted
      */
     private function form2WasPosted() {

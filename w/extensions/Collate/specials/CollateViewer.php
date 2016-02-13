@@ -87,7 +87,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
             $title_name = $manuscript_titles[$index];
 
             $html .= "<td>";
-            $html .="<input type='checkbox' class='begincollate-checkbox' name='text$index' value='" . htmlspecialchars($url) . "'>" . htmlspecialchars($title_name);
+            $html .="<input type='checkbox' class='begincollate-checkbox' name='manuscripts_urls$index' value='" . htmlspecialchars($url) . "'>" . htmlspecialchars($title_name);
             $html .= "</td>";
             $a+=1;
         }
@@ -119,8 +119,8 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
 
                 //add a checkbox for the collection
                 $html .="<td>";
-                $html .="<input type='checkbox' class='begincollate-checkbox-col' name='collection$a' value='$json_manuscript_collection_urls'>" . htmlspecialchars($collection_name);
-                $html .="<input type='hidden' name='collection_hidden$a' value='" . htmlspecialchars($collection_name) . "'>";
+                $html .="<input type='checkbox' class='begincollate-checkbox-col' name='collection_urls$a' value='$json_manuscript_collection_urls'>" . htmlspecialchars($collection_name);
+                $html .="<input type='hidden' name='collection_titles$a' value='" . htmlspecialchars($collection_name) . "'>";
                 $html .= "<br>";
                 $html .= "<span class='begincollate-span'>" . $collection_text . "</span>";
                 $html .="</td>";
