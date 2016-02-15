@@ -16,7 +16,7 @@ class CollateFormDataGetter {
      */
     public function getForm1Data() {
         $data = $this->loadForm1Data();
-        $this->checkForm1($data);
+        $this->checkForm1Data($data);
         return $data;
     }
 
@@ -42,7 +42,7 @@ class CollateFormDataGetter {
             elseif ($checkbox_without_numbers === 'collection_urls') {
                 $collection_urls[$checkbox] = $validator->validateStringUrl(json_decode($request->getText($checkbox)));
             }
-            elseif ($checkbox_without_numbers === 'collection_hidden') {
+            elseif ($checkbox_without_numbers === 'collection_titles') {
                 $collection_titles[$checkbox] = $validator->validateString($request->getText($checkbox));
             }
         }
@@ -50,7 +50,7 @@ class CollateFormDataGetter {
         return array($manuscript_urls, $collection_data, $collection_titles);
     }
 
-    private function checkForm1(array $data) {
+    private function checkForm1Data(array $data) {
 
         global $wgCollationOptions;
 
@@ -62,6 +62,10 @@ class CollateFormDataGetter {
         }
 
         list($manuscript_urls, $collection_data, $collection_titles) = $data;
+        
+        if (count($collection_data) !== count($collection_titles)){
+            throw new \Exception('collate-error-request');
+        }
 
         //check if the user has selected too few pages
         if (count($manuscript_urls) + count($collection_data) < $minimum_manuscripts) {
@@ -69,7 +73,6 @@ class CollateFormDataGetter {
         }
 
         $total_collection_urls = 0;
-
         foreach ($collection_data as $collection_name => $single_collection_urls) {
             $total_collection_urls += count($single_collection_urls);
         }

@@ -52,7 +52,7 @@ $dirbasename = basename($dir2);
 
 //Auto load classes 
 $wgAutoloadClasses['CollateHooks'] = $dir . '/Collate.hooks.php';
-$wgAutoloadClasses['TextConverter'] = $dir . '/specials/TextConverter.php'; //should have a different name....
+$wgAutoloadClasses['TextConverter'] = $dir . '/specials/CollatexConverter.php'; 
 $wgAutoloadClasses['CollateWrapper'] = $dir . '/specials/CollateWrapper.php';
 $wgAutoloadClasses['CollateViewer'] = $dir . '/specials/CollateViewer.php';
 $wgExtensionMessagesFiles['Collate'] = __DIR__ . '/Collate.i18n.php';

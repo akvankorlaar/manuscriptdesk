@@ -93,9 +93,9 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
     /**
      * This function retrieves the wiki text from a page
      */
-    protected function getSinglePageText($title_object) {
+    protected function getSinglePageText(Title $title) {
 
-        $article_object = Wikipage::factory($title_object);
+        $article_object = Wikipage::factory($title);
         $raw_text = $article_object->getRawText();
 
         $filtered_raw_text = $this->filterText($raw_text);

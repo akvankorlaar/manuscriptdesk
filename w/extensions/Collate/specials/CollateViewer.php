@@ -25,16 +25,32 @@
 class CollateViewer extends ManuscriptDeskBaseViewer {
 
     public function __construct($out) {
-        $this->out = $out;       
+        $this->out = $out;
+    }
+
+    /**
+     * This function adds html used for the begincollate loader (see ext.begincollate)
+     * 
+     * Source of the gif: http://preloaders.net/en/circular
+     */
+    private function addBeginCollateLoader() {
+
+        //shows after submit has been clicked
+        $html = "<div id='begincollate-loaderdiv'>";
+        $html .= "<img id='begincollate-loadergif' src='/w/extensions/collate/specials/assets/362.gif' style='width: 64px; height: 64px;"
+            . " position: relative; left: 50%;'>";
+        $html .= "</div>";
+
+        return $html;
     }
 
     /**
      * This function constructs the HTML for the default page
      */
     public function showForm1(array $manuscript_data, array $collection_data) {
-        
+
         global $wgArticleUrl;
-        $out = $this->out; 
+        $out = $this->out;
         $manuscript_urls = isset($manuscript_data['manuscript_urls']) ? $manuscript_data['manuscript_urls'] : array();
         $manuscript_titles = isset($manuscript_data['manuscript_titles']) ? $manuscript_data['manuscript_titles'] : array();
         $article_url = $wgArticleUrl;
@@ -145,6 +161,47 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $html .= $this->AddBeginCollateLoader();
 
         $out->addHTML($html);
+    }
+
+    /**
+     * This function constructs the HTML collation table, and buttons
+     */
+    public function showFirstTable(array $title_array, $collatex_output, $time) {
+
+        $out = $this->out;
+        $article_url = $this->article_url;
+
+        $redirect_hover_message = $this->msg('collate-redirecthover');
+        $redirect_message = $this->msg('collate-redirect');
+
+        $save_hover_message = $this->msg('collate-savehover');
+        $save_message = $this->msg('collate-save');
+
+        $html = "
+       <div id = 'begincollate-buttons'>
+            <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
+            <input type='submit' class='begincollate-submitbutton-two' name ='redirect_to_start' title='$redirect_hover_message'  value='$redirect_message'>
+            </form>
+            
+            <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
+            <input type='submit' class='begincollate-submitbutton-two' name= 'save_current_table' title='$save_hover_message' value='$save_message'> 
+            <input type='hidden' name='time' value='$time'>  
+            </form>
+       </div>";
+
+        $html .= "<p>" . $this->msg('collate-success') . "</p>" . "<p>" . $this->msg('collate-tableread') . " " . $this->msg('collate-savetable') . "</p>";
+
+        $html .= $this->AddBeginCollateLoader();
+
+        $collate = new collate();
+
+        $html .= "<div id='begincollate-tablewrapper'>";
+
+        $html .= $collate->renderTable($title_array, $collatex_output);
+
+        $html .= "</div>";
+
+        return $out->addHTML($html);
     }
 
     /**

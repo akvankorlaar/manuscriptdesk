@@ -33,7 +33,6 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      * 4: when saving the table, the data is retrieved from the tempcollate table, saved to the collations table, a new wiki page is created, and the user is redirected to this page 
      * 
      */
-    public $article_url;
     private $user_name;
     private $full_manuscripts_url;
     private $posted_titles_array = array();
@@ -51,10 +50,8 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
     }
 
     private function setVariables() {
-        global $wgNewManuscriptOptions, $wgArticleUrl, $wgCollationOptions;
+        global $wgNewManuscriptOptions, $wgCollationOptions;
 
-        $this->article_url = $wgArticleUrl;
-        
         $user = $this->getUser();
         $this->user_name = $user->getName();
         //and other variables
@@ -87,7 +84,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      * Processes the request when a user has submitted the collate form
      */
     private function processRequest() {
-        
+
         $this->checkEditToken();
 
         if ($this->form1WasPosted()) {
@@ -112,32 +109,24 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
             return $this->processSaveTable();
         }
     }
-    
-    private function processForm1(){
-       $form_data_getter = new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
-       $data = $form_data_getter->getForm1Data();
+
+    private function processForm1() {
+        $form_data_getter = new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        list($manuscript_urls, $collection_data, $collection_titles) = $form_data_getter->getForm1Data();
+        $page_texts = $this->getTextsFromWikiPagesForSingleManuscriptPagesAndCollections($manuscript_urls, $collection_data);        
+        $collatex_converter = new CollatexConverter();
+        $collatex_output = $collatex_converter->execute($page_texts);
     }
-    
-    private function temp(){
 
-        $texts = $this->constructTexts();
+    private function getTextsFromWikiPagesForSingleManuscriptPagesAndCollections(array $manuscript_urls, array $collection_data) {
+        $page_texts_manuscripts = $this->getPageTextsForSingleManuscriptPages($manuscript_urls);
+        $page_texts_collections = $this->getPageTextsForCollections($collection_data);    
+        return array_merge($page_texts_manuscripts, $page_texts_collections);
+    }
 
-        //if returned false, one of the posted pages did not exist
-        if (!$texts) {
-            return $this->showError('collate-error-notexists');
-        }
+    private function temp() {
+        
 
-        $text_converter = new textConverter(); //rename this class
-        //convert $texts to json, in a format that it can be accepted by Collatex
-        $texts_converted = $text_converter->convertJson($texts);
-
-        //send $texts_converted to Collatex, and get the output
-        $collatex_output = $text_converter->callCollatex($texts_converted);
-
-        //if the output is an empty string, collatex was not started up or configured properly
-        if (!$collatex_output || $collatex_output === "") {
-            return $this->showError('collate-error-collatex');
-        }
 
         //construct all the titles, used to display the page titles and collection titles in the table
         $titles_array = $this->constructTitles();
@@ -281,124 +270,52 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         return $titles_array;
     }
 
-    /**
-     * This function loops through all the posted collections and titles, and
-     * retrieves the text from the corresponding pages 
-     * 
-     * @return type
-     */
-    private function constructTexts() {
+    private function getPageTextsForSingleManuscriptPages(array $manuscript_urls) {
 
-        //in $texts both single page texts and combined collection texts will be stored 
         $texts = array();
+        foreach ($manuscript_urls as $single_manuscript_url) {
 
-        //collect all single pages
-        foreach ($this->posted_titles_array as $file_url) {
-
-            $title_object = Title::newFromText($file_url);
-
-            //if the page does not exist, return false
-            if (!$title_object->exists()) {
-                return false;
-            }
-
-            //get the text
-            $single_page_text = $this->getSinglePageText($title_object);
-
-            //check if $single_page_text does not only contain whitespace charachters
-            if (ctype_space($single_page_text) || $single_page_text === '') {
-                return false;
-            }
-
-            //add the text to the array
+            $title = $this->constructTitleObject();
+            $single_page_text = $this->getSinglePageText($title);
+            $this->checkIfTextIsNotOnlyWhitespace($single_page_text);
             $texts[] = $single_page_text;
         }
 
-        if ($this->collection_array) {
-            //for collections, collect all single pages of a collection and merge them together
-            foreach ($this->collection_array as $collection_name => $url_array) {
+        return $texts;
+    }
+       private function getPageTextsForCollections(array $collection_data) {
 
-                $all_texts_for_one_collection = "";
+        foreach ($collection_data as $single_collection_url_array) {
 
-                //go through all urls of a collection
-                foreach ($url_array as $file_url) {
+            $all_texts_for_one_collection = "";
 
-                    $title_object = Title::newFromText($file_url);
-
-                    if (!$title_object->exists()) {
-                        return false;
-                    }
-
-                    $single_page_text = $this->getSinglePageText($title_object);
-
-                    //add $single_page_text to $single_page_texts
-                    $all_texts_for_one_collection .= $single_page_text;
-                }
-
-                //check if $all_texts_for_one_collection does not only contain whitespace charachters
-                if (ctype_space($all_texts_for_one_collection) || $all_texts_for_one_collection === '') {
-                    return false;
-                }
-
-                //add the combined texts of one collection to $texts
-                $texts[] = $all_texts_for_one_collection;
+            foreach ($single_collection_url_array as $single_manuscript_url) {
+                $title = $this->constructTitleObject($single_manuscript_url);
+                $single_page_text = $this->getSinglePageText($title);
+                $all_texts_for_one_collection .= $single_page_text;
             }
+
+            $this->checkIfTextIsNotOnlyWhitespace($all_texts_for_one_collection);
+            $texts[] = $all_texts_for_one_collection;
         }
 
         return $texts;
     }
 
-    /**
-     * This function retrieves the wiki text from a page url
-     * 
-     * @param type $title_object
-     * @return type
-     */
-    private function getSinglePageText($title_object) {
+    private function constructTitleObject($single_manuscript_url = '') {
+        $title = Title::newFromText($single_manuscript_url);
 
-        $article_object = Wikipage::factory($title_object);
-        $raw_text = $article_object->getRawText();
-
-        $filtered_raw_text = $this->filterText($raw_text);
-
-        return $filtered_raw_text;
-    }
-
-    /**
-     * This function filters out tags, and text in between certain tags. It also trims the text, and adds a single space to the last charachter if needed 
-     */
-    private function filterText($raw_text) {
-
-        //filter out the following tags, and all text in between the tags
-        //pagemetatable tag
-        $raw_text = preg_replace('/<pagemetatable>[^<]+<\/pagemetatable>/i', '', $raw_text);
-
-        //del tag
-        $raw_text = preg_replace('/<del>[^<]+<\/del>/i', '', $raw_text);
-
-        //note tag
-        $raw_text = preg_replace('/<note>[^<]+<\/note>/i', '', $raw_text);
-
-        //filter out any other tags, but keep all text in between the tags
-        $raw_text = strip_tags($raw_text);
-
-        //filter out newline charachters and carriage returns, and replace them with a single space
-        //$raw_text = preg_replace( '/\r|\n/',' ', $raw_text);
-        //trim the text
-        $raw_text = trim($raw_text);
-
-        //check if it is possible to get the last charachter of the page
-        if (substr($raw_text, -1) !== false) {
-            $last_charachter = substr($raw_text, -1);
-
-            if ($last_charachter !== '-') {
-                //If the last charachter of the current page is '-', this may indicate that the first word of the next page 
-                //is linked to the last word of this page because they form a single word. In other cases, add a space after the last charachter of the current page 
-                $raw_text = $raw_text . ' ';
-            }
+        if (!$title->exists()) {
+            throw new \Exception('collation-error-notexts');
         }
 
-        return $raw_text;
+        return $title;
+    }
+
+    private function checkIfTextIsNotOnlyWhitespace($text = '') {
+        if (ctype_space($text) || $text === '') {
+            throw new Exception('collation-error-notexts');
+        }
     }
 
     /**
@@ -410,7 +327,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $collection_data = $collate_wrapper->getCollectionData();
         $collate_viewer = new CollateViewer($this->getOutput());
         $collate_viewer->showForm1($manuscripts_data, $collection_data);
-        return true; 
+        return true;
     }
 
     /**
@@ -439,66 +356,6 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $this->error_message = $error_message;
 
         return $this->getForm1($this->getOutput());
-    }
-
-    /**
-     * This function adds html used for the begincollate loader (see ext.begincollate)
-     * 
-     * Source of the gif: http://preloaders.net/en/circular
-     */
-    private function addBeginCollateLoader() {
-
-        //shows after submit has been clicked
-        $html = "<div id='begincollate-loaderdiv'>";
-        $html .= "<img id='begincollate-loadergif' src='/w/extensions/collate/specials/assets/362.gif' style='width: 64px; height: 64px;"
-            . " position: relative; left: 50%;'>";
-        $html .= "</div>";
-
-        return $html;
-    }
-
-    /**
-     * This function constructs the HTML collation table, and buttons
-     * 
-     * @param type $title_array
-     * @param type $collatex_output
-     */
-    private function showFirstTable($title_array, $collatex_output, $time) {
-
-        $out = $this->getOutput();
-        $article_url = $this->article_url;
-
-        $redirect_hover_message = $this->msg('collate-redirecthover');
-        $redirect_message = $this->msg('collate-redirect');
-
-        $save_hover_message = $this->msg('collate-savehover');
-        $save_message = $this->msg('collate-save');
-
-        $html = "
-       <div id = 'begincollate-buttons'>
-            <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
-            <input type='submit' class='begincollate-submitbutton-two' name ='redirect_to_start' title='$redirect_hover_message'  value='$redirect_message'>
-            </form>
-            
-            <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
-            <input type='submit' class='begincollate-submitbutton-two' name= 'save_current_table' title='$save_hover_message' value='$save_message'> 
-            <input type='hidden' name='time' value='$time'>  
-            </form>
-       </div>";
-
-        $html .= "<p>" . $this->msg('collate-success') . "</p>" . "<p>" . $this->msg('collate-tableread') . " " . $this->msg('collate-savetable') . "</p>";
-
-        $html .= $this->AddBeginCollateLoader();
-
-        $collate = new collate();
-
-        $html .= "<div id='begincollate-tablewrapper'>";
-
-        $html .= $collate->renderTable($title_array, $collatex_output);
-
-        $html .= "</div>";
-
-        return $out->addHTML($html);
     }
 
     private function handleExceptions($e) {
