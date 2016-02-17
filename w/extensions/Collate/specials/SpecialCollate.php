@@ -33,16 +33,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      * 4: when saving the table, the data is retrieved from the tempcollate table, saved to the collations table, a new wiki page is created, and the user is redirected to this page 
      * 
      */
-    private $user_name;
-    private $full_manuscripts_url;
-    private $posted_titles_array = array();
-    private $collection_array = array();
-    private $collection_hidden_array = array();
-    private $save_table = false;
     private $error_message = false;
-    private $manuscripts_namespace_url;
-    private $redirect_to_start = false;
-    private $time_identifier = null;
 
     public function __construct() {
 
@@ -62,9 +53,9 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      */
     public function execute() {
 
-        $this->setVariables();
-
         try {
+
+            $this->setVariables();
             $this->checkManuscriptDeskPermission();
 
             if ($this->requestWasPosted()) {
@@ -103,171 +94,89 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         }
 
         throw new \Exception('collate-error-request');
-
-        //check if the user tried to save a collation table
-        if ($this->save_table) {
-            return $this->processSaveTable();
-        }
     }
-
+    
+    private function getForm1() {
+        $collate_wrapper = new CollateWrapper($this->user_name);
+        $manuscripts_data = $collate_wrapper->getManuscriptsData();
+        $collection_data = $collate_wrapper->getCollectionData();
+        $collate_viewer = new CollateViewer($this->getOutput());
+        $collate_viewer->showForm1($manuscripts_data, $collection_data);
+        return true;
+    }
+    
     private function processForm1() {
         $form_data_getter = new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
-        list($manuscript_urls, $collection_data, $collection_titles) = $form_data_getter->getForm1Data();
-        $page_texts = $this->getTextsFromWikiPagesForSingleManuscriptPagesAndCollections($manuscript_urls, $collection_data);        
+        list($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles) = $form_data_getter->getForm1Data();
+        $page_titles = $this->getPageTitlesCorrespondingToPostedUrls($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles);
+        $page_texts = $this->getTextsFromWikiPages($manuscript_urls, $collection_urls_data);
         $collatex_converter = new CollatexConverter();
-        $collatex_output = $collatex_converter->execute($page_texts);
+        $collatex_output = $collatex_converter->execute($page_texts);        
+        $imploded_page_titles = $this->createImplodedPageTitles($page_titles);
+        $new_url = $this->makeUrlForNewPage($imploded_page_titles);
+        $time = idate('U');//time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are
+        $this->updateDatabase($page_titles, $imploded_page_titles, $new_url, $time, $collatex_output);
+        $collate_viewer = new CollateViewer($this->getOutput());
+        $collate_viewer->showCollatexOutput($page_titles, $collatex_output, $time);
+        return true; 
+    }
+    
+    /**
+     * This function processes the request when the user wants to save the collation table. Collate data is transferred from the 'tempcollate' table to
+     * the 'collations' table, a new page is made, and the user is redirected to this page
+     */
+    private function processSavePageRequest() {
+        $form_data_getter = new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        $time_identifier = $form_data_getter->getSavePageData();
+        $collate_wrapper = new CollateWrapper($this->user_name);
+        list($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) = $collate_wrapper->getSavePageData($time_identifier);
+        $local_url = $this->createNewWikiPage($new_url);
+        $collate_wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output);    
+        $collate_wrapper->incrementAlphabetNumbers($main_title_lowercase, 'AllCollations');  
+        return $this->getOutput()->redirect($local_url);     
     }
 
-    private function getTextsFromWikiPagesForSingleManuscriptPagesAndCollections(array $manuscript_urls, array $collection_data) {
-        $page_texts_manuscripts = $this->getPageTextsForSingleManuscriptPages($manuscript_urls);
-        $page_texts_collections = $this->getPageTextsForCollections($collection_data);    
-        return array_merge($page_texts_manuscripts, $page_texts_collections);
+    /**
+     * $titles are posted inside of hidden fields, which are always sent, and so the $titles corresponding to the $urls need to be found
+     */
+    private function getPageTitlesCorrespondingToPostedUrls($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles) {
+        $corresponding_manuscript_titles = $this->getCorrespondingTitles($manuscript_urls, $manuscript_titles, 'manuscript_urls');
+        $corresponding_collection_titles = $this->getCorrespondingTitles($collection_urls_data, $collection_titles, 'collection_urls');
+        return array_merge($corresponding_manuscript_titles, $corresponding_collection_titles);
     }
 
-    private function temp() {
-        
+    private function getCorrespondingTitles(array $urls, array $titles, $base_match = '') {
 
+        $corresponding_titles = array();
+        foreach ($titles as $key => $title) {
+            //remove everything except the $number_identifier
+            $number_identifier = filter_var($key, FILTER_SANITIZE_NUMBER_INT);
+            $match = $base_match . $number_identifier;
 
-        //construct all the titles, used to display the page titles and collection titles in the table
-        $titles_array = $this->constructTitles();
-
-        //construct an URL for the new page
-        list($main_title, $new_url) = $this->makeURL($titles_array);
-
-        //time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are
-        $time = idate('U');
-
-        $status = $this->prepareTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
-
-        if (!$status) {
-            return $this->showError('collate-error-database');
+            //see if this $match appears in $urls
+            if (isset($urls[$match])) {
+                //if it does appear, add the current $title to $corresponding_titles 
+                $corresponding_titles[$key] = $title;
+            }
         }
 
-        $this->showFirstTable($titles_array, $collatex_output, $time);
+        return $corresponding_titles;
+    }
+
+    private function getTextsFromWikiPages(array $manuscript_urls, array $collection_data) {
+        $page_texts_manuscripts = $this->getPageTextsForSingleManuscriptPages($manuscript_urls);
+        $page_texts_collections = $this->getPageTextsForCollections($collection_data);
+        return array_merge($page_texts_manuscripts, $page_texts_collections);
     }
 
     /**
      * This function intializes the $collate_wrapper, clears the tempcollate table, and inserts new data into the tempcollate table 
      */
-    private function prepareTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output) {
-
+    private function updateDatabase($titles_array, $main_title, $new_url, $time, $collatex_output) {
         $collate_wrapper = new CollateWrapper($this->user_name);
-
-        //delete old entries in the 'tempcollate' table
-        $status = $collate_wrapper->clearTempcollate($time);
-
-        if (!$status) {
-            return false;
-        }
-
-        //store new values in the 'tempcollate' table
-        $status = $collate_wrapper->storeTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
-
-        if (!$status) {
-            return false;
-        }
-
+        $collate_wrapper->clearOldCollatexOutput($time);
+        $collate_wrapper->storeTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
         return true;
-    }
-
-    /**
-     * This function processes the request when the user wants to save the collation table. Collate data is transferred from the 'tempcollate' table to
-     * the 'collations' table, preloaded wikitext is retrieved, a new page is made, and the user is redirected to
-     * this page
-     */
-    private function processSaveTable() {
-
-        $user_name = $this->user_name;
-        $collate_wrapper = new CollateWrapper($this->user_name);
-        $time_identifier = $this->time_identifier;
-
-        $status = $collate_wrapper->getTempcollate($time_identifier);
-
-        if (!$status) {
-            return $this->showError('collate-error-database');
-        }
-
-        list($titles_array, $new_url, $main_title, $main_title_lowercase, $collatex_output) = $status;
-
-        $local_url = $this->createNewPage($new_url);
-
-        if (!$local_url) {
-            return $this->showError('collate-error-wikipage');
-        }
-
-        $status = $collate_wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $titles_array, $collatex_output);
-
-        if (!$status) {
-            return $this->showError('collate-error-database');
-        }
-
-        //save data in alphabetnumbersTable   
-        $collate_wrapper->storeAlphabetnumbers($main_title_lowercase);
-
-        //redirect the user to the new page
-        return $this->getOutput()->redirect($local_url);
-    }
-
-    /**
-     * This function creates a new wikipage with preloaded wikitext
-     */
-    private function createNewPage($new_url) {
-
-        $title_object = Title::newFromText($new_url);
-        $local_url = $title_object->getLocalURL();
-
-        $context = $this->getContext();
-
-        $article = Article::newFromTitle($title_object, $context);
-
-        //make a new page
-        $editor_object = new EditPage($article);
-        $content_new = new wikitextcontent('<!--' . $this->msg('collate-newpage') . '-->');
-        $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97, false, null, $editor_object->contentFormat);
-
-        if (!$doEditStatus->isOK()) {
-            $errors = $doEditStatus->getErrorsArray();
-            return false;
-        }
-
-        return $local_url;
-    }
-
-    /**
-     *  This function constructs the $titles_array used by the table, and removes the base url   
-     */
-    private function constructTitles() {
-
-        $full_manuscripts_url = $this->full_manuscripts_url;
-        $posted_hidden_collection_titles = array();
-
-        if (isset($this->collection_hidden_array)) {
-            //hidden fields are always sent, and so the correct posted collection titles need to be identified
-            foreach ($this->collection_hidden_array as $key => $value) {
-
-                //remove everything except the number
-                $number = filter_var($key, FILTER_SANITIZE_NUMBER_INT);
-
-                //see if this collection name appears in $this->collection_array
-                $collection_match = 'collection' . $number;
-
-                if (isset($this->collection_array[$collection_match])) {
-                    //if it does appear in $this->collection array, add this collection name to $posted_hidden_collection_titles
-                    $posted_hidden_collection_titles[$key] = $value;
-                }
-            }
-        }
-
-        //merge these two arrays if collections were also checked
-        $titles_array = !empty($posted_hidden_collection_titles) ? array_merge($this->posted_titles_array, $posted_hidden_collection_titles) : $this->posted_titles_array;
-
-        foreach ($titles_array as &$full_url) {
-
-            //remove $full_manuscript_url from each url to get the title
-            $full_url = trim(str_replace($full_manuscripts_url, '', $full_url));
-        }
-
-        return $titles_array;
     }
 
     private function getPageTextsForSingleManuscriptPages(array $manuscript_urls) {
@@ -275,23 +184,24 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $texts = array();
         foreach ($manuscript_urls as $single_manuscript_url) {
 
-            $title = $this->constructTitleObject();
-            $single_page_text = $this->getSinglePageText($title);
+            $title = $this->constructTitleObjectFromUrl($single_manuscript_url);
+            $single_page_text = $this->getFilteredSinglePageText($title);
             $this->checkIfTextIsNotOnlyWhitespace($single_page_text);
             $texts[] = $single_page_text;
         }
 
         return $texts;
     }
-       private function getPageTextsForCollections(array $collection_data) {
 
-        foreach ($collection_data as $single_collection_url_array) {
+    private function getPageTextsForCollections(array $collection_data) {
+
+        foreach ($collection_data as $single_collection_urls) {
 
             $all_texts_for_one_collection = "";
 
-            foreach ($single_collection_url_array as $single_manuscript_url) {
-                $title = $this->constructTitleObject($single_manuscript_url);
-                $single_page_text = $this->getSinglePageText($title);
+            foreach ($single_collection_urls as $single_manuscript_url) {
+                $title = $this->constructTitleObjectFromUrl($single_manuscript_url);
+                $single_page_text = $this->getFilteredSinglePageText($title);
                 $all_texts_for_one_collection .= $single_page_text;
             }
 
@@ -302,7 +212,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         return $texts;
     }
 
-    private function constructTitleObject($single_manuscript_url = '') {
+    private function constructTitleObjectFromUrl($single_manuscript_url = '') {
         $title = Title::newFromText($single_manuscript_url);
 
         if (!$title->exists()) {
@@ -318,48 +228,29 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         }
     }
 
-    /**
-     * This function prepares the default page, in case no request was posted
-     */
-    private function getForm1() {
-        $collate_wrapper = new CollateWrapper($this->user_name);
-        $manuscripts_data = $collate_wrapper->getManuscriptsData();
-        $collection_data = $collate_wrapper->getCollectionData();
-        $collate_viewer = new CollateViewer($this->getOutput());
-        $collate_viewer->showForm1($manuscripts_data, $collection_data);
-        return true;
+    private function createImplodedPageTitles(array $page_titles){
+        return implode('', $page_titles);
     }
 
     /**
      * This function makes a new URL, which will be used when the user saves the current table
      */
-    private function makeURL($title_array) {
-
+    private function makeUrlForNewPage($imploded_page_titles = '') {
         $user_name = $this->user_name;
-        $imploded_title_array = implode('', $title_array);
-
         $year_month_day = date('Ymd');
         $hours_minutes_seconds = date('his');
-
-        return array($imploded_title_array, 'Collations:' . $user_name . "/" . $imploded_title_array . "/" . $year_month_day . "/" . $hours_minutes_seconds);
+        return 'Collations:' . $user_name . "/" . $imploded_page_titles . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
-
-    /**
-     * This function fetches the correct error message, and redirects to showDefaultPage()
-     * 
-     * @param type $type
-     */
-    private function showError($type) {
-
-        $error_message = $this->msg($type);
-
-        $this->error_message = $error_message;
-
-        return $this->getForm1($this->getOutput());
-    }
-
+    
     private function handleExceptions($e) {
         
+//        
+//        
+//        $error_message = $this->msg($type);
+//
+//        $this->error_message = $error_message;
+//
+//        return $this->getForm1($this->getOutput());
     }
 
 }

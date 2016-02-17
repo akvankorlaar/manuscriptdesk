@@ -26,8 +26,8 @@ class ManuscriptDeskBaseWrapper {
 
     protected $user_name;
 
-    public function __construct() {
-        
+    public function __construct($user_name = "") {
+        $this->user_name = $user_name;
     }
 
     /**
@@ -62,7 +62,7 @@ class ManuscriptDeskBaseWrapper {
 
     /**
      * Subtract entries in the alphabetnumbers table when a page is deleted
-     */  //AllCollations ..context information
+     */
     public function subtractAlphabetnumbers($main_title_lowercase = '', $alphabetnumbers_context = '') {
 
         if (!is_string($main_title_lowercase) || !is_string($alphabetnumbers_context)) {
@@ -72,7 +72,22 @@ class ManuscriptDeskBaseWrapper {
         $first_character_of_page = $this->getFirstCharachter($main_title_lowercase);
         $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersData($first_character_of_page);
         $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter - 1;
-        $this->updateAlphabetNumbers($new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
+        $this->updateAlphabetNumbers($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
+    }
+
+    /**
+     * Increments entries in the alphabetnumbers table when a page is added
+     */
+    public function incrementAlphabetNumbers($main_title_lowercase = '', $alphabetnumbers_context = '') {
+
+        if (!is_string($main_title_lowercase) || !is_string($alphabetnumbers_context)) {
+            return true;
+        }
+
+        $first_character_of_page = $this->getFirstCharachter($main_title_lowercase);
+        $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersData($first_character_of_page);
+        $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter + 1;
+        $this->updateAlphabetNumbers($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
     }
 
     /**
@@ -84,10 +99,10 @@ class ManuscriptDeskBaseWrapper {
 
         $res = $dbr->select(
             'alphabetnumbers', //from
-            array(//values
-          $first_charachter_of_page,
+            array(
+          $first_charachter_of_page, //values
             ), array(
-          'alphabetnumbers_context = ' . $dbr->addQuotes($alphabetnumbers_context),
+          'alphabetnumbers_context = ' . $dbr->addQuotes($alphabetnumbers_context), //conditions
             ), __METHOD__
         );
 
@@ -96,13 +111,7 @@ class ManuscriptDeskBaseWrapper {
         }
 
         $s = $res->fetchObject();
-        $number_of_pages_starting_with_this_charachter = (int) $s->$first_charachter_of_page;
-
-        if ($intvalue < 0) {
-            $intvalue = 0;
-        }
-
-        return $number_of_pages_starting_with_this_charachter;
+        return (int) $s->first_charachter_of_page;
     }
 
     private function getFirstCharachter($main_title_lowercase = '') {
@@ -147,13 +156,13 @@ class ManuscriptDeskBaseWrapper {
         return $first_char;
     }
 
-    private function updateAlphabetNumbers($number_of_pages = 0, $aphabetnumbers_context = '') {
+    private function updateAlphabetNumbers($first_charachter_of_page, $number_of_pages = 0, $aphabetnumbers_context = '') {
         $dbw = wfGetDB(DB_MASTER);
 
         $dbw->update(
             'alphabetnumbers', //select table
             array(//insert values
-          $first_char => $number_of_pages,
+          $first_charachter_of_page => $number_of_pages,
             ), array(
           'alphabetnumbers_context = ' . $dbw->addQuotes($alphabetnumbers_context),
             ), __METHOD__

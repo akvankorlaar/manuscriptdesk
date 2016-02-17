@@ -1,5 +1,28 @@
 <?php
 
+/**
+ * This file is part of the Collate extension
+ * Copyright (C) 2015 Arent van Korlaar
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * @package MediaWiki
+ * @subpackage Extensions
+ * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
+ * @copyright 2015 Arent van Korlaar
+ */
+
 //there should be a base formdatagetter........
 class CollateFormDataGetter {
 
@@ -28,7 +51,8 @@ class CollateFormDataGetter {
         $posted_names = $request->getValueNames();
 
         $manuscript_urls = array();
-        $collection_data = array();
+        $manuscript_titles = array();
+        $collection_urls_data = array();
         $collection_titles = array();
 
         foreach ($posted_names as $key => $checkbox) {
@@ -36,8 +60,11 @@ class CollateFormDataGetter {
             //remove the numbers from $checkbox
             $checkbox_without_numbers = trim(str_replace(range(0, 9), '', $checkbox));
 
-            if ($checkbox_without_numbers === 'manuscripts_urls') {
+            if ($checkbox_without_numbers === 'manuscript_urls') {
                 $manuscript_urls[$checkbox] = $validator->validateStringUrl($request->getText($checkbox));
+            }
+             elseif ($checkbox_without_numbers === 'manuscript_titles') {
+                $manuscript_titles[$checkbox] = $validator->validateString(($request->getText($checkbox)));
             }
             elseif ($checkbox_without_numbers === 'collection_urls') {
                 $collection_urls[$checkbox] = $validator->validateStringUrl(json_decode($request->getText($checkbox)));
@@ -47,7 +74,7 @@ class CollateFormDataGetter {
             }
         }
 
-        return array($manuscript_urls, $collection_data, $collection_titles);
+        return array($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles);
     }
 
     private function checkForm1Data(array $data) {
@@ -57,23 +84,19 @@ class CollateFormDataGetter {
         $minimum_manuscripts = $wgCollationOptions['wgmin_collation_pages'];
         $maximum_manuscripts = $wgCollationOptions['wgmax_collation_pages'];
 
-        if (count($data) !== 3) {
+        if (count($data) !== 4) {
             throw new \Exception('collate-error-internal');
         }
 
-        list($manuscript_urls, $collection_data, $collection_titles) = $data;
-        
-        if (count($collection_data) !== count($collection_titles)){
-            throw new \Exception('collate-error-request');
-        }
+        list($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles) = $data;
 
         //check if the user has selected too few pages
-        if (count($manuscript_urls) + count($collection_data) < $minimum_manuscripts) {
+        if (count($manuscript_urls) + count($collection_urls_data) < $minimum_manuscripts) {
             throw new \Exception('collate-error-fewtexts');
         }
 
         $total_collection_urls = 0;
-        foreach ($collection_data as $collection_name => $single_collection_urls) {
+        foreach ($collection_urls_data as $collection_name => $single_collection_urls) {
             $total_collection_urls += count($single_collection_urls);
         }
 
@@ -83,18 +106,10 @@ class CollateFormDataGetter {
         }
     }
 
-    private function temp() {
-
-//            }elseif($checkbox_without_numbers === 'time'){
-//        $this->time_identifier = $this->validateInput($request->getText('time'));
-//                
-//      }elseif($checkbox_without_numbers === 'save_current_table'){
-//        $this->save_table = true;
-//       
-//      }elseif($checkbox_without_numbers === 'redirect_to_start'){
-//        $this->redirect_to_start = true; 
-//        break; 
-//      }
+    public function getSavePageData() {
+        $validator = $this->validator;
+        $request = $this->request; 
+        return $validator->validateStringNumber($request->getText('time'));
     }
 
 }

@@ -24,14 +24,10 @@
  */
 class CollateWrapper extends ManuscriptDeskBaseWrapper {
 
-    public function __construct($user_name = "") {
-        $this->user_name = $user_name;
-    }
-
     public function getCollectionData() {
 
-        global $wgCollationOptions; 
-        
+        global $wgCollationOptions;
+
         $user_name = $this->user_name;
         $dbr = wfGetDB(DB_SLAVE);
         $collection_data = array();
@@ -61,7 +57,6 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
                       'manuscripts_url' => array($s->manuscripts_url),
                       'manuscripts_title' => array($s->manuscripts_title),
                     );
-
                 }
                 //if the collection already has been added, append the new manuscripts_url to the current array
                 else {
@@ -87,8 +82,8 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      * This function fetches the data showing which pages have been created by the current user by retrieving this data from the 'manuscripts' table
      */
     public function getManuscriptsData() {
-        
-        global $wgCollationOptions; 
+
+        global $wgCollationOptions;
 
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
@@ -119,26 +114,25 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
                 $manuscript_urls[] = $s->manuscripts_url;
             }
         }
-        
+
         if (count($manuscript_urls) < $minimum_manuscripts) {
-                throw new \Exception('collate-error-fewmanuscripts');
+            throw new \Exception('collate-error-fewmanuscripts');
         }
 
         return array(
-          'manuscript_urls' => $manuscript_urls, 
+          'manuscript_urls' => $manuscript_urls,
           'manuscript_titles' => $manuscript_titles
-            );
+        );
     }
 
     /**
      * This function gets the stored collate values from 'tempcollate'
      */
-    public function getTempcollate($time_identifier) {
+    public function getSavePageData($time_identifier) {
 
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
 
-        //Database query
         $res = $dbr->select(
             'tempcollate', //from
             array(
@@ -155,29 +149,25 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
             ), __METHOD__
         );
 
-        if ($res->numRows() === 1) {
-            $s = $res->fetchObject();
-
-            $titles_array = $s->tempcollate_titles_array;
-            $new_url = $s->tempcollate_new_url;
-            $main_title = $s->tempcollate_main_title;
-            $main_title_lowercase = $s->tempcollate_main_title_lowercase;
-            $collatex_output = $s->tempcollate_collatex;
-
-            return array($titles_array, $new_url, $main_title, $main_title_lowercase, $collatex_output);
+        if ($res->numRows() !== 1) {
+            throw new \Exception('collate-error-database');
         }
-        else {
 
-            return false;
-        }
+        $s = $res->fetchObject();
+
+        $titles_array = $s->tempcollate_titles_array;
+        $new_url = $s->tempcollate_new_url;
+        $main_title = $s->tempcollate_main_title;
+        $main_title_lowercase = $s->tempcollate_main_title_lowercase;
+        $collatex_output = $s->tempcollate_collatex;
+
+        return array($titles_array, $new_url, $main_title, $main_title_lowercase, $collatex_output);
     }
 
     /**
-     * Insert the result of the collation into 'tempcollate', which will be used when the user wants to save the current table
-     *  
-     * @param type $collatex_output
+     * Insert the result of the collation into 'tempcollate', which will be used when the user wants to save the current Collatex output data
      */
-    public function storeTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output) {
+    public function storeTempcollate(array $titles_array, $main_title = '', $new_url = '', $time, $collatex_output) {
 
         $titles_array = json_encode($titles_array);
         $main_title_lowercase = strtolower($main_title);
@@ -197,13 +187,8 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
             ), __METHOD__, 'IGNORE'
         );
 
-        if ($dbw->affectedRows()) {
-            //insert succeeded
-            return true;
-        }
-        else {
-            //return error    
-            return false;
+        if (!$dbw->affectedRows()) {
+            throw new \Exception('collate-error-database');
         }
     }
 
@@ -211,7 +196,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      * This function checks if there are other stored values for this user in 'tempcollate'. If the time difference between $current_time
      * and $time of the stored values is larger than $this->hours_before_delete, the values will be deleted 
      */
-    public function clearTempcollate($current_time) {
+    public function clearOldCollatexOutput($time) {
 
         global $wgCollationOptions;
 
@@ -220,7 +205,6 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         $time_array = array();
         $hours_before_delete = $wgCollationOptions['tempcollate_hours_before_delete'];
 
-        //Database query
         $res = $dbr->select(
             'tempcollate', //from
             array(
@@ -233,21 +217,14 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
             )
         );
 
-        //while there are still titles in this query
         while ($s = $res->fetchObject()) {
-
             $time_array[] = $s->tempcollate_time;
         }
 
-        foreach ($time_array as $index => $time) {
+        foreach ($time_array as $time) {
 
-            if ($current_time - $time > ($hours_before_delete * 3600)) {
+            if ($time - $time > ($hours_before_delete * 3600)) {
                 $status = $this->deleteTempcollate($time);
-
-                //deletion of an element failed, so something went wrong
-                if (!$status) {
-                    return false;
-                }
             }
         }
 
@@ -256,9 +233,6 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
 
     /**
      * This function deletes entries from the 'tempcollate' table
-     * 
-     * @param type $time
-     * @return boolean
      */
     private function deleteTempcollate($time) {
 
@@ -272,25 +246,17 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
           'tempcollate_time = ' . $dbw->addQuotes($time),
             ), __METHOD__);
 
-        if ($dbw->affectedRows()) {
-            //something was deleted from the tempcollate table  
-            return true;
+        if (!$dbw->affectedRows()) {
+            throw new \Exception('collate-error-database');
         }
-        else {
-            //nothing was deleted
-            return false;
-        }
+
+        return true;
     }
 
     /**
      * This function stores the collation data in 'collations' when the user chooses to save the current table
-     * 
-     * @param type $new_url
-     * @param type $main_title
-     * @param type $main_title_lowercase
-     * @return boolean
      */
-    public function storeCollations($new_url, $main_title, $main_title_lowercase, $titles_array, $collatex_output) {
+    public function storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) {
 
         $user_name = $this->user_name;
         $date = date("d-m-Y H:i:s");
@@ -304,107 +270,15 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
           'collations_date' => $date,
           'collations_main_title' => $main_title,
           'collations_main_title_lowercase' => $main_title_lowercase,
-          'collations_titles_array' => $titles_array,
+          'collations_titles_array' => $page_titles,
           'collations_collatex' => $collatex_output
             ), __METHOD__, 'IGNORE');
-        if ($dbw->affectedRows()) {
-            //insert succeeded
-            return true;
+        
+        if (!$dbw->affectedRows()) {
+            throw new \Exception('collate-error-database');
         }
-        else {
-            //return error
-            return false;
-        }
-    }
-
-    /**
-     * This function increments the alphabetnumbers table. The first letter or digit of the $posted_title is extracted, and the value is incremented in the appropriate place.
-     * The alphabetnumbers table is used to visualize the number of pages in different categories (used in for example: Special:AllCollections)
-     * 
-     * @param type $collection_title
-     * @param type $user_name    
-     * @return boolean
-     */
-    public function storeAlphabetnumbers($main_title_lowercase) {
-
-        $first_char = substr($main_title_lowercase, 0, 1);
-
-        if (preg_match('/[0-9]/', $first_char)) {
-
-            switch ($first_char) {
-                case '0':
-                    $first_char = 'zero';
-                    break;
-                case '1':
-                    $first_char = 'one';
-                    break;
-                case '2':
-                    $first_char = 'two';
-                    break;
-                case '3':
-                    $first_char = 'three';
-                    break;
-                case '4':
-                    $first_char = 'four';
-                    break;
-                case '5':
-                    $first_char = 'five';
-                    break;
-                case '6':
-                    $first_char = 'six';
-                    break;
-                case '7':
-                    $first_char = 'seven';
-                    break;
-                case '8':
-                    $first_char = 'eight';
-                    break;
-                case '9':
-                    $first_char = 'nine';
-                    break;
-            }
-        }
-
-        $alphabetnumbers_context = 'AllCollations';
-
-        //first select the old value, increment it by one, and update the value. Ideally this should be done in 1 update statement, but there seems to be no other way using
-        //Mediawiki's database wrapper
-        $dbr = wfGetDB(DB_SLAVE);
-
-        $res = $dbr->select(
-            'alphabetnumbers', //from
-            array(//values
-          $first_char,
-            ), array(
-          'alphabetnumbers_context = ' . $dbr->addQuotes($alphabetnumbers_context),
-            ), __METHOD__
-        );
-
-        //there should only be 1 result
-        if ($res->numRows() === 1) {
-            $s = $res->fetchObject();
-            $intvalue = (int) (($s->$first_char) + 1);
-
-            $dbw = wfGetDB(DB_MASTER);
-
-            $dbw->update(
-                'alphabetnumbers', //select table
-                array(//insert values
-              $first_char => $intvalue,
-                ), array(
-              'alphabetnumbers_context = ' . $dbw->addQuotes($alphabetnumbers_context),
-                ), __METHOD__
-            );
-
-            if ($dbw->affectedRows()) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-
-        return false;
+        
+        return true; 
     }
 
     /**

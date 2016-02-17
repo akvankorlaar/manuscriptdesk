@@ -25,6 +25,8 @@
  * Idea: Refractor code and use interfaces. For example, there is some duplication in the execute and handleErrors methods
  */
 class ManuscriptDeskBaseSpecials extends SpecialPage {
+    
+    protected $user_name; 
 
     public function __construct($page_name) {
         parent::__construct($page_name);
@@ -76,9 +78,6 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         return true;
     }
 
-    /**
-     * This function checks if a request was posted
-     */
     protected function requestWasPosted() {
 
         $request = $this->getRequest();
@@ -90,16 +89,10 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         return true;
     }
 
-    /**
-     * This function retrieves the wiki text from a page
-     */
-    protected function getSinglePageText(Title $title) {
-
+    protected function getFilteredSinglePageText(Title $title) {
         $article_object = Wikipage::factory($title);
         $raw_text = $article_object->getRawText();
-
         $filtered_raw_text = $this->filterText($raw_text);
-
         return $filtered_raw_text;
     }
 
@@ -137,7 +130,7 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         return $raw_text;
     }
 
-    protected function createNewWikiPage($new_url) {
+    protected function createNewWikiPage($new_url = '') {
 
         $title_object = Title::newFromText($new_url);
         $local_url = $title_object->getLocalURL();
@@ -156,9 +149,6 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         return $local_url;
     }
 
-    /**
-     * Check if form 1 was posted
-     */
     protected function form1WasPosted() {
         $request = $this->getRequest();
         if ($request->getText('form1Posted') !== '') {
@@ -166,6 +156,24 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         }
 
         return false;
+    }
+
+    protected function redirectBackWasRequested() {
+        $request = $this->getRequest();
+        if ($request->getText('redirect') !== '') {
+            return true;
+        }
+
+        return false;
+    }
+    
+    protected function savePageWasRequested() {
+        $request = $this->getRequest();
+        if ($request->getText('save_current_page') === '') {
+            return false;
+        }
+
+        return true;
     }
 
 }

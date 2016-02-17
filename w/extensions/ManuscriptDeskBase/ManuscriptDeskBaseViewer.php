@@ -27,8 +27,8 @@ class ManuscriptDeskBaseViewer {
     protected $out;
     protected $max_int_formfield_length = 5;
 
-    public function __construct() {
-        
+    public function __construct($out) {
+        $this->out = $out;
     }
 
     protected function HTMLSpecialCharachtersArray(array &$array) {

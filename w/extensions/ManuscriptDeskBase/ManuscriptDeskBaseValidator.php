@@ -94,7 +94,7 @@ class ManuscriptDeskBaseValidator {
     /**
      * This function checks if basic form conditions are met for numbers. Field specific validation is done later 
      */
-    public function validateNumber($input) {
+    public function validateStringNumber($input) {
 
         //string containting 0 is also seen as empty
         if (empty($input) && $input !== '0') {

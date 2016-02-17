@@ -85,10 +85,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * Main entry point for the page
      */
     public function execute() {
-
-        $this->setVariables();
-
-        try {
+     
+        try{
+            $this->setVariables();
             $this->checkPermission();
 
             if ($this->requestWasPosted()) {
@@ -132,15 +131,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         }
 
         throw new \Exception('stylometricanalysis-error-request');
-    }
-
-    private function redirectBackWasRequested() {
-        $request = $this->getRequest();
-        if ($request->getText('redirect') !== '') {
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -252,7 +242,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
                         throw new \Exception('stylometricanalysis-error-notexists');
                     }
 
-                    $single_page_text = $this->getSinglePageText($title_object);
+                    $single_page_text = $this->getFilteredSinglePageText($title_object);
                     //add $single_page_text to $single_page_texts
                     $all_texts_for_one_collection .= $single_page_text;
                 }
@@ -337,15 +327,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $dir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'ManuscriptDeskAnalysis.py';
         //test.py      
         return $python_path . ' ' . $dir;
-    }
-
-    private function savePageWasRequested() {
-        $request = $this->getRequest();
-        if ($request->getText('save_current_page') === '') {
-            return false;
-        }
-
-        return true;
     }
 
     /**

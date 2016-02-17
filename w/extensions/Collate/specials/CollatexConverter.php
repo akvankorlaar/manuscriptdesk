@@ -24,9 +24,6 @@
  */
 class CollatexConverter {
 
-    /**
-     * Text converter. Converts array text to json format, and sends it to collatex
-     */
     public function __construct() {
         
     }
@@ -36,7 +33,7 @@ class CollatexConverter {
         $curl = $this->constructCurlCollatexCaller($json_encoded_text);
         $result = $this->executeCurlCollatexCaller($curl);
         $this->checkForCollatexOutputErrors($result);
-        return true;
+        return $result;
     }
 
     private function convertToFormatAcceptableByCollatex(array $text_array) {

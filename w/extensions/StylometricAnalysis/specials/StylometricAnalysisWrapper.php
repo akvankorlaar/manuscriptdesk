@@ -118,7 +118,6 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
 
         //while there are still titles in this query
         while ($s = $res->fetchObject()) {
-
             $time_array[] = $s->tempstylometricanalysis_time;
             $full_outputpath1_array[] = $s->tempstylometricanalysis_full_outputpath1;
             $full_outputpath2_array[] = $s->tempstylometricanalysis_full_outputpath2;

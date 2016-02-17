@@ -24,10 +24,6 @@
  */
 class CollateViewer extends ManuscriptDeskBaseViewer {
 
-    public function __construct($out) {
-        $this->out = $out;
-    }
-
     /**
      * This function adds html used for the begincollate loader (see ext.begincollate)
      * 
@@ -62,7 +58,8 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $software_message = $this->msg('collate-software');
         $lastedit_message = $this->msg('collate-lastedit');
 
-        $html = "<table id='begincollate-infobox'>";
+        $html = "";
+        $html .= "<table id='begincollate-infobox'>";
         $html .= "<tr><th>$about_message</th></tr>";
         $html .= "<tr><td>$version_message</td></tr>";
         $html .= "<tr><td>$software_message <a href= 'http://collatex.net' target='_blank'> Collatex Tools 1.7.0</a>.</td></tr>";
@@ -103,7 +100,8 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
             $title_name = $manuscript_titles[$index];
 
             $html .= "<td>";
-            $html .="<input type='checkbox' class='begincollate-checkbox' name='manuscripts_urls$index' value='" . htmlspecialchars($url) . "'>" . htmlspecialchars($title_name);
+            $html .= "<input type='checkbox' class='begincollate-checkbox' name='manuscript_urls$a' value='" . htmlspecialchars($url) . "'>" . htmlspecialchars($title_name);
+            $html .= "<input type='hidden' name='manuscript_titles$a' value='" . htmlspecialchars($title_name) . "'>";
             $html .= "</td>";
             $a+=1;
         }
@@ -134,12 +132,12 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
                 $collection_text = $this->msg('collate-contains') . $manuscript_pages_within_collection . '.';
 
                 //add a checkbox for the collection
-                $html .="<td>";
-                $html .="<input type='checkbox' class='begincollate-checkbox-col' name='collection_urls$a' value='$json_manuscript_collection_urls'>" . htmlspecialchars($collection_name);
-                $html .="<input type='hidden' name='collection_titles$a' value='" . htmlspecialchars($collection_name) . "'>";
+                $html .= "<td>";
+                $html .= "<input type='checkbox' class='begincollate-checkbox-col' name='collection_urls$a' value='$json_manuscript_collection_urls'>" . htmlspecialchars($collection_name);
+                $html .= "<input type='hidden' name='collection_titles$a' value='" . htmlspecialchars($collection_name) . "'>";
                 $html .= "<br>";
                 $html .= "<span class='begincollate-span'>" . $collection_text . "</span>";
-                $html .="</td>";
+                $html .= "</td>";
                 $a = ++$a;
             }
 
@@ -156,7 +154,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $html .= "<input type='submit' disabled id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message>";
         $html .= "<input type='hidden' name='form1Posted' value='form1Posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
-        $html .="</form>";
+        $html .= "</form>";
         $html .= "<br>";
         $html .= $this->AddBeginCollateLoader();
 
@@ -166,59 +164,67 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
     /**
      * This function constructs the HTML collation table, and buttons
      */
-    public function showFirstTable(array $title_array, $collatex_output, $time) {
+    public function showCollatexOutput(array $page_titles, $collatex_output, $time) {
+
+        global $wgArticleUrl;
 
         $out = $this->out;
-        $article_url = $this->article_url;
+        $article_url = $wgArticleUrl;
+        $edit_token = $out->getUser()->getEditToken();
 
         $redirect_hover_message = $this->msg('collate-redirecthover');
         $redirect_message = $this->msg('collate-redirect');
 
         $save_hover_message = $this->msg('collate-savehover');
         $save_message = $this->msg('collate-save');
-
-        $html = "
-       <div id = 'begincollate-buttons'>
-            <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
-            <input type='submit' class='begincollate-submitbutton-two' name ='redirect_to_start' title='$redirect_hover_message'  value='$redirect_message'>
-            </form>
+        
+        $html = '';
+        $html .= "<div id = 'begincollate-buttons'>";
+        $html .= "<form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'>";
+        $html .= "<input type='submit' class='begincollate-submitbutton-two' name='redirect' title='$redirect_hover_message'  value='$redirect_message'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
             
-            <form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'> 
-            <input type='submit' class='begincollate-submitbutton-two' name= 'save_current_table' title='$save_hover_message' value='$save_message'> 
-            <input type='hidden' name='time' value='$time'>  
-            </form>
-       </div>";
+        $html .= "<form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'>";
+        $html .= "<input type='submit' class='begincollate-submitbutton-two' name='save_current_page' title='$save_hover_message' value='$save_message'>"; 
+        $html .= "<input type='hidden' name='time' value='$time'>";  
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
+        $html .= "</div>";
 
         $html .= "<p>" . $this->msg('collate-success') . "</p>" . "<p>" . $this->msg('collate-tableread') . " " . $this->msg('collate-savetable') . "</p>";
 
         $html .= $this->AddBeginCollateLoader();
 
-        $collate = new collate();
-
         $html .= "<div id='begincollate-tablewrapper'>";
 
-        $html .= $collate->renderTable($title_array, $collatex_output);
+        $html .= $this->getHTMLforCollatexTable($page_titles, $collatex_output);
 
         $html .= "</div>";
 
         return $out->addHTML($html);
     }
 
-    /**
-     * Generate HTML for the collate table, based on collatex output
-     */
     public function showCollateNamespacePage(array $data) {
 
+        $out = $this->out;
         $user_name = isset($data['user_name']) ? $data['user_name'] : '';
         $date = isset($data['date']) ? $data['date'] : '';
-        $titles_array = isset($data['titles_array']) ? $data['titles_array'] : '';
+        $page_titles = isset($data['titles_array']) ? $data['titles_array'] : '';
         $collatex_output = isset($data['collatex_output']) ? $data['collatex_output'] : '';
 
         $html = "";
 
-        if ($user_name && $date) {
+        if (!empty($user_name) && !empty($date)) {
             $html .= "This page has been created by: " . htmlspecialchars($user_name) . "<br> Date: " . htmlspecialchars($date) . "<br> ";
         }
+
+        $html .= $this->getHTMLforCollatexTable($page_titles, $collatex_output);
+
+        return $out->addHTML($html);
+    }
+
+    private function getHTMLforCollatexTable(array $page_titles, $collatex_output) {
 
         $collatex_output = preg_replace('/[<>]/', '', $collatex_output);
 
