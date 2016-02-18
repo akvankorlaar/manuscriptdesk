@@ -27,16 +27,15 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     public $error_message = '';
     private $minimum_pages_per_collection;
     private $minimum_collections;
-    private $user_name;
     private $python_path;
-    private $form;
+    private $form_type;
     private $base_outputpath;
     private $base_linkpath;
     private $full_outputpath1;
     private $full_outputpath2;
     private $min_words_collection;  //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
     private $collection_data;
-    private $collection_name_data; 
+    private $collection_name_data;
     private $pystyl_config;
 
     //PyStyl $config_array information: 
@@ -85,15 +84,15 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * Main entry point for the page
      */
     public function execute() {
-     
-        try{
+
+        try {
             $this->setVariables();
-            $this->checkPermission();
+            $this->checkManuscriptDeskPermission();
 
             if ($this->requestWasPosted()) {
                 $this->processRequest();
                 return true;
-    }
+            }
 
             $this->getForm1();
             return true;
@@ -153,7 +152,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     private function processForm1() {
         $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
-        $this->form = 'Form1';
+        $this->form_type = 'Form1';
         $this->collection_data = $collection_data = $form_data_getter->getForm1Data();
         $this->collection_name_data = $this->constructCollectionNameData();
         $viewer = new StylometricAnalysisViewer($this->getOutput());
@@ -162,7 +161,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     private function processForm2() {
         $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
-        $this->form = 'Form2';
+        $this->form_type = 'Form2';
         $this->collection_data = $form_data_getter->getForm2CollectionData();
         $this->collection_name_data = $this->constructCollectionNameData();
         $this->pystyl_config = $form_data_getter->getForm2PystylConfigurationData();
@@ -238,7 +237,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
                     if (!$title_object->exists()) {
                         wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
-                        $this->form = 'Form1';
+                        $this->form_type = 'Form1';
                         throw new \Exception('stylometricanalysis-error-notexists');
                     }
 
@@ -274,7 +273,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $pystyl_config = $this->pystyl_config;
 
         if ($collection_n_words < $this->min_words_collection) {
-            $this->form = 'Form1';
+            $this->form_type = 'Form1';
             throw new \Exception('stylometricanalysis-error-toosmall');
         }
 
@@ -446,7 +445,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return $viewer->showFewCollectionsError($error_message);
         }
 
-        if ($this->form === 'Form2' && isset($this->collection_data) && isset($this->collection_name_data)) {
+        if ($this->form_type === 'Form2' && isset($this->collection_data) && isset($this->collection_name_data)) {
             return $viewer->showForm2($this->collection_data, $this->collection_name_data, $this->getContext(), $error_message);
         }
 

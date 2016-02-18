@@ -44,5 +44,10 @@ class ManuscriptDeskBaseViewer {
 
         return $array;
     }
+    
+    public function showNoPermissionError($error_message = '') {
+        $this->out->addHTML($error_message);
+        return true;
+    }
 
 }

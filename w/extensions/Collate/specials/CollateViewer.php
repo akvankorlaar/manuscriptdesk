@@ -43,7 +43,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
     /**
      * This function constructs the HTML for the default page
      */
-    public function showForm1(array $manuscript_data, array $collection_data) {
+    public function showForm1(array $manuscript_data, array $collection_data, $error_message = '') {
 
         global $wgArticleUrl;
         $out = $this->out;
@@ -51,12 +51,12 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $manuscript_titles = isset($manuscript_data['manuscript_titles']) ? $manuscript_data['manuscript_titles'] : array();
         $article_url = $wgArticleUrl;
 
-        $out->setPageTitle($this->msg('collate-welcome'));
+        $out->setPageTitle($out->msg('collate-welcome'));
 
-        $about_message = $this->msg('collate-about');
-        $version_message = $this->msg('collate-version');
-        $software_message = $this->msg('collate-software');
-        $lastedit_message = $this->msg('collate-lastedit');
+        $about_message = $out->msg('collate-about');
+        $version_message = $out->msg('collate-version');
+        $software_message = $out->msg('collate-software');
+        $lastedit_message = $out->msg('collate-lastedit');
 
         $html = "";
         $html .= "<table id='begincollate-infobox'>";
@@ -66,23 +66,22 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $html .= "<tr><td id='begincollate-infobox-lasttd'><small>$lastedit_message</small></td></tr>";
         $html .= "</table>";
 
-        $html .= "<p>" . $this->msg('collate-instruction1') . "</p>";
+        $html .= "<p>" . $out->msg('collate-instruction1') . "</p>";
 
         if (!empty($collection_data)) {
-            $html .= "<p>" . $this->msg('collate-instruction2') . "</p>";
+            $html .= "<p>" . $out->msg('collate-instruction2') . "</p>";
         }
 
         $html .= "<div id='javascript-error'></div>";
 
-        if ($this->error_message) {
-            $error_message = $this->error_message;
+        if (!empty($error_message)) {
             $html .= "<br>";
             $html .= "<div class = 'error'>$error_message</div>";
         }
 
-        $manuscript_message = $this->msg('collate-manuscriptpages');
+        $manuscript_message = $out->msg('collate-manuscriptpages');
 
-        $html .= "<form id='begincollate-form' action='" . $article_url . "Special:BeginCollate' method='post'>";
+        $html .= "<form id='begincollate-form' action='" . $article_url . "Special:Collate' method='post'>";
         $html .= "<h3>$manuscript_message</h3>";
         $html .= "<table class='begincollate-table'>";
 
@@ -111,7 +110,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
 
         if (!empty($collection_data)) {
 
-            $collection_message = $this->msg('collate-collections');
+            $collection_message = $out->msg('collate-collections');
             $html .= "<h3>$collection_message</h3>";
             $html .= "<table class='begincollate-table'>";
 
@@ -129,7 +128,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
                 //encode the array into json to be able to place it in the checkbox value
                 $json_manuscript_collection_urls = json_encode($manuscript_collection_urls);
                 $manuscript_pages_within_collection = htmlspecialchars(implode(', ', $single_collection_data['manuscripts_title']));
-                $collection_text = $this->msg('collate-contains') . $manuscript_pages_within_collection . '.';
+                $collection_text = $out->msg('collate-contains') . $manuscript_pages_within_collection . '.';
 
                 //add a checkbox for the collection
                 $html .= "<td>";
@@ -147,8 +146,8 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
 
         $html .= "<br><br>";
 
-        $submit_hover_message = $this->msg('collate-hover');
-        $submit_message = $this->msg('collate-submit');
+        $submit_hover_message = $out->msg('collate-hover');
+        $submit_message = $out->msg('collate-submit');
         $edit_token = $out->getUser()->getEditToken();
 
         $html .= "<input type='submit' disabled id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message>";
@@ -172,27 +171,27 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $article_url = $wgArticleUrl;
         $edit_token = $out->getUser()->getEditToken();
 
-        $redirect_hover_message = $this->msg('collate-redirecthover');
-        $redirect_message = $this->msg('collate-redirect');
+        $redirect_hover_message = $out->msg('collate-redirecthover');
+        $redirect_message = $out->msg('collate-redirect');
 
-        $save_hover_message = $this->msg('collate-savehover');
-        $save_message = $this->msg('collate-save');
+        $save_hover_message = $out->msg('collate-savehover');
+        $save_message = $out->msg('collate-save');
         
         $html = '';
         $html .= "<div id = 'begincollate-buttons'>";
-        $html .= "<form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'>";
+        $html .= "<form class='begincollate-form-two' action='" . $article_url . "Special:Collate' method='post'>";
         $html .= "<input type='submit' class='begincollate-submitbutton-two' name='redirect' title='$redirect_hover_message'  value='$redirect_message'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
             
-        $html .= "<form class='begincollate-form-two' action='" . $article_url . "Special:BeginCollate' method='post'>";
+        $html .= "<form class='begincollate-form-two' action='" . $article_url . "Special:Collate' method='post'>";
         $html .= "<input type='submit' class='begincollate-submitbutton-two' name='save_current_page' title='$save_hover_message' value='$save_message'>"; 
         $html .= "<input type='hidden' name='time' value='$time'>";  
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
         $html .= "</div>";
 
-        $html .= "<p>" . $this->msg('collate-success') . "</p>" . "<p>" . $this->msg('collate-tableread') . " " . $this->msg('collate-savetable') . "</p>";
+        $html .= "<p>" . $out->msg('collate-success') . "</p>" . "<p>" . $out->msg('collate-tableread') . " " . $out->msg('collate-savetable') . "</p>";
 
         $html .= $this->AddBeginCollateLoader();
 
@@ -228,6 +227,8 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
 
         $collatex_output = preg_replace('/[<>]/', '', $collatex_output);
 
+        $html = '';
+        
         $html .= "
        <script> var at = $collatex_output;</script>
        <script type='text/javascript' src='https://yui-s.yahooapis.com/3.18.1/build/yui/yui-min.js'></script>
@@ -239,9 +240,8 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $html .="
       <table class='alignment'>";
 
-        foreach ($titles_array as $key => $title) {
-            $html .=
-                "<tr><th>" . htmlspecialchars($title) . "</th></tr>";
+        foreach ($page_titles as $key => $title) {
+            $html .= "<tr><th>" . htmlspecialchars($title) . "</th></tr>";
         }
 
         $html .= "         
@@ -254,14 +254,14 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         return $html;
     }
 
-    public function showFewManuscriptsError() {
+    public function showFewManuscriptsError($error_message = '') {
 
         global $wgArticleUrl;
 
         $article_url = $wgArticleUrl;
 
         $html = "";
-        $html .= $this->msg('collate-fewuploads');
+        $html .= $error_message;
         $html .= "<p><a class='begincollate-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new manuscript page</a></p>";
 
         return $this->out->addHTML($html);

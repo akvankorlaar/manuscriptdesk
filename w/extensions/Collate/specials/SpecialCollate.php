@@ -33,19 +33,14 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      * 4: when saving the table, the data is retrieved from the tempcollate table, saved to the collations table, a new wiki page is created, and the user is redirected to this page 
      * 
      */
-    private $error_message = false;
-
     public function __construct() {
 
         parent::__construct('Collate');
     }
 
     private function setVariables() {
-        global $wgNewManuscriptOptions, $wgCollationOptions;
-
         $user = $this->getUser();
         $this->user_name = $user->getName();
-        //and other variables
     }
 
     /**
@@ -95,32 +90,32 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
 
         throw new \Exception('collate-error-request');
     }
-    
-    private function getForm1() {
+
+    private function getForm1($error_message = '') {
         $collate_wrapper = new CollateWrapper($this->user_name);
         $manuscripts_data = $collate_wrapper->getManuscriptsData();
         $collection_data = $collate_wrapper->getCollectionData();
         $collate_viewer = new CollateViewer($this->getOutput());
-        $collate_viewer->showForm1($manuscripts_data, $collection_data);
+        $collate_viewer->showForm1($manuscripts_data, $collection_data, $error_message);
         return true;
     }
-    
+
     private function processForm1() {
         $form_data_getter = new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
         list($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles) = $form_data_getter->getForm1Data();
         $page_titles = $this->getPageTitlesCorrespondingToPostedUrls($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles);
         $page_texts = $this->getTextsFromWikiPages($manuscript_urls, $collection_urls_data);
         $collatex_converter = new CollatexConverter();
-        $collatex_output = $collatex_converter->execute($page_texts);        
+        $collatex_output = $collatex_converter->execute($page_texts);
         $imploded_page_titles = $this->createImplodedPageTitles($page_titles);
         $new_url = $this->makeUrlForNewPage($imploded_page_titles);
-        $time = idate('U');//time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are
+        $time = idate('U'); //time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are
         $this->updateDatabase($page_titles, $imploded_page_titles, $new_url, $time, $collatex_output);
         $collate_viewer = new CollateViewer($this->getOutput());
         $collate_viewer->showCollatexOutput($page_titles, $collatex_output, $time);
-        return true; 
+        return true;
     }
-    
+
     /**
      * This function processes the request when the user wants to save the collation table. Collate data is transferred from the 'tempcollate' table to
      * the 'collations' table, a new page is made, and the user is redirected to this page
@@ -130,10 +125,10 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $time_identifier = $form_data_getter->getSavePageData();
         $collate_wrapper = new CollateWrapper($this->user_name);
         list($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) = $collate_wrapper->getSavePageData($time_identifier);
+        $collate_wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output);
+        $collate_wrapper->incrementAlphabetNumbers($main_title_lowercase, 'AllCollations');
         $local_url = $this->createNewWikiPage($new_url);
-        $collate_wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output);    
-        $collate_wrapper->incrementAlphabetNumbers($main_title_lowercase, 'AllCollations');  
-        return $this->getOutput()->redirect($local_url);     
+        return $this->getOutput()->redirect($local_url);
     }
 
     /**
@@ -188,6 +183,8 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
             $single_page_text = $this->getFilteredSinglePageText($title);
             $this->checkIfTextIsNotOnlyWhitespace($single_page_text);
             $texts[] = $single_page_text;
+            $test= strlen($single_page_text);
+            $a = 5;
         }
 
         return $texts;
@@ -195,6 +192,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
 
     private function getPageTextsForCollections(array $collection_data) {
 
+        $texts = array();    
         foreach ($collection_data as $single_collection_urls) {
 
             $all_texts_for_one_collection = "";
@@ -228,7 +226,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         }
     }
 
-    private function createImplodedPageTitles(array $page_titles){
+    private function createImplodedPageTitles(array $page_titles) {
         return implode('', $page_titles);
     }
 
@@ -241,16 +239,32 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $hours_minutes_seconds = date('his');
         return 'Collations:' . $user_name . "/" . $imploded_page_titles . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
-    
-    private function handleExceptions($e) {
+
+    private function handleExceptions(Exception $exception_error) {
         
-//        
-//        
-//        $error_message = $this->msg($type);
-//
-//        $this->error_message = $error_message;
-//
-//        return $this->getForm1($this->getOutput());
+        global $wgShowExceptionDetails;
+        
+        $error_identifier = $exception_error->getMessage();
+
+        if($wgShowExceptionDetails === true){
+            $error_line = $exception_error->getLine();
+            $error_file = $exception_error->getFile();
+            $error_message = $error_identifier . ' ' . $error_line . ' ' . $error_file;
+        }else{
+            $error_message = $this->msg($error_identifier);
+        }
+                
+        $viewer = new CollateViewer($this->getOutput());
+
+        if ($error_identifier === 'error-nopermission') {
+            return $viewer->showNoPermissionError($error_message);
+        }
+
+        if ($error_identifier === 'collate-error-fewuploads') {
+            return $viewer->showFewCollectionsError($error_message);
+        }
+
+        return $this->getForm1($error_message);
     }
 
 }

@@ -116,7 +116,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         if (count($manuscript_urls) < $minimum_manuscripts) {
-            throw new \Exception('collate-error-fewmanuscripts');
+            throw new \Exception('collate-error-uploads');
         }
 
         return array(
@@ -155,13 +155,13 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
 
         $s = $res->fetchObject();
 
-        $titles_array = $s->tempcollate_titles_array;
+        $page_titles = $s->tempcollate_titles_array;
         $new_url = $s->tempcollate_new_url;
         $main_title = $s->tempcollate_main_title;
         $main_title_lowercase = $s->tempcollate_main_title_lowercase;
         $collatex_output = $s->tempcollate_collatex;
 
-        return array($titles_array, $new_url, $main_title, $main_title_lowercase, $collatex_output);
+        return array($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output);
     }
 
     /**
@@ -310,7 +310,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         return array(
           'user_name' => $s->collations_user,
           'date' => $s->collations_date,
-          'titles_array' => $s->collations_titles_array,
+          'titles_array' => (array) json_decode($s->collations_titles_array),
           'collatex_output' => $s->collations_collatex,
         );
     }
@@ -340,7 +340,6 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
 
-        //Database query
         $res = $dbr->select(
             'manuscripts', //from
             array(

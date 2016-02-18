@@ -50,18 +50,18 @@ class CollatexConverter {
         return json_encode($content);
     }
 
-    private function constructCurlCollatexCaller($json_encoded_text = '') {
+    private function constructCurlCollatexCaller($json_encoded_text) {
         global $wgCollationOptions;
 
-        $url = $wgCollationOptions['collatex_url'];
-        $headers = $wgCollationOptions['collatex_headers'];
+        $collatex_url = $wgCollationOptions['collatex_url'];
+        $collatex_headers = $wgCollationOptions['collatex_headers'];
 
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        $curl = curl_init($collatex_url);
+        curl_setopt($curl, CURLOPT_URL, $collatex_url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $collatex_headers);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $json_encoded_text = '');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $json_encoded_text);
         
         return $curl; 
     }

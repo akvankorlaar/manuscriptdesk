@@ -52,7 +52,7 @@ class CollateFormDataGetter {
 
         $manuscript_urls = array();
         $manuscript_titles = array();
-        $collection_urls_data = array();
+        $collection_urls = array();
         $collection_titles = array();
 
         foreach ($posted_names as $key => $checkbox) {
@@ -74,7 +74,7 @@ class CollateFormDataGetter {
             }
         }
 
-        return array($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles);
+        return array($manuscript_urls, $manuscript_titles, $collection_urls, $collection_titles);
     }
 
     private function checkForm1Data(array $data) {
@@ -91,7 +91,7 @@ class CollateFormDataGetter {
         list($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles) = $data;
 
         //check if the user has selected too few pages
-        if (count($manuscript_urls) + count($collection_urls_data) < $minimum_manuscripts) {
+        if ((count($manuscript_urls) + count($collection_urls_data)) < $minimum_manuscripts) {
             throw new \Exception('collate-error-fewtexts');
         }
 

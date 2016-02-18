@@ -41,6 +41,7 @@ $messages['en'] = array(
   'error-edittoken' => 'The edit token is not ok',
   'error-nopmerission' => 'You do not have permission to access the functionality of this page',
   'error-newpage' => 'The new Wiki Page could not be created',
+  'newpage' => 'You can add custom information to this page. The saved analysis will be preserved.'
 );
 
 $messages['en-gb'] = $messages['en'];

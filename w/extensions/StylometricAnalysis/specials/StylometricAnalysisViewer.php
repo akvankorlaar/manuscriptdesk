@@ -430,11 +430,6 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         return true;
     }
 
-    public function showNoPermissionError($error_message = '') {
-        $this->out->addHTML($error_message);
-        return true;
-    }
-
     public function showFewCollectionsError($error_message = '') {
 
         global $wgArticleUrl;

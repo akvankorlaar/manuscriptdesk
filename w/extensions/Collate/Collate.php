@@ -52,9 +52,10 @@ $dirbasename = basename($dir2);
 
 //Auto load classes 
 $wgAutoloadClasses['CollateHooks'] = $dir . '/Collate.hooks.php';
-$wgAutoloadClasses['TextConverter'] = $dir . '/specials/CollatexConverter.php'; 
+$wgAutoloadClasses['CollatexConverter'] = $dir . '/specials/CollatexConverter.php'; 
 $wgAutoloadClasses['CollateWrapper'] = $dir . '/specials/CollateWrapper.php';
 $wgAutoloadClasses['CollateViewer'] = $dir . '/specials/CollateViewer.php';
+$wgAutoloadClasses['CollateFormDataGetter'] = $dir . 'specials/CollateFormDataGetter.php';
 $wgExtensionMessagesFiles['Collate'] = __DIR__ . '/Collate.i18n.php';
 
 //Register auto load for the special page classes and register special pages

@@ -79,7 +79,6 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
     }
 
     protected function requestWasPosted() {
-
         $request = $this->getRequest();
 
         if (!$request->wasPosted()) {
@@ -90,8 +89,8 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
     }
 
     protected function getFilteredSinglePageText(Title $title) {
-        $article_object = Wikipage::factory($title);
-        $raw_text = $article_object->getRawText();
+        $wikipage = Wikipage::factory($title);
+        $raw_text = $wikipage->getText();
         $filtered_raw_text = $this->filterText($raw_text);
         return $filtered_raw_text;
     }
@@ -138,7 +137,7 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         $article = Article::newFromTitle($title_object, $context);
 
         $editor_object = new EditPage($article);
-        $content_new = new wikitextcontent('<!--' . $this->msg('newmanuscript-newpage') . '-->');
+        $content_new = new wikitextcontent('<!--' . $this->msg('newpage') . '-->');
         $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97, false, null, $editor_object->contentFormat);
 
         if (!$doEditStatus->isOK()) {
