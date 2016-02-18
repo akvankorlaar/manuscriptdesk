@@ -23,20 +23,8 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-//there should be a base formdatagetter........
-class CollateFormDataGetter {
+class CollateFormDataGetter extends ManuscriptDeskBaseFormDataGetter {
 
-    public $request;
-    private $validator;
-
-    public function __construct(WebRequest $request, ManuscriptDeskBaseValidator $validator) {
-        $this->request = $request;
-        $this->validator = $validator;
-    }
-
-    /**
-     * This function processes form 1
-     */
     public function getForm1Data() {
         $data = $this->loadForm1Data();
         $this->checkForm1Data($data);

@@ -22,19 +22,8 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class FormDataGetter {
+class StylometricAnalysisFormDataGetter extends ManuscriptDeskBaseFormDataGetter{
 
-    public $request;
-    private $validator;
-
-    public function __construct(WebRequest $request, ManuscriptDeskBaseValidator $validator) {
-        $this->request = $request;
-        $this->validator = $validator;
-    }
-
-    /**
-     * This function processes form 1
-     */
     public function getForm1Data() {
         global $wgStylometricAnalysisOptions;
         $minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];

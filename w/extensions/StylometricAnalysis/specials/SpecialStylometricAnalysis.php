@@ -60,16 +60,14 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         parent::__construct('StylometricAnalysis');
     }
 
-    private function setVariables() {
+    protected function setVariables() {
         global $wgStylometricAnalysisOptions, $wgWebsiteRoot;
+        parent::setVariables();
 
         $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
         $this->python_path = $wgStylometricAnalysisOptions['python_path'];
         $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
         $web_root = $wgWebsiteRoot;
-
-        $user_object = $this->getUser();
-        $this->user_name = $user_object->getName();
 
         $initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
         $this->base_outputpath = $web_root . '/' . $initial_analysis_dir . '/' . $this->user_name;
@@ -81,31 +79,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * Main entry point for the page
-     */
-    public function execute() {
-
-        try {
-            $this->setVariables();
-            $this->checkManuscriptDeskPermission();
-
-            if ($this->requestWasPosted()) {
-                $this->processRequest();
-                return true;
-            }
-
-            $this->getForm1();
-            return true;
-        } catch (Exception $e) {
-            $this->handleExceptions($e);
-            return false;
-        }
-    }
-
-    /**
      * Process all requests
      */
-    private function processRequest() {
+    protected function processRequest() {
 
         $this->checkEditToken();
 
@@ -144,14 +120,14 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return false;
     }
 
-    private function getForm1($error_message = '') {
+    protected function getForm1($error_message = '') {
         $user_collection_data = $this->getUserCollectionData();
         $viewer = new StylometricAnalysisViewer($this->getOutput());
         return $viewer->showForm1($user_collection_data, $error_message);
     }
 
     private function processForm1() {
-        $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        $form_data_getter = new StylometricAnalysisFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
         $this->form_type = 'Form1';
         $this->collection_data = $collection_data = $form_data_getter->getForm1Data();
         $this->collection_name_data = $this->constructCollectionNameData();
@@ -160,7 +136,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function processForm2() {
-        $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        $form_data_getter = new StylometricAnalysisFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
         $this->form_type = 'Form2';
         $this->collection_data = $form_data_getter->getForm2CollectionData();
         $this->collection_name_data = $this->constructCollectionNameData();
@@ -190,7 +166,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function processSavePageRequest() {
-        $form_data_getter = new FormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        $form_data_getter = new StylometricAnalysisFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
         $time = $form_data_getter->getSavePageData();
         $new_page_url = $this->transferDatabaseDataAndGetNewPageUrl($time);
         $local_url = $this->createNewWikiPage($new_page_url);
@@ -431,7 +407,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $database_wrapper->getNewPageUrl($time);
     }
 
-    private function handleExceptions(Exception $exception_error) {
+    protected function handleExceptions(Exception $exception_error) {
 
         $error_identifier = $this->error_message = $exception_error->getMessage();
         $error_message = $this->msg($error_identifier);

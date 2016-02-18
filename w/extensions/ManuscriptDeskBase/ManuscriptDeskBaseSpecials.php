@@ -27,9 +27,37 @@
 class ManuscriptDeskBaseSpecials extends SpecialPage {
     
     protected $user_name; 
+    protected $special_page_context_name; 
 
     public function __construct($page_name) {
         parent::__construct($page_name);
+    }
+    
+    protected function setVariables() {
+        $user = $this->getUser();
+        $this->user_name = $user->getName();
+    }
+    
+    /**
+     * Main entry point for Special Pages in the Manuscript Desk
+     */
+    public function execute() {
+
+        try {
+            $this->setVariables();
+            $this->checkManuscriptDeskPermission();
+
+            if ($this->requestWasPosted()) {
+                $this->processRequest();
+                return true;
+            }
+
+            $this->getForm1();
+            return true;
+        } catch (Exception $e) {
+            $this->handleExceptions($e);
+            return false;
+        }
     }
 
     /**

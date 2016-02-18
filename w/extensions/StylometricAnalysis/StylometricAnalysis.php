@@ -52,7 +52,7 @@ $dir = __DIR__ . '/';
 $wgAutoloadClasses['StylometricAnalysisHooks'] = $dir . '/StylometricAnalysis.hooks.php';
 $wgExtensionMessagesFiles['StylometricAnalysis'] = $dir . '/StylometricAnalysis.i18n.php';
 $wgAutoloadClasses['StylometricAnalysisViewer'] = $dir . '/specials/StylometricAnalysisViewer.php';
-$wgAutoloadClasses['FormDataGetter'] = $dir . '/specials/FormDataGetter.php';
+$wgAutoloadClasses['StylometricAnalysisFormDataGetter'] = $dir . '/specials/StylometricAnalysisFormDataGetter.php';
 $wgAutoloadClasses['StylometricAnalysisWrapper'] = $dir . '/specials/StylometricAnalysisWrapper.php';
 
 ////Register auto load for the special page classes and register special pages

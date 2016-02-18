@@ -32,44 +32,22 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      * 3: when redirecting to start, the default page is shown
      * 4: when saving the table, the data is retrieved from the tempcollate table, saved to the collations table, a new wiki page is created, and the user is redirected to this page 
      * 
+     * Main entry point = ManuscriptDeskBaseSpecials::execute()
      */
     public function __construct() {
 
         parent::__construct('Collate');
     }
-
-    private function setVariables() {
-        $user = $this->getUser();
-        $this->user_name = $user->getName();
-    }
-
-    /**
-     * Main entry point for the page
-     */
-    public function execute() {
-
-        try {
-
-            $this->setVariables();
-            $this->checkManuscriptDeskPermission();
-
-            if ($this->requestWasPosted()) {
-                $this->processRequest();
-                return true;
-            }
-
-            $this->getForm1();
-            return true;
-        } catch (Exception $e) {
-            $this->handleExceptions($e);
-            return false;
-        }
+    
+    protected function setVariables(){
+        parent::setVariables();
+        $this->special_page_context_name = 'Collate';
     }
 
     /**
      * Processes the request when a user has submitted the collate form
      */
-    private function processRequest() {
+    protected function processRequest() {
 
         $this->checkEditToken();
 
@@ -91,7 +69,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         throw new \Exception('collate-error-request');
     }
 
-    private function getForm1($error_message = '') {
+    protected function getForm1($error_message = '') {
         $collate_wrapper = new CollateWrapper($this->user_name);
         $manuscripts_data = $collate_wrapper->getManuscriptsData();
         $collection_data = $collate_wrapper->getCollectionData();
@@ -240,7 +218,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         return 'Collations:' . $user_name . "/" . $imploded_page_titles . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
 
-    private function handleExceptions(Exception $exception_error) {
+    protected function handleExceptions(Exception $exception_error) {
         
         global $wgShowExceptionDetails;
         
@@ -249,7 +227,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         if($wgShowExceptionDetails === true){
             $error_line = $exception_error->getLine();
             $error_file = $exception_error->getFile();
-            $error_message = $error_identifier . ' ' . $error_line . ' ' . $error_file;
+            $error_message = $this->msg($error_identifier) . ' ' . $error_line . ' ' . $error_file;
         }else{
             $error_message = $this->msg($error_identifier);
         }

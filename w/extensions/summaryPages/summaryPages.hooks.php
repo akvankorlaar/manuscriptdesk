@@ -1,5 +1,6 @@
 <?php
-/**  
+
+/**
  * This file is part of the newManuscript extension
  * Copyright (C) 2015 Arent van Korlaar
  *
@@ -21,27 +22,23 @@
  * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 class summaryPagesHooks {
-    
-  /**
-   * This function adds additional modules containing CSS before the page is displayed
-   * 
-   * @param OutputPage $out
-   * @param Skin $ski
-   */
-  public function onBeforePageDisplay(OutputPage &$out, Skin &$ski ){
 
-    $title_object = $out->getTitle();    
-    $page_title = $title_object->getPrefixedURL();
-    
-    if($page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections'|| $page_title === 'Special:SingleManuscriptPages' || $page_title === 'Special:AllCollations'
-        || $page_title === 'Special:RecentManuscriptPages'){
-      
-      $out->addModuleStyles("ext.userPage");
-      $out->addModules("ext.summarypageloader");
+    /**
+     * This function adds additional modules containing CSS before the page is displayed
+     */
+    public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
+
+        $title_object = $out->getTitle();
+        $page_title = $title_object->getPrefixedURL();
+
+        if ($page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections' || $page_title === 'Special:SingleManuscriptPages' || $page_title === 'Special:AllCollations' || $page_title === 'Special:RecentManuscriptPages') {
+
+            $out->addModuleStyles("ext.userPage");
+            $out->addModules("ext.summarypageloader");
+        }
+
+        return true;
     }
-    
-    return true; 
-  }
+
 }
