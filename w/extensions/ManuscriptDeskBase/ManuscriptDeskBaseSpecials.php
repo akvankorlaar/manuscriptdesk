@@ -25,19 +25,18 @@
  * Idea: Refractor code and use interfaces. For example, there is some duplication in the execute and handleErrors methods
  */
 class ManuscriptDeskBaseSpecials extends SpecialPage {
-    
-    protected $user_name; 
-    protected $special_page_context_name; 
+
+    protected $user_name;
 
     public function __construct($page_name) {
         parent::__construct($page_name);
     }
-    
+
     protected function setVariables() {
         $user = $this->getUser();
         $this->user_name = $user->getName();
     }
-    
+
     /**
      * Main entry point for Special Pages in the Manuscript Desk
      */
@@ -193,7 +192,7 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
 
         return false;
     }
-    
+
     protected function savePageWasRequested() {
         $request = $this->getRequest();
         if ($request->getText('save_current_page') === '') {
@@ -201,6 +200,45 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         }
 
         return true;
+    }
+
+    protected function handleExceptions(Exception $exception_error) {
+
+        $viewer = $this->getViewer();
+        $error_identifier = $exception_error->getMessage();
+        $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
+
+        if ($error_identifier === 'error-nopermission') {
+            return $viewer->showNoPermissionError($error_message);
+        }
+
+        if ($error_identifier === 'error-fewuploads') {
+            return $viewer->showFewUploadsError($error_message);
+        }
+
+        if ($this instanceof SpecialStylometricAnalysis) {
+            if ($this->form_type === 'Form2' && isset($this->collection_data) && isset($this->collection_name_data)) {
+                return $viewer->showForm2($this->collection_data, $this->collection_name_data, $this->getContext(), $error_message);
+            }
+        }
+
+        return $this->getForm1($error_message);
+    }
+
+    private function constructErrorMessage(Exception $exception_error, $error_identifier) {
+
+        global $wgShowExceptionDetails;
+
+        if ($wgShowExceptionDetails === true) {
+            $error_line = $exception_error->getLine();
+            $error_file = $exception_error->getFile();
+            $error_message = $this->msg($error_identifier) . ' ' . $error_line . ' ' . $error_file;
+        }
+        else {
+            $error_message = $this->msg($error_identifier);
+        }
+
+        return $error_message;
     }
 
 }

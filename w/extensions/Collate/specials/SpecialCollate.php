@@ -38,11 +38,6 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
 
         parent::__construct('Collate');
     }
-    
-    protected function setVariables(){
-        parent::setVariables();
-        $this->special_page_context_name = 'Collate';
-    }
 
     /**
      * Processes the request when a user has submitted the collate form
@@ -70,26 +65,26 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
     }
 
     protected function getForm1($error_message = '') {
-        $collate_wrapper = new CollateWrapper($this->user_name);
+        $collate_wrapper = $this->getWrapper();
         $manuscripts_data = $collate_wrapper->getManuscriptsData();
         $collection_data = $collate_wrapper->getCollectionData();
-        $collate_viewer = new CollateViewer($this->getOutput());
+        $collate_viewer = $this->getViewer();
         $collate_viewer->showForm1($manuscripts_data, $collection_data, $error_message);
         return true;
     }
 
     private function processForm1() {
-        $form_data_getter = new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        $form_data_getter = $this->getFormDataGetter();
         list($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles) = $form_data_getter->getForm1Data();
         $page_titles = $this->getPageTitlesCorrespondingToPostedUrls($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles);
         $page_texts = $this->getTextsFromWikiPages($manuscript_urls, $collection_urls_data);
-        $collatex_converter = new CollatexConverter();
+        $collatex_converter = $this->getCollatexConverter();
         $collatex_output = $collatex_converter->execute($page_texts);
         $imploded_page_titles = $this->createImplodedPageTitles($page_titles);
         $new_url = $this->makeUrlForNewPage($imploded_page_titles);
         $time = idate('U'); //time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are
         $this->updateDatabase($page_titles, $imploded_page_titles, $new_url, $time, $collatex_output);
-        $collate_viewer = new CollateViewer($this->getOutput());
+        $collate_viewer = $this->getViewer();
         $collate_viewer->showCollatexOutput($page_titles, $collatex_output, $time);
         return true;
     }
@@ -99,9 +94,9 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      * the 'collations' table, a new page is made, and the user is redirected to this page
      */
     private function processSavePageRequest() {
-        $form_data_getter = new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        $form_data_getter = $this->getFormDataGetter();
         $time_identifier = $form_data_getter->getSavePageData();
-        $collate_wrapper = new CollateWrapper($this->user_name);
+        $collate_wrapper = $this->getWrapper();
         list($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) = $collate_wrapper->getSavePageData($time_identifier);
         $collate_wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output);
         $collate_wrapper->incrementAlphabetNumbers($main_title_lowercase, 'AllCollations');
@@ -217,32 +212,21 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $hours_minutes_seconds = date('his');
         return 'Collations:' . $user_name . "/" . $imploded_page_titles . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
-
-    protected function handleExceptions(Exception $exception_error) {
-        
-        global $wgShowExceptionDetails;
-        
-        $error_identifier = $exception_error->getMessage();
-
-        if($wgShowExceptionDetails === true){
-            $error_line = $exception_error->getLine();
-            $error_file = $exception_error->getFile();
-            $error_message = $this->msg($error_identifier) . ' ' . $error_line . ' ' . $error_file;
-        }else{
-            $error_message = $this->msg($error_identifier);
-        }
-                
-        $viewer = new CollateViewer($this->getOutput());
-
-        if ($error_identifier === 'error-nopermission') {
-            return $viewer->showNoPermissionError($error_message);
-        }
-
-        if ($error_identifier === 'collate-error-fewuploads') {
-            return $viewer->showFewCollectionsError($error_message);
-        }
-
-        return $this->getForm1($error_message);
+    
+    protected function getViewer(){
+        return new CollateViewer($this->getOutput());
+    }
+    
+    protected function getWrapper(){
+        return new CollateWrapper($this->user_name);
+    }
+    
+    protected function getFormDataGetter(){
+       return new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+    }
+    
+    protected function getCollatexConverter(){
+        return new CollatexConverter();
     }
 
 }

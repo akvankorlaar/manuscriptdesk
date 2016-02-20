@@ -116,7 +116,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         if (count($manuscript_urls) < $minimum_manuscripts) {
-            throw new \Exception('collate-error-uploads');
+            throw new \Exception('error-fewuploads');
         }
 
         return array(

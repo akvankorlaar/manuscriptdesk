@@ -254,17 +254,4 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         return $html;
     }
 
-    public function showFewManuscriptsError($error_message = '') {
-
-        global $wgArticleUrl;
-
-        $article_url = $wgArticleUrl;
-
-        $html = "";
-        $html .= $error_message;
-        $html .= "<p><a class='begincollate-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new manuscript page</a></p>";
-
-        return $this->out->addHTML($html);
-    }
-
 }

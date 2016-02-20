@@ -24,10 +24,6 @@
  */
 class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
 
-    public function __construct(Outputpage $out) {
-        $this->out = $out;
-    }
-
     /**
      * This function adds html used for the gif loader image
      */
@@ -427,20 +423,6 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $html .= $this->addStylometricAnalysisLoaderImage();
 
         $out->addHTML($html);
-        return true;
-    }
-
-    public function showFewCollectionsError($error_message = '') {
-
-        global $wgArticleUrl;
-
-        $article_url = $wgArticleUrl;
-
-        $html = "";
-        $html .= $error_message;
-        $html .= "<p><a class='stylometricanalysis-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new collection</a></p>";
-
-        $this->out->addHTML($html);
         return true;
     }
 

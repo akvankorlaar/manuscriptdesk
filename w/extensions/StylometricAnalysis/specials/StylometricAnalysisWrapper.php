@@ -81,7 +81,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         if (count($collection_urls) < $minimum_collections) {
-            throw new \Exception('stylometricanalysis-error-fewcollections');
+            throw new \Exception('error-fewuploads');
         }
 
         return $collection_urls;

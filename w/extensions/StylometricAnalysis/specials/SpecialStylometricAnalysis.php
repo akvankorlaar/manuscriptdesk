@@ -24,7 +24,6 @@
  */
 class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
-    public $error_message = '';
     private $minimum_pages_per_collection;
     private $minimum_collections;
     private $python_path;
@@ -122,21 +121,21 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     protected function getForm1($error_message = '') {
         $user_collection_data = $this->getUserCollectionData();
-        $viewer = new StylometricAnalysisViewer($this->getOutput());
+        $viewer = $this->getViewer();
         return $viewer->showForm1($user_collection_data, $error_message);
     }
 
     private function processForm1() {
-        $form_data_getter = new StylometricAnalysisFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        $form_data_getter = $this->getFormDataGetter();
         $this->form_type = 'Form1';
         $this->collection_data = $collection_data = $form_data_getter->getForm1Data();
         $this->collection_name_data = $this->constructCollectionNameData();
-        $viewer = new StylometricAnalysisViewer($this->getOutput());
+        $viewer = $this->getViewer();
         return $viewer->showForm2($collection_data, $this->collection_name_data, $this->getContext());
     }
 
     private function processForm2() {
-        $form_data_getter = new StylometricAnalysisFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        $form_data_getter = $this->getFormDataGetter();
         $this->form_type = 'Form2';
         $this->collection_data = $form_data_getter->getForm2CollectionData();
         $this->collection_name_data = $this->constructCollectionNameData();
@@ -161,12 +160,12 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $date = date("d-m-Y H:i:s");
         $this->updateDatabase($time, $new_page_url, $date, $full_linkpath1, $full_linkpath2);
 
-        $viewer = new StylometricAnalysisViewer($this->getOutput());
+        $viewer = $this->getViewer();
         return $viewer->showResult($this->pystyl_config, $this->collection_name_data, $full_linkpath1, $full_linkpath2, $time);
     }
 
     private function processSavePageRequest() {
-        $form_data_getter = new StylometricAnalysisFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+        $form_data_getter = $this->getFormDataGetter();
         $time = $form_data_getter->getSavePageData();
         $new_page_url = $this->transferDatabaseDataAndGetNewPageUrl($time);
         $local_url = $this->createNewWikiPage($new_page_url);
@@ -390,42 +389,33 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function updateDatabase($time = 0, $new_page_url, $date, $full_linkpath1, $full_linkpath2) {
-        $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
+        $database_wrapper = $this->getWrapper();
         $database_wrapper->clearOldPystylOutput($time);
         $database_wrapper->storeTempStylometricAnalysis($this->collection_name_data, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $this->full_outputpath1, $this->full_outputpath2, $this->pystyl_config);
         return true;
     }
 
     private function getUserCollectionData() {
-        $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
+        $database_wrapper = $this->getWrapper();
         return $database_wrapper->getManuscriptsCollectionData($this->minimum_pages_per_collection, $this->minimum_collections);
     }
 
     private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
-        $database_wrapper = new StylometricAnalysisWrapper($this->user_name);
+        $database_wrapper = $this->getWrapper();
         $database_wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
         return $database_wrapper->getNewPageUrl($time);
     }
-
-    protected function handleExceptions(Exception $exception_error) {
-
-        $error_identifier = $this->error_message = $exception_error->getMessage();
-        $error_message = $this->msg($error_identifier);
-        $viewer = new StylometricAnalysisViewer($this->getOutput());
-
-        if ($error_identifier === 'error-nopermission') {
-            return $viewer->showNoPermissionError($error_message);
-        }
-
-        if ($error_identifier === 'stylometricanalysis-error-fewcollections') {
-            return $viewer->showFewCollectionsError($error_message);
-        }
-
-        if ($this->form_type === 'Form2' && isset($this->collection_data) && isset($this->collection_name_data)) {
-            return $viewer->showForm2($this->collection_data, $this->collection_name_data, $this->getContext(), $error_message);
-        }
-
-        return $this->getForm1($error_message);
+    
+    protected function getViewer(){
+        return new StylometricAnalysisViewer($this->getOutput());
+    }
+    
+    protected function getWrapper(){
+        return new StylometricAnalysisWrapper($this->user_name);
+    }
+    
+    protected function getFormDataGetter(){
+       return new StylometricAnalysisFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     /**

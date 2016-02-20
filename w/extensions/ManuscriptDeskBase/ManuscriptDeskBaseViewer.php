@@ -49,5 +49,18 @@ class ManuscriptDeskBaseViewer {
         $this->out->addHTML($error_message);
         return true;
     }
+    
+    public function showFewUploadsError($error_message = '') {
+
+        global $wgArticleUrl;
+
+        $article_url = $wgArticleUrl;
+
+        $html = "";
+        $html .= $error_message;
+        $html .= "<p><a class='begincollate-transparent' href='" . $article_url . "Special:NewManuscript'>Create a new manuscript page or collection</a></p>";
+
+        return $this->out->addHTML($html);
+    }
 
 }
