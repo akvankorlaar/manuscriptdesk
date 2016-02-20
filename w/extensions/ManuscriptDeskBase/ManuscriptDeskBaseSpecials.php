@@ -115,6 +115,20 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         return true;
     }
 
+    protected function getAllTextsForOneCollection(array $single_collection_data) {
+        $all_texts_for_one_collection = "";
+        foreach ($single_collection_data as $index => $single_mansuscript_url) {
+            if ($index !== 'collection_name') {
+                $title = $this->constructTitleObjectFromUrl($single_manuscript_url);
+                $single_page_text = $this->getFilteredSinglePageText($title_object);
+                $all_texts_for_one_collection .= $single_page_text;
+            }
+        }
+
+        $this->checkIfTextIsNotOnlyWhitespace($all_texts_for_one_collection);
+        return $all_texts_for_one_collection;
+    }
+
     protected function getFilteredSinglePageText(Title $title) {
         $wikipage = Wikipage::factory($title);
         $raw_text = $wikipage->getText();
@@ -200,6 +214,22 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         }
 
         return true;
+    }
+
+    protected function constructTitleObjectFromUrl($single_manuscript_url = '') {
+        $title = Title::newFromText($single_manuscript_url);
+
+        if (!$title->exists()) {
+            throw new \Exception('error-titledoesnotexist');
+        }
+
+        return $title;
+    }
+
+    protected function checkIfTextIsNotOnlyWhitespace($text = '') {
+        if (ctype_space($text) || $text === '') {
+            throw new Exception('error-notextonwikipage');
+        }
     }
 
     protected function handleExceptions(Exception $exception_error) {

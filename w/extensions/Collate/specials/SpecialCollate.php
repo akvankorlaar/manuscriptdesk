@@ -167,36 +167,10 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
 
         $texts = array();    
         foreach ($collection_data as $single_collection_urls) {
-
-            $all_texts_for_one_collection = "";
-
-            foreach ($single_collection_urls as $single_manuscript_url) {
-                $title = $this->constructTitleObjectFromUrl($single_manuscript_url);
-                $single_page_text = $this->getFilteredSinglePageText($title);
-                $all_texts_for_one_collection .= $single_page_text;
-            }
-
-            $this->checkIfTextIsNotOnlyWhitespace($all_texts_for_one_collection);
-            $texts[] = $all_texts_for_one_collection;
+            $texts[] = $this->getAllTextsForOneCollection($single_collection_urls);
         }
 
         return $texts;
-    }
-
-    private function constructTitleObjectFromUrl($single_manuscript_url = '') {
-        $title = Title::newFromText($single_manuscript_url);
-
-        if (!$title->exists()) {
-            throw new \Exception('collation-error-notexts');
-        }
-
-        return $title;
-    }
-
-    private function checkIfTextIsNotOnlyWhitespace($text = '') {
-        if (ctype_space($text) || $text === '') {
-            throw new Exception('collation-error-notexts');
-        }
     }
 
     private function createImplodedPageTitles(array $page_titles) {

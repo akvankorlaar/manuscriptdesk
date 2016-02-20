@@ -141,7 +141,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->collection_name_data = $this->constructCollectionNameData();
         $this->pystyl_config = $form_data_getter->getForm2PystylConfigurationData();
 
-        $texts = $this->getPageTextsFromWikiPages();
+        $texts = $this->getPageTextsForCollections();
 
         list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames();
         $this->constructFullOutputPathOfPystylOutputImages($output_file_name1, $output_file_name2);
@@ -192,39 +192,13 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * This function loops through all the posted collections, and
      * retrieves the text from the corresponding pages 
      */
-    private function getPageTextsFromWikiPages() {
-
-        //in $texts combined collection texts will be stored 
+    private function getPageTextsForCollections() {
+        
         $texts = array();
         $a = 1;
-
-        //for collections, collect all single pages of a collection and merge them together
-        foreach ($this->collection_data as $index => $single_collection_data) {
-
-            $all_texts_for_one_collection = "";
-
-            //go through all urls of a collection
-            foreach ($single_collection_data as $index => $file_url) {
-
-                if ($index !== 'collection_name') {
-
-                    $title_object = Title::newFromText($file_url);
-
-                    if (!$title_object->exists()) {
-                        wfErrorLog($this->msg('stylometricanalysis-error-notexists') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
-                        $this->form_type = 'Form1';
-                        throw new \Exception('stylometricanalysis-error-notexists');
-                    }
-
-                    $single_page_text = $this->getFilteredSinglePageText($title_object);
-                    //add $single_page_text to $single_page_texts
-                    $all_texts_for_one_collection .= $single_page_text;
-                }
-            }
-
-            $collection_n_words = str_word_count($all_texts_for_one_collection);
-            $this->checkForCollectionErrors($collection_n_words);
-
+        foreach ($this->collection_data as $single_collection_data) {      
+            $all_texts_for_one_collection = $this->getAllTextsForOneCollection($single_collection_data);
+            $this->checkForStylometricAnalysisCollectionErrors($all_texts_for_one_collection);
             $collection_name = isset($single_collection_data['collection_name']) ? $single_collection_data['collection_name'] : 'collection' . $a;
 
             //add the combined texts of one collection to $texts
@@ -239,12 +213,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         return $texts;
     }
+    
+    private function checkForStylometricAnalysisCollectionErrors($all_texts_for_one_collection = '') {
 
-    /**
-     * This function checks for collection errors based on the number of words in the collection
-     */
-    private function checkForCollectionErrors($collection_n_words) {
-
+        $collection_n_words = str_word_count($all_texts_for_one_collection);
         $pystyl_config = $this->pystyl_config;
 
         if ($collection_n_words < $this->min_words_collection) {
