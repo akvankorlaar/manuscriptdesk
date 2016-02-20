@@ -24,8 +24,6 @@
  */
 class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
-    private $minimum_pages_per_collection;
-    private $minimum_collections;
     private $python_path;
     private $form_type;
     private $base_outputpath;
@@ -61,7 +59,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         global $wgStylometricAnalysisOptions, $wgWebsiteRoot;
         parent::setVariables();
 
-        $this->minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
         $this->python_path = $wgStylometricAnalysisOptions['python_path'];
         $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
         $web_root = $wgWebsiteRoot;
@@ -69,8 +66,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
         $this->base_outputpath = $web_root . '/' . $initial_analysis_dir . '/' . $this->user_name;
         $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name;
-
-        $this->minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
 
         return true;
     }
@@ -153,10 +148,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->deleteTextfile($full_textfilepath);
         $this->checkPystylOutput($pystyl_output, $full_outputpath1, $full_outputpath2);
 
-        $new_page_url = $this->createNewPageUrl();
         $time = idate('U'); //time format integer (Unix Timestamp). This timestamp is used to see how old values are
-        $date = date("d-m-Y H:i:s");
-        $this->updateDatabase($time, $new_page_url, $date, $full_linkpath1, $full_linkpath2);
+        $this->updateDatabase($time, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2);
 
         $viewer = $this->getViewer();
         return $viewer->showResult($this->pystyl_config, $this->collection_name_data, $full_linkpath1, $full_linkpath2, $time);
@@ -186,15 +179,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $collection_name_data;
     }
 
-    /**
-     * This function loops through all the posted collections, and
-     * retrieves the text from the corresponding pages 
-     */
     private function getPageTextsForCollections() {
-        
+
         $texts = array();
         $a = 1;
-        foreach ($this->collection_data as $single_collection_data) {      
+        foreach ($this->collection_data as $single_collection_data) {
             $all_texts_for_one_collection = $this->getAllTextsForOneCollection($single_collection_data);
             $this->checkForStylometricAnalysisCollectionErrors($all_texts_for_one_collection);
             $collection_name = isset($single_collection_data['collection_name']) ? $single_collection_data['collection_name'] : 'collection' . $a;
@@ -211,7 +200,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         return $texts;
     }
-    
+
     private function checkForStylometricAnalysisCollectionErrors($all_texts_for_one_collection = '') {
 
         $collection_n_words = str_word_count($all_texts_for_one_collection);
@@ -358,16 +347,18 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function updateDatabase($time = 0, $new_page_url, $date, $full_linkpath1, $full_linkpath2) {
+    private function updateDatabase($time = 0, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2) {
+        $new_page_url = $this->createNewPageUrl();
+        $date = date("d-m-Y H:i:s");
         $database_wrapper = $this->getWrapper();
         $database_wrapper->clearOldPystylOutput($time);
-        $database_wrapper->storeTempStylometricAnalysis($this->collection_name_data, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $this->full_outputpath1, $this->full_outputpath2, $this->pystyl_config);
+        $database_wrapper->storeTempStylometricAnalysis($this->collection_name_data, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2, $this->pystyl_config);
         return true;
     }
 
     private function getUserCollectionData() {
         $database_wrapper = $this->getWrapper();
-        return $database_wrapper->getManuscriptsCollectionData($this->minimum_pages_per_collection, $this->minimum_collections);
+        return $database_wrapper->getManuscriptsCollectionData();
     }
 
     private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
@@ -375,17 +366,17 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $database_wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
         return $database_wrapper->getNewPageUrl($time);
     }
-    
-    protected function getViewer(){
+
+    protected function getViewer() {
         return new StylometricAnalysisViewer($this->getOutput());
     }
-    
-    protected function getWrapper(){
+
+    protected function getWrapper() {
         return new StylometricAnalysisWrapper($this->user_name);
     }
-    
-    protected function getFormDataGetter(){
-       return new StylometricAnalysisFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+
+    protected function getFormDataGetter() {
+        return new StylometricAnalysisFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     /**

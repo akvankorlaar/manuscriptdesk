@@ -32,8 +32,12 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
     /**
      * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
      */
-    public function getManuscriptsCollectionData($minimum_pages_per_collection = 0, $minimum_collections = 0) {
+    public function getManuscriptsCollectionData() {
 
+        global $wgStylometricAnalysisOptions;
+
+        $minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
+        $minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
         $dbr = wfGetDB(DB_SLAVE);
         $collection_urls = array();
         $user_name = $this->user_name;
@@ -169,7 +173,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         return true;
     }
 
-    public function storeTempStylometricAnalysis(array $collection_name_data, $time = 0, $new_page_url = '', $date = 0, $full_linkpath1 = '', $full_linkpath2 = '',  $full_outputpath1 = '', $full_outputpath2 = '',array $pystyl_config) {
+    public function storeTempStylometricAnalysis(array $collection_name_data, $time = 0, $new_page_url = '', $date = 0, $full_linkpath1 = '', $full_linkpath2 = '', $full_outputpath1 = '', $full_outputpath2 = '', array $pystyl_config) {
 
         $dbw = wfGetDB(DB_MASTER);
 
@@ -187,7 +191,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'tempstylometricanalysis_full_linkpath1' => $full_linkpath1,
           'tempstylometricanalysis_full_linkpath2' => $full_linkpath2,
           'tempstylometricanalysis_json_pystyl_config' => $json_pystyl_config,
-          'tempstylometricanalysis_json_collection_name_data' => $json_collection_name_data,     
+          'tempstylometricanalysis_json_collection_name_data' => $json_collection_name_data,
           'tempstylometricanalysis_new_page_url' => $new_page_url,
           'tempstylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
@@ -217,7 +221,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'tempstylometricanalysis_full_linkpath1',
           'tempstylometricanalysis_full_linkpath2',
           'tempstylometricanalysis_json_pystyl_config',
-          'tempstylometricanalysis_json_collection_name_data',    
+          'tempstylometricanalysis_json_collection_name_data',
           'tempstylometricanalysis_new_page_url',
           'tempstylometricanalysis_date'
             ), array(
@@ -237,7 +241,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         $full_linkpath1 = $s->tempstylometricanalysis_full_linkpath1;
         $full_linkpath2 = $s->tempstylometricanalysis_full_linkpath2;
         $json_pystyl_config = $s->tempstylometricanalysis_json_pystyl_config;
-        $json_collection_name_data = $s->tempstylometricanalysis_json_collection_name_data; 
+        $json_collection_name_data = $s->tempstylometricanalysis_json_collection_name_data;
         $new_page_url = $s->tempstylometricanalysis_new_page_url;
         $date = $s->tempstylometricanalysis_date;
 
@@ -253,7 +257,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'stylometricanalysis_full_linkpath1' => $full_linkpath1,
           'stylometricanalysis_full_linkpath2' => $full_linkpath2,
           'stylometricanalysis_json_pystyl_config' => $json_pystyl_config,
-          'stylometricanalysis_json_collection_name_data' => $json_collection_name_data,    
+          'stylometricanalysis_json_collection_name_data' => $json_collection_name_data,
           'stylometricanalysis_new_page_url' => $new_page_url,
           'stylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
@@ -310,7 +314,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'stylometricanalysis_full_linkpath1',
           'stylometricanalysis_full_linkpath2',
           'stylometricanalysis_json_pystyl_config',
-          'stylometricanalysis_json_collection_name_data',    
+          'stylometricanalysis_json_collection_name_data',
           'stylometricanalysis_new_page_url',
           'stylometricanalysis_date',
             ), array(

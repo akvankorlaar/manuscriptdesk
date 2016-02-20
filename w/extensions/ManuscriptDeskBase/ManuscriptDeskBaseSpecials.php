@@ -117,10 +117,10 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
 
     protected function getAllTextsForOneCollection(array $single_collection_data) {
         $all_texts_for_one_collection = "";
-        foreach ($single_collection_data as $index => $single_mansuscript_url) {
+        foreach ($single_collection_data as $index => $single_manuscript_url) {
             if ($index !== 'collection_name') {
                 $title = $this->constructTitleObjectFromUrl($single_manuscript_url);
-                $single_page_text = $this->getFilteredSinglePageText($title_object);
+                $single_page_text = $this->getFilteredSinglePageText($title);
                 $all_texts_for_one_collection .= $single_page_text;
             }
         }
@@ -178,7 +178,7 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
         $article = Article::newFromTitle($title_object, $context);
 
         $editor_object = new EditPage($article);
-        $content_new = new wikitextcontent('<!--' . $this->msg('newpage') . '-->');
+        $content_new = new wikitextcontent('<!--' . $this->msg('manuscriptdesk-newpage') . '-->');
         $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97, false, null, $editor_object->contentFormat);
 
         if (!$doEditStatus->isOK()) {

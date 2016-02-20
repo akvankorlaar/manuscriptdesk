@@ -151,13 +151,10 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
 
         $texts = array();
         foreach ($manuscript_urls as $single_manuscript_url) {
-
             $title = $this->constructTitleObjectFromUrl($single_manuscript_url);
             $single_page_text = $this->getFilteredSinglePageText($title);
             $this->checkIfTextIsNotOnlyWhitespace($single_page_text);
             $texts[] = $single_page_text;
-            $test= strlen($single_page_text);
-            $a = 5;
         }
 
         return $texts;
@@ -165,7 +162,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
 
     private function getPageTextsForCollections(array $collection_data) {
 
-        $texts = array();    
+        $texts = array();
         foreach ($collection_data as $single_collection_urls) {
             $texts[] = $this->getAllTextsForOneCollection($single_collection_urls);
         }
@@ -186,20 +183,20 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $hours_minutes_seconds = date('his');
         return 'Collations:' . $user_name . "/" . $imploded_page_titles . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
-    
-    protected function getViewer(){
+
+    protected function getViewer() {
         return new CollateViewer($this->getOutput());
     }
-    
-    protected function getWrapper(){
+
+    protected function getWrapper() {
         return new CollateWrapper($this->user_name);
     }
-    
-    protected function getFormDataGetter(){
-       return new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+
+    protected function getFormDataGetter() {
+        return new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
-    
-    protected function getCollatexConverter(){
+
+    protected function getCollatexConverter() {
         return new CollatexConverter();
     }
 
