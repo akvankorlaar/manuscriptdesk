@@ -30,8 +30,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private $form_type;
     private $base_outputpath;
     private $base_linkpath;
-    private $full_outputpath1;
-    private $full_outputpath2;
     private $min_words_collection;  //min words that should be in a collection. This is checked using str_word_count, but it has to be checked if str_word_count equals the number of tokens.
     private $collection_data;
     private $collection_name_data;
@@ -144,16 +142,16 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $texts = $this->getPageTextsForCollections();
 
         list($output_file_name1, $output_file_name2) = $this->constructPystylOutputFileNames();
-        $this->constructFullOutputPathOfPystylOutputImages($output_file_name1, $output_file_name2);
+        list($full_outputpath1, $full_outputpath2) = $this->constructFullOutputPathOfPystylOutputImages($output_file_name1, $output_file_name2);
         list($full_linkpath1, $full_linkpath2) = $this->constructFullLinkPathOfPystylOutputImages($output_file_name1, $output_file_name2);
 
-        $this->setAdditionalPystylConfigValues($texts);
+        $this->setAdditionalPystylConfigValues($texts, $full_outputpath1, $full_outputpath2);
         $full_textfilepath = $this->constructFullTextfilePath();
         $this->insertPystylConfigIntoTextfile($full_textfilepath);
         $command = $this->constructShellCommandToCallPystyl();
         $pystyl_output = $this->callPystyl($command, $full_textfilepath);
         $this->deleteTextfile($full_textfilepath);
-        $this->checkPystylOutput($pystyl_output);
+        $this->checkPystylOutput($pystyl_output, $full_outputpath1, $full_outputpath2);
 
         $new_page_url = $this->createNewPageUrl();
         $time = idate('U'); //time format integer (Unix Timestamp). This timestamp is used to see how old values are
@@ -181,11 +179,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function constructCollectionNameData() {
-        $this->collection_name_data = array();
+        $collection_name_data = array();
         foreach ($this->collection_data as $index => $single_collection_data) {
-            $this->collection_name_data[] = $single_collection_data['collection_name'];
+            $collection_name_data[] = $single_collection_data['collection_name'];
         }
-        return $this->collection_name_data;
+        return $collection_name_data;
     }
 
     /**
@@ -252,14 +250,14 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function constructFullOutputPathOfPystylOutputImages($file_name1, $file_name2) {
-        $this->full_outputpath1 = $this->base_outputpath . '/' . $file_name1;
-        $this->full_outputpath2 = $this->base_outputpath . '/' . $file_name2;
+        $full_outputpath1 = $this->base_outputpath . '/' . $file_name1;
+        $full_outputpath2 = $this->base_outputpath . '/' . $file_name2;
 
-        if (is_file($this->full_outputpath1) || is_file($this->full_outputpath2)) {
+        if (is_file($full_outputpath1) || is_file($full_outputpath2)) {
             throw new \Exception('stylometricanalysis-error-internal');
         }
 
-        return true;
+        return array($full_outputpath1, $full_outputpath2);
     }
 
     private function constructFullLinkPathOfPystylOutputImages($file_name1, $file_name2) {
@@ -278,10 +276,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     /**
      * This function constructs the config array that will be sent to Pystyl
      */
-    private function setAdditionalPystylConfigValues($texts) {
+    private function setAdditionalPystylConfigValues(array $texts, $full_outputpath1 = '', $full_outputpath2 = '') {
         $this->pystyl_config['texts'] = $texts;
-        $this->pystyl_config['full_outputpath1'] = $this->full_outputpath1;
-        $this->pystyl_config['full_outputpath2'] = $this->full_outputpath2;
+        $this->pystyl_config['full_outputpath1'] = $full_outputpath1;
+        $this->pystyl_config['full_outputpath2'] = $full_outputpath2;
         $this->pystyl_config['base_outputpath'] = $this->base_outputpath;
         return true;
     }
@@ -336,24 +334,24 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return system(escapeshellcmd($command . ' ' . $full_textfilepath));
     }
 
-    private function checkPystylOutput($output) {
+    private function checkPystylOutput($pystyl_output, $full_outputpath1, $full_outputpath2) {
 
         //something went wrong when importing data into PyStyl
-        if (strpos($output, 'stylometricanalysis-error-import') !== false) {
+        if (strpos($pystyl_output, 'stylometricanalysis-error-import') !== false) {
             throw new \Exception('stylometricanalysis-error-import');
         }
 
         //the path already exists
-        if (strpos($output, 'stylometricanalysis-error-path') !== false) {
+        if (strpos($pystyl_output, 'stylometricanalysis-error-path') !== false) {
             throw new \Exception('stylometricanalysis-error-path');
         }
 
         //something went wrong when doing the analysis in PyStyl
-        if (strpos($output, 'stylometricanalysis-error-analysis') !== false) {
+        if (strpos($pystyl_output, 'stylometricanalysis-error-analysis') !== false) {
             throw new \Exception('stylometricanalysis-error-analysis');
         }
 
-        if (!is_file($this->full_outputpath1) || !is_file($this->full_outputpath2)) {
+        if (!is_file($full_outputpath1) || !is_file($full_outputpath2)) {
             throw new \Exception('stylometricanalysis-error-internal');
         }
 
