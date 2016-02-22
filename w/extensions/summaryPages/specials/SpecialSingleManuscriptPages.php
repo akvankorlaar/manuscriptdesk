@@ -22,7 +22,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SpecialSingleManuscriptPages extends baseSummaryPage {
+class SpecialSingleManuscriptPages extends SummaryPageBase {
   
 /**
  * SpecialSingleManuscriptPages page. Organises all manuscripts 

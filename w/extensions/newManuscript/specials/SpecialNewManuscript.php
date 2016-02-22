@@ -278,10 +278,11 @@ class SpecialNewManuscript extends SpecialPage {
       return $this->showUploadError($this->msg('newmanuscript-error-noextension'));
     }
       
-    if($extension !== $this->allowed_file_extensions[0] && $extension !== $this->allowed_file_extensions[1] && $extension !== $this->allowed_file_extensions[2] && $extension !== $this->allowed_file_extensions[3]){
+    if(!in_array($extension, $this->allowed_file_extensions)){
       return $this->showUploadError($this->msg('newmanuscript-error-fileformat'));
     }
-    
+      
+    //strpos should be equaled to false.. not to ! ...
     if(!strpos($mime,$this->allowed_file_extensions[0]) && !strpos($mime,$this->allowed_file_extensions[1]) && !strpos($mime,$this->allowed_file_extensions[2]) && !strpos($mime,$this->allowed_file_extensions[3])){
       return $this->showUploadError($this->msg('newmanuscript-error-fileformat'));
     }

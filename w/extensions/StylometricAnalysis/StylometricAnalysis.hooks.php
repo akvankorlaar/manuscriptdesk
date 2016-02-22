@@ -24,10 +24,6 @@
  */
 class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
 
-    public function __construct() {
-        
-    }
-
     public function onMediaWikiPerformAction($output, $article, $title, $user, $request, $wiki) {
 
         try {

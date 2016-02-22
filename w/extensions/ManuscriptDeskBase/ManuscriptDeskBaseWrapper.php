@@ -70,9 +70,9 @@ class ManuscriptDeskBaseWrapper {
         }
 
         $first_character_of_page = $this->getFirstCharachter($main_title_lowercase);
-        $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersData($first_character_of_page, $alphabetnumbers_context);
+        $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersSingleValue($first_character_of_page, $alphabetnumbers_context);
         $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter - 1;
-        $this->updateAlphabetNumbers($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
+        $this->updateAlphabetNumbersSingleValue($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
     }
 
     /**
@@ -85,15 +85,15 @@ class ManuscriptDeskBaseWrapper {
         }
 
         $first_character_of_page = $this->getFirstCharachter($main_title_lowercase);
-        $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersData($first_character_of_page, $alphabetnumbers_context);
+        $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersSingleValue($first_character_of_page, $alphabetnumbers_context);
         $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter + 1;
-        $this->updateAlphabetNumbers($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
+        $this->updateAlphabetNumbersSingleValue($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
     }
 
     /**
      * Get the number of pages that start with $first_charachter_of_page from the 'alphabetnumbers' table
      */
-    private function getAlphabetNumbersData($first_charachter_of_page = '', $alphabetnumbers_context = '') {
+    private function getAlphabetNumbersSingleValue($first_charachter_of_page = '', $alphabetnumbers_context = '') {
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -156,7 +156,7 @@ class ManuscriptDeskBaseWrapper {
         return $first_char;
     }
 
-    private function updateAlphabetNumbers($first_charachter_of_page, $number_of_pages = 0, $alphabetnumbers_context = '') {
+    private function updateAlphabetNumbersSingleValue($first_charachter_of_page, $number_of_pages = 0, $alphabetnumbers_context = '') {
         $dbw = wfGetDB(DB_MASTER);
 
         $dbw->update(

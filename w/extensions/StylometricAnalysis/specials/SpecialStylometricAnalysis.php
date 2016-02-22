@@ -76,6 +76,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     protected function processRequest() {
 
         $this->checkEditToken();
+        $form_data_getter = $this->getFormDataGetter();
 
         if ($this->form1WasPosted()) {
             $this->processForm1();

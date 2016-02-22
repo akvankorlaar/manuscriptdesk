@@ -22,7 +22,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SpecialAllCollations extends baseSummaryPage {
+class SpecialAllCollations extends SummaryPageBase {
   
 /**
  * SpecialallCollations page. Organises all collations 
@@ -30,16 +30,13 @@ class SpecialAllCollations extends baseSummaryPage {
   
   public function __construct(){
     
-    //call the parent constructor. The parent constructor (in 'summaryPages' class) will call the 'SpecialPage' class (grandparent) 
     parent::__construct('AllCollations');
   }
   
   /**
    * This function shows the page after a request has been processed
-   * 
-   * @param type $title_array
    */
-  protected function showPage($title_array, $alphabet_numbers = array()){
+  protected function showPage(array $title_array){
       
     $out = $this->getOutput();    
     $article_url = $this->article_url; 

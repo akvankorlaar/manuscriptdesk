@@ -347,18 +347,14 @@ class newManuscriptHooks {
    * This function checks if the file is an image. This has been done earlier and more thouroughly when uploading, but these checks are just to make sure
    */
   private function isImage($file){
-    
+         
     if(null !== pathinfo($file,PATHINFO_EXTENSION)){
       $extension = pathinfo($file,PATHINFO_EXTENSION);
     }else{
       $extension = null; 
     }
-          
-    if($extension !== $this->allowed_file_extensions[0] && $extension !== $this->allowed_file_extensions[1]){
-      return false;
-    }
-    
-    if(getimagesize($file) === false){
+       
+    if(!in_array($extension, $this->allowed_file_extensions) || getimagesize($file) === false){      
       return false;
     }
     
