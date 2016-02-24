@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the collate extension
+ * This file is part of the newManuscript extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,13 +22,16 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-abstract class ManuscriptDeskBaseFormDataGetter {
 
-    protected $request;
-    protected $validator;
+trait HTMLJavascriptLoaderGif{
 
-    public function __construct(WebRequest $request, ManuscriptDeskBaseValidator $validator) {
-        $this->request = $request;
-        $this->validator = $validator;
+    protected function getHTMLJavascriptLoaderGif() {
+
+        $html = "<h3 id='summarypage-loaderdiv' style='display: none;'>Loading";
+        $html .= "<span id='summarypage-loaderspan'></span>";
+        $html .= "</h3>";
+
+        return $html;
     }
+      
 }

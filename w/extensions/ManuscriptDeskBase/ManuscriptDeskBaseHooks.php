@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class ManuscriptDeskBaseHooks {
+abstract class ManuscriptDeskBaseHooks {
 
     public function __construct() {
         

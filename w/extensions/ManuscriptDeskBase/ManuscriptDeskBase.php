@@ -52,7 +52,9 @@ $dir = __DIR__ . '/';
 $wgAutoloadClasses['ManuscriptDeskBaseHooks'] = $dir . 'ManuscriptDeskBaseHooks.php';
 $wgAutoloadClasses['ManuscriptDeskBaseSpecials'] = $dir . 'ManuscriptDeskBaseSpecials.php';
 $wgAutoloadClasses['ManuscriptDeskBaseValidator'] = $dir . 'ManuscriptDeskBaseValidator.php';
-$wgAutoloadClasses['ManuscriptDeskBaseViewer'] = $dir . 'ManuscriptDeskBaseViewer.php';
 $wgAutoloadClasses['ManuscriptDeskBaseWrapper'] = $dir . 'ManuscriptDeskBaseWrapper.php';
 $wgAutoloadClasses['ManuscriptDeskBaseFormDataGetter'] = $dir . 'ManuscriptDeskBaseFormDataGetter.php';
-$wgExtensionMessagesFiles['ManuscriptDeskBaseMessages'] = $dir . '/ManuscriptDeskBaseMessages.i18n.php';
+$wgExtensionMessagesFiles['ManuscriptDeskBaseMessages'] = $dir . 'ManuscriptDeskBaseMessages.i18n.php';
+
+$wgAutoloadClasses['ManuscriptDeskBaseViewer'] = $dir . 'BaseViews' . '/' . 'ManuscriptDeskBaseViewer.php';
+$wgAutoloadClasses['ManuscriptDeskBaseViews'] = $dir . 'BaseViews' . '/' . 'HTMLUploadError.php';

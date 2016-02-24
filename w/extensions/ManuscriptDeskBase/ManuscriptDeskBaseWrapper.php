@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class ManuscriptDeskBaseWrapper {
+abstract class ManuscriptDeskBaseWrapper {
 
     protected $user_name;
 
@@ -173,6 +173,101 @@ class ManuscriptDeskBaseWrapper {
         }
 
         return true;
+    }
+    
+    public function getAlphabetNumbersData($alphabetnumbers_context = '') {
+
+        $dbr = wfGetDB(DB_SLAVE);
+        $number_array = array();
+
+        $res = $dbr->select(
+            'alphabetnumbers', array(
+          'a',
+          'b',
+          'c',
+          'd',
+          'e',
+          'f',
+          'g',
+          'h',
+          'i',
+          'j',
+          'k',
+          'l',
+          'm',
+          'n',
+          'o',
+          'p',
+          'q',
+          'r',
+          's',
+          't',
+          'u',
+          'v',
+          'w',
+          'x',
+          'y',
+          'z',
+          'zero',
+          'one',
+          'two',
+          'three',
+          'four',
+          'five',
+          'six',
+          'seven',
+          'eight',
+          'nine',
+            ), array(
+          'alphabetnumbers_context = ' . $dbr->addQuotes($alphabetnumbers_context), //contitions
+            ), __METHOD__
+        );
+
+        //there should only be one result
+        if ($res->numRows() === 1) {
+            $s = $res->fetchObject();
+
+            $number_array = array(
+              $s->a,
+              $s->b,
+              $s->c,
+              $s->d,
+              $s->e,
+              $s->f,
+              $s->g,
+              $s->h,
+              $s->i,
+              $s->j,
+              $s->k,
+              $s->l,
+              $s->m,
+              $s->n,
+              $s->o,
+              $s->p,
+              $s->q,
+              $s->r,
+              $s->s,
+              $s->t,
+              $s->u,
+              $s->v,
+              $s->w,
+              $s->x,
+              $s->y,
+              $s->z,
+              $s->zero,
+              $s->one,
+              $s->two,
+              $s->three,
+              $s->four,
+              $s->five,
+              $s->six,
+              $s->seven,
+              $s->eight,
+              $s->nine,
+            );
+        }
+
+        return $number_array;
     }
 
 }

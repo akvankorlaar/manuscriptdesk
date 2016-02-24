@@ -1,6 +1,7 @@
 <?php
+
 /**
- * This file is part of the newManuscript extension
+ * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,20 +22,32 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
+class ManuscriptDeskBaseViewer {
 
-class SpecialAllCollections extends SummaryPageBase {
-  
-  public function __construct(){
+    protected $out;
+    protected $max_int_formfield_length = 5;
+
+    public function __construct($out) {
+        $this->out = $out;
+    }
+
+    protected function HTMLSpecialCharachtersArray(array &$array) {
+        foreach ($array as $index => &$value) {
+            if (is_string($value)) {
+                $value = htmlspecialchars($value);
+            }
+
+            if (is_array($value)) {
+                $this->HTMLSpecialCharachtersArray($value);
+            }
+        }
+
+        return $array;
+    }
     
-    parent::__construct('AllCollections');
-  }
-  
-  protected function getViewer(){
-      return new AllCollectionsViewer($this->getOutput(), $this->getRequest());
-  }
-  
-  protected function getWrapper(){
-      return new AllCollectionsWrapper();
-  }
- 
+    public function showNoPermissionError($error_message = '') {
+        $this->out->addHTML($error_message);
+        return true;
+    }
+    
 }

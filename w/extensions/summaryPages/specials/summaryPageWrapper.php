@@ -152,67 +152,7 @@ class summaryPageWrapper{
    
     return array($title_array, $next_offset, $this->next_page_possible);   
   }
-  
-  /**
-   * This function prepares the database configuration settings, and then calls the database to fetch collection titles and their associated manuscript pages
-   * 
-   * @return type an array of all manuscripts
-   */
-  private function retrieveAllCollections(){
-                
-    $button_name = $this->button_name;
-    $next_letter_alphabet = $this->next_letter_alphabet; 
-    $dbr = wfGetDB(DB_SLAVE);
-    $title_array = array();
-    $next_offset = null; 
-    
-    //Database query
-    $res = $dbr->select(
-        'collections', //from
-      array(
-        'collections_title',//values
-        'collections_title_lowercase',
-        'collections_user',
-        'collections_date',        
-        ), 
-      array(
-        'collections_title_lowercase >= ' . $dbr->addQuotes($button_name),
-        'collections_title_lowercase < '  . $dbr->addQuotes($next_letter_alphabet),
-        'collections_title_lowercase != ' . $dbr->addQuotes("none"),
-       ),
-      __METHOD__,
-      array(
-        'ORDER BY' => 'collections_title_lowercase',
-        'LIMIT' => $this->max_on_page+1,
-        'OFFSET' => $this->offset, 
-      )
-      );
-        
-    if ($res->numRows() > 0){
-      //while there are still titles in this query
-      while ($s = $res->fetchObject()){
-        
-        //add titles to the title array as long as it is not bigger than max_on_page
-        if (count($title_array) < $this->max_on_page){
-          
-          $title_array[] = array(
-          'collections_title' => $s->collections_title,
-          'collections_user' => $s->collections_user,
-          'collections_date' => $s->collections_date,
-        );
-
-        //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
-        }else{
-          $this->next_page_possible = true;
-          $next_offset = ($this->offset)+($this->max_on_page);          
-          break; 
-        }
-      }     
-    }
    
-    return array($title_array, $next_offset, $this->next_page_possible);   
-  }
-  
    /**
    * This function prepares the database configuration settings, and then calls the database to fetch manuscript titles
    * 

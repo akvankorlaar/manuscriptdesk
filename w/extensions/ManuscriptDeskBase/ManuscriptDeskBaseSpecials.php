@@ -24,7 +24,7 @@
  * 
  * Idea: Refractor code and use interfaces. For example, there is some duplication in the execute and handleErrors methods
  */
-class ManuscriptDeskBaseSpecials extends SpecialPage {
+abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
 
     protected $user_name;
 
@@ -270,5 +270,12 @@ class ManuscriptDeskBaseSpecials extends SpecialPage {
 
         return $error_message;
     }
+    
+    /**
+     * Return viewer object for the special page
+     * 
+     * @return ManuscriptDeskBaseViewer object
+     */
+    abstract protected function getViewer();
 
 }

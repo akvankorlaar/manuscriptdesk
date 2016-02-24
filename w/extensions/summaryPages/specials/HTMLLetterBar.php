@@ -23,7 +23,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-trait LetterBarView {
+trait HTMLLetterBar {
 
     protected function getHTMLLetterBar(array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name = null) {
 
@@ -84,4 +84,3 @@ trait LetterBarView {
     
 
 }
-
