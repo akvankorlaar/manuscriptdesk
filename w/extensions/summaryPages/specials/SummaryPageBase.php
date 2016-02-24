@@ -26,13 +26,10 @@
 abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
 
     public $lowercase_alphabet;
-    public $uppercase_alphabet;
-    protected $max_on_page; //maximum manuscripts shown on a page
-    protected $selected_collection;
-    
-    protected $database_wrapper;
-    protected $viewer; 
-    protected $form_data_getter;
+    public $uppercase_alphabet;  
+    private $max_on_page; //maximum manuscripts shown on a page    
+    private $wrapper;
+    private $viewer; 
     
     public function __construct($page_name) {
         parent::__construct($page_name);
@@ -49,13 +46,15 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         $this->uppercase_alphabet = array_merge(range('A', 'Z'), $numbers);
         $this->max_on_page = $wgNewManuscriptOptions['max_on_page'];
         
-       // $this->database_wrapp
-        
+       $this->wrapper = $this->getWrapper();
+       $this->viewer = $this->getViewer();
     }
 
-    private function processRequest() {
+    protected function processRequest() {
 
-        if (!$this->singleCollectionDataWasRequested()) {
+        $request_processor = $this->request_processor;
+        
+        if (!$request_processor->singleCollectionPosted()) {
             $this->processLetterOrButtonRequest();
             return true; 
         }
@@ -65,7 +64,7 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
     }
 
     private function processLetterOrButtonRequest() {
-        list($button_name, $offset) = $this->getFormData();
+        list($button_name, $offset) = $this->getDefaultPageData();
         list($page_titles, $next_offset) = $this->getLetterOrButtonDatabaseData($button_name, $offset);
         
         if(empty($page_titles)){
@@ -77,10 +76,9 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
     
     private function prepareShowSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset){
         
-        $alphabet_numbers = $database_wrapper->getAlphabetNumbersData($this->getSpecialPageName());
-        $viewer = $this->getViewer();
+        $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
               
-        $viewer->showSingleLetterOrNumberPage(
+        $this->viewer->showSingleLetterOrNumberPage(
                 $alphabet_numbers,
                 $this->uppercase_alphabet,
                 $this->lowercase_alphabet,              
@@ -94,22 +92,18 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
     }
     
     private function prepareShowEmptyPageTitlesError(){
-        $database_wrapper = $this->getDatabaseWrapper();
-        $alphabet_numbers = $database_wrapper->getAlphabetNumbersData($this->getSpecialPageName());
-        $viewer = $this->getViewer();
-        $viewer->showEmptyPageTitlesError($alphabet_numbers, $this->uppercase_alphabet,$this->lowercase_alphabet);
+        $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
+        $this->viewer->showEmptyPageTitlesError($alphabet_numbers, $this->uppercase_alphabet,$this->lowercase_alphabet);
     }
     
-    private function getFormData(){
-        $form_data_getter = $this->getFormDataGetter();
-        list($button_name, $offset) = $form_data_getter->getLetterOrButtonRequestValues($this->lowercase_alphabet); 
+    private function getDefaultPageData(){
+        list($button_name, $offset) = $this->request_processor->getLetterOrButtonRequestValues($this->lowercase_alphabet); 
         return array($button_name, $offset);
     }
     
     private function getLetterOrButtonDatabaseData($button_name, $offset){
         $next_letter_alphabet = $this->getNextNumberOrLetterOfTheAlphabet($button);
-        $database_wrapper = $this->getWrapper();
-        return $database_wrapper->getData($button_name, $offset, $next_letter_alphabet, $this->max_on_page);
+        return $this->wrapper->getData($button_name, $offset, $next_letter_alphabet, $this->max_on_page);
     }
     
     private function getNextNumberOrLetterOfTheAlphabet($button_name = '', array $lowercase_alphabet) {
@@ -135,28 +129,15 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
     private function processSingleCollectionDataRequest() {
         $this->selected_collection = $this->validateInput($request->getText($value));
         $this->button_name = 'singlecollection';
-    }
-
-    private function singleCollectionDataWasRequested() {
-        $request = $this->getRequest();
-        if ($request->getText('singlecollection') !== '') {
-            return true;
-        }
-
-        return false;
+        
+         $database_wrapper = new summaryPageWrapper('singlecollection', 0, 0, "", "", "", $this->selected_collection);
+        $single_collection_data = $database_wrapper->retrieveFromDatabase();
+        return $this->showSingleCollectionData($single_collection_data);
     }
 
     protected function getDefaultPage() {
-        $database_wrapper = $this->getWrapper();
-        $alphabet_numbers = $database_wrapper->getAlphabetNumbersData($this->getSpecialPageName());
-        $viewer = $this->getViewer();
-        $viewer->showDefaultPage($alphabet_numbers);
-    }
-
-    private function temp() {
-        $database_wrapper = new summaryPageWrapper('singlecollection', 0, 0, "", "", "", $this->selected_collection);
-        $single_collection_data = $database_wrapper->retrieveFromDatabase();
-        return $this->showSingleCollectionData($single_collection_data);
+        $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
+        $this->viewer->showDefaultPage($alphabet_numbers);
     }
 
     /**
@@ -176,9 +157,9 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
     /**
      * Get the form data getter object for the page
      * 
-     * @return name of Special Page
+     * @return ManuscriptDeskBaseRequestProcessor object
      */
-    abstract protected function getFormDataGetter();
+    abstract protected function getRequestProcessor();
     
     /**
      * Get the name of the special page

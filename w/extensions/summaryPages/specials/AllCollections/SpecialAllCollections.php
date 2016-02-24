@@ -39,8 +39,8 @@ class SpecialAllCollections extends SummaryPageBase {
         return new AllCollectionsWrapper();
     }
     
-    protected function getFormDataGetter(){
-        return new SummaryPageFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+    protected function getRequestProcessor(){
+        return new SummaryPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     protected function getSpecialPageName() {

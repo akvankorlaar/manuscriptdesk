@@ -22,21 +22,21 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class StylometricAnalysisFormDataGetter extends ManuscriptDeskBaseFormDataGetter{
+class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProcessor{
 
-    public function getForm1Data() {
+    public function getDefaultPageData() {
         global $wgStylometricAnalysisOptions;
         $minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
         $maximum_collections = $wgStylometricAnalysisOptions['wgmax_stylometricanalysis_collections'];
-        $collection_data = $this->loadForm1Data();
-        $this->checkForm1($collection_data, $minimum_collections, $maximum_collections);
+        $collection_data = $this->loadDefaultPageData();
+        $this->checkDefaultPageData($collection_data, $minimum_collections, $maximum_collections);
         return $collection_data;
     }
 
     /**
      * This function loads the variables in Form 1
      */
-    private function loadForm1Data() {
+    private function loadDefaultPageData() {
 
         $request = $this->request;
         $validator = $this->validator;
@@ -56,7 +56,7 @@ class StylometricAnalysisFormDataGetter extends ManuscriptDeskBaseFormDataGetter
         return $collection_data;
     }
 
-    private function checkForm1(array $collection_data, $minimum_collections, $maximum_collections) {
+    private function checkDefaultPageData(array $collection_data, $minimum_collections, $maximum_collections) {
         
         if (empty($collection_data)) {
             throw new Exception('stylometricanalysis-error-request');
@@ -151,6 +151,17 @@ class StylometricAnalysisFormDataGetter extends ManuscriptDeskBaseFormDataGetter
         $validator = $this->validator;
         $time = $validator->validateStringNumber(json_decode($request->getText('time')));
         return $time; 
+    }
+    
+    /**
+     * Check if form 2 was posted
+     */
+    public function form2WasPosted() {
+        if ($this->request->getText('form_2_posted') !== '') {
+            return true;
+        }
+
+        return false;
     }
 
 }

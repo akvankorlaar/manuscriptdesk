@@ -32,6 +32,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private $collection_data;
     private $collection_name_data;
     private $pystyl_config;
+    
+    private $viewer; 
+    private $wrapper;
 
     //PyStyl $config_array information: 
     //removenonalpha : wheter or not to keep alphabetical symbols
@@ -66,6 +69,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
         $this->base_outputpath = $web_root . '/' . $initial_analysis_dir . '/' . $this->user_name;
         $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name;
+        
+        $this->viewer = $this->getViewer();
+        $this->wrapper = $this->getWrapper();
 
         return true;
     }
@@ -75,65 +81,52 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      */
     protected function processRequest() {
 
-        $this->checkEditToken();
-        $form_data_getter = $this->getFormDataGetter();
+        $request_processor = $this->request_processor;
+        $request_processor->checkEditToken($this->getUser());
 
-        if ($this->form1WasPosted()) {
-            $this->processForm1();
+        if ($request_processor->defaultPageWasPosted()) {
+            $this->processDefaultPage();
             return true;
         }
 
-        if ($this->form2WasPosted()) {
+        if ($request_processor->form2WasPosted()) {
             $this->processForm2();
             return true;
         }
 
-        if ($this->savePageWasRequested()) {
+        if ($request_processor->savePagePosted()) {
             $this->processSavePageRequest();
             return true;
         }
 
-        if ($this->redirectBackWasRequested()) {
-            $this->getForm1();
+        if ($request_processor->redirectBackPosted()) {
+            $this->getDefaultPage();
             return true;
         }
 
         throw new \Exception('stylometricanalysis-error-request');
     }
 
-    /**
-     * Check if form 2 was posted
-     */
-    private function form2WasPosted() {
-        $request = $this->getRequest();
-        if ($request->getText('form2Posted') !== '') {
-            return true;
-        }
-
-        return false;
-    }
-
-    protected function getForm1($error_message = '') {
+    protected function getDefaultPage($error_message = '') {
         $user_collection_data = $this->getUserCollectionData();
-        $viewer = $this->getViewer();
-        return $viewer->showForm1($user_collection_data, $error_message);
+        return $this->viewer->showDefaultPage($user_collection_data, $error_message);
     }
 
-    private function processForm1() {
-        $form_data_getter = $this->getFormDataGetter();
+    private function processDefaultPage() {
         $this->form_type = 'Form1';
-        $this->collection_data = $collection_data = $form_data_getter->getForm1Data();
+        $this->collection_data = $this->request_processor->getDefaultPageData();
         $this->collection_name_data = $this->constructCollectionNameData();
-        $viewer = $this->getViewer();
-        return $viewer->showForm2($collection_data, $this->collection_name_data, $this->getContext());
+        return $this->viewer->showForm2($this->collection_data, $this->collection_name_data, $this->getContext());
     }
 
     private function processForm2() {
-        $form_data_getter = $this->getFormDataGetter();
+        $request_processor = $this->request_processor;
+        $viewer = $this->viewer;
+        
         $this->form_type = 'Form2';
-        $this->collection_data = $form_data_getter->getForm2CollectionData();
+        $this->collection_data = $request_processor->getForm2CollectionData();
         $this->collection_name_data = $this->constructCollectionNameData();
-        $this->pystyl_config = $form_data_getter->getForm2PystylConfigurationData();
+        $this->pystyl_config = $request_processor->getForm2PystylConfigurationData();
 
         $texts = $this->getPageTextsForCollections();
 
@@ -152,13 +145,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $time = idate('U'); //time format integer (Unix Timestamp). This timestamp is used to see how old values are
         $this->updateDatabase($time, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2);
 
-        $viewer = $this->getViewer();
         return $viewer->showResult($this->pystyl_config, $this->collection_name_data, $full_linkpath1, $full_linkpath2, $time);
     }
 
     private function processSavePageRequest() {
-        $form_data_getter = $this->getFormDataGetter();
-        $time = $form_data_getter->getSavePageData();
+        $time = $this->request_processor->getSavePageData();
         $new_page_url = $this->transferDatabaseDataAndGetNewPageUrl($time);
         $local_url = $this->createNewWikiPage($new_page_url);
         return $this->getOutput()->redirect($local_url);
@@ -351,19 +342,19 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private function updateDatabase($time = 0, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2) {
         $new_page_url = $this->createNewPageUrl();
         $date = date("d-m-Y H:i:s");
-        $database_wrapper = $this->getWrapper();
+        $database_wrapper = $this->wrapper;
         $database_wrapper->clearOldPystylOutput($time);
         $database_wrapper->storeTempStylometricAnalysis($this->collection_name_data, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2, $this->pystyl_config);
         return true;
     }
 
     private function getUserCollectionData() {
-        $database_wrapper = $this->getWrapper();
+        $database_wrapper = $this->wrapper;
         return $database_wrapper->getManuscriptsCollectionData();
     }
 
     private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
-        $database_wrapper = $this->getWrapper();
+        $database_wrapper = $this->wrapper;
         $database_wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
         return $database_wrapper->getNewPageUrl($time);
     }
@@ -376,8 +367,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return new StylometricAnalysisWrapper($this->user_name);
     }
 
-    protected function getFormDataGetter() {
-        return new StylometricAnalysisFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+    protected function getRequestProcessor() {
+        return new StylometricAnalysisRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     /**

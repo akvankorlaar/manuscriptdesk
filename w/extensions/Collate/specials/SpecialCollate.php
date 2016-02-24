@@ -23,6 +23,9 @@
  * @copyright 2015 Arent van Korlaar
  */
 class SpecialCollate extends ManuscriptDeskBaseSpecials {
+    
+    private $viewer;
+    private $wrapper;
 
     /**
      * This code can run in a few different contexts:
@@ -38,44 +41,49 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
 
         parent::__construct('Collate');
     }
+    
+    protected function setVariables(){
+        parent::setVariables();
+        $this->viewer = $this->getViewer();
+        $this->wrapper = $this->getWrapper();     
+    }
 
     /**
      * Processes the request when a user has submitted the collate form
      */
     protected function processRequest() {
 
-        $this->checkEditToken();
+        $request_processor = $this->request_processor;
+        $request_processor->checkEditToken($this->getUser());
 
-        if ($this->form1WasPosted()) {
-            $this->processForm1();
+        if ($request_processor->defaultPageWasPosted()) {
+            $this->processDefaultPage();
             return true;
         }
 
-        if ($this->savePageWasRequested()) {
+        if ($request_processor->savePagePosted()) {
             $this->processSavePageRequest();
             return true;
         }
 
-        if ($this->redirectBackWasRequested()) {
-            $this->getForm1();
+        if ($request_processor->redirectBackPosted()) {
+            $this->getDefaultPage();
             return true;
         }
 
         throw new \Exception('collate-error-request');
     }
 
-    protected function getForm1($error_message = '') {
-        $collate_wrapper = $this->getWrapper();
+    protected function getDefaultPage($error_message = '') {
+        $collate_wrapper = $this->wrapper;
         $manuscripts_data = $collate_wrapper->getManuscriptsData();
         $collection_data = $collate_wrapper->getCollectionData();
-        $collate_viewer = $this->getViewer();
-        $collate_viewer->showForm1($manuscripts_data, $collection_data, $error_message);
+        $this->viewer->showDefaultPage($manuscripts_data, $collection_data, $error_message);
         return true;
     }
 
-    private function processForm1() {
-        $form_data_getter = $this->getFormDataGetter();
-        list($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles) = $form_data_getter->getForm1Data();
+    private function processDefaultPage() {
+        list($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles) = $this->request_processor->getDefaultPageData();
         $page_titles = $this->getPageTitlesCorrespondingToPostedUrls($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles);
         $page_texts = $this->getTextsFromWikiPages($manuscript_urls, $collection_urls_data);
         $collatex_converter = $this->getCollatexConverter();
@@ -84,8 +92,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $new_url = $this->makeUrlForNewPage($imploded_page_titles);
         $time = idate('U'); //time format (Unix Timestamp). This timestamp is used to see how old tempcollate values are
         $this->updateDatabase($page_titles, $imploded_page_titles, $new_url, $time, $collatex_output);
-        $collate_viewer = $this->getViewer();
-        $collate_viewer->showCollatexOutput($page_titles, $collatex_output, $time);
+        $this->viewer->showCollatexOutput($page_titles, $collatex_output, $time);
         return true;
     }
 
@@ -94,12 +101,11 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      * the 'collations' table, a new page is made, and the user is redirected to this page
      */
     private function processSavePageRequest() {
-        $form_data_getter = $this->getFormDataGetter();
-        $time_identifier = $form_data_getter->getSavePageData();
-        $collate_wrapper = $this->getWrapper();
-        list($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) = $collate_wrapper->getSavePageData($time_identifier);
-        $collate_wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output);
-        $collate_wrapper->incrementAlphabetNumbers($main_title_lowercase, 'AllCollations');
+        $time_identifier = $this->request_processor->getSavePageData();
+        $wrapper = $this->wrapper;
+        list($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) = $wrapper->getSavedCollateAnalysisData($time_identifier);
+        $wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output);
+        $wrapper->incrementAlphabetNumbers($main_title_lowercase, 'AllCollations');
         $local_url = $this->createNewWikiPage($new_url);
         return $this->getOutput()->redirect($local_url);
     }
@@ -141,7 +147,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      * This function intializes the $collate_wrapper, clears the tempcollate table, and inserts new data into the tempcollate table 
      */
     private function updateDatabase($titles_array, $main_title, $new_url, $time, $collatex_output) {
-        $collate_wrapper = new CollateWrapper($this->user_name);
+        $collate_wrapper = $this->wrapper;
         $collate_wrapper->clearOldCollatexOutput($time);
         $collate_wrapper->storeTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
         return true;
@@ -192,8 +198,8 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         return new CollateWrapper($this->user_name);
     }
 
-    protected function getFormDataGetter() {
-        return new CollateFormDataGetter($this->getRequest(), new ManuscriptDeskBaseValidator());
+    protected function getRequestProcessor() {
+        return new CollateRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     protected function getCollatexConverter() {

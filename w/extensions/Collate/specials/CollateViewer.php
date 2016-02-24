@@ -43,7 +43,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
     /**
      * This function constructs the HTML for the default page
      */
-    public function showForm1(array $manuscript_data, array $collection_data, $error_message = '') {
+    public function showDefaultPage(array $manuscript_data, array $collection_data, $error_message = '') {
 
         global $wgArticleUrl;
         $out = $this->out;
@@ -151,7 +151,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $edit_token = $out->getUser()->getEditToken();
 
         $html .= "<input type='submit' disabled id='begincollate-submitbutton' title = $submit_hover_message value=$submit_message>";
-        $html .= "<input type='hidden' name='form1Posted' value='form1Posted'>";
+        $html .= "<input type='hidden' name='default_page_posted' value='default_page_posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
         $html .= "<br>";
@@ -180,12 +180,12 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $html = '';
         $html .= "<div id = 'begincollate-buttons'>";
         $html .= "<form class='begincollate-form-two' action='" . $article_url . "Special:Collate' method='post'>";
-        $html .= "<input type='submit' class='begincollate-submitbutton-two' name='redirect' title='$redirect_hover_message'  value='$redirect_message'>";
+        $html .= "<input type='submit' class='begincollate-submitbutton-two' name='redirect_posted' title='$redirect_hover_message'  value='$redirect_message'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
             
         $html .= "<form class='begincollate-form-two' action='" . $article_url . "Special:Collate' method='post'>";
-        $html .= "<input type='submit' class='begincollate-submitbutton-two' name='save_current_page' title='$save_hover_message' value='$save_message'>"; 
+        $html .= "<input type='submit' class='begincollate-submitbutton-two' name='save_page_posted' title='$save_hover_message' value='$save_message'>"; 
         $html .= "<input type='hidden' name='time' value='$time'>";  
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";

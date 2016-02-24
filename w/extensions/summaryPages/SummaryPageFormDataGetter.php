@@ -23,7 +23,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class SummaryPageFormDataGetter extends ManuscriptDeskBaseFormDataGetter {
+class SummaryPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
     public function getLetterOrButtonRequestValues($lowercase_alphabet) {
 
@@ -50,24 +50,16 @@ class SummaryPageFormDataGetter extends ManuscriptDeskBaseFormDataGetter {
 
         return array($button_name, $offset);
     }
-
-    public function assertPreviousPageIsPossible($offset = 0) {
-        global $wgNewManuscriptOptions;
-        $max_on_page = $wgNewManuscriptOptions['max_on_page'];
-
-        if ($offset < $max_on_page) {
-            return false;
+    
+    public function singleCollectionPosted() {
+        $request = $this->getRequest();
+        if ($request->getText('single_collection_posted') !== '') {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
-    public function assertButtonIsNumeric($button_name = '') {
-        if (!is_numeric($button_name)) {
-            return false;
-        }
 
-        return true;
-    }
 
 }

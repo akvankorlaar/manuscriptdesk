@@ -39,7 +39,7 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
     /**
      * This function constructs the HTML for the default page
      */
-    public function showForm1(array $user_collection_data, $error_message = '') {
+    public function showDefaultPage(array $user_collection_data, $error_message = '') {
 
         global $wgArticleUrl;
 
@@ -113,7 +113,7 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $edit_token = $out->getUser()->getEditToken();
 
         $html .= "<input type='submit' id='stylometricanalysis-submitbutton' title = $submit_hover_message value=$submit_message>";
-        $html .= "<input type='hidden' name='form1Posted' value='form1Posted'>";
+        $html .= "<input type='hidden' name='default_page_posted' value='default_page_posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
 
         $html .="</form>";
@@ -322,7 +322,7 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $html_form = new HTMLForm($descriptor, $context);
         $html_form->setSubmitText($out->msg('stylometricanalysis-submit'));
         $html_form->addHiddenField('collection_data', json_encode($collection_data));
-        $html_form->addHiddenField('form2Posted', 'form2Posted');
+        $html_form->addHiddenField('form_2_posted', 'form_2_posted');
         $html_form->setSubmitCallback(array('SpecialStylometricAnalysis', 'callbackForm2'));
         $html_form->show();
 
@@ -372,13 +372,13 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
 
         $html .= "<form class='stylometricanalysis-form-two' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
         $html .= "<input type='submit' id='stylometricanalysis-submitbutton-two' title='$perform_new_analysis' value='$perform_new_analysis'>";
-        $html .= "<input type='hidden' name='redirect' value='redirect'>";
+        $html .= "<input type='hidden' name='redirect_posted' value='redirect_posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
         $html .= "<form class='stylometricanalysis-form-two' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
         $html .= "<input type='submit' id='stylometricanalysis-submitbutton-two' title='$save_button_title' value='$save_button_value'>";
-        $html .= "<input type='hidden' name='save_current_page' value='save_current_page'>";
+        $html .= "<input type='hidden' name='save_page_posted' value='save_page_posted'>";
         $html .= "<input type='hidden' name='time' value='$time'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";

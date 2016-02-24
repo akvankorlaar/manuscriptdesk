@@ -27,6 +27,7 @@
 abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
 
     protected $user_name;
+    protected $request_processor;
 
     public function __construct($page_name) {
         parent::__construct($page_name);
@@ -35,6 +36,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
     protected function setVariables() {
         $user = $this->getUser();
         $this->user_name = $user->getName();
+        $this->request_processor = $this->getRequestProcessor();
     }
 
     /**
@@ -46,49 +48,17 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
             $this->setVariables();
             $this->checkManuscriptDeskPermission();
 
-            if ($this->requestWasPosted()) {
+            if ($this->request_processor->requestWasPosted()) {
                 $this->processRequest();
                 return true;
             }
 
-            $this->getForm1();
+            $this->getDefaultPage();
             return true;
         } catch (Exception $e) {
             $this->handleExceptions($e);
             return false;
         }
-    }
-
-    /**
-     * This function checks if the edit token was posted
-     */
-    protected function tokenWasPosted() {
-        $edit_token = $this->getEditToken();
-        if ($edit_token === '') {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * This function gets the edit token
-     */
-    protected function getEditToken() {
-        $request = $this->getRequest();
-        return $request->getText('wpEditToken');
-    }
-
-    /**
-     * This function checks the edit token
-     */
-    protected function checkEditToken() {
-        $edit_token = $this->getEditToken();
-        if ($this->getUser()->matchEditToken($edit_token) === false) {
-            throw new \Exception('error-edittoken');
-        }
-
-        return true;
     }
 
     /**
@@ -100,16 +70,6 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
 
         if (!in_array('ManuscriptEditors', $user_object->getGroups())) {
             throw new \Exception('error-nopermission');
-        }
-
-        return true;
-    }
-
-    protected function requestWasPosted() {
-        $request = $this->getRequest();
-
-        if (!$request->wasPosted()) {
-            return false;
         }
 
         return true;
@@ -128,12 +88,18 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         $this->checkIfTextIsNotOnlyWhitespace($all_texts_for_one_collection);
         return $all_texts_for_one_collection;
     }
-
+    
     protected function getFilteredSinglePageText(Title $title) {
         $wikipage = Wikipage::factory($title);
         $raw_text = $wikipage->getText();
         $filtered_raw_text = $this->filterText($raw_text);
         return $filtered_raw_text;
+    }
+    
+    protected function checkIfTextIsNotOnlyWhitespace($text = '') {
+        if (ctype_space($text) || $text === '') {
+            throw new Exception('error-notextonwikipage');
+        }
     }
 
     /**
@@ -189,33 +155,6 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         return $local_url;
     }
 
-    protected function form1WasPosted() {
-        $request = $this->getRequest();
-        if ($request->getText('form1Posted') !== '') {
-            return true;
-        }
-
-        return false;
-    }
-
-    protected function redirectBackWasRequested() {
-        $request = $this->getRequest();
-        if ($request->getText('redirect') !== '') {
-            return true;
-        }
-
-        return false;
-    }
-
-    protected function savePageWasRequested() {
-        $request = $this->getRequest();
-        if ($request->getText('save_current_page') === '') {
-            return false;
-        }
-
-        return true;
-    }
-
     protected function constructTitleObjectFromUrl($single_manuscript_url = '') {
         $title = Title::newFromText($single_manuscript_url);
 
@@ -224,12 +163,6 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         }
 
         return $title;
-    }
-
-    protected function checkIfTextIsNotOnlyWhitespace($text = '') {
-        if (ctype_space($text) || $text === '') {
-            throw new Exception('error-notextonwikipage');
-        }
     }
 
     protected function handleExceptions(Exception $exception_error) {
@@ -277,5 +210,17 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
      * @return ManuscriptDeskBaseViewer object
      */
     abstract protected function getViewer();
+    
+    /**
+     * Return request processor object for the special page
+     * 
+     * @return ManuscriptDeskBaseRequestProcessor object
+     */
+    abstract protected function getRequestProcessor();
+    
+    /**
+     * Get the default page for this special page
+     */
+    abstract protected function getDefaultPage();
 
 }

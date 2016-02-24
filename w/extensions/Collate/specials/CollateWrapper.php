@@ -128,7 +128,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
     /**
      * This function gets the stored collate values from 'tempcollate'
      */
-    public function getSavePageData($time_identifier) {
+    public function getSavedCollateAnalysisData($time_identifier) {
 
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;

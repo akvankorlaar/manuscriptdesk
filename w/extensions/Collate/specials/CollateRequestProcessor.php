@@ -23,15 +23,15 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class CollateFormDataGetter extends ManuscriptDeskBaseFormDataGetter {
+class CollateRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
-    public function getForm1Data() {
-        $data = $this->loadForm1Data();
-        $this->checkForm1Data($data);
+    public function getDefaultPageData() {
+        $data = $this->loadDefaultPageData();
+        $this->checkDefaultPageData($data);
         return $data;
     }
 
-    private function loadForm1Data() {
+    private function loadDefaultPageData() {
 
         $request = $this->request;
         $validator = $this->validator;
@@ -65,7 +65,7 @@ class CollateFormDataGetter extends ManuscriptDeskBaseFormDataGetter {
         return array($manuscript_urls, $manuscript_titles, $collection_urls, $collection_titles);
     }
 
-    private function checkForm1Data(array $data) {
+    private function checkDefaultPageData(array $data) {
 
         global $wgCollationOptions;
 
