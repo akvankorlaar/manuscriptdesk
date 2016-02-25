@@ -52,14 +52,17 @@ class SummaryPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
     }
     
     public function singleCollectionPosted() {
-        $request = $this->getRequest();
-        if ($request->getText('single_collection_posted') !== '') {
+        if ($this->request->getText('single_collection_posted') !== '') {
             return true;
         }
 
         return false;
     }
 
-
+    public function getSingleCollectionName(){
+        $validator = $this->validator;
+        $request = $this->request;
+        return $validator->validateString($request->getText('single_collection_posted'));
+    }
 
 }

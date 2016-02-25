@@ -22,26 +22,14 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class collectionMetaTable{
-  
-/**
- * This class contains the HTML for the metatable
- */
- 
-  //class constructor
-  public function __construct(){
-    }
+trait HTMLCollectionMetaTable{
       
   /**
    * This function renders the metadata table 
    */
-  public function renderTable($meta_data){
+  protected function getHTMLCollectionMetaTable(array $meta_data){
     
-    foreach($meta_data as $index => &$variable){
-      $variable = htmlspecialchars($variable);
-    }
-    
-    //get the data
+    //get the data  
     $metatitle =         isset($meta_data['collections_metatitle']) ? $meta_data['collections_metatitle'] : '';
     $metaauthor =        isset($meta_data['collections_metaauthor']) ? $meta_data['collections_metaauthor'] : '';
     $metayear =          isset($meta_data['collections_metayear']) ? $meta_data['collections_metayear'] :'';
@@ -176,13 +164,4 @@ class collectionMetaTable{
    return $html_table; 
   }
   
-  /**
-   * This function retrieves the message from the i18n file for String $identifier
-   * 
-   * @param type $identifier
-   * @return type
-   */
-  public function getMessage($identifier){
-    return wfMessage($identifier)->text();
-  }
 }

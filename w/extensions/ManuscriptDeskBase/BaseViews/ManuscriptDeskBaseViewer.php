@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class ManuscriptDeskBaseViewer {
+abstract class ManuscriptDeskBaseViewer {
 
     protected $out;
     protected $max_int_formfield_length = 5;
@@ -49,5 +49,7 @@ class ManuscriptDeskBaseViewer {
         $this->out->addHTML($error_message);
         return true;
     }
+    
+    abstract public function showDefaultPage();
     
 }

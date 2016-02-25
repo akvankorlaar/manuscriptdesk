@@ -22,29 +22,12 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SpecialAllCollections extends SummaryPageBase {
 
-    private $page_name = 'AllCollections';
-
-    public function __construct() {
-
-        parent::__construct($this->page_name);
-    }
-
-    protected function getViewer() {
-        return new AllCollectionsViewer($this->getOutput(), $this->page_name);
-    }
-
-    protected function getWrapper() {
-        return new AllCollectionsWrapper();
-    }
+interface SummaryPageViewerInterface{
     
-    protected function getRequestProcessor(){
-        return new SummaryPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
-    }
-
-    protected function getSpecialPageName() {
-        return $this->page_name;
-    }
-
+    public function showSingleLetterOrNumberPage();
+    
+    public function showDefaultPage();
+    
+    public function showEmptyPageTitlesError();
 }

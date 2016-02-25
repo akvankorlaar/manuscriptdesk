@@ -22,62 +22,40 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class AllCollectionsViewer extends ManuscriptDeskBaseViewer {
+class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPageViewerInterface {
 
-    use HTMLLetterBar, HTMLJavascriptLoaderGif;
+    use HTMLLetterBar,
+        HTMLJavascriptLoaderGif,
+        HTMLPreviousNextPageLinks;
+
+    private $page_name;
+
+    public function __construct($out, $page_name) {
+        parent::construct();
+        $this->page_name = $page_name;
+    }
 
     /**
      * This function shows the page after a request has been processed
      */
-    public function showSingleLetterOrNumberPage(array $collection_titles, $next_offset, $next_page_possible, $button_name, $offset, $previous_page_possible, $max_on_page) {
+    public function showSingleLetterOrNumberPage(
+    $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset, $max_on_page) {
 
         $out = $this->out;
-
-        if ($previous_page_possible) {
-
-            $previous_message_hover = $this->msg('allmanuscriptpages-previoushover');
-            $previous_message = $this->msg('allmanuscriptpages-previous');
-
-            $previous_offset = ($offset) - ($max_on_page);
-
-            $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:AllCollections" method="post">';
-
-            $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
-            $html .= "<input type='hidden' name='$button_name' value='$button_name'>";
-            $html .= "<input type='submit' class='button-transparent' name='redirect_page_back' title='$previous_message_hover'  value='$previous_message'>";
-
-            $html.= "</form>";
-        }
-
-        if ($next_page_possible) {
-
-            if (!$previous_page_possible) {
-                $html.='<br>';
-            }
-
-            $next_message_hover = $this->msg('allmanuscriptpages-nexthover');
-            $next_message = $this->msg('allmanuscriptpages-next');
-
-            $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:AllCollections" method="post">';
-
-            $html .= "<input type='hidden' name='offset' value = '$this->next_offset'>";
-            $html .= "<input type='hidden' name='$this->button_name' value='$this->button_name'>";
-            $html .= "<input type='submit' class='button-transparent' name = 'redirect_page_forward' title='$next_message_hover' value='$next_message'>";
-
-            $html.= "</form>";
-        }
-
+        $html = '';
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $max_on_page, $button_name);
         $html .= $this->getHTMLJavascriptLoaderGif();
 
         $html .= "<form id='allcollections-post' action='" . $article_url . "Special:AllCollections' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-collection') . "</b>" . "</td>";
-        $html .= "<td class='td-trhee'>" . "<b>" . $this->msg('userpage-user') . "</b>" . "</td>";
-        $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-creationdate') . "</b>" . "</td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-collection') . "</b>" . "</td>";
+        $html .= "<td class='td-trhee'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
-        foreach ($collection_titles as $single_collection_data) {
+        foreach ($page_titles as $single_collection_data) {
 
             $title = isset($single_collection_data['collections_title']) ? $single_collection_data['collections_title'] : '';
             $user = isset($single_collection_data['collections_user']) ? $single_collection_data['collections_user'] : '';
@@ -85,7 +63,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer {
 
             $html .= "<tr>";
             $html .= "<td class='td-three'>";
-            $html .= "<input type='submit' class='button-transparent' name='singlecollection' value='" . htmlspecialchars($title) . "'>";
+            $html .= "<input type='submit' class='button-transparent' name='single_collection_posted' value='" . htmlspecialchars($title) . "'>";
             $html .= "</td>";
             $html .= "<td class='td-three'>" . htmlspecialchars($user) . "</td>";
             $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
@@ -104,38 +82,37 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer {
     /**
      * This function shows single collection data
      */
-    public function showSingleCollectionData($single_collection_data, $alphabet_numbers = array(), $selected_collection) {
+    public function showSingleCollectionData($selected_collection, $single_collection_data, $alphabet_numbers = array()) {
 
         global $wgArticleUrl;
 
-        $out = $this->getOutput();
+        $out = $this->out;
         $article_url = $wgArticleUrl;
-        $selected_collection;
         list($meta_data, $pages_within_collection) = $single_collection_data;
 
-        $out->setPageTitle($this->msg('allcollections'));
+        $out->setPageTitle($out->msg('allcollections'));
 
-        $html .= $this->getHTMLLetterBar($data);
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
         $html .= $this->getHTMLJavascriptLoaderGif();
 
         $html .= "<div id='userpage-singlecollectionwrap'>";
 
-        $html .= "<h2 style='text-align: center;'>" . $this->msg('userpage-collection') . ": " . $selected_collection . "</h2>";
+        $html .= "<h2 style='text-align: center;'>" . $out->msg('userpage-collection') . ": " . $selected_collection . "</h2>";
         $html .= "<br>";
-        $html .= "<h3>" . $this->msg('userpage-metadata') . "</h3>";
+        $html .= "<h3>" . $out->msg('userpage-metadata') . "</h3>";
 
-        $collection_meta_table = new collectionMetaTable();
 
-        $html .= $collection_meta_table->renderTable($meta_data);
+        $meta_data = $this->HTMLSpecialCharachtersArray($meta_data);
+        $html .= $collection_meta_table->getHTMLCollectionMetaTable($meta_data);
 
         $html .= "<h3>Pages</h3>";
-        $html .= $this->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $this->msg('userpage-contains2');
+        $html .= $out->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $out->msg('userpage-contains2');
         $html .= "<br>";
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-long'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td>" . "<b>" . $this->msg('userpage-creationdate') . "</b>" . "</td>";
+        $html .= "<td class='td-long'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
         foreach ($pages_within_collection as $key => $array) {
@@ -166,29 +143,35 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $out = $this->out;
 
-        $out->setPageTitle($this->msg('allcollections'));
-        $html = '';
+        $out->setPageTitle($out->msg('allcollections'));
+
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
         $html .= $this->getHTMLJavascriptLoaderGif();
 
-        $html .= "<p>" . $this->msg('allcollections-instruction') . "</p>";
+        $html .= "<p>" . $out->msg('allcollections-instruction') . "</p>";
 
         return $out->addHTML($html);
     }
 
     public function showEmptyPageTitlesError(array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name) {
 
+        $out = $this->out;
         $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name);
+        $out->setPageTitle($out->msg('allcollections'));
 
         if ($button_is_numeric) {
-            $html .= "<p>" . $this->msg('allcollections-nocollections-number') . "</p>";
+            $html .= "<p>" . $out->msg('allcollections-nocollections-number') . "</p>";
         }
         else {
-            $html .= "<p>" . $this->msg('allcollections-nocollections') . "</p>";
+            $html .= "<p>" . $out->msg('allcollections-nocollections') . "</p>";
         }
 
         return $out->addHTML($html);
+    }
+
+    protected function getPageName() {
+        return $this->page_name;
     }
 
 }

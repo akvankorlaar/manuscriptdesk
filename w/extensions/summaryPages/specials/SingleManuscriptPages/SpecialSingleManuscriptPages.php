@@ -22,12 +22,13 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SpecialAllCollections extends SummaryPageBase {
+class SpecialSingleManuscriptPages extends SummaryPageBase {
 
-    private $page_name = 'AllCollections';
+    private $page_name = 'SingleManuscriptPages';
 
     public function __construct() {
 
+        //call the parent constructor. The parent constructor (in 'summaryPages' class) will call the 'SpecialPage' class (grandparent) 
         parent::__construct($this->page_name);
     }
 
@@ -38,8 +39,8 @@ class SpecialAllCollections extends SummaryPageBase {
     protected function getWrapper() {
         return new AllCollectionsWrapper();
     }
-    
-    protected function getRequestProcessor(){
+
+    protected function getRequestProcessor() {
         return new SummaryPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 

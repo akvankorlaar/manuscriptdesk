@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
+ * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,9 +22,10 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SpecialAllCollections extends SummaryPageBase {
 
-    private $page_name = 'AllCollections';
+class SpecialAllCollations extends SummaryPageBase {
+
+    private $page_name = 'allCollations';
 
     public function __construct() {
 
@@ -32,14 +33,14 @@ class SpecialAllCollections extends SummaryPageBase {
     }
 
     protected function getViewer() {
-        return new AllCollectionsViewer($this->getOutput(), $this->page_name);
+        return new AllCollationsViewer($this->getOutput(), $this->page_name);
     }
 
     protected function getWrapper() {
-        return new AllCollectionsWrapper();
+        return new AllCollationsWrapper();
     }
-    
-    protected function getRequestProcessor(){
+
+    protected function getRequestProcessor() {
         return new SummaryPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 

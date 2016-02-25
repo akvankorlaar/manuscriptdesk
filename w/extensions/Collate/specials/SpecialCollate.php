@@ -23,9 +23,6 @@
  * @copyright 2015 Arent van Korlaar
  */
 class SpecialCollate extends ManuscriptDeskBaseSpecials {
-    
-    private $viewer;
-    private $wrapper;
 
     /**
      * This code can run in a few different contexts:
@@ -40,12 +37,6 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
     public function __construct() {
 
         parent::__construct('Collate');
-    }
-    
-    protected function setVariables(){
-        parent::setVariables();
-        $this->viewer = $this->getViewer();
-        $this->wrapper = $this->getWrapper();     
     }
 
     /**
@@ -75,9 +66,9 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
     }
 
     protected function getDefaultPage($error_message = '') {
-        $collate_wrapper = $this->wrapper;
-        $manuscripts_data = $collate_wrapper->getManuscriptsData();
-        $collection_data = $collate_wrapper->getCollectionData();
+        $wrapper = $this->wrapper;
+        $manuscripts_data = $wrapper->getManuscriptsData();
+        $collection_data = $wrapper->getCollectionData();
         $this->viewer->showDefaultPage($manuscripts_data, $collection_data, $error_message);
         return true;
     }
@@ -147,9 +138,9 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
      * This function intializes the $collate_wrapper, clears the tempcollate table, and inserts new data into the tempcollate table 
      */
     private function updateDatabase($titles_array, $main_title, $new_url, $time, $collatex_output) {
-        $collate_wrapper = $this->wrapper;
-        $collate_wrapper->clearOldCollatexOutput($time);
-        $collate_wrapper->storeTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
+        $wrapper = $this->wrapper;
+        $wrapper->clearOldCollatexOutput($time);
+        $wrapper->storeTempcollate($titles_array, $main_title, $new_url, $time, $collatex_output);
         return true;
     }
 

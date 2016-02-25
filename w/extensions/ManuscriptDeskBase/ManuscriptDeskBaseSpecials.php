@@ -27,6 +27,8 @@
 abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
 
     protected $user_name;
+    protected $viewer;
+    protected $wrapper;
     protected $request_processor;
 
     public function __construct($page_name) {
@@ -36,6 +38,8 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
     protected function setVariables() {
         $user = $this->getUser();
         $this->user_name = $user->getName();
+        $this->viewer = $this->getViewer();
+        $this->wrapper = $this->getWrapper();
         $this->request_processor = $this->getRequestProcessor();
     }
 
@@ -210,6 +214,13 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
      * @return ManuscriptDeskBaseViewer object
      */
     abstract protected function getViewer();
+    
+    /**
+     * Return wrapper object for the special page
+     * 
+     * @return ManuscriptDeskBaseWrapper object
+     */
+    abstract protected function getWrapper();
     
     /**
      * Return request processor object for the special page

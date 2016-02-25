@@ -511,8 +511,8 @@ class newManuscriptHooks {
     $summary_page_wrapper = new summaryPageWrapper('getmetadata',0,0,'','','', $collection_name);
     $meta_data = $summary_page_wrapper->retrieveFromDatabase($collection_name); 
       
-    $collection_meta_table = new collectionMetaTable();   
-    return $collection_meta_table->renderTable($meta_data);
+    $collection_meta_table = new HTMLcollectionMetaTable();   
+    return $collection_meta_table->getHTMLCollectionMetaTable($meta_data);
   }
   
   /**

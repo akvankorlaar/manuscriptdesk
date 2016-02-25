@@ -32,9 +32,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private $collection_data;
     private $collection_name_data;
     private $pystyl_config;
-    
-    private $viewer; 
-    private $wrapper;
 
     //PyStyl $config_array information: 
     //removenonalpha : wheter or not to keep alphabetical symbols
@@ -69,9 +66,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
         $this->base_outputpath = $web_root . '/' . $initial_analysis_dir . '/' . $this->user_name;
         $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name;
-        
-        $this->viewer = $this->getViewer();
-        $this->wrapper = $this->getWrapper();
 
         return true;
     }
@@ -120,9 +114,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function processForm2() {
-        $request_processor = $this->request_processor;
-        $viewer = $this->viewer;
-        
+        $request_processor = $this->request_processor;     
         $this->form_type = 'Form2';
         $this->collection_data = $request_processor->getForm2CollectionData();
         $this->collection_name_data = $this->constructCollectionNameData();
@@ -145,7 +137,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $time = idate('U'); //time format integer (Unix Timestamp). This timestamp is used to see how old values are
         $this->updateDatabase($time, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2);
 
-        return $viewer->showResult($this->pystyl_config, $this->collection_name_data, $full_linkpath1, $full_linkpath2, $time);
+        return $this->viewer->showResult($this->pystyl_config, $this->collection_name_data, $full_linkpath1, $full_linkpath2, $time);
     }
 
     private function processSavePageRequest() {
@@ -342,21 +334,21 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private function updateDatabase($time = 0, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2) {
         $new_page_url = $this->createNewPageUrl();
         $date = date("d-m-Y H:i:s");
-        $database_wrapper = $this->wrapper;
-        $database_wrapper->clearOldPystylOutput($time);
-        $database_wrapper->storeTempStylometricAnalysis($this->collection_name_data, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2, $this->pystyl_config);
+        $wrapper = $this->wrapper;
+        $wrapper->clearOldPystylOutput($time);
+        $wrapper->storeTempStylometricAnalysis($this->collection_name_data, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2, $this->pystyl_config);
         return true;
     }
 
     private function getUserCollectionData() {
-        $database_wrapper = $this->wrapper;
-        return $database_wrapper->getManuscriptsCollectionData();
+        $wrapper = $this->wrapper;
+        return $wrapper->getManuscriptsCollectionData();
     }
 
     private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
-        $database_wrapper = $this->wrapper;
-        $database_wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
-        return $database_wrapper->getNewPageUrl($time);
+        $wrapper = $this->wrapper;
+        $wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
+        return $wrapper->getNewPageUrl($time);
     }
 
     protected function getViewer() {

@@ -24,10 +24,6 @@
  */
 class CollateHooks extends ManuscriptDeskBaseHooks {
 
-    public function __construct() {
-        
-    }
-
     /**
      * This function retrieves the collatex output from the database and renders the table
      */
