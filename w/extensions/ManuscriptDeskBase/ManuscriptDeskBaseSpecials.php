@@ -21,8 +21,6 @@
  * @subpackage Extensions
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
- * 
- * Idea: Refractor code and use interfaces. For example, there is some duplication in the execute and handleErrors methods
  */
 abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
 
@@ -79,67 +77,6 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         return true;
     }
 
-    protected function getAllTextsForOneCollection(array $single_collection_data) {
-        $all_texts_for_one_collection = "";
-        foreach ($single_collection_data as $index => $single_manuscript_url) {
-            if ($index !== 'collection_name') {
-                $title = $this->constructTitleObjectFromUrl($single_manuscript_url);
-                $single_page_text = $this->getFilteredSinglePageText($title);
-                $all_texts_for_one_collection .= $single_page_text;
-            }
-        }
-
-        $this->checkIfTextIsNotOnlyWhitespace($all_texts_for_one_collection);
-        return $all_texts_for_one_collection;
-    }
-    
-    protected function getFilteredSinglePageText(Title $title) {
-        $wikipage = Wikipage::factory($title);
-        $raw_text = $wikipage->getText();
-        $filtered_raw_text = $this->filterText($raw_text);
-        return $filtered_raw_text;
-    }
-    
-    protected function checkIfTextIsNotOnlyWhitespace($text = '') {
-        if (ctype_space($text) || $text === '') {
-            throw new Exception('error-notextonwikipage');
-        }
-    }
-
-    /**
-     * This function filters out tags, and text in between certain tags. It also trims the text, and adds a single space to the last charachter if needed 
-     */
-    protected function filterText($raw_text) {
-
-        //filter out the following tags, and all text in between the tags
-        //pagemetatable tag
-        $raw_text = preg_replace('/<pagemetatable>[^<]+<\/pagemetatable>/i', '', $raw_text);
-
-        //del tag
-        $raw_text = preg_replace('/<del>[^<]+<\/del>/i', '', $raw_text);
-
-        //note tag
-        $raw_text = preg_replace('/<note>[^<]+<\/note>/i', '', $raw_text);
-
-        //filter out any other tags, but keep all text in between the tags
-        $raw_text = strip_tags($raw_text);
-
-        $raw_text = trim($raw_text);
-
-        //check if it is possible to get the last charachter of the page
-        if (substr($raw_text, -1) !== false) {
-            $last_charachter = substr($raw_text, -1);
-
-            if ($last_charachter !== '-') {
-                //If the last charachter of the current page is '-', this may indicate that the first word of the next page 
-                //is linked to the last word of this page because they form a single word. In other cases, add a space after the last charachter of the current page 
-                $raw_text = $raw_text . ' ';
-            }
-        }
-
-        return $raw_text;
-    }
-
     protected function createNewWikiPage($new_url = '') {
 
         $title_object = Title::newFromText($new_url);
@@ -159,16 +96,6 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         return $local_url;
     }
 
-    protected function constructTitleObjectFromUrl($single_manuscript_url = '') {
-        $title = Title::newFromText($single_manuscript_url);
-
-        if (!$title->exists()) {
-            throw new \Exception('error-titledoesnotexist');
-        }
-
-        return $title;
-    }
-
     protected function handleExceptions(Exception $exception_error) {
 
         $viewer = $this->getViewer();
@@ -183,16 +110,10 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
             return $viewer->showFewUploadsError($error_message);
         }
 
-        if ($this instanceof SpecialStylometricAnalysis) {
-            if ($this->form_type === 'Form2' && isset($this->collection_data) && isset($this->collection_name_data)) {
-                return $viewer->showForm2($this->collection_data, $this->collection_name_data, $this->getContext(), $error_message);
-            }
-        }
-
-        return $this->getForm1($error_message);
+        return $this->getDefaultPage($error_message);
     }
 
-    private function constructErrorMessage(Exception $exception_error, $error_identifier) {
+    protected function constructErrorMessage(Exception $exception_error, $error_identifier) {
 
         global $wgShowExceptionDetails;
 
@@ -232,6 +153,6 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
     /**
      * Get the default page for this special page
      */
-    abstract protected function getDefaultPage();
+    abstract protected function getDefaultPage($error_message);
 
 }

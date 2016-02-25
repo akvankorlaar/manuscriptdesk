@@ -69,7 +69,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $wrapper = $this->wrapper;
         $manuscripts_data = $wrapper->getManuscriptsData();
         $collection_data = $wrapper->getCollectionData();
-        $this->viewer->showDefaultPage($manuscripts_data, $collection_data, $error_message);
+        $this->viewer->showDefaultPage($error_message, $manuscripts_data, $collection_data);
         return true;
     }
 
@@ -129,8 +129,9 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
     }
 
     private function getTextsFromWikiPages(array $manuscript_urls, array $collection_data) {
-        $page_texts_manuscripts = $this->getPageTextsForSingleManuscriptPages($manuscript_urls);
-        $page_texts_collections = $this->getPageTextsForCollections($collection_data);
+        $text_processor = $this->getTextProcessor();
+        $page_texts_manuscripts = $this->getPageTextsForSingleManuscriptPages($text_processor, $manuscript_urls);
+        $page_texts_collections = $this->getPageTextsForCollections($text_processor, $collection_data);
         return array_merge($page_texts_manuscripts, $page_texts_collections);
     }
 
@@ -144,24 +145,22 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function getPageTextsForSingleManuscriptPages(array $manuscript_urls) {
+    private function getPageTextsForSingleManuscriptPages(ManuscriptDeskBaseTextProcessor $text_processor, array $manuscript_urls) {
 
         $texts = array();
         foreach ($manuscript_urls as $single_manuscript_url) {
-            $title = $this->constructTitleObjectFromUrl($single_manuscript_url);
-            $single_page_text = $this->getFilteredSinglePageText($title);
-            $this->checkIfTextIsNotOnlyWhitespace($single_page_text);
+            $single_page_text = $text_processor->getFilteredSinglePageText($single_manuscript_url);
             $texts[] = $single_page_text;
         }
 
         return $texts;
     }
 
-    private function getPageTextsForCollections(array $collection_data) {
+    private function getPageTextsForCollections(ManuscriptDeskBaseTextProcessor $text_processor, array $collection_data) {
 
         $texts = array();
         foreach ($collection_data as $single_collection_urls) {
-            $texts[] = $this->getAllTextsForOneCollection($single_collection_urls);
+            $texts[] = $text_processor->getAllTextsForOneCollection($single_collection_urls);
         }
 
         return $texts;
@@ -195,6 +194,10 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
 
     protected function getCollatexConverter() {
         return new CollatexConverter();
+    }
+    
+    protected function getTextProcessor(){
+        return new ManuscriptDeskBaseTextProcessor();
     }
 
 }

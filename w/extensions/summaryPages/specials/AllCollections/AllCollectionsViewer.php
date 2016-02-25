@@ -139,7 +139,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
     /**
      * This function shows the default page if no request was posted 
      */
-    public function showDefaultPage(array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet) {
+    public function showDefaultPage($error_message, array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet) {
 
         $out = $this->out;
 
@@ -147,6 +147,11 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
         $html .= $this->getHTMLJavascriptLoaderGif();
+
+        if (!empty($error_message)) {
+            $html .= "<br>";
+            $html .= "<div class = 'error'>$error_message</div>";
+        }
 
         $html .= "<p>" . $out->msg('allcollections-instruction') . "</p>";
 

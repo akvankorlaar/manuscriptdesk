@@ -79,13 +79,18 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
     /**
      * This function shows the default page if no request was posted 
      */
-    public function showDefaultPage($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet) {
+    public function showDefaultPage($error_message, $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet) {
 
         $out = $this->out;
         $out->setPageTitle($this->msg('allcollations'));
 
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
         $html .= $this->getHTMLJavascriptLoaderGif();
+
+        if (!empty($error_message)) {
+            $html .= "<br>";
+            $html .= "<div class = 'error'>$error_message</div>";
+        }
 
         $html .= "<p>" . $this->msg('allcollations-instruction') . "</p>";
 

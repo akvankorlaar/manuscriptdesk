@@ -39,7 +39,7 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
     /**
      * This function constructs the HTML for the default page
      */
-    public function showDefaultPage(array $user_collection_data, $error_message = '') {
+    public function showDefaultPage($error_message = '', array $user_collection_data) {
 
         global $wgArticleUrl;
 

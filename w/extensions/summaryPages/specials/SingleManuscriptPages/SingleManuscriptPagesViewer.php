@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the newManuscript extension
  * Copyright (C) 2015 Arent van Korlaar
@@ -21,7 +22,6 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements SummaryPageViewerInterface {
 
     use HTMLLetterBar,
@@ -74,15 +74,19 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
     /**
      * This function shows the default page if no request was posted 
      */
-    protected function showDefaultPage($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet) {
+    protected function showDefaultPage($error_message, $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet) {
 
         $out = $this->out;
 
         $out->setPageTitle($this->msg('singlemanuscriptpages'));
 
-
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
         $html .= $this->getHTMLJavascriptLoaderGif();
+
+        if (!empty($error_message)) {
+            $html .= "<br>";
+            $html .= "<div class = 'error'>$error_message</div>";
+        }
 
         $html .= "<p>" . $this->msg('singlemanuscriptpages-instruction') . "</p>";
 

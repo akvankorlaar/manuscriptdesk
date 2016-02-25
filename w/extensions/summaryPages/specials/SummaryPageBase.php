@@ -128,9 +128,9 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         return $this->viewer->showSingleCollectionData($selected_collection, $single_collection_data, $alphabet_numbers);
     }
 
-    protected function getDefaultPage() {
+    protected function getDefaultPage($error_message = '') {
         $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
-        $this->viewer->showDefaultPage($alphabet_numbers);
+        $this->viewer->showDefaultPage($error_message, $alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet);
     }
 
     /**

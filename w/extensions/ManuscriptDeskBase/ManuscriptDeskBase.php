@@ -54,6 +54,7 @@ $wgAutoloadClasses['ManuscriptDeskBaseSpecials'] = $dir . 'ManuscriptDeskBaseSpe
 $wgAutoloadClasses['ManuscriptDeskBaseValidator'] = $dir . 'ManuscriptDeskBaseValidator.php';
 $wgAutoloadClasses['ManuscriptDeskBaseWrapper'] = $dir . 'ManuscriptDeskBaseWrapper.php';
 $wgAutoloadClasses['ManuscriptDeskBaseRequestProcessor'] = $dir . 'ManuscriptDeskBaseRequestProcessor.php';
+$wgAutoloadClasses['ManuscriptDeskBaseTextProcessor'] = $dir . 'ManuscriptDeskBaseTextProcessor.php';
 $wgExtensionMessagesFiles['ManuscriptDeskBaseMessages'] = $dir . 'ManuscriptDeskBaseMessages.i18n.php';
 
 $wgAutoloadClasses['ManuscriptDeskBaseViewer'] = $dir . 'BaseViews' . '/' . 'ManuscriptDeskBaseViewer.php';

@@ -103,7 +103,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     protected function getDefaultPage($error_message = '') {
         $user_collection_data = $this->getUserCollectionData();
-        return $this->viewer->showDefaultPage($user_collection_data, $error_message);
+        return $this->viewer->showDefaultPage($error_message, $user_collection_data);
     }
 
     private function processDefaultPage() {
@@ -114,7 +114,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function processForm2() {
-        $request_processor = $this->request_processor;     
+        $request_processor = $this->request_processor;
         $this->form_type = 'Form2';
         $this->collection_data = $request_processor->getForm2CollectionData();
         $this->collection_name_data = $this->constructCollectionNameData();
@@ -368,6 +368,27 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      */
     static function callbackForm2($form_data) {
         return false;
+    }
+
+    protected function handleExceptions(Exception $exception_error) {
+
+        $viewer = $this->getViewer();
+        $error_identifier = $exception_error->getMessage();
+        $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
+
+        if ($error_identifier === 'error-nopermission') {
+            return $viewer->showNoPermissionError($error_message);
+        }
+
+        if ($error_identifier === 'error-fewuploads') {
+            return $viewer->showFewUploadsError($error_message);
+        }
+
+        if ($this->form_type === 'Form2' && isset($this->collection_data) && isset($this->collection_name_data)) {
+            return $viewer->showForm2($this->collection_data, $this->collection_name_data, $this->getContext(), $error_message);
+        }
+
+        return $this->getDefaultPage($error_message);
     }
 
 }

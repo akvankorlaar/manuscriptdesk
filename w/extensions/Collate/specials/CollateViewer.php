@@ -43,7 +43,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
     /**
      * This function constructs the HTML for the default page
      */
-    public function showDefaultPage(array $manuscript_data, array $collection_data, $error_message = '') {
+    public function showDefaultPage($error_message, array $manuscript_data, array $collection_data) {
 
         global $wgArticleUrl;
         $out = $this->out;
