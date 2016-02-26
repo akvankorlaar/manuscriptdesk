@@ -27,7 +27,7 @@ abstract class ManuscriptDeskBaseViewer {
     protected $out;
     protected $max_int_formfield_length = 5;
 
-    public function __construct($out) {
+    public function __construct(OutputPage $out) {
         $this->out = $out;
     }
 
@@ -44,12 +44,11 @@ abstract class ManuscriptDeskBaseViewer {
 
         return $array;
     }
-    
+
     public function showNoPermissionError($error_message = '') {
         $this->out->addHTML($error_message);
         return true;
     }
-    
+
     abstract public function showDefaultPage();
-    
 }

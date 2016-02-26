@@ -98,7 +98,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return true;
         }
 
-        throw new \Exception('stylometricanalysis-error-request');
+        throw new \Exception('error-request');
     }
 
     protected function getDefaultPage($error_message = '') {
@@ -351,25 +351,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $wrapper->getNewPageUrl($time);
     }
 
-    protected function getViewer() {
-        return new StylometricAnalysisViewer($this->getOutput());
-    }
-
-    protected function getWrapper() {
-        return new StylometricAnalysisWrapper($this->user_name);
-    }
-
-    protected function getRequestProcessor() {
-        return new StylometricAnalysisRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
-    }
-
-    /**
-     * Callback function. Makes sure the page is redisplayed in case there was an error in Form 2 
-     */
-    static function callbackForm2($form_data) {
-        return false;
-    }
-
     protected function handleExceptions(Exception $exception_error) {
 
         $viewer = $this->getViewer();
@@ -389,6 +370,25 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         }
 
         return $this->getDefaultPage($error_message);
+    }
+
+    protected function getViewer() {
+        return new StylometricAnalysisViewer($this->getOutput());
+    }
+
+    protected function getWrapper() {
+        return new StylometricAnalysisWrapper($this->user_name);
+    }
+
+    protected function getRequestProcessor() {
+        return new StylometricAnalysisRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+    }
+
+    /**
+     * Callback function. Makes sure the page is redisplayed in case there was an error in Form 2 
+     */
+    static function callbackForm2($form_data) {
+        return false;
     }
 
 }

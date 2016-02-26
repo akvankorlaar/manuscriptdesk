@@ -67,18 +67,19 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
      * This function checks if the user has the appropriate permissions
      */
     protected function checkManuscriptDeskPermission() {
-        $out = $this->getOutput();
-        $user_object = $out->getUser();
+        $user = $this->getUser();
 
-        if (!in_array('ManuscriptEditors', $user_object->getGroups())) {
+        if (!in_array('ManuscriptEditors', $user->getGroups())) {
             throw new \Exception('error-nopermission');
         }
 
         return true;
     }
 
+    /**
+     * Create a new wikipage and return a $local_url
+     */
     protected function createNewWikiPage($new_url = '') {
-
         $title_object = Title::newFromText($new_url);
         $local_url = $title_object->getLocalURL();
         $context = $this->getContext();
@@ -128,31 +129,30 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
 
         return $error_message;
     }
-    
+
     /**
      * Return viewer object for the special page
      * 
      * @return ManuscriptDeskBaseViewer object
      */
     abstract protected function getViewer();
-    
+
     /**
      * Return wrapper object for the special page
      * 
      * @return ManuscriptDeskBaseWrapper object
      */
     abstract protected function getWrapper();
-    
+
     /**
      * Return request processor object for the special page
      * 
      * @return ManuscriptDeskBaseRequestProcessor object
      */
     abstract protected function getRequestProcessor();
-    
+
     /**
      * Get the default page for this special page
      */
     abstract protected function getDefaultPage($error_message);
-
 }
