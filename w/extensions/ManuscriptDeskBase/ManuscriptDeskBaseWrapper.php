@@ -26,7 +26,7 @@ abstract class ManuscriptDeskBaseWrapper {
 
     protected $user_name;
 
-    public function __construct($user_name = "") {
+    public function __construct($user_name = null) {
         $this->user_name = $user_name;
     }
 

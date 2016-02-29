@@ -25,18 +25,38 @@
 
 class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor{
     
-      /**
+    public function getDefaultPageData(){
+        $request = $this->request;  
+        $validator = $this->validator; 
+        $posted_names = $request->getValueNames();
+        $offset = 0;
+        
+        foreach ($posted_names as $checkbox) {
+
+            if ($checkbox === 'view_manuscripts_posted' || $checkbox === 'view_collections_posted' || $checkbox === 'view_collations_posted') {
+               $button_name = $checkbox;
+            }elseif ($value === 'offset'){
+                $offset = (int) $validator->validateStringNumber($request->getText($value));
+
+                if (!$offset >= 0) {
+                    throw new \Exception('error-request');
+                }      
+            }
+        }
+        
+        if(!isset($button_name)){
+            throw new \Exception('error-request');
+        }
+
+        return array($button_name, $offset);
+    }
+    
+  /**
    * This function loads requests when a user selects a button, moves to the previous page, or to the next page
    */
   private function loadRequest(){
     
-    $request = $this->getRequest();
-        
-    if(!$request->wasPosted()){
-      return false;  
-    }
     
-    $posted_names = $request->getValueNames();    
      
     //identify the button pressed, and assign $posted_names to values
     foreach($posted_names as $key=>$original_value){
@@ -57,10 +77,6 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor{
         $this->view_collections = true; 
         $this->id_collections = 'button-active';
         $this->button_name = $value;
-        
-      }elseif($value === 'wpEditToken'){
-        $token = $request->getText($value);
-        $this->token_is_ok = $this->getUser()->matchEditToken($token);
       
       //form textfield. Is validated later on
       }elseif($value === 'wptextfield'){

@@ -24,7 +24,23 @@
  */
 class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
 
-    public function getData($button_name, $offset, $next_letter_alphabet, $max_on_page) {
+    public function getData($button_name, $offset = '', $next_letter_alphabet = '') {
+
+        global $wgNewManuscriptOptions;
+        $max_on_page = $wgNewManuscriptOptions['max_on_page'];
+
+        if (isset($this->user_name)) {
+            $conditions = array(
+              'manuscripts_user = ' . $dbr->addQuotes($this->user_name),
+              'manuscripts_collection = ' . $dbr->addQuotes('none'),);
+        }
+        else {
+            $conditions = array(
+              'manuscripts_lowercase_title >= ' . $dbr->addQuotes($button_name),
+              'manuscripts_lowercase_title < ' . $dbr->addQuotes($next_letter_alphabet),
+              'manuscripts_collection =' . $dbr->addQuotes('none'),
+            );
+        }
 
         $dbr = wfGetDB(DB_SLAVE);
         $title_array = array();
@@ -38,12 +54,8 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_url',
           'manuscripts_date',
           'manuscripts_lowercase_title',
-            ), array(
-          'manuscripts_lowercase_title >= ' . $dbr->addQuotes($button_name),
-          'manuscripts_lowercase_title < ' . $dbr->addQuotes($next_letter_alphabet),
-          //only get manuscript pages that are not part of a collection
-          'manuscripts_collection =' . $dbr->addQuotes('none'),
-            ), __METHOD__, array(
+            ), $conditions
+            , __METHOD__, array(
           'ORDER BY' => 'manuscripts_lowercase_title',
           'LIMIT' => $max_on_page + 1,
           'OFFSET' => $offset,
@@ -63,10 +75,9 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
                       'manuscripts_url' => $s->manuscripts_url,
                       'manuscripts_date' => $s->manuscripts_date,
                     );
-
-                    //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
                 }
                 else {
+                    //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
                     $next_offset = ($offset) + ($max_on_page);
                     break;
                 }

@@ -24,8 +24,7 @@
  */
 class UserPageViewer extends ManuscriptDeskBaseViewer {
 
-    use HTMLUserPageMenuBar,
-        HTMLJavascriptLoaderGif;
+    use HTMLJavascriptLoaderGif;
 
     /**
      * This function shows a confirmation of the edit after submission of the form, in case the user has reached the page via the link on a manuscript page
@@ -365,19 +364,6 @@ class UserPageViewer extends ManuscriptDeskBaseViewer {
     }
 
     /**
-     * This function adds html used for the summarypage loader (see ext.summarypageloader)
-     */
-    private function addSummaryPageLoader() {
-
-        //shows after submit has been clicked
-        $html = "<h3 id='summarypage-loaderdiv' style='display: none;'>Loading";
-        $html .= "<span id='summarypage-loaderspan'></span>";
-        $html .= "</h3>";
-
-        return $html;
-    }
-
-    /**
      * This function constructs html for a go back button
      */
     private function addGoBackButton() {
@@ -410,30 +396,6 @@ class UserPageViewer extends ManuscriptDeskBaseViewer {
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar();
         $html .= $this->getHTMLJavascriptLoaderGif();
-
-        if (empty($title_array)) {
-
-            $html .= "<div id='userpage-messagewrap'>";
-
-            if ($this->view_manuscripts) {
-                $html .= "<p>" . $this->msg('userpage-nomanuscripts') . "</p>";
-                $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $this->msg('userpage-newmanuscriptpage') . "</a></p>";
-            }
-
-            if ($this->view_collations) {
-                $html .= "<p>" . $this->msg('userpage-nocollations') . "</p>";
-                $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:BeginCollate'>" . $this->msg('userpage-newcollation') . "</a></p>";
-            }
-
-            if ($this->view_collections) {
-                $html .= "<p>" . $this->msg('userpage-nocollections') . "</p>";
-                $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $this->msg('userpage-newcollection') . "</a></p>";
-            }
-
-            $html .= "</div>";
-
-            return $out->addHTML($html);
-        }
 
         if ($this->previous_page_possible) {
 
@@ -548,7 +510,7 @@ class UserPageViewer extends ManuscriptDeskBaseViewer {
     /**
      * This function shows the default page if no request was posted 
      */
-    public function showDefaultPage($error_message = '', $user_name, $user_is_a_sysop, array $button_ids) {
+    public function showDefaultPage($error_message = '', $user_name, $user_is_a_sysop, $button_name) {
 
         global $wgArticleUrl;
 
@@ -558,7 +520,13 @@ class UserPageViewer extends ManuscriptDeskBaseViewer {
         $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($button_ids);
+        $html .= $this->getHTMLUserPageMenuBar($this->getButtonIds($button_name));
+
+        if (!empty($error_message)) {
+            $html .= "<br>";
+            $html .= "<div class = 'error'>$error_message</div>";
+        }
+
         $html .= $this->getHTMLJavascriptLoaderGif();
 
         if ($user_is_a_sysop) {
@@ -568,10 +536,74 @@ class UserPageViewer extends ManuscriptDeskBaseViewer {
         return $out->addHTML($html);
     }
 
+    public function showEmptyPageTitlesError($user_name, $button_name) {
+        global $wgArticleUrl;
+
+        $out = $this->out;
+        $article_url = $wgArticleUrl;
+
+        $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+
+        $html = "";
+        $html .= $this->getHTMLUserPageMenuBar($this->getButtonIds($button_name));
+        $html .= $this->getHTMLEmptyPageTitlesMessage($button_name);
+        $html .= $this->getHTMLJavascriptLoaderGif();
+
+        return $out->addHTML($html);
+    }
+
+    private function getHTMLEmptyPageTitlesMessage($button_name) {
+
+        $html = '';
+        $html .= "<div id='userpage-messagewrap'>";
+
+        switch ($button_name) {
+            case 'view_manuscripts_posted':
+                $html .= "<p>" . $this->msg('userpage-nomanuscripts') . "</p>";
+                $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $this->msg('userpage-newmanuscriptpage') . "</a></p>";
+                break;
+            case 'view_collations_posted':
+                $html .= "<p>" . $this->msg('userpage-nocollations') . "</p>";
+                $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:BeginCollate'>" . $this->msg('userpage-newcollation') . "</a></p>";
+                break;
+            case 'view_collections_posted':
+                $html .= "<p>" . $this->msg('userpage-nocollections') . "</p>";
+                $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $this->msg('userpage-newcollection') . "</a></p>";
+                break;
+        }
+
+        $html .= "</div>";
+
+        return $html;
+    }
+
+    private function getButtonIds($button_name) {
+
+        $id_manuscripts = 'button';
+        $id_collections = 'button';
+        $id_collations = 'button';
+
+        switch ($button_name) {
+            case 'default':
+                break;
+            case 'view_manuscripts_posted':
+                $id_manuscripts = 'button-active';
+                break;
+            case 'view_collations_posted':
+                $id_collations = 'button-active';
+                break;
+            case 'view_collections_posted':
+                $id_collections = 'button-active';
+                break;
+
+         return array($id_manuscripts, $id_collations, $id_collections);
+        }
+    }
+
     /**
      * This function constructs the menu bar for the user page
      */
-    protected function getHTMLUserPageMenuBar(array $button_ids) {
+    private function getHTMLUserPageMenuBar(array $button_ids) {
 
         global $wgArticleUrl;
         $article_url = $wgArticleUrl;
@@ -582,11 +614,8 @@ class UserPageViewer extends ManuscriptDeskBaseViewer {
         $collations_message = $this->msg('userpage-mycollations');
         $collections_message = $this->msg('userpage-mycollections');
 
-        $id_manuscripts = isset($this->id_manuscripts) ? $this->id_manuscripts : 'button';
-        $id_collations = isset($this->id_collations) ? $this->id_collations : 'button';
-
-        $id_collections = isset($button_ids[0]) ? $button_ids[0] : 'button';
-        $id_collections = isset($button_ids[1]) ? $button_ids[1] : 'button';
+        $id_manuscripts = isset($button_ids[0]) ? $button_ids[0] : 'button';
+        $id_collations = isset($button_ids[1]) ? $button_ids[1] : 'button';
         $id_collections = isset($button_ids[2]) ? $button_ids[2] : 'button';
 
         $html = '<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';

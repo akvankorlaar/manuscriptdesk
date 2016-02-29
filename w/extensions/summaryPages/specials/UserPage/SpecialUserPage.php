@@ -27,43 +27,18 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     /**
      * SpecialuserPage. Organises all content created by a user
      */
-    public $max_length = 50;
-    private $button_name; //value of the button the user clicked on 
-    private $max_on_page; //maximum manuscripts shown on a page
-    private $next_page_possible = false;
-    private $previous_page_possible = false;
-    private $offset = 0;
-    private $next_offset;
-    private $view_manuscripts = false;
-    private $view_collations = false;
-    private $view_collections = false;
-    
-    private $id_manuscripts = 'default';
-    private $id_collations = 'default';
-    private $id_collections = 'default';
-    private $selected_collection;
-    private $textfield_array = array();
-    private $linkback = null;
-    private $manuscript_old_title;
-    private $manuscript_url_old_title;
-    private $manuscript_new_title;
+//    public $max_length = 50;
+//    private $button_name; //value of the button the user clicked on 
+//    
+//    private $selected_collection;
+//    private $textfield_array = array();
+//    private $linkback = null;
+//    private $manuscript_old_title;
+//    private $manuscript_url_old_title;
+//    private $manuscript_new_title;
 
     public function __construct() {   
         parent::__construct('UserPage');
-    }
-
-    protected function getDefaultPage($error_message = '') {
-        $user_is_a_sysop = $this->checkWhetherUseIsASysop();
-        $this->viewer->showDefaultPage($error_message, $this->user_name, $user_is_a_sysop, array($this->id_manuscripts, $this->id_collations, $this->id_collections));
-    }
-    
-    private function checkWhetherUseIsASysop(){
-        $user = $this->getUser();
-        if (!in_array('sysop', $user->getGroups())) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -97,17 +72,47 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         throw new \Exception('error-request');
     }
     
-    private function processDefaultPage(){      
-        $summary_page_wrapper = new summaryPageWrapper($button_name, $this->max_on_page, $this->offset, $user_name);
-        list($page_titles, $this->next_offset, $this->next_page_possible) = $summary_page_wrapper->retrieveFromDatabase();
-        return $this->showPage($page_titles);   
-    }      
+    protected function getDefaultPage($error_message = '') {
+        $user_is_a_sysop = $this->checkWhetherUserIsASysop();
+        $this->viewer->showDefaultPage($error_message, $this->user_name, $user_is_a_sysop);
+    }
+    
+    private function checkWhetherUserIsASysop(){
+        $user = $this->getUser();
+        if (!in_array('sysop', $user->getGroups())) {
+            return false;
+        }
+
+        return true;
+    }
+    
+    private function processDefaultPage(){ 
+        list($button_name, $offset) = $this->request_processor->getDefaultPageData();         
+        $this->wrapper = $this->setWrapper($button_name);    
+        list($page_titles, $next_offset) = $this->wrapper->getData($offset);
         
-     private function temp(){   
+        if(empty($page_titles)){
+            $this->viewer->showEmptyPageTitlesError($this->user_name, $button_name);
+            return true;
+        }
         
+        $this->getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset);
+    }
+    
+    private function setWrapper($button_name){
+        switch ($button_name){
+            case 'view_manuscripts_posted':
+                return new SingleManuscriptPagesWrapper($this->user_name);
+            case 'view_collations_posted':
+                return new AllCollationsWrapper($this->user_name);
+            case 'view_collections_posted':
+                return new AllCollectionsWrapper($this->user_name);
+        }
         
-        $button_name = $this->button_name;
-        $user_name = $this->user_name;
+        throw new \Exception('error-request');
+    }
+         
+     private function temp(){  
 
         if ($button_name === 'editmetadata') {
             $summary_page_wrapper = new summaryPageWrapper($button_name, 0, 0, $user_name, "", "", $this->selected_collection);
@@ -360,7 +365,8 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     protected function getWrapper() {
-        return new UserPageWrapper($this->user_name);
+        //empty because wrapper has to be determined at runtime   
+        return null; 
     }
 
     protected function getRequestProcessor() {

@@ -27,7 +27,6 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
 
     private $lowercase_alphabet;
     private $uppercase_alphabet;  
-    private $max_on_page; //maximum manuscripts shown on a page    
     
     public function __construct($page_name) {
         parent::__construct($page_name);
@@ -42,7 +41,6 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         $numbers = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
         $this->lowercase_alphabet = array_merge(range('a', 'z'), $numbers);
         $this->uppercase_alphabet = array_merge(range('A', 'Z'), $numbers);
-        $this->max_on_page = $wgNewManuscriptOptions['max_on_page'];       
     }
 
     protected function processRequest() {
@@ -69,14 +67,9 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         $this->getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset);
     }
     
-    private function getDefaultPageData(){
-        list($button_name, $offset) = $this->request_processor->getLetterOrButtonRequestValues($this->lowercase_alphabet); 
-        return array($button_name, $offset);
-    }
-    
     private function getLetterOrButtonDatabaseData($button_name, $offset){
         $next_letter_alphabet = $this->getNextNumberOrLetterOfTheAlphabet($button);
-        return $this->wrapper->getData($button_name, $offset, $next_letter_alphabet, $this->max_on_page);
+        return $this->wrapper->getData($offset, $button_name, $next_letter_alphabet);
     }
     
     private function getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset){
@@ -90,8 +83,8 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
                 $button_name, 
                 $page_titles, 
                 $offset, 
-                $next_offset, 
-                $this->max_on_page); 
+                $next_offset
+            ); 
             
         return true; 
     }

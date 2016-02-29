@@ -22,14 +22,26 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 class AllCollationsWrapper extends ManuscriptDeskBaseWrapper {
 
-    public function getData($button_name, $offset, $next_letter_alphabet, $max_on_page) {
+    public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
+
+        global $wgNewManuscriptOptions;
+        $max_on_page = $wgNewManuscriptOptions['max_on_page'];
 
         $dbr = wfGetDB(DB_SLAVE);
         $title_array = array();
         $next_offset = null;
+
+        if (isset($this->user_name)) {
+            $conditions = array('collations_user = ' . $dbr->addQuotes($this->user_name));
+        }
+        else {
+            $conditions = array(
+              'collations_main_title_lowercase >= ' . $dbr->addQuotes($button_name),
+              'collations_main_title_lowercase < ' . $dbr->addQuotes($next_letter_alphabet)
+            );
+        }
 
         $res = $dbr->select(
             'collations', //from
@@ -39,10 +51,8 @@ class AllCollationsWrapper extends ManuscriptDeskBaseWrapper {
           'collations_date',
           'collations_main_title',
           'collations_main_title_lowercase'
-            ), array(
-          'collations_main_title_lowercase >= ' . $dbr->addQuotes($button_name),
-          'collations_main_title_lowercase < ' . $dbr->addQuotes($next_letter_alphabet),
-            ), __METHOD__, array(
+            ), $conditions
+            , __METHOD__, array(
           'ORDER BY' => 'collations_main_title_lowercase',
           'LIMIT' => $max_on_page + 1,
           'OFFSET' => $offset,
