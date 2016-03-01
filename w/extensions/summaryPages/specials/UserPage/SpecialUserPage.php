@@ -37,7 +37,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 //    private $manuscript_url_old_title;
 //    private $manuscript_new_title;
 
-    public function __construct() {   
+    public function __construct() {
         parent::__construct('UserPage');
     }
 
@@ -71,13 +71,14 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
         throw new \Exception('error-request');
     }
-    
+
     protected function getDefaultPage($error_message = '') {
         $user_is_a_sysop = $this->checkWhetherUserIsASysop();
+        $this->viewer = new UserPageDefaultViewer();
         $this->viewer->showDefaultPage($error_message, $this->user_name, $user_is_a_sysop);
     }
-    
-    private function checkWhetherUserIsASysop(){
+
+    private function checkWhetherUserIsASysop() {
         $user = $this->getUser();
         if (!in_array('sysop', $user->getGroups())) {
             return false;
@@ -85,34 +86,22 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
         return true;
     }
-    
-    private function processDefaultPage(){ 
-        list($button_name, $offset) = $this->request_processor->getDefaultPageData();         
-        $this->wrapper = $this->setWrapper($button_name);    
+
+    private function processDefaultPage() {
+        list($button_name, $offset) = $this->request_processor->getDefaultPageData();
+        $this->setWrapperAndViewer($button_name);
         list($page_titles, $next_offset) = $this->wrapper->getData($offset);
-        
-        if(empty($page_titles)){
-            $this->viewer->showEmptyPageTitlesError($this->user_name, $button_name);
+
+        if (empty($page_titles)) {
+            $this->viewer->showEmptyPageTitlesError($button_name);
             return true;
         }
-        
-        $this->getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset);
+
+        $this->viewer->showPage($button_name, $page_titles, $offset, $next_offset);
+        return true;
     }
-    
-    private function setWrapper($button_name){
-        switch ($button_name){
-            case 'view_manuscripts_posted':
-                return new SingleManuscriptPagesWrapper($this->user_name);
-            case 'view_collations_posted':
-                return new AllCollationsWrapper($this->user_name);
-            case 'view_collections_posted':
-                return new AllCollectionsWrapper($this->user_name);
-        }
-        
-        throw new \Exception('error-request');
-    }
-         
-     private function temp(){  
+
+    private function temp() {
 
         if ($button_name === 'editmetadata') {
             $summary_page_wrapper = new summaryPageWrapper($button_name, 0, 0, $user_name, "", "", $this->selected_collection);
@@ -132,12 +121,11 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             return $this->processNewTitle();
         }
 
-        if ($button_name === 'singlecollection') {
+        if ($button_name === 'single_collection_posted') {
             $summary_page_wrapper = new summaryPageWrapper($button_name, 0, 0, $user_name, "", "", $this->selected_collection);
             $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
             return $this->showSingleCollection($single_collection_data);
         }
-
     }
 
     /**
@@ -361,12 +349,34 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     protected function getViewer() {
-        return new UserPageViewer($this->getOutput());
+        //empty because viewer has to be determined at runtime
+        return null;
     }
 
     protected function getWrapper() {
         //empty because wrapper has to be determined at runtime   
-        return null; 
+        return null;
+    }
+
+    private function setWrapperAndViewer($button_name) {
+        switch ($button_name) {
+            case 'view_manuscripts_posted':
+                $this->wrapper = new SingleManuscriptPagesWrapper($this->user_name);
+                $this->viewer = new UserPageManuscriptsViewer($this->getOutput(), $this->user_name);
+                break;
+            case 'view_collations_posted':
+                $this->wrapper = new AllCollationsWrapper($this->user_name);
+                $this->viewer = new UserPageCollationsViewer($this->getOutput(), $this->user_name);
+                break;
+            case 'view_collections_posted':
+                $this->wrapper = new AllCollectionsWrapper($this->user_name);
+                $this->viewer = new UserPageCollectionsViewer($this->getOutput(), $this->user_name);
+                break;
+        }
+
+        if (!isset($this->wrapper) || !isset($this->viewer)) {
+            throw new \Exception('error-request');
+        }
     }
 
     protected function getRequestProcessor() {

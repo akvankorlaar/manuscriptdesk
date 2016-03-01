@@ -24,7 +24,7 @@
  */
 trait HTMLPreviousNextPageLinks {
 
-    protected function getHTMLPreviousNextPageLinks(OutputPage $out, $offset, $next_offset, $max_on_page, $button_name, $page_name) {
+    protected function getHTMLPreviousNextPageLinks(OutputPage $out, $button_name, $offset, $next_offset, $page_name) {
 
         $html = "";
 
@@ -35,7 +35,7 @@ trait HTMLPreviousNextPageLinks {
 
             $previous_offset = ($offset) - ($max_on_page);
 
-            $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:' . $this->getPageName() . '" method="post">';
+            $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:' . $page_name . '" method="post">';
 
             $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
             $html .= "<input type='hidden' name='$button_name' value='$button_name'>";
@@ -53,7 +53,7 @@ trait HTMLPreviousNextPageLinks {
             $next_message_hover = $out->msg('allmanuscriptpages-nexthover');
             $next_message = $out->msg('allmanuscriptpages-next');
 
-            $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:' . $this->getPageName() . '" method="post">';
+            $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:' . $page_name . '" method="post">';
 
             $html .= "<input type='hidden' name='offset' value = '$next_offset'>";
             $html .= "<input type='hidden' name='$button_name' value='$button_name'>";
@@ -64,7 +64,5 @@ trait HTMLPreviousNextPageLinks {
 
         return $html;
     }
-    
-    abstract protected function getPageName();
-    
+        
 }

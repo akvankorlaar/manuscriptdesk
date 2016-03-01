@@ -39,12 +39,12 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
      * This function shows the page after a request has been processed
      */
     public function showSingleLetterOrNumberPage(
-    $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset, $max_on_page) {
+    $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
 
         $out = $this->out;
         $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $max_on_page, $button_name);
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $button_name);
         $html .= $this->getHTMLJavascriptLoaderGif();
 
         $out->setPageTitle($this->msg('allcollations'));
