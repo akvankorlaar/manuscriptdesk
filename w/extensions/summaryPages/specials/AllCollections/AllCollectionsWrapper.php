@@ -74,7 +74,6 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
                       'collections_user' => $s->collections_user,
                       'collections_date' => $s->collections_date,
                     );
-
                 }
                 //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
                 else {
@@ -90,11 +89,15 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
     /**
      * This function retrieves all the data for a single collection
      */
-    public function retrieveSingleCollection($selected_collection = '') {
+    public function getSingleCollectionData($collection_title) {
+        $meta_data = $this->getSingleCollectionMetadata($collection_title);
+        $pages_within_collection = $this->getSingleCollectionPages($collection_title);
+        return array($meta_data, $pages_within_collection);
+    }
 
+    public function getSingleCollectionMetadata($collection_title) {
         $dbr = wfGetDB(DB_SLAVE);
         $meta_data = array();
-        $pages_within_collection = array();
 
         $res = $dbr->select(
             'collections', //from
@@ -114,7 +117,7 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
           'collections_metaid',
           'collections_metanotes',
             ), array(
-          'collections_title = ' . $dbr->addQuotes($selected_collection),
+          'collections_title = ' . $dbr->addQuotes($collection_title),
             ), __METHOD__, array(
           'ORDER BY' => 'collections_title',
             )
@@ -142,7 +145,13 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
             }
         }
 
-        //Database query
+        return $meta_data;
+    }
+
+    public function getSingleCollectionPages($collection_title) {
+
+        $pages_within_collection = array();
+
         $res = $dbr->select(
             'manuscripts', //from
             array(
@@ -151,7 +160,7 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_date',
           'manuscripts_lowercase_title',
             ), array(
-          'manuscripts_collection = ' . $dbr->addQuotes($selected_collection),
+          'manuscripts_collection = ' . $dbr->addQuotes($collection_title),
             ), __METHOD__, array(
           'ORDER BY' => 'manuscripts_lowercase_title',
             )
@@ -169,7 +178,7 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
             }
         }
 
-        return array($meta_data, $pages_within_collection);
+        return $pages_within_collection;
     }
 
 }

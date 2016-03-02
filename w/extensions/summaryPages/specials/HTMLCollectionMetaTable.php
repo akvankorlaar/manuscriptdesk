@@ -27,7 +27,7 @@ trait HTMLCollectionMetaTable{
   /**
    * This function renders the metadata table 
    */
-  protected function getHTMLCollectionMetaTable(array $meta_data){
+  protected function getHTMLCollectionMetaTable(OutputPage $out, array $meta_data){
     
     //get the data  
     $metatitle =         isset($meta_data['collections_metatitle']) ? $meta_data['collections_metatitle'] : '';
@@ -46,19 +46,19 @@ trait HTMLCollectionMetaTable{
     $metanotes =         isset($meta_data['collections_metanotes']) ? $meta_data['collections_metanotes'] : '';
     
     //get the messages
-    $metadata_title = $this->getMessage('metadata-title');
-    $metadata_name = $this->getMessage('metadata-name');
-    $metadata_year = $this->getMessage('metadata-year');
-    $metadata_pages = $this->getMessage('metadata-pages');
-    $metadata_category = $this->getMessage('metadata-category');
-    $metadata_produced = $this->getMessage('metadata-produced');
-    $metadata_producer = $this->getMessage('metadata-producer');
-    $metadata_editors = $this->getMessage('metadata-editors');
-    $metadata_journal = $this->getMessage('metadata-journal');
-    $metadata_journalnumber = $this->getMessage('metadata-journalnumber');
-    $metadata_translators = $this->getMessage('metadata-translators');
-    $metadata_websource = $this->getMessage('metadata-websource');
-    $metadata_id = $this->getMessage('metadata-id');
+    $metadata_title = $out->getMessage('metadata-title');
+    $metadata_name = $out->getMessage('metadata-name');
+    $metadata_year = $out->getMessage('metadata-year');
+    $metadata_pages = $out->getMessage('metadata-pages');
+    $metadata_category = $out->getMessage('metadata-category');
+    $metadata_produced = $out->getMessage('metadata-produced');
+    $metadata_producer = $out->getMessage('metadata-producer');
+    $metadata_editors = $out->getMessage('metadata-editors');
+    $metadata_journal = $out->getMessage('metadata-journal');
+    $metadata_journalnumber = $out->getMessage('metadata-journalnumber');
+    $metadata_translators = $out->getMessage('metadata-translators');
+    $metadata_websource = $out->getMessage('metadata-websource');
+    $metadata_id = $out->getMessage('metadata-id');
        
     //construct the table
      $html_table = " 

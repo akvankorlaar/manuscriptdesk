@@ -26,6 +26,7 @@ abstract class ManuscriptDeskBaseViewer {
 
     protected $out;
     protected $max_int_formfield_length = 5;
+    protected $max_string_formfield_length = 50; 
 
     public function __construct(OutputPage $out) {
         $this->out = $out;
@@ -50,5 +51,4 @@ abstract class ManuscriptDeskBaseViewer {
         return true;
     }
 
-    abstract public function showDefaultPage();
 }

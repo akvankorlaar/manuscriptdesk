@@ -54,14 +54,19 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             return true;
         }
 
-        if ($request_processor->form2WasPosted()) {
-            $this->processForm2();
+        if ($request_processor->singleCollectionPosted()) {
+            $this->processSingleCollection();
             return true;
         }
 
-        if ($request_processor->savePagePosted()) {
-            $this->processSavePageRequest();
+        if ($request_processor->EditMetadataPosted()) {
+            $this->getEditMetadataForm();
             return true;
+        }
+        
+        if($request_processor->SaveMetadataPosted()){
+            $this->processSaveMetadata();
+            return true; 
         }
 
         if ($request_processor->redirectBackPosted()) {
@@ -100,31 +105,34 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $this->viewer->showPage($button_name, $page_titles, $offset, $next_offset);
         return true;
     }
+    
+    private function processSingleCollection(){
+        $collection_title = $this->request_processor->getCollectionTitle();
+        $this->setWrapperAndViewer('single_collection_posted');
+        $single_collection_data = $this->wrapper->getSingleCollectionData($collection_title);
+        return $this->wrapper->showSingleCollectionData($collection_title, $single_collection_data);
+    }
+    
+    private function getEditMetadataForm($error_message = ''){
+        $collection_title = $this->request_processor->getCollectionTitle();
+        $link_back_to_manuscript_page = $this->request_processor->getLinkBackToManuscriptPage();
+        $this->setWrapperAndViewer('edit_metadata_posted');
+        $single_collection_data = $this->wrapper->getSingleCollectionMetadata($collection_title);
+        return $this->wrapper->showEditCollectionMetadata($collection_title, $single_collection_data, $link_back_to_manuscript_page, $error_message);
+    }
 
     private function temp() {
-
-        if ($button_name === 'editmetadata') {
-            $summary_page_wrapper = new summaryPageWrapper($button_name, 0, 0, $user_name, "", "", $this->selected_collection);
-            $meta_data = $summary_page_wrapper->retrieveFromDatabase();
-            return $this->showEditMetadata($meta_data, '');
-        }
 
         if ($button_name === 'changetitle') {
             return $this->showEditTitle();
         }
 
         if ($button_name === 'submitedit') {
-            return $this->processEdit();
+            return $this->processEditCollectionMetadata();
         }
 
         if ($button_name === 'submittitle') {
             return $this->processNewTitle();
-        }
-
-        if ($button_name === 'single_collection_posted') {
-            $summary_page_wrapper = new summaryPageWrapper($button_name, 0, 0, $user_name, "", "", $this->selected_collection);
-            $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
-            return $this->showSingleCollection($single_collection_data);
         }
     }
 
@@ -271,18 +279,15 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return $this->showSingleCollection($single_collection_data);
     }
 
-    /**
-     * This function processes the edit form once it has been posted
-     * 
+    /**     
+     * Regular expression: 
      * /^[A-Za-z0-9\s]+$/
      * 
      * / = delimiter
      * ^ and $ = anchors. Start and end of line
      * /s = match spaces
-     * 
-     * @return string
      */
-    private function processEdit() {
+    private function processEditCollectionMetadata() {
 
         $max_length = $this->max_length;
         $textfield_array = $this->textfield_array;
@@ -369,6 +374,8 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
                 $this->viewer = new UserPageCollationsViewer($this->getOutput(), $this->user_name);
                 break;
             case 'view_collections_posted':
+            case 'single_collection_posted': 
+            case 'edit_metadata_posted':    
                 $this->wrapper = new AllCollectionsWrapper($this->user_name);
                 $this->viewer = new UserPageCollectionsViewer($this->getOutput(), $this->user_name);
                 break;
