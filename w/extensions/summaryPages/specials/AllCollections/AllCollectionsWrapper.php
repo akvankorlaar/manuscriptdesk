@@ -180,5 +180,60 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
 
         return $pages_within_collection;
     }
+    
+  /**
+   * This function inserts data into the 'collections' table 
+   */
+  public function updateCollectionsMetadata($saved_metadata, $collection_title){
+        
+    $user_name = $this->user_name;
+    
+    $metatitle =         isset($saved_metadata['wpmetadata_title']) ? $saved_metadata['wpmetadata_title'] : '';
+    $metaauthor =        isset($saved_metadata['wpmetadata_author']) ? $saved_metadata['wpmetadata_author'] : '';
+    $metayear =          isset($saved_metadata['wpmetadata_year']) ? $saved_metadata['wpmetadata_year'] : '';
+    $metapages =         isset($saved_metadata['wpmetadata_pages']) ? $saved_metadata['wpmetadata_pages'] : '';
+    $metacategory =      isset($saved_metadata['wpmetadata_category']) ? $saved_metadata['wpmetadata_category'] : '';
+    $metaproduced =      isset($saved_metadata['wpmetadata_produced']) ? $saved_metadata['wpmetadata_produced'] : '';
+    $metaproducer =      isset($saved_metadata['wpmetadata_producer']) ? $saved_metadata['wpmetadata_producer'] : '';
+    $metaeditors =       isset($saved_metadata['wpmetadata_editors']) ? $saved_metadata['wpmetadata_editors'] : '';
+    $metajournal =       isset($saved_metadata['wpmetadata_journal']) ? $saved_metadata['wpmetadata_journal'] : '';
+    $metajournalnumber = isset($saved_metadata['wpmetadata_journalnumber']) ? $saved_metadata['wpmetadata_journalnumber'] : '';
+    $metatranslators =   isset($saved_metadata['wpmetadata_translators']) ? $saved_metadata['wpmetadata_translators'] : '';
+    $metawebsource =     isset($saved_metadata['wpmetadata_websource']) ? $saved_metadata['wpmetadata_websource'] : '';
+    $metaid =            isset($saved_metadata['wpmetadata_id']) ? $saved_metadata['wpmetadata_id'] : '';
+    $metanotes =         isset($saved_metadata['wpmetadata_notes']) ? $saved_metadata['wpmetadata_notes'] : '';
+    
+    $dbw = wfGetDB(DB_MASTER);
+    
+    $dbw->update('collections', //select table
+      array( //update values
+      'collections_metatitle'         => $metatitle,
+      'collections_metaauthor'        => $metaauthor,
+      'collections_metayear'          => $metayear,
+      'collections_metapages'         => $metapages,
+      'collections_metacategory'      => $metacategory,
+      'collections_metaproduced'      => $metaproduced,  
+      'collections_metaproducer'      => $metaproducer,
+      'collections_metaeditors'       => $metaeditors,
+      'collections_metajournal'       => $metajournal,
+      'collections_metajournalnumber' => $metajournalnumber,
+      'collections_metatranslators'   => $metatranslators,
+      'collections_metawebsource'     => $metawebsource,   
+      'collections_metaid'            => $metaid,
+      'collections_metanotes'         => $metanotes,
+       ),
+        array(
+      'collections_user  = ' . $dbw->addQuotes($user_name),//conditions
+      'collections_title = ' . $dbw->addQuotes($collection_title),
+        ), //conditions
+        __METHOD__,
+       'IGNORE' );
+    
+    if (!$dbw->affectedRows()){
+        throw new \Exception('error-database');
+    }
+    
+    return true; 
+  }
 
 }

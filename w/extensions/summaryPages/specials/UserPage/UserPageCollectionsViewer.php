@@ -362,7 +362,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
      * This function shows a confirmation of the edit after submission of the form, in case the user has reached the page via the link on a manuscript page
      * 
      */
-    public function prepareRedirectBackToManuscriptPageAfterEditMetadata($link_back_to_manuscript_page) {
+    public function showRedirectBackToManuscriptPageAfterEditMetadata($link_back_to_manuscript_page) {
 
         global $wgArticleUrl;
         $article_url = $wgArticleUrl;

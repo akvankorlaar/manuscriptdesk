@@ -258,64 +258,6 @@ class summaryPageWrapper{
   }
   
   /**
-   * This function inserts data into the 'collections' table 
-   */
-  public function insertCollections($form_data){
-        
-    $user_name = $this->user_name;
-    $selected_collection = $this->selected_collection;
-    
-    $metatitle =         isset($form_data['wptextfield1']) ? $form_data['wptextfield1'] : '';
-    $metaauthor =        isset($form_data['wptextfield2']) ? $form_data['wptextfield2'] : '';
-    $metayear =          isset($form_data['wptextfield3']) ? $form_data['wptextfield3'] : '';
-    $metapages =         isset($form_data['wptextfield4']) ? $form_data['wptextfield4'] : '';
-    $metacategory =      isset($form_data['wptextfield5']) ? $form_data['wptextfield6'] : '';
-    $metaproduced =      isset($form_data['wptextfield6']) ? $form_data['wptextfield8'] : '';
-    $metaproducer =      isset($form_data['wptextfield7']) ? $form_data['wptextfield9'] : '';
-    $metaeditors =       isset($form_data['wptextfield8']) ? $form_data['wptextfield8'] : '';
-    $metajournal =       isset($form_data['wptextfield9']) ? $form_data['wptextfield9'] : '';
-    $metajournalnumber = isset($form_data['wptextfield10']) ? $form_data['wptextfield10'] : '';
-    $metatranslators =   isset($form_data['wptextfield11']) ? $form_data['wptextfield11'] : '';
-    $metawebsource =     isset($form_data['wptextfield12']) ? $form_data['wptextfield12'] : '';
-    $metaid =            isset($form_data['wptextfield13']) ? $form_data['wptextfield13'] : '';
-    $metanotes =         isset($form_data['wptextfield14']) ? $form_data['wptextfield14'] : '';
-    
-    $dbw = wfGetDB(DB_MASTER);
-    
-    $dbw->update('collections', //select table
-      array( //update values
-      'collections_metatitle'         => $metatitle,
-      'collections_metaauthor'        => $metaauthor,
-      'collections_metayear'          => $metayear,
-      'collections_metapages'         => $metapages,
-      'collections_metacategory'      => $metacategory,
-      'collections_metaproduced'      => $metaproduced,  
-      'collections_metaproducer'      => $metaproducer,
-      'collections_metaeditors'       => $metaeditors,
-      'collections_metajournal'       => $metajournal,
-      'collections_metajournalnumber' => $metajournalnumber,
-      'collections_metatranslators'   => $metatranslators,
-      'collections_metawebsource'     => $metawebsource,   
-      'collections_metaid'            => $metaid,
-      'collections_metanotes'         => $metanotes,
-       ),
-        array(
-      'collections_user  = ' . $dbw->addQuotes($user_name),//conditions
-      'collections_title = ' . $dbw->addQuotes($selected_collection),
-        ), //conditions
-        __METHOD__,
-       'IGNORE' );
-    
-    if ($dbw->affectedRows()){
-    //insert succeeded
-      return true;     
-    }else{
-    //return error
-      return false;      
-    }   
-  }
-  
-  /**
    * This function retrieves the page id from the 'page' table 
    */
   public function retrievePageId(){

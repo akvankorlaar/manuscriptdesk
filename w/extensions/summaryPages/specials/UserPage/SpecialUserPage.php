@@ -55,7 +55,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         }
 
         if ($request_processor->singleCollectionPosted()) {
-            $this->processSingleCollection();
+            $this->getSingleCollectionPage();
             return true;
         }
 
@@ -68,11 +68,11 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             $this->processSaveCollectionMetadata();
             return true; 
         }
-
-        if ($request_processor->redirectBackPosted()) {
-            $this->getDefaultPage();
-            return true;
-        }
+//
+//        if ($request_processor->redirectBackPosted()) {
+//            $this->getDefaultPage();
+//            return true;
+//        }
 
         throw new \Exception('error-request');
     }
@@ -106,9 +106,9 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return true;
     }
     
-    private function processSingleCollection(){
+    private function getSingleCollectionPage(){
         $collection_title = $this->request_processor->getCollectionTitle();
-        $this->setWrapperAndViewer('single_collection_posted');
+        $this->setWrapperAndViewer('view_collections_posted');
         $single_collection_data = $this->wrapper->getSingleCollectionData($collection_title);
         return $this->wrapper->showSingleCollectionData($collection_title, $single_collection_data);
     }
@@ -116,7 +116,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     private function getEditMetadataForm($error_message = ''){
         $collection_title = $this->request_processor->getCollectionTitle();
         $link_back_to_manuscript_page = $this->request_processor->getLinkBackToManuscriptPage();
-        $this->setWrapperAndViewer('edit_metadata_posted');
+        $this->setWrapperAndViewer('view_collections_posted');
         $single_collection_data = $this->wrapper->getSingleCollectionMetadata($collection_title);
         return $this->wrapper->showEditCollectionMetadata($collection_title, $single_collection_data, $link_back_to_manuscript_page, $error_message);
     }
@@ -124,14 +124,16 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     private function processSaveCollectionMetadata() {
         $saved_metadata = $this->request_processor->getAndValidateSavedCollectionMetadata();
         $collection_title = $this->request_processor->getCollectionTitle();
-        //$status = $summary_page_wrapper->insertCollections($textfield_array);
-        $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
+        $this->setWrapperAndViewer('view_collections_posted');
+        $this->wrapper->updateCollectionsMetadata($saved_metadata, $collection_title);
+        $link_back_to_manuscript_page = $this->request_processor->getLinkBackToManuscriptPage();
 
-        if (isset($this->linkback)) {
-            return $this->prepareRedirect();
-        }
+       if (!empty($link_back_to_manuscript_page)) {     
+           return $this->viewer->showRedirectBackToManuscriptPageAfterEditMetadata($link_back_to_manuscript_page);
+       }
 
-        return $this->showSingleCollection($single_collection_data);
+        $single_collection_data = $this->wrapper->getSingleCollectionData($collection_title);
+        return $this->wrapper->showSingleCollectionData($collection_title, $single_collection_data);
     }
 
     private function temp() {
@@ -310,6 +312,11 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     private function setWrapperAndViewer($button_name) {
+        
+        if(isset($this->wrapper) || isset($this->viewer)){
+            return true; 
+        }
+        
         switch ($button_name) {
             case 'view_manuscripts_posted':
                 $this->wrapper = new SingleManuscriptPagesWrapper($this->user_name);
@@ -319,9 +326,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
                 $this->wrapper = new AllCollationsWrapper($this->user_name);
                 $this->viewer = new UserPageCollationsViewer($this->getOutput(), $this->user_name);
                 break;
-            case 'view_collections_posted':
-            case 'single_collection_posted': 
-            case 'edit_metadata_posted':    
+            case 'view_collections_posted': 
                 $this->wrapper = new AllCollectionsWrapper($this->user_name);
                 $this->viewer = new UserPageCollectionsViewer($this->getOutput(), $this->user_name);
                 break;
@@ -330,6 +335,8 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         if (!isset($this->wrapper) || !isset($this->viewer)) {
             throw new \Exception('error-request');
         }
+        
+        return true; 
     }
 
     protected function getRequestProcessor() {

@@ -94,7 +94,7 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor{
         foreach ($posted_names as $formfield) {
         
             if(strpos($formfield,'wpmetadata') !== false){
-                $saved_metadata [] = $validator->validateSavedCollectionMetadataField($request->getText($formfield), $formfield);
+                $saved_metadata [$formfield] = $validator->validateSavedCollectionMetadataField($request->getText($formfield), $formfield);
             }
         }
              
