@@ -77,6 +77,30 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor{
         return $validator->validateStringUrl($request->getText($value_name));
     }
     
+    public function saveCollectionMetadataPosted(){
+        if($this->request->getText('save_metadata_posted') !== ''){
+            return true;
+        }
+        
+        return false; 
+    }
+    
+    public function getAndValidateSavedCollectionMetadata(){
+        $request = $this->request;
+        $validator = $this->validator; 
+        $posted_names = $request->getValueNames();
+        $saved_metadata = array();
+          
+        foreach ($posted_names as $formfield) {
+        
+            if(strpos($formfield,'wpmetadata') !== false){
+                $saved_metadata [] = $validator->validateSavedCollectionMetadataField($request->getText($formfield), $formfield);
+            }
+        }
+             
+        return $saved_metadata;
+    }
+    
   /**
    * This function loads requests when a user selects a button, moves to the previous page, or to the next page
    */

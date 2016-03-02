@@ -64,8 +64,8 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             return true;
         }
         
-        if($request_processor->SaveMetadataPosted()){
-            $this->processSaveMetadata();
+        if($request_processor->saveCollectionMetadataPosted()){
+            $this->processSaveCollectionMetadata();
             return true; 
         }
 
@@ -119,6 +119,19 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $this->setWrapperAndViewer('edit_metadata_posted');
         $single_collection_data = $this->wrapper->getSingleCollectionMetadata($collection_title);
         return $this->wrapper->showEditCollectionMetadata($collection_title, $single_collection_data, $link_back_to_manuscript_page, $error_message);
+    }
+    
+    private function processSaveCollectionMetadata() {
+        $saved_metadata = $this->request_processor->getAndValidateSavedCollectionMetadata();
+        $collection_title = $this->request_processor->getCollectionTitle();
+        //$status = $summary_page_wrapper->insertCollections($textfield_array);
+        $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
+
+        if (isset($this->linkback)) {
+            return $this->prepareRedirect();
+        }
+
+        return $this->showSingleCollection($single_collection_data);
     }
 
     private function temp() {
@@ -276,73 +289,6 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
         //redirect back if there were no errors          
         $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
-        return $this->showSingleCollection($single_collection_data);
-    }
-
-    /**     
-     * Regular expression: 
-     * /^[A-Za-z0-9\s]+$/
-     * 
-     * / = delimiter
-     * ^ and $ = anchors. Start and end of line
-     * /s = match spaces
-     */
-    private function processEditCollectionMetadata() {
-
-        $max_length = $this->max_length;
-        $textfield_array = $this->textfield_array;
-
-        foreach ($textfield_array as $index => $textfield) {
-
-            if (!empty($textfield)) {
-                //wptextfield12 is the websource textfield, and wptextfield14 is the notes textfield
-                if ($index !== 'wptextfield12' && $index !== 'wptextfield14') {
-
-                    if (strlen($textfield) > $max_length) {
-                        return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " " . $max_length . " " . $this->msg('userpage-error-editmax2'));
-
-                        //allow alphanumeric charachters and whitespace  
-                    }
-                    elseif (!preg_match("/^[A-Za-z0-9\s]+$/", $textfield)) {
-                        return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric'));
-                    }
-                }
-                elseif ($index === 'wptextfield12') {
-
-                    if (strlen($textfield) > $max_length) {
-                        return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " " . $max_length . " " . $this->msg('userpage-error-editmax2'));
-
-                        //allow alphanumeric charachters, whitespace, and '-./:'  
-                    }
-                    elseif (!preg_match("/^[A-Za-z0-9\-.\/:\s]+$/", $textfield)) {
-                        return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric2'));
-                    }
-                }
-                elseif ($index === 'wptextfield14') {
-
-                    $length_textfield = strlen($textfield);
-                    $max_charachters_notes = $max_length * 20;
-
-                    if ($length_textfield > $max_charachters_notes) {
-                        return $this->showEditMetadata(array(), $this->msg('userpage-error-editmax1') . " " . $max_charachters_notes . " " . $this->msg('userpage-error-editmax3') . " " . $length_textfield . " " . $this->msg('userpage-error-editmax4'));
-
-                        //allow alphanumeric charachters, whitespace, and ',.;!?' 
-                    }
-                    elseif (!preg_match("/^[A-Za-z0-9,.;!?\s]+$/", $textfield)) {
-                        return $this->showEditMetadata(array(), $this->msg('userpage-error-alphanumeric3'));
-                    }
-                }
-            }
-        }
-
-        $summary_page_wrapper = new summaryPageWrapper('submitedit', 0, 0, $this->user_name, "", "", $this->selected_collection);
-        $status = $summary_page_wrapper->insertCollections($textfield_array);
-        $single_collection_data = $summary_page_wrapper->retrieveFromDatabase();
-
-        if (isset($this->linkback)) {
-            return $this->prepareRedirect();
-        }
-
         return $this->showSingleCollection($single_collection_data);
     }
 

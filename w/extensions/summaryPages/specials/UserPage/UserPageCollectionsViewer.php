@@ -240,98 +240,99 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $descriptor = array();
 
-        $descriptor['textfield1'] = array(
+        //important! These are posted as 'textfield', but will appear as 'wptextfield' in the request object ! 
+        $descriptor['metadata_title'] = array(
           'label-message' => 'metadata-title',
           'class' => 'HTMLTextField',
           'default' => $metatitle,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield2'] = array(
+        $descriptor['metadata_name'] = array(
           'label-message' => 'metadata-name',
           'class' => 'HTMLTextField',
           'default' => $metaauthor,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield3'] = array(
+        $descriptor['metadata_year'] = array(
           'label-message' => 'metadata-year',
           'class' => 'HTMLTextField',
           'default' => $metayear,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield4'] = array(
+        $descriptor['metadata_pages'] = array(
           'label-message' => 'metadata-pages',
           'class' => 'HTMLTextField',
           'default' => $metapages,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield5'] = array(
+        $descriptor['metadata_category'] = array(
           'label-message' => 'metadata-category',
           'class' => 'HTMLTextField',
           'default' => $metacategory,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield6'] = array(
+        $descriptor['metadata_produced'] = array(
           'label-message' => 'metadata-produced',
           'class' => 'HTMLTextField',
           'default' => $metaproduced,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield7'] = array(
+        $descriptor['metadata_producer'] = array(
           'label-message' => 'metadata-producer',
           'class' => 'HTMLTextField',
           'default' => $metaproducer,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield8'] = array(
+        $descriptor['metadata_editors'] = array(
           'label-message' => 'metadata-editors',
           'class' => 'HTMLTextField',
           'default' => $metaeditors,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield9'] = array(
+        $descriptor['metadata_journal'] = array(
           'label-message' => 'metadata-journal',
           'class' => 'HTMLTextField',
           'default' => $metajournal,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield10'] = array(
+        $descriptor['metadata_journalnumber'] = array(
           'label-message' => 'metadata-journalnumber',
           'class' => 'HTMLTextField',
           'default' => $metajournalnumber,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield11'] = array(
+        $descriptor['metadata_translators'] = array(
           'label-message' => 'metadata-translators',
           'class' => 'HTMLTextField',
           'default' => $metatranslators,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield12'] = array(
+        $descriptor['metadata_websource'] = array(
           'label-message' => 'metadata-websource',
           'class' => 'HTMLTextField',
           'default' => $metawebsource,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield13'] = array(
+        $descriptor['metadata_id'] = array(
           'label-message' => 'metadata-id',
           'class' => 'HTMLTextField',
           'default' => $metaid,
           'maxlength' => $max_length,
         );
 
-        $descriptor['textfield14'] = array(
+        $descriptor['metadata_notes'] = array(
           'type' => 'textarea',
           'labelmessage' => 'metadata-notes',
           'default' => $metanotes,
@@ -342,7 +343,6 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         //in case the user was directed here from a manuscript page, send the link back to that manuscript page with the form
         if (!empty($link_back_to_manuscript_page)) {
-
             $descriptor['hidden'] = array(
               'type' => 'hidden',
               'name' => 'link_back_to_manuscript_page',
@@ -352,7 +352,8 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $html_form = new HTMLForm($descriptor, $this->getContext());
         $html_form->setSubmitText($this->msg('metadata-submit'));
-        $html_form->addHiddenField('save_collection_posted', $collection_title);
+        $html_form->addHiddenField('single_collection', $collection_title);
+        $html_form->addHiddenField('save_metadata_posted','save_metadata_posted');
         $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));
         $html_form->show();
     }
