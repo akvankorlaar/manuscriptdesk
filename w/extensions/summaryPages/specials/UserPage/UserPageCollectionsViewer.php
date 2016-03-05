@@ -26,13 +26,13 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
     use HTMLUserPageMenuBar,
         HTMLJavascriptLoaderGif,
-        HTMLPreviousNextPageLinks, HTMLCollectionMetaTable;
+        HTMLPreviousNextPageLinks,
+        HTMLCollectionMetaTable;
 
-    private $out;
     private $user_name;
 
     public function __construct(OutputPage $out, $user_name) {
-        $this->out = $out;
+        parent::__construct($out);
         $this->user_name = $user_name;
     }
 
@@ -63,12 +63,12 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         foreach ($page_titles as $key => $array) {
 
-            $collections_title = isset($array['collections_title']) ? $array['collections_title'] : '';
-            $collections_date = isset($array['collections_date']) ? $array['collections_date'] : '';
+            $collection_title = isset($array['collections_title']) ? $array['collections_title'] : '';
+            $collection_date = isset($array['collections_date']) ? $array['collections_date'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-long'><input type='submit' class='userpage-collectionlist' name='single_collection' value='" . htmlspecialchars($collections_title) . "'></td>";
-            $html .= "<td>" . htmlspecialchars($collections_date) . "</td>";
+            $html .= "<td class='td-long'><input type='submit' class='userpage-collectionlist' name='collection_title' value='" . htmlspecialchars($collection_title) . "'></td>";
+            $html .= "<td>" . htmlspecialchars($collection_date) . "</td>";
             $html .= "</tr>";
         }
 
@@ -97,20 +97,20 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         return $out->addHTML($html);
     }
-    
+
     /**
      * This function displays a single collection (metadata and information on the pages) to the user
      */
     public function showSingleCollectionData($collection_title, $single_collection_data) {
 
-        global $wgArticleUrl; 
+        global $wgArticleUrl;
         $out = $this->out;
         $user_name = $this->user_name;
         $article_url = $wgArticleUrl;
         list($meta_data, $pages_within_collection) = $single_collection_data;
 
         $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
-        
+
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
@@ -121,13 +121,13 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<input type='submit' class='button-transparent' name='edit_metadata_posted' value='" . $this->msg('userpage-editmetadatabutton') . "'>";
-        $html .= "<input type='hidden' name='single_collection' value='" . $collection_title . "'>";
+        $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
         //redirect to Special:NewManuscript, and automatically have the current collection selected
         $html .= "<form id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
-        $html .= "<input type='submit' class='button-transparent' name='addnewpage' title='" . $this->msg('userpage-newcollection') . "' value='Add New Page'>";
+        $html .= "<input type='submit' class='button-transparent' name='add_new_page_posted' title='" . $this->msg('userpage-newcollection') . "' value='Add New Page'>";
         $html .= "<input type='hidden' name='selected_collection' value='" . $collection_title . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
@@ -164,14 +164,15 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
             $html .= "<td class='td-three'>" . htmlspecialchars($manuscripts_date) . "</td>";
             $html .= "<td class='td-three'><input type='submit' class='button-transparent' name='changetitle_button" . $counter . "' "
                 . "value='" . $this->msg('userpage-changetitle') . "'></td>";
-            $html .= "<input type='hidden' name='oldtitle" . $counter . "' value = '" . htmlspecialchars($manuscripts_title) . "'>";
-            $html .= "<input type='hidden' name='urloldtitle" . $counter . "' value = '" . htmlspecialchars($manuscripts_url) . "'>";
+            $html .= "<input type='hidden' name='old_title_posted" . $counter . "' value = '" . htmlspecialchars($manuscripts_title) . "'>";
+            $html .= "<input type='hidden' name='url_old_title_posted" . $counter . "' value = '" . htmlspecialchars($manuscripts_url) . "'>";
             $html .= "</tr>";
 
             $counter+=1;
         }
 
-        $html .= "<input type='hidden' name='edit_collection_posted' value = '" . $collection_title . "'>";
+        $html .= "<input type='hidden' name='edit_single_page_collection_posted' value = 'edit_single_page_collection_posted'>";
+        $html .= "<input type='hidden' name='collection_title' value = '" . $collection_title . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</table>";
         $html .= "</form>";
@@ -179,7 +180,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         return $out->addHTML($html);
     }
-    
+
     /**
      * This function constructs the edit form for editing metadata.
      * 
@@ -207,11 +208,11 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $out = $this->out;
         $user_name = $this->user_name;
-        
+
         $max_length = $this->max_string_formfield_length;
 
         $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
-        
+
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
@@ -219,13 +220,13 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         $html .= $this->getHTMLJavascriptLoaderGif();
 
         $html .= "<div id='userpage-singlecollectionwrap'>";
-        
+
         $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<input type='submit' class='button-transparent' value='" . $this->msg('userpage-goback') . "'>";
         $html .= "<input type='hidden' name='single_collection_posted' value='" . htmlspecialchars($collection_title) . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
-        
+
         $html .= "<h2>" . $this->msg('userpage-editmetadata') . " " . $collection_title . "</h2>";
         $html .= $this->msg('userpage-optional');
         $html .= "<br><br>";
@@ -352,12 +353,12 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $html_form = new HTMLForm($descriptor, $this->getContext());
         $html_form->setSubmitText($this->msg('metadata-submit'));
-        $html_form->addHiddenField('single_collection', $collection_title);
-        $html_form->addHiddenField('save_metadata_posted','save_metadata_posted');
+        $html_form->addHiddenField('collection_title', $collection_title);
+        $html_form->addHiddenField('save_metadata_posted', 'save_metadata_posted');
         $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));
         $html_form->show();
     }
-    
+
     /**
      * This function shows a confirmation of the edit after submission of the form, in case the user has reached the page via the link on a manuscript page
      * 
@@ -371,6 +372,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         $html = "";
 
         $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+        $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
@@ -388,5 +390,63 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         return $out->addHTML($html);
     }
-    
+
+    /**
+     * This function shows the form when editing a manuscript title
+     * 
+     * See https://www.mediawiki.org/wiki/HTMLForm/tutorial for information on the MediaWiki form builder
+     */
+    public function showEditPageSingleCollectionForm($error_message = '', $collection_title, $manuscript_old_title, $manuscript_url_old_title) {
+
+        $out = $this->out;
+        $user_name = $this->user_name;
+        $max_length = $this->max_string_formfield_length;
+
+        $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+
+        $edit_token = $this->getUser()->getEditToken();
+
+        $html = "";
+        $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
+        $html .= $this->getHTMLJavascriptLoaderGif();
+
+        $html .= "<div id='userpage-singlecollectionwrap'>";
+
+        $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
+        $html .= "<input type='submit' class='button-transparent' value='" . $this->msg('userpage-goback') . "'>";
+        $html .= "<input type='hidden' name='single_collection_posted' value='" . htmlspecialchars($collection_title) . "'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
+
+        $html .= "<h2>" . $this->msg('userpage-edittitle') . " " . $manuscript_old_title . "</h2>";
+        $html .= $this->msg('userpage-edittitleinstruction');
+        $html .= "<br><br>";
+
+        if (!empty($error_message)) {
+            $html .= "<div class='error'>" . $error_message . "</div>";
+        }
+
+        $html .= "</div>";
+
+        $out->addHTML($html);
+
+        $descriptor = array();
+
+        $descriptor['manuscript_new_title'] = array(
+          'label-message' => 'userpage-newmanuscripttitle',
+          'class' => 'HTMLTextField',
+          'default' => $manuscript_old_title,
+          'maxlength' => $max_length,
+        );
+
+        $html_form = new HTMLForm($descriptor, $this->getContext());
+        $html_form->setSubmitText($this->msg('metadata-submit'));
+        $html_form->addHiddenField('single_collection', $collection_title);
+        $html_form->addHiddenField('old_title_posted', $manuscript_old_title);
+        $html_form->addHiddenField('url_old_title_posted', $manuscript_url_old_title);
+        $html_form->addHiddenField('save_new_page_title_collection_posted', 'save_new_collection_title_posted');
+        $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));
+        $html_form->show();
+    }
+
 }

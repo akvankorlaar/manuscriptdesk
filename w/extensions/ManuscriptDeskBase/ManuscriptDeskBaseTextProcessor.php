@@ -40,12 +40,16 @@ class ManuscriptDeskBaseTextProcessor {
         $this->checkIfTextIsNotOnlyWhitespace($all_texts_for_one_collection);
         return $all_texts_for_one_collection;
     }
+    
+    public function getSinglePageText($single_page_manuscript_url){
+        $title_object = $this->getTitleObjectExistingPage($single_page_manuscript_url);
+        $wikipage = Wikipage::factory($title_object);
+        return $wikipage->getText();
+    }
 
     public function getFilteredSinglePageText($single_manuscript_url) {
-        $title = $this->constructTitleObjectFromUrl($single_manuscript_url);
-        $wikipage = Wikipage::factory($title);
-        $raw_text = $wikipage->getText();
-        $filtered_raw_text = $this->filterText($raw_text);
+        $page_text = $this->getSinglePageText($single_manuscript_url);
+        $filtered_raw_text = $this->filterText($page_text);
         $this->checkIfTextIsNotOnlyWhitespace($text);
         return $filtered_raw_text;
     }
@@ -90,7 +94,7 @@ class ManuscriptDeskBaseTextProcessor {
         return $raw_text;
     }
 
-    private function constructTitleObjectFromUrl($single_manuscript_url = '') {
+    private function getTitleObjectExistingPage($single_manuscript_url) {
         $title = Title::newFromText($single_manuscript_url);
 
         if (!$title->exists()) {

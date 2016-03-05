@@ -79,14 +79,18 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
     /**
      * Create a new wikipage and return a $local_url
      */
-    protected function createNewWikiPage($new_url = '') {
-        $title_object = Title::newFromText($new_url);
-        $local_url = $title_object->getLocalURL();
+    protected function createNewWikiPage($new_url, $content = '') {
+        
+        empty($content) ? '<!--' . $this->msg('manuscriptdesk-newpage') . '-->' : $content; 
+        
+        $title = $this->createTitleObjectNewPage($new_url);
+      
+        $local_url = $title->getLocalURL();
         $context = $this->getContext();
-        $article = Article::newFromTitle($title_object, $context);
+        $article = Article::newFromTitle($title, $context);
 
         $editor_object = new EditPage($article);
-        $content_new = new wikitextcontent('<!--' . $this->msg('manuscriptdesk-newpage') . '-->');
+        $content_new = new wikitextcontent($content);
         $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97, false, null, $editor_object->contentFormat);
 
         if (!$doEditStatus->isOK()) {
@@ -95,6 +99,21 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         }
 
         return $local_url;
+    }
+    
+    private function createTitleObjectNewPage($new_page_url){
+        
+        if (null === Title::newFromText($new_page_url)) {
+            throw new \Exception('error-newpage');
+        }
+        
+        $title = Title::newFromText($new_page_url);
+
+        if ($title->exists()) {
+           throw new \Exception('error-newpage');
+        }
+      
+        return $title; 
     }
 
     protected function handleExceptions(Exception $exception_error) {

@@ -235,5 +235,76 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
     
     return true; 
   }
+  
+  public function updateManuscriptsTableAndDeleteOldPage($manuscript_new_title, $new_page_url, $manuscript_url_old_title, $page_id){
+      
+        $dbw = wfGetDB(DB_MASTER);
+        $dbw->begin(__METHOD__);
+             
+        $dbw->update(
+            'manuscripts', //select table
+            array(
+          'manuscripts_title' => $manuscript_new_title, //update values
+          'manuscripts_url' => $new_page_url,
+          'manuscripts_lowercase_title' => strtolower($manuscript_new_title),
+            ), array(
+          'manuscripts_url  = ' . $dbw->addQuotes($manuscript_url_old_title), //conditions ..why was url old title used ...
+            ), 
+            __METHOD__, 'IGNORE'
+        );
+
+        if (!$dbw->affectedRows()) {
+            $dbw->rollback(__METHOD__);
+            return false; 
+        }
+
+        $dbw->delete(
+            'page', //from
+            array(
+          'page_id' => $page_id //conditions
+            ),
+            __METHOD__
+        );
+
+        if (!$dbw->affectedRows() > 0) {
+            $dbw->rollback(__METHOD__);
+            return false;
+        }
+        
+        return true; 
+  }
+  
+  /**
+   * This function retrieves the page id from the 'page' table 
+   */
+  public function getPageId($page_title){
+      
+    $page_title = str_replace('Manuscripts:','',$page_title);    
+    
+    $dbr = wfGetDB(DB_SLAVE);
+    
+     //Database query
+    $res = $dbr->select(
+        'page', //from
+      array(
+        'page_id',//values
+         ),
+      array(
+        'page_namespace = ' . $dbr->addQuotes(NS_MANUSCRIPTS),
+        'page_title = ' . $dbr->addQuotes($page_title),
+      ),
+      __METHOD__,
+      array(
+        'ORDER BY' => 'page_id', 
+      )
+      );
+        
+    //there should only be one result
+    if ($res->numRows() !== 1){
+        throw new \Exception('error-database');
+    }
+    
+    return $res->fetchObject()->page_id;          
+  }
 
 }

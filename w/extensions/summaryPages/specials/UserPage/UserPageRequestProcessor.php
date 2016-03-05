@@ -101,6 +101,38 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor{
         return $saved_metadata;
     }
     
+    public function editSinglePageCollectionPosted(){
+        if($request->getText('edit_single_page_collection_posted') !== ''){
+            return true;
+        }
+        
+        return false; 
+    }
+    
+    public function getEditSinglePageCollectionData(){
+        $request = $this->request;
+        $validator = $this->validator;
+        
+        $old_title = $validator->validateString($request->getText('old_title_posted'));
+        $url_old_title = $validator->validateStringUrl($request->getText('url_old_title_posted'));
+        
+        return array($old_title, $url_old_title);
+    }
+    
+    public function saveNewPageTitleCollectionPosted(){
+        if($this->request->getText('save_new_page_title_collection_posted') !== ''){
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public function getManuscriptNewTitleData(){
+        $validator = $this->validator;
+        $request = $this->request;
+        return $validator->validateString($request->getText('wpmanuscript_new_title'));
+    }
+    
   /**
    * This function loads requests when a user selects a button, moves to the previous page, or to the next page
    */
