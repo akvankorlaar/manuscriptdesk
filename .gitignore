@@ -36,7 +36,7 @@ w/skins/*
 !w/extensions/newManuscript
 !w/extensions/JBTEIToolbar
 !w/extensions/TEITags
-!w/extensions/summaryPages
+!w/extensions/SummaryPages
 !w/extensions/StylometricAnalysis
 !w/skins/CbpTranscriptionEnhanced
 
@@ -45,7 +45,7 @@ w/skins/*
 !w/extensions/newManuscript/*
 !w/extensions/JBTEIToolbar/*
 !w/extensions/TEITags/*
-!w/extensions/summaryPages/*
+!w/extensions/SummaryPages/*
 !w/extensions/StylometricAnalysis/*
 !w/skins/CbpTranscriptionEnhanced/*
 
@@ -54,7 +54,7 @@ w/skins/*
 !w/extensions/newManuscript/*/*
 !w/extensions/JBTEIToolbar/*/*
 !w/extensions/TEITags/*/*
-!w/extensions/summaryPages/*/*
+!w/extensions/SummaryPages/*/*
 !w/extensions/StylometricAnalysis/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*
 
@@ -62,7 +62,7 @@ w/skins/*
 !w/extensions/newManuscript/*/*/*
 !w/extensions/JBTEIToolbar/*/*/*
 !w/extensions/TEITags/*/*/*
-!w/extensions/summaryPages/*/*/*
+!w/extensions/SummaryPages/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*
 
@@ -70,7 +70,7 @@ w/skins/*
 !w/extensions/newManuscript/*/*/*/*
 !w/extensions/JBTEIToolbar/*/*/*/*
 !w/extensions/TEITags/*/*/*/*
-!w/extensions/summaryPages/*/*/*/*
+!w/extensions/SummaryPages/*/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*/*
 
