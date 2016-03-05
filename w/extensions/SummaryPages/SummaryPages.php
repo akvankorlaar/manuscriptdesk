@@ -74,6 +74,7 @@ $wgAutoloadClasses['UserPageManuscriptsViewer'] = $dir . '/specials/UserPage/Use
 $wgAutoloadClasses['UserPageRequestProcessor'] = $dir . '/specials/UserPage/UserPageRequestProcessor.php';
 
 $wgAutoloadClasses['HTMLCollectionMetaTable'] = $dir . '/specials/HTMLCollectionMetaTable.php';
+$wgAutoloadClasses['HTMLJavascriptLoaderDots'] = $dir . '/specials/HTMLJavascriptLoaderDots.php';
 $wgAutoloadClasses['HTMLLetterBar'] = $dir . '/specials/HTMLLetterBar.php';
 $wgAutoloadClasses['HTMLPreviousNExtPageLinks'] = $dir . '/specials/HTMLPreviousNextPageLinks.php';
 $wgAutoloadClasses['HTMLUserPageMenuBar'] = $dir . '/specials/HTMLUserPageMenuBar.php';
@@ -94,12 +95,11 @@ $wgResourceModules['ext.userPage'] = array(
   'styles'  => '/ext.userPage.css',
 );
 
-$wgResourceModules['ext.summarypageloader' ] = array(
+$wgResourceModules['ext.javascriptloaderdots' ] = array(
   'scripts'  => array(
-    'js/ext.summarypageloader.js',
+    'js/ext.javascriptloaderdots.js',
   ),
   'localBasePath' => __DIR__,
-  'remoteExtPath' => 'newManuscript',
 );
 
 //Instantiate the collateHooks class and register the hooks

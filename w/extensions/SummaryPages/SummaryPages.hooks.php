@@ -32,10 +32,14 @@ class SummaryPagesHooks {
         $title_object = $out->getTitle();
         $page_title = $title_object->getPrefixedURL();
 
-        if ($page_title === 'Special:UserPage' || $page_title === 'Special:AllCollections' || $page_title === 'Special:SingleManuscriptPages' || $page_title === 'Special:AllCollations' || $page_title === 'Special:RecentManuscriptPages') {
+        if ($page_title === 'Special:UserPage' ||
+            $page_title === 'Special:AllCollections' ||
+            $page_title === 'Special:SingleManuscriptPages' ||
+            $page_title === 'Special:AllCollations' ||
+            $page_title === 'Special:RecentManuscriptPages') {
 
             $out->addModuleStyles("ext.userPage");
-            $out->addModules("ext.summarypageloader");
+            $out->addModules("ext.javascriptloaderdots");
         }
 
         return true;
