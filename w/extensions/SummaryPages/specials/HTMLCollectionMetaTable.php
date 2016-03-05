@@ -46,19 +46,19 @@ trait HTMLCollectionMetaTable{
     $metanotes =         isset($meta_data['collections_metanotes']) ? $meta_data['collections_metanotes'] : '';
     
     //get the messages
-    $metadata_title = $out->getMessage('metadata-title');
-    $metadata_name = $out->getMessage('metadata-name');
-    $metadata_year = $out->getMessage('metadata-year');
-    $metadata_pages = $out->getMessage('metadata-pages');
-    $metadata_category = $out->getMessage('metadata-category');
-    $metadata_produced = $out->getMessage('metadata-produced');
-    $metadata_producer = $out->getMessage('metadata-producer');
-    $metadata_editors = $out->getMessage('metadata-editors');
-    $metadata_journal = $out->getMessage('metadata-journal');
-    $metadata_journalnumber = $out->getMessage('metadata-journalnumber');
-    $metadata_translators = $out->getMessage('metadata-translators');
-    $metadata_websource = $out->getMessage('metadata-websource');
-    $metadata_id = $out->getMessage('metadata-id');
+    $metadata_title = $out->msg('metadata-title');
+    $metadata_name = $out->msg('metadata-name');
+    $metadata_year = $out->msg('metadata-year');
+    $metadata_pages = $out->msg('metadata-pages');
+    $metadata_category = $out->msg('metadata-category');
+    $metadata_produced = $out->msg('metadata-produced');
+    $metadata_producer = $out->msg('metadata-producer');
+    $metadata_editors = $out->msg('metadata-editors');
+    $metadata_journal = $out->msg('metadata-journal');
+    $metadata_journalnumber = $out->msg('metadata-journalnumber');
+    $metadata_translators = $out->msg('metadata-translators');
+    $metadata_websource = $out->msg('metadata-websource');
+    $metadata_id = $out->msg('metadata-id');
        
     //construct the table
      $html_table = " 

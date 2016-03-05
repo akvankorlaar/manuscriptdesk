@@ -505,14 +505,16 @@ class newManuscriptHooks {
   private function renderMetaTable($collection_name){
         
     if(!isset($collection_name)){
-      return; 
+      return ''; 
     }
     
-    $summary_page_wrapper = new summaryPageWrapper('getmetadata',0,0,'','','', $collection_name);
-    $meta_data = $summary_page_wrapper->retrieveFromDatabase($collection_name); 
-      
-    $collection_meta_table = new HTMLcollectionMetaTable();   
-    return $collection_meta_table->getHTMLCollectionMetaTable($meta_data);
+//    $summary_page_wrapper = new summaryPageWrapper('getmetadata',0,0,'','','', $collection_name);
+//    $meta_data = $summary_page_wrapper->retrieveFromDatabase($collection_name); 
+//      
+//    $collection_meta_table = new HTMLcollectionMetaTable();   
+//    return $collection_meta_table->getHTMLCollectionMetaTable($meta_data);
+    
+    return '';
   }
   
   /**

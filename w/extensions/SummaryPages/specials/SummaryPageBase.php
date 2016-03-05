@@ -32,8 +32,8 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         parent::__construct($page_name);
     }
     
-    protected function setVariables() {
-        
+    protected function setVariables() {      
+        parent::setVariables();
         global $wgNewManuscriptOptions;
         
         //there is both a lowercase alphabet, and a uppercase alphabet, because the lowercase alphabet is used for the database query, and the uppercase alphabet
@@ -57,18 +57,18 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
     }
 
     private function processLetterOrButtonRequest() {
-        list($button_name, $offset) = $this->getDefaultPageData();
+        list($button_name, $offset) = $this->request_processor->getLetterOrButtonRequestValues($this->lowercase_alphabet);
         list($page_titles, $next_offset) = $this->getLetterOrButtonDatabaseData($button_name, $offset);
         
         if(empty($page_titles)){
-            $this->getEmptyPageTitlesError();
+            return $this->getEmptyPageTitlesError($button_name);
         }
         
-        $this->getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset);
+        return $this->getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset);
     }
     
     private function getLetterOrButtonDatabaseData($button_name, $offset){
-        $next_letter_alphabet = $this->getNextNumberOrLetterOfTheAlphabet($button);
+        $next_letter_alphabet = $this->getNextNumberOrLetterOfTheAlphabet($button_name);
         return $this->wrapper->getData($offset, $button_name, $next_letter_alphabet);
     }
     
@@ -89,13 +89,14 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         return true; 
     }
     
-    private function getEmptyPageTitlesError(){
+    private function getEmptyPageTitlesError($button_name){
         $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
-        $this->viewer->showEmptyPageTitlesError($alphabet_numbers, $this->uppercase_alphabet,$this->lowercase_alphabet);
+        $this->viewer->showEmptyPageTitlesError($alphabet_numbers, $this->uppercase_alphabet,$this->lowercase_alphabet, $button_name);
     }
        
-    private function getNextNumberOrLetterOfTheAlphabet($button_name = '', array $lowercase_alphabet) {
+    private function getNextNumberOrLetterOfTheAlphabet($button_name = '') {
 
+        $lowercase_alphabet = $this->lowercase_alphabet;
         $next_letter = null;
         $index = array_search($button_name, $lowercase_alphabet);
 
@@ -118,7 +119,7 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         $selected_collection = $this->request_processor->getSingleCollectionName();      
         $single_collection_data = $this->wrapper->getSingleCollectionData($selected_collection);
         $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
-        return $this->viewer->showSingleCollectionData($selected_collection, $single_collection_data, $alphabet_numbers);
+        return $this->viewer->showSingleCollectionData($alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet, $selected_collection, $single_collection_data, $alphabet_numbers);
     }
 
     protected function getDefaultPage($error_message = '') {

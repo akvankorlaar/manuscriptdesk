@@ -28,6 +28,7 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
 
         global $wgNewManuscriptOptions;
         $max_on_page = $wgNewManuscriptOptions['max_on_page'];
+        $dbr = wfGetDB(DB_SLAVE);
 
         if (isset($this->user_name)) {
             $conditions = array(
@@ -44,7 +45,6 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
             );
         }
 
-        $dbr = wfGetDB(DB_SLAVE);
         $collection_titles = array();
         $next_offset = null;
 
@@ -151,6 +151,7 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
     public function getSingleCollectionPages($collection_title) {
 
         $pages_within_collection = array();
+        $dbr = wfGetDB(DB_SLAVE);
 
         $res = $dbr->select(
             'manuscripts', //from

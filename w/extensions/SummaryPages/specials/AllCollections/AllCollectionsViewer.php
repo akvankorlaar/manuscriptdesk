@@ -26,7 +26,8 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
     use HTMLLetterBar,
         HTMLJavascriptLoaderDots,
-        HTMLPreviousNextPageLinks;
+        HTMLPreviousNextPageLinks,
+        HTMLCollectionMetaTable;
 
     private $page_name;
 
@@ -40,17 +41,21 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
      */
     public function showSingleLetterOrNumberPage(
     $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
+        
+        global $wgArticleUrl;
 
         $out = $this->out;
+        $out->setPageTitle($out->msg('allcollections'));
+
         $html = '';
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div class='javascripthide'>";
 
         $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $this->page_name, $button_name);
 
-        $html .= "<form id='allcollections-post' action='" . $article_url . "Special:AllCollections' method='post'>";
+        $html .= "<form id='allcollections-post' action='" . $wgArticleUrl . "Special:AllCollections' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
         $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-collection') . "</b>" . "</td>";
@@ -86,7 +91,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
     /**
      * This function shows single collection data
      */
-    public function showSingleCollectionData($selected_collection, $single_collection_data, $alphabet_numbers = array()) {
+    public function showSingleCollectionData($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $selected_collection, $single_collection_data, $alphabet_numbers = array()) {
 
         global $wgArticleUrl;
 
@@ -96,6 +101,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
         $out->setPageTitle($out->msg('allcollections'));
 
+        $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
 
@@ -108,7 +114,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
         $html .= "<h3>" . $out->msg('userpage-metadata') . "</h3>";
 
         $meta_data = $this->HTMLSpecialCharachtersArray($meta_data);
-        $html .= $collection_meta_table->getHTMLCollectionMetaTable($meta_data);
+        $html .= $this->getHTMLCollectionMetaTable($out, $meta_data);
 
         $html .= "<h3>Pages</h3>";
         $html .= $out->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $out->msg('userpage-contains2');
@@ -151,7 +157,8 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
         $out->setPageTitle($out->msg('allcollections'));
 
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
+        $html = '';
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
 
         $html .= "<div class='javascripthide'>";
 
@@ -181,7 +188,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
         $out->setPageTitle($out->msg('allcollections'));
 
-        if ($button_is_numeric) {
+        if (preg_match('/^[0-9.]*$/', $button_name)) {
             $html .= "<p>" . $out->msg('allcollections-nocollections-number') . "</p>";
         }
         else {

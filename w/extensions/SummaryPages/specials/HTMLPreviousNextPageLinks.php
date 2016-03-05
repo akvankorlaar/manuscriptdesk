@@ -25,7 +25,11 @@
 trait HTMLPreviousNextPageLinks {
 
     protected function getHTMLPreviousNextPageLinks(OutputPage $out, $offset, $next_offset, $page_name, $button_name) {
-
+        
+        global $wgNewManuscriptOptions;
+        
+        $max_on_page = $wgNewManuscriptOptions['max_on_page'];
+        
         $html = "";
 
         if ($offset >= $max_on_page) {

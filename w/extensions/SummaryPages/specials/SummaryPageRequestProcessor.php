@@ -29,6 +29,7 @@ class SummaryPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
         $request = $this->request;
         $validator = $this->validator;
+        $offset = null; 
 
         foreach ($request->getValueNames()as $value) {
 

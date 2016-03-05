@@ -30,7 +30,7 @@ trait HTMLLetterBar {
         global $wgArticleUrl;
         
         $html = '';
-        $html .='<form class="summarypage-form" action="' . $wgArticleUrl . 'Special:' . $page_name . ' method="post">';
+        $html .='<form class="summarypage-form" action="' . $wgArticleUrl . 'Special:' . $page_name . '" method="post">';
         $html .= "</table>";
 
         $a = 0;

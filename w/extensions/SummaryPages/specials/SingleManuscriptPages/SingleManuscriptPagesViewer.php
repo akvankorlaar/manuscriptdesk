@@ -108,7 +108,7 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
         
-        if ($button_is_numeric) {
+        if (preg_match('/^[0-9.]*$/', $button_name)) {
             $html .= "<p>" . $out->msg('allcollations-nocollections-number') . "</p>";
         }
         else {
