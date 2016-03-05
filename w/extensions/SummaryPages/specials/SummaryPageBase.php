@@ -125,27 +125,6 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
         $this->viewer->showDefaultPage($error_message, $alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet);
     }
-
-    /**
-     * Return viewer object for the special page
-     * 
-     * @return ManuscriptDeskBaseViewer object
-     */
-    abstract protected function getViewer();
-
-    /**
-     * Return wrapper object for the special page
-     * 
-     * @return ManuscriptDeskBaseWrapper object
-     */
-    abstract protected function getWrapper();
-    
-    /**
-     * Get the form data getter object for the page
-     * 
-     * @return ManuscriptDeskBaseRequestProcessor object
-     */
-    abstract protected function getRequestProcessor();
     
     /**
      * Get the name of the special page

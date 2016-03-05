@@ -31,7 +31,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
     private $page_name;
 
     public function __construct($out, $page_name) {
-        parent::construct();
+        parent::__construct($out);
         $this->page_name = $page_name;
     }
 

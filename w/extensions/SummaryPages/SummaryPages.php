@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
@@ -21,36 +22,34 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 /**
  * Usage: Add the following line in LocalSettings.php:
  * require_once( "$IP/extensions/SummaryPages/SummaryPages.php" );
  */
-
 //Check environment
-if (!defined( 'MEDIAWIKI')){
-  echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
-  die( -1 );
+if (!defined('MEDIAWIKI')) {
+    echo( "This is an extension to the MediaWiki package and cannot be run standalone.\n" );
+    die(-1);
 }
 
 /* Configuration */
 
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
-  'path'           => __FILE__,
-  'name'           => 'SummaryPages',
-  'author'         => 'Arent van Korlaar',
-  'version'        => '0.0.1',
-  'url'            => 'https://manuscriptdesk.uantwerpen.be',
-  'description'    => 'Various special pages used to summarize data for the Manuscript Desk.',
+  'path' => __FILE__,
+  'name' => 'SummaryPages',
+  'author' => 'Arent van Korlaar',
+  'version' => '0.0.1',
+  'url' => 'https://manuscriptdesk.uantwerpen.be',
+  'description' => 'Various special pages used to summarize data for the Manuscript Desk.',
 );
 
 //Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
 //Auto load classes 
-$wgAutoloadClasses['SummaryPagesHooks']    = $dir . '/SummaryPages.hooks.php';
-$wgExtensionMessagesFiles['SummaryPages']  = __DIR__ . '/SummaryPages.i18n.php';
+$wgAutoloadClasses['SummaryPagesHooks'] = $dir . '/SummaryPages.hooks.php';
+$wgExtensionMessagesFiles['SummaryPages'] = __DIR__ . '/SummaryPages.i18n.php';
 
 $wgAutoloadClasses['SpecialAllCollations'] = $dir . '/specials/AllCollations/SpecialAllCollations.php';
 $wgAutoloadClasses['AllCollationsViewer'] = $dir . '/specials/AllCollations/AllCollationsViewer.php';
@@ -76,7 +75,7 @@ $wgAutoloadClasses['UserPageRequestProcessor'] = $dir . '/specials/UserPage/User
 $wgAutoloadClasses['HTMLCollectionMetaTable'] = $dir . '/specials/HTMLCollectionMetaTable.php';
 $wgAutoloadClasses['HTMLJavascriptLoaderDots'] = $dir . '/specials/HTMLJavascriptLoaderDots.php';
 $wgAutoloadClasses['HTMLLetterBar'] = $dir . '/specials/HTMLLetterBar.php';
-$wgAutoloadClasses['HTMLPreviousNExtPageLinks'] = $dir . '/specials/HTMLPreviousNextPageLinks.php';
+$wgAutoloadClasses['HTMLPreviousNextPageLinks'] = $dir . '/specials/HTMLPreviousNextPageLinks.php';
 $wgAutoloadClasses['HTMLUserPageMenuBar'] = $dir . '/specials/HTMLUserPageMenuBar.php';
 
 $wgAutoloadClasses['SummaryPageBase'] = $dir . '/specials/SummaryPageBase.php';
@@ -91,12 +90,12 @@ $wgSpecialPages['UserPage'] = 'SpecialUserPage';
 
 //Extra file loaded later 
 $wgResourceModules['ext.userPage'] = array(
-  'localBasePath' => dirname( __FILE__ ) . '/css',
-  'styles'  => '/ext.userPage.css',
+  'localBasePath' => dirname(__FILE__) . '/css',
+  'styles' => '/ext.userPage.css',
 );
 
-$wgResourceModules['ext.javascriptloaderdots' ] = array(
-  'scripts'  => array(
+$wgResourceModules['ext.javascriptloaderdots'] = array(
+  'scripts' => array(
     'js/ext.javascriptloaderdots.js',
   ),
   'localBasePath' => __DIR__,

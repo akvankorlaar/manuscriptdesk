@@ -39,7 +39,7 @@ $messages['en'] = array(
   'validation-notanumber' => 'You have entered a non-numeric charachter in one of the number fields',
   'validation-empty' => 'One of the form fields is empty',
   'error-edittoken' => 'The edit token is not ok',
-  'error-nopmerission' => 'You do not have permission to access the functionality of this page',
+  'error-nopermission' => 'You do not have permission to access the functionality of this page',
   'error-newpage' => 'The new Wiki Page could not be created',
   'manuscriptdesk-newpage' => 'You can add custom information to this page. The saved analysis will be preserved.'
 );
