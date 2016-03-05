@@ -24,7 +24,7 @@
  */
 trait HTMLPreviousNextPageLinks {
 
-    protected function getHTMLPreviousNextPageLinks(OutputPage $out, $button_name, $offset, $next_offset, $page_name) {
+    protected function getHTMLPreviousNextPageLinks(OutputPage $out, $offset, $next_offset, $page_name, $button_name) {
 
         $html = "";
 
@@ -36,7 +36,6 @@ trait HTMLPreviousNextPageLinks {
             $previous_offset = ($offset) - ($max_on_page);
 
             $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:' . $page_name . '" method="post">';
-
             $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
             $html .= "<input type='hidden' name='$button_name' value='$button_name'>";
             $html .= "<input type='submit' class='button-transparent' name='redirect_page_back' title='$previous_message_hover'  value='$previous_message'>";
@@ -54,7 +53,6 @@ trait HTMLPreviousNextPageLinks {
             $next_message = $out->msg('allmanuscriptpages-next');
 
             $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:' . $page_name . '" method="post">';
-
             $html .= "<input type='hidden' name='offset' value = '$next_offset'>";
             $html .= "<input type='hidden' name='$button_name' value='$button_name'>";
             $html .= "<input type='submit' class='button-transparent' name = 'redirect_page_forward' title='$next_message_hover' value='$next_message'>";

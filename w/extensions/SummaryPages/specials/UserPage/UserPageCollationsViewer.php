@@ -26,7 +26,7 @@
 class UserPageCollationsViewer {
 
     use HTMLUserPageMenuBar,
-        HTMLJavascriptLoaderGif, HTMLPreviousNextPageLinks;
+        HTMLJavascriptLoaderDots, HTMLPreviousNextPageLinks;
 
     private $out;
     private $user_name;
@@ -48,7 +48,10 @@ class UserPageCollationsViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button-active', 'button'));
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        
+        $html .= "<div class='javascripthide'>";
+        
         $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $button_name, 'UserPage');
 
         $created_message = $this->msg('userpage-created');
@@ -75,6 +78,7 @@ class UserPageCollationsViewer {
 
         $html .= "</table>";
         $html .= "<input type='hidden' name='view_collations_posted' value='view_collations_posted'>";
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }
@@ -90,9 +94,14 @@ class UserPageCollationsViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button-active', 'button'));
+        $html .= $this->getHTMLJavascriptLoaderDots();
+       
+        $html .= "<div class='javascripthide'>";
+        
         $html .= "<p>" . $this->msg('userpage-nocollations') . "</p>";
         $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:BeginCollate'>" . $this->msg('userpage-newcollation') . "</a></p>";
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }

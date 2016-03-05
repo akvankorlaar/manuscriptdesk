@@ -23,12 +23,12 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-trait HTMLJavascriptLoaderGif{
+trait HTMLJavascriptLoaderDots{
 
-    protected function getHTMLJavascriptLoaderGif() {
+    protected function getHTMLJavascriptLoaderDots() {
 
-        $html = "<h3 id='summarypage-loaderdiv' style='display: none;'>Loading";
-        $html .= "<span id='summarypage-loaderspan'></span>";
+        $html = "<h3 class='javascriptloader' style='display: none;'>Loading";
+        $html .= "<span id='javascriptspan'></span>";
         $html .= "</h3>";
 
         return $html;

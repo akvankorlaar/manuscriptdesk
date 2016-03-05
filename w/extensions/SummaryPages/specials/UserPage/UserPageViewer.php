@@ -24,14 +24,14 @@
  */
 class UserPageViewer extends ManuscriptDeskBaseViewer {
 
-    use HTMLJavascriptLoaderGif, HTMLPreviousNextPageLinks;
+    use HTMLJavascriptLoaderDots, HTMLPreviousNextPageLinks;
 
     /**
      * This function shows the form when editing a manuscript title
      * 
      * See https://www.mediawiki.org/wiki/HTMLForm/tutorial for information on the MediaWiki form builder
      */
-    private function showEditTitle($error = '') {
+    public function showEditTitle($error = '') {
 
         $out = $this->getOutput();
         $user_name = $this->user_name;
@@ -44,7 +44,7 @@ class UserPageViewer extends ManuscriptDeskBaseViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar('edit');
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div id='userpage-singlecollectionwrap'>";
         $html .= $this->addGoBackButton();

@@ -25,7 +25,7 @@
 class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPageViewerInterface {
 
     use HTMLLetterBar,
-        HTMLJavascriptLoaderGif,
+        HTMLJavascriptLoaderDots,
         HTMLPreviousNextPageLinks;
 
     private $page_name;
@@ -43,9 +43,12 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
         $out = $this->out;
         $html = '';
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $button_name);
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
+        $html .= $this->getHTMLJavascriptLoaderDots();
+
+        $html .= "<div class='javascripthide'>";
+
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $this->page_name, $button_name);
 
         $html .= "<form id='allcollections-post' action='" . $article_url . "Special:AllCollections' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";
@@ -72,6 +75,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
         $html .= "</table>";
         $html .= "</form>";
+        $html .= "</div>";
 
         //this has to be added explicitly and not in the hook because somehow mPrefixedText does not work in this case
         $out->addModuleStyles('ext.userPage');
@@ -92,15 +96,16 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
         $out->setPageTitle($out->msg('allcollections'));
 
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
+        $html .= $this->getHTMLJavascriptLoaderDots();
+
+        $html .= "<div class='javascripthide'>";
 
         $html .= "<div id='userpage-singlecollectionwrap'>";
 
         $html .= "<h2 style='text-align: center;'>" . $out->msg('userpage-collection') . ": " . $selected_collection . "</h2>";
         $html .= "<br>";
         $html .= "<h3>" . $out->msg('userpage-metadata') . "</h3>";
-
 
         $meta_data = $this->HTMLSpecialCharachtersArray($meta_data);
         $html .= $collection_meta_table->getHTMLCollectionMetaTable($meta_data);
@@ -132,6 +137,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
         $html .= "</div>";
 
         $html .= "</div>";
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }
@@ -146,7 +152,11 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
         $out->setPageTitle($out->msg('allcollections'));
 
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
-        $html .= $this->getHTMLJavascriptLoaderGif();
+
+        $html .= "<div class='javascripthide'>";
+
+        $html .= $this->getHTMLJavascriptLoaderDots();
+
 
         if (!empty($error_message)) {
             $html .= "<br>";
@@ -155,6 +165,8 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
         $html .= "<p>" . $out->msg('allcollections-instruction') . "</p>";
 
+        $html .= "</div>";
+
         return $out->addHTML($html);
     }
 
@@ -162,7 +174,11 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
         $out = $this->out;
         $html = '';
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name);
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
+        $html .= $this->getHTMLJavascriptLoaderDots();
+
+        $html .= "<div class='javascripthide'>";
+
         $out->setPageTitle($out->msg('allcollections'));
 
         if ($button_is_numeric) {
@@ -172,11 +188,9 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
             $html .= "<p>" . $out->msg('allcollections-nocollections') . "</p>";
         }
 
-        return $out->addHTML($html);
-    }
+        $html .= "</div>";
 
-    protected function getPageName() {
-        return $this->page_name;
+        return $out->addHTML($html);
     }
 
 }

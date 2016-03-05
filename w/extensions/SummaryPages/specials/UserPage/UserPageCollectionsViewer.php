@@ -25,7 +25,7 @@
 class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
     use HTMLUserPageMenuBar,
-        HTMLJavascriptLoaderGif,
+        HTMLJavascriptLoaderDots,
         HTMLPreviousNextPageLinks,
         HTMLCollectionMetaTable;
 
@@ -48,7 +48,9 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLJavascriptLoaderDots();
+
+        $html .= "<div class='javascripthide'>";
         $html .= $this->getHTMLPreviousNextPageLinks($out, $button_name, $offset, $next_offset, 'UserPage');
 
         $created_message = $this->msg('userpage-created');
@@ -76,6 +78,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         $html .= "<input type='hidden' name='single_collection_posted' value='single_collection_posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }
@@ -91,9 +94,12 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
+        $html .= $this->getHTMLJavascriptLoaderDots();
+
+        $html .= "<div class='javascripthide'>";
         $html .= "<p>" . $this->msg('userpage-nocollections') . "</p>";
         $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $this->msg('userpage-newcollection') . "</a></p>";
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }
@@ -115,9 +121,8 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
-        $html .= $this->getHTMLJavascriptLoaderGif();
-
-        $html .= "<div id='userpage-singlecollectionwrap'>";
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        $html .= "<div class='javascripthide'>";
 
         $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<input type='submit' class='button-transparent' name='edit_metadata_posted' value='" . $this->msg('userpage-editmetadatabutton') . "'>";
@@ -217,9 +222,8 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
-        $html .= $this->getHTMLJavascriptLoaderGif();
-
-        $html .= "<div id='userpage-singlecollectionwrap'>";
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        $html .= "<div class='javascripthide'>";
 
         $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<input type='submit' class='button-transparent' value='" . $this->msg('userpage-goback') . "'>";
@@ -376,9 +380,8 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
-        $html .= $this->getHTMLJavascriptLoaderGif();
-
-        $html .= "<div id='userpage-singlecollectionwrap'>";
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        $html .= "<div class='javascripthide'>";
 
         $html .= "<p>" . $this->msg('userpage-editcomplete') . "</p>";
 
@@ -408,9 +411,9 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLJavascriptLoaderDots();
 
-        $html .= "<div id='userpage-singlecollectionwrap'>";
+        $html .= "<div class='javascripthide'>";
 
         $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<input type='submit' class='button-transparent' value='" . $this->msg('userpage-goback') . "'>";

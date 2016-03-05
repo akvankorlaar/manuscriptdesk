@@ -21,53 +21,47 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-(function (mw, $){
-  
-   var dots = 0;
-   
-   /**
-    * This function shows #begincollate-loaderdiv and hides #begincollate-form after clicking submit
-    */
-   function showLoader() {
-     $('#summarypage-loaderdiv').show(); 
-     $('p').hide();
-     $('br').hide();
-     $('#previous-link').hide();
-     $('#next-link').hide();
-     $('#userpage-table').hide();
-     $('#userpage-singlecollectionwrap').hide();
-     $('#userpage-messagewrap').hide();
-     $('.visualClear').hide();
-   };
-   
-   //call function showLoader on submit
-   $('.summarypage-form').submit(showLoader);
-   $('#userpage-editmetadata').submit(showLoader);
-   $('#userpage-addnewpage').submit(showLoader);
-   $('.visualClear').submit(showLoader);
-         
-  /**
-   * This function sets the interval when calling the loader() function (the speed at which the dots change)
-   */       
-   $(document).ready(function(){
-    setInterval (loader, 600);
-   });
+(function (mw, $) {
+
+  var dots = 0;
+
+  function showLoader() {
+    $('.javascriptloader').show();
+    $('.javascripthide').hide();
+    
+    
+    $('#userpage-table').hide();
+    $('.visualClear').hide();
+  }
 
   /**
    * This function appends dots to the message specified in #begincollate-loaderdiv
-   * 
-   * @returns {undefined}
    */
-  function loader(){
-    
-   if(dots < 3){
-      $('#summarypage-loaderspan').append('.');
+  function loader() {
+
+    if (dots < 3) {
+      $('.javascriptspan').append('.');
       dots++;
-   }else{
-     $('#summarypage-loaderspan').html('');
-     dots = 0;
-   }
-}
-    
+    } else {
+      $('.javascriptspan').html('');
+      dots = 0;
+    }
+  }
+  
+  
+  $('.summarypage-form').submit(showLoader);
+
+
+  $('#userpage-editmetadata').submit(showLoader);
+  $('#userpage-addnewpage').submit(showLoader);
+  $('.visualClear').submit(showLoader);
+
+  /**
+   * This function sets the interval when calling the loader() function (the speed at which the dots change)
+   */
+  $(document).ready(function () {
+    setInterval(loader, 600);
+  });
+
 }(mediaWiki, jQuery));
 

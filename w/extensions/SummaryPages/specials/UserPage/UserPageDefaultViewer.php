@@ -24,7 +24,7 @@
  */
 class UserPageDefaultViewer extends ManuscriptDeskBaseViewer {
     
-    use HTMLJavascriptLoaderGif, HTMLUserPageMenuBar;
+    use HTMLJavascriptLoaderDots, HTMLUserPageMenuBar;
 
     /**
      * This function shows the default page if no request was posted 
@@ -41,17 +41,21 @@ class UserPageDefaultViewer extends ManuscriptDeskBaseViewer {
         $html = "";
         $edit_token = $out->getUser()->getEditToken();
         $html .= $this->getHTMLUserPageMenuBar($edit_token);
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        
+        $html .= "<div class='javascripthide'>";
 
         if (!empty($error_message)) {
             $html .= "<br>";
             $html .= "<div class = 'error'>$error_message</div>";
         }
 
-        $html .= $this->getHTMLJavascriptLoaderGif();
 
         if ($user_is_a_sysop) {
             $html .= $this->getHTMLMessageSpaceLeftOnDisk();
         }
+        
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }

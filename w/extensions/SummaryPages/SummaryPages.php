@@ -24,7 +24,7 @@
 
 /**
  * Usage: Add the following line in LocalSettings.php:
- * require_once( "$IP/extensions/summaryPages/summaryPages.php" );
+ * require_once( "$IP/extensions/SummaryPages/SummaryPages.php" );
  */
 
 //Check environment
@@ -38,7 +38,7 @@ if (!defined( 'MEDIAWIKI')){
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
   'path'           => __FILE__,
-  'name'           => 'summaryPages',
+  'name'           => 'SummaryPages',
   'author'         => 'Arent van Korlaar',
   'version'        => '0.0.1',
   'url'            => 'https://manuscriptdesk.uantwerpen.be',
@@ -105,6 +105,6 @@ $wgResourceModules['ext.summarypageloader' ] = array(
 );
 
 //Instantiate the collateHooks class and register the hooks
-$summary_pages_hooks_object = new summaryPagesHooks();
+$summary_pages_hooks = new SummaryPagesHooks();
 
-$wgHooks['BeforePageDisplay'][] = array($summary_pages_hooks_object, 'onBeforePageDisplay');
+$wgHooks['BeforePageDisplay'][] = array($summary_pages_hooks, 'onBeforePageDisplay');

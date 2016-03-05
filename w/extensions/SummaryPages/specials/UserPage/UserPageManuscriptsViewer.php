@@ -22,18 +22,18 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 class UserPageManuscriptsViewer {
 
     use HTMLUserPageMenuBar,
-        HTMLJavascriptLoaderGif, HTMLPreviousNextPageLinks;
+        HTMLJavascriptLoaderDots,
+        HTMLPreviousNextPageLinks;
 
     private $out;
     private $user_name;
 
     public function __construct(OutputPage $out, $user_name) {
         $this->out = $out;
-        $this->user_name = $user_name; 
+        $this->user_name = $user_name;
     }
 
     public function showPage($button_name, $page_titles, $offset, $next_offset) {
@@ -48,33 +48,35 @@ class UserPageManuscriptsViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button-active', 'button', 'button'));
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        $html .= "<div class='javascripthide'>";
         $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $button_name, 'UserPage');
 
         $created_message = $this->msg('userpage-created');
         $html .= "<br>";
 
-                  $html .= "<p>" . $this->msg('userpage-manuscriptinstr') . "</p>";
-            $html .= "<table id='userpage-table' style='width: 100%;'>";
+        $html .= "<p>" . $this->msg('userpage-manuscriptinstr') . "</p>";
+        $html .= "<table id='userpage-table' style='width: 100%;'>";
+        $html .= "<tr>";
+        $html .= "<td class='td-long'><b>" . $this->msg('userpage-tabletitle') . "</b></td>";
+        $html .= "<td><b>" . $this->msg('userpage-creationdate') . "</b></td>";
+        $html .= "</tr>";
+
+        foreach ($page_titles as $single_page_data) {
+
+            $title = isset($single_page_data['manuscripts_title']) ? $single_page_data['manuscripts_title'] : '';
+            $url = isset($single_page_data['manuscripts_url']) ? $single_page_data['manuscripts_url'] : '';
+            $date = $single_page_data['manuscripts_date'] !== '' ? $single_page_data['manuscripts_date'] : 'unknown';
+
             $html .= "<tr>";
-            $html .= "<td class='td-long'><b>" . $this->msg('userpage-tabletitle') . "</b></td>";
-            $html .= "<td><b>" . $this->msg('userpage-creationdate') . "</b></td>";
+            $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
+                htmlspecialchars($title) . "</a></td>";
+            $html .= "<td>" . htmlspecialchars($date) . "</td>";
             $html .= "</tr>";
+        }
 
-            foreach ($page_titles as $single_page_data) {
-
-                $title = isset($single_page_data['manuscripts_title']) ? $single_page_data['manuscripts_title'] : '';
-                $url = isset($single_page_data['manuscripts_url']) ? $single_page_data['manuscripts_url'] : '';
-                $date = $single_page_data['manuscripts_date'] !== '' ? $single_page_data['manuscripts_date'] : 'unknown';
-
-                $html .= "<tr>";
-                $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
-                    htmlspecialchars($title) . "</a></td>";
-                $html .= "<td>" . htmlspecialchars($date) . "</td>";
-                $html .= "</tr>";
-            }
-
-            $html .= "</table>";
+        $html .= "</table>";
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }
@@ -90,12 +92,13 @@ class UserPageManuscriptsViewer {
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button-active', 'button', 'button'));
-                 $html .= "<p>" . $this->msg('userpage-nomanuscripts') . "</p>";
-               $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $this->msg('userpage-newmanuscriptpage') . "</a></p>";
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        $html .= "<div class='javascripthide'>";
+        $html .= "<p>" . $this->msg('userpage-nomanuscripts') . "</p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $this->msg('userpage-newmanuscriptpage') . "</a></p>";
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }
-    
-  
+
 }

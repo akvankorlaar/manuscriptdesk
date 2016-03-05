@@ -25,7 +25,13 @@
 
 trait HTMLLetterBar {
     
-    protected function getHTMLLetterBar(array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name = null) {
+    protected function getHTMLLetterBar(array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $page_name, $button_name = null) {
+        
+        global $wgArticleUrl;
+        
+        $html = '';
+        $html .='<form class="summarypage-form" action="' . $wgArticleUrl . 'Special:' . $page_name . ' method="post">';
+        $html .= "</table>";
 
         $a = 0;
 
@@ -75,6 +81,5 @@ trait HTMLLetterBar {
 
         return $html;
     }
-    
-    
+        
 }

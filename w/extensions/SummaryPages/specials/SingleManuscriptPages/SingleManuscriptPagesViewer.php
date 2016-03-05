@@ -25,7 +25,7 @@
 class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements SummaryPageViewerInterface {
 
     use HTMLLetterBar,
-        HTMLJavascriptLoaderGif,
+        HTMLJavascriptLoaderDots,
         HTMLPreviousNextPageLinks;
 
     private $page_name;
@@ -40,9 +40,12 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
 
         $out = $this->out;
         $html = '';
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $button_name);
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        
+        $html .= "<div class='javascripthide'>";
+        
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $button_name);     
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
@@ -67,6 +70,7 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
         }
 
         $html .= "</table>";
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }
@@ -77,11 +81,11 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
     protected function showDefaultPage($error_message, $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet) {
 
         $out = $this->out;
-
         $out->setPageTitle($this->msg('singlemanuscriptpages'));
 
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        $html .= "<div class='javascripthide'>";
 
         if (!empty($error_message)) {
             $html .= "<br>";
@@ -89,6 +93,7 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
         }
 
         $html .= "<p>" . $this->msg('singlemanuscriptpages-instruction') . "</p>";
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }
@@ -96,22 +101,23 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
     public function showEmptyPageTitlesError() {
 
         $out = $this->out;
-        $html = '';
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name);
         $out->setPageTitle($out->msg('allcollations'));
 
+        $html = '';
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        $html .= "<div class='javascripthide'>";
+        
         if ($button_is_numeric) {
             $html .= "<p>" . $out->msg('allcollations-nocollections-number') . "</p>";
         }
         else {
             $html .= "<p>" . $out->msg('allcollations-nocollections') . "</p>";
         }
+        
+        $html .= "</div>";
 
         return $out->addHTML($html);
-    }
-
-    protected function getPageName() {
-        return $this->page_name;
     }
 
 }

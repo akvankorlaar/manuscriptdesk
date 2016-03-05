@@ -25,7 +25,7 @@
 class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPageViewerInterface {
 
     use HTMLLetterBar,
-        HTMLJavascriptLoaderGif,
+        HTMLJavascriptLoaderDots,
         HTMLPreviousNextPageLinks;
 
     private $page_name;
@@ -43,10 +43,13 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
 
         $out = $this->out;
         $html = '';
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $button_name);
-        $html .= $this->getHTMLJavascriptLoaderGif();
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
+        $html .= $this->getHTMLJavascriptLoaderDots();
 
+        $html .= "<div class='javascripthide'>";
+        
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $this->page_name, $button_name);
+        
         $out->setPageTitle($this->msg('allcollations'));
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
@@ -72,6 +75,7 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
         }
 
         $html .= "</table>";
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }
@@ -84,15 +88,18 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
         $out = $this->out;
         $out->setPageTitle($this->msg('allcollations'));
 
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet);
-        $html .= $this->getHTMLJavascriptLoaderGif();
-
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        $html .= "<div class='javascripthide'>";
+        
         if (!empty($error_message)) {
             $html .= "<br>";
             $html .= "<div class = 'error'>$error_message</div>";
         }
 
         $html .= "<p>" . $this->msg('allcollations-instruction') . "</p>";
+        
+        $html .= "</div>";
 
         return $out->addHTML($html);
     }
@@ -100,9 +107,12 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
     public function showEmptyPageTitlesError(array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name) {
 
         $out = $this->out;
-        $html = '';
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name);
         $out->setPageTitle($out->msg('allcollations'));
+
+        $html = '';
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
+        $html .= $this->getHTMLJavascriptLoaderDots();
+        $html .= "<div class='javascripthide'>";
 
         if ($button_is_numeric) {
             $html .= "<p>" . $out->msg('allcollations-nocollections-number') . "</p>";
@@ -110,12 +120,10 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
         else {
             $html .= "<p>" . $out->msg('allcollations-nocollections') . "</p>";
         }
+        
+        $html .= "</div>";
 
         return $out->addHTML($html);
-    }
-
-    protected function getPageName() {
-        return $this->page_name;
     }
 
 }
