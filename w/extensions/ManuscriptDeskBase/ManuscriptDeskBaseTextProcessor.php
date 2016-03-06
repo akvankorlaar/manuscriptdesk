@@ -50,7 +50,7 @@ class ManuscriptDeskBaseTextProcessor {
     public function getFilteredSinglePageText($single_manuscript_url) {
         $page_text = $this->getSinglePageText($single_manuscript_url);
         $filtered_raw_text = $this->filterText($page_text);
-        $this->checkIfTextIsNotOnlyWhitespace($text);
+        $this->checkIfTextIsNotOnlyWhitespace($page_text);
         return $filtered_raw_text;
     }
 

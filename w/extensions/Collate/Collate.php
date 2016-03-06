@@ -55,7 +55,7 @@ $wgAutoloadClasses['CollateHooks'] = $dir . '/Collate.hooks.php';
 $wgAutoloadClasses['CollatexConverter'] = $dir . '/specials/CollatexConverter.php'; 
 $wgAutoloadClasses['CollateWrapper'] = $dir . '/specials/CollateWrapper.php';
 $wgAutoloadClasses['CollateViewer'] = $dir . '/specials/CollateViewer.php';
-$wgAutoloadClasses['CollateFormDataGetter'] = $dir . 'specials/CollateFormDataGetter.php';
+$wgAutoloadClasses['CollateRequestProcessor'] = $dir . 'specials/CollateRequestProcessor.php';
 $wgExtensionMessagesFiles['Collate'] = __DIR__ . '/Collate.i18n.php';
 
 //Register auto load for the special page classes and register special pages

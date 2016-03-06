@@ -81,7 +81,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
      */
     protected function createNewWikiPage($new_url, $content = '') {
         
-        empty($content) ? '<!--' . $this->msg('manuscriptdesk-newpage') . '-->' : $content; 
+        $content = empty($content) ? '<!--' . $this->msg('manuscriptdesk-newpage') . '-->' : $content; 
         
         $title = $this->createTitleObjectNewPage($new_url);
       
@@ -94,8 +94,8 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97, false, null, $editor_object->contentFormat);
 
         if (!$doEditStatus->isOK()) {
-            throw new \Exception('error-newpage');
-            //$errors = $doEditStatus->getErrorsArray();
+            $errors = $doEditStatus->getErrorsArray();
+            throw new \Exception('error-newpage');        
         }
 
         return $local_url;

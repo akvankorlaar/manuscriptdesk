@@ -43,13 +43,14 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
 
         global $wgArticleUrl;
         $out = $this->out;
+        $edit_token = $out->getUser()->getEditToken();
         $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div class='javascripthide'>";
         
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $this->page_name, $button_name);
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $this->page_name, $button_name);
         
         $out->setPageTitle($out->msg('allcollations'));
 

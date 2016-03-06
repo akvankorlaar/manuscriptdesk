@@ -79,7 +79,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
     private function collateSavePageWasRequested(User $user) {
         $request = $user->getRequest();
 
-        if (!$request->getText('save_current_page')) {
+        if (!$request->getText('save_page_posted')) {
             return false;
         }
 
