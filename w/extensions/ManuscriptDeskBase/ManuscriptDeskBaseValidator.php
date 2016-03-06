@@ -81,7 +81,7 @@ class ManuscriptDeskBaseValidator {
 
         //check if all charachters are alphanumeric
         if (!preg_match('/^[a-zA-Z0-9]*$/', $input)) {
-            throw new \Exception('validation-notalphanumberic');
+            throw new \Exception('validation-notalphanumeric');
         }
 
         if (strlen($input) > ($this->max_length * 10)) {
@@ -136,7 +136,7 @@ class ManuscriptDeskBaseValidator {
         
         elseif ($formfield_name === 'wpmetadata_notes') {
 
-            if (strlen($formfield_value) > ($max_lnegth * 20)) {
+            if (strlen($formfield_value) > ($max_length * 20)) {
                 throw new \Exception('validation-error-noteslength');
             }
             //allow alphanumeric charachters, whitespace, and ',.;!?' 
@@ -151,7 +151,7 @@ class ManuscriptDeskBaseValidator {
             }
 
             //allow alphanumeric charachters and whitespace  
-            elseif (!preg_match("/^[A-Za-z0-9\s]+$/", $textfield)) {
+            elseif (!preg_match("/^[A-Za-z0-9\s]+$/", $formfield_value)) {
                 throw new \Exception('validation-error-metadatacharachters');
             }
         }

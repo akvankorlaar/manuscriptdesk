@@ -116,7 +116,7 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
     }
     
     private function processSingleCollectionDataRequest() {
-        $selected_collection = $this->request_processor->getSingleCollectionName();      
+        $selected_collection = $this->request_processor->getCollectionTitle();      
         $single_collection_data = $this->wrapper->getSingleCollectionData($selected_collection);
         $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
         return $this->viewer->showSingleCollectionData($alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet, $selected_collection, $single_collection_data, $alphabet_numbers);

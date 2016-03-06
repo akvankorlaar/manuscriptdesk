@@ -60,10 +60,10 @@ class SummaryPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         return false;
     }
 
-    public function getSingleCollectionName(){
+    public function getCollectionTitle(){
         $validator = $this->validator;
         $request = $this->request;
-        return $validator->validateString($request->getText('single_collection_posted'));
+        return $validator->validateString($request->getText('collection_title'));
     }
 
 }

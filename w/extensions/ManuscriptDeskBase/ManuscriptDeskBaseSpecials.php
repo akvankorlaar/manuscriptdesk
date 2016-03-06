@@ -138,9 +138,10 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         global $wgShowExceptionDetails;
 
         if ($wgShowExceptionDetails === true) {
-            $error_line = $exception_error->getLine();
             $error_file = $exception_error->getFile();
-            $error_message = $this->msg($error_identifier) . ' ' . $error_line . ' ' . $error_file;
+            $error_line = $exception_error->getLine();
+            $trace = $exception_error->getTrace();
+            $error_message = $this->msg($error_identifier) . ' ' . $error_file . ' ' . $error_line;
         }
         else {
             $error_message = $this->msg($error_identifier);

@@ -40,7 +40,6 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
 
         $out = $this->out;
         global $wgArticleUrl;
-        $article_url = $wgArticleUrl;
         $user_name = $this->user_name;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
@@ -51,12 +50,12 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div class='javascripthide'>";
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $button_name, $offset, $next_offset, 'UserPage');
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $button_name, 'UserPage');
 
         $created_message = $out->msg('userpage-created');
         $html .= "<br>";
 
-        $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
+        $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $wgArticleUrl . "Special:UserPage' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
         $html .= "<td class='td-long'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
@@ -120,18 +119,18 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button', 'button-active'));
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
 
-        $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
+        $html .= "<form class='summarypage-form' id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<input type='submit' class='button-transparent' name='edit_metadata_posted' value='" . $out->msg('userpage-editmetadatabutton') . "'>";
         $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
         //redirect to Special:NewManuscript, and automatically have the current collection selected
-        $html .= "<form id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
+        $html .= "<form class='summarypage-form' id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
         $html .= "<input type='submit' class='button-transparent' name='add_new_page_posted' title='" . $out->msg('userpage-newcollection') . "' value='Add New Page'>";
         $html .= "<input type='hidden' name='selected_collection' value='" . $collection_title . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
@@ -147,7 +146,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $html .= $out->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $out->msg('userpage-contains2');
         $html .= "<br>";
 
-        $html .= "<form id='userpage-edittitle' action='" . $article_url . "Special:UserPage' method='post'>";
+        $html .= "<form summarypage-form' id='userpage-edittitle' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
         $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
@@ -191,25 +190,26 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
      * 
      * See https://www.mediawiki.org/wiki/HTMLForm/tutorial for information on the MediaWiki form builder
      */
-    public function showEditCollectionMetadata($meta_data = array(), $collection_title, $single_collection_data, $link_back_to_manuscript_page, $error_message = '') {
+    public function showEditCollectionMetadata($collection_title, $collection_metadata, $link_back_to_manuscript_page, $error_message = '') {
 
-        list($meta_data, $pages_within_collection) = $single_collection_data;
-        $meta_data = $this->HTMLSpecialCharachtersArray($meta_data);
+        global $wgArticleUrl;
+        
+        $collection_metadata = $this->HTMLSpecialCharachtersArray($collection_metadata);
 
-        $metatitle = isset($meta_data['collections_metatitle']) ? $meta_data['collections_metatitle'] : '';
-        $metaauthor = isset($meta_data['collections_metaauthor']) ? $meta_data['collections_metaauthor'] : '';
-        $metayear = isset($meta_data['collections_metayear']) ? $meta_data['collections_metayear'] : '';
-        $metapages = isset($meta_data['collections_metapages']) ? $meta_data['collections_metapages'] : '';
-        $metacategory = isset($meta_data['collections_metacategory']) ? $meta_data['collections_metacategory'] : '';
-        $metaproduced = isset($meta_data['collections_metaproduced']) ? $meta_data['collections_metaproduced'] : '';
-        $metaproducer = isset($meta_data['collections_metaproducer']) ? $meta_data['collections_metaproducer'] : '';
-        $metaeditors = isset($meta_data['collections_metaeditors']) ? $meta_data['collections_metaeditors'] : '';
-        $metajournal = isset($meta_data['collections_metajournal']) ? $meta_data['collections_metajournal'] : '';
-        $metajournalnumber = isset($meta_data['collections_metajournalnumber']) ? $meta_data['collections_metajournalnumber'] : '';
-        $metatranslators = isset($meta_data['collections_metatranslators']) ? $meta_data['collections_metatranslators'] : '';
-        $metawebsource = isset($meta_data['collections_metawebsource']) ? $meta_data['collections_metawebsource'] : '';
-        $metaid = isset($meta_data['collections_metaid']) ? $meta_data['collections_metaid'] : '';
-        $metanotes = isset($meta_data['collections_metanotes']) ? $meta_data['collections_metanotes'] : '';
+        $metatitle = isset($collection_metadata['collections_metatitle']) ? $collection_metadata['collections_metatitle'] : '';
+        $metaauthor = isset($collection_metadata['collections_metaauthor']) ? $collection_metadata['collections_metaauthor'] : '';
+        $metayear = isset($collection_metadata['collections_metayear']) ? $collection_metadata['collections_metayear'] : '';
+        $metapages = isset($collection_metadata['collections_metapages']) ? $collection_metadata['collections_metapages'] : '';
+        $metacategory = isset($collection_metadata['collections_metacategory']) ? $collection_metadata['collections_metacategory'] : '';
+        $metaproduced = isset($collection_metadata['collections_metaproduced']) ? $collection_metadata['collections_metaproduced'] : '';
+        $metaproducer = isset($collection_metadata['collections_metaproducer']) ? $collection_metadata['collections_metaproducer'] : '';
+        $metaeditors = isset($collection_metadata['collections_metaeditors']) ? $collection_metadata['collections_metaeditors'] : '';
+        $metajournal = isset($collection_metadata['collections_metajournal']) ? $collection_metadata['collections_metajournal'] : '';
+        $metajournalnumber = isset($collection_metadata['collections_metajournalnumber']) ? $collection_metadata['collections_metajournalnumber'] : '';
+        $metatranslators = isset($collection_metadata['collections_metatranslators']) ? $collection_metadata['collections_metatranslators'] : '';
+        $metawebsource = isset($collection_metadata['collections_metawebsource']) ? $collection_metadata['collections_metawebsource'] : '';
+        $metaid = isset($collection_metadata['collections_metaid']) ? $collection_metadata['collections_metaid'] : '';
+        $metanotes = isset($collection_metadata['collections_metanotes']) ? $collection_metadata['collections_metanotes'] : '';
 
         $out = $this->out;
         $user_name = $this->user_name;
@@ -225,9 +225,10 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
 
-        $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
+        $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $wgArticleUrl . "Special:UserPage' method='post'>";
         $html .= "<input type='submit' class='button-transparent' value='" . $out->msg('userpage-goback') . "'>";
-        $html .= "<input type='hidden' name='single_collection_posted' value='" . htmlspecialchars($collection_title) . "'>";
+        $html .= "<input type='hidden' name='collection_title' value='" . htmlspecialchars($collection_title) . "'>";
+        $html .= "<input type='hidden' name='single_collection_posted' value='single_collection_posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
@@ -245,7 +246,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
 
         $descriptor = array();
 
-        //important! These are posted as 'textfield', but will appear as 'wptextfield' in the request object ! 
+        //important! These are posted as 'metadata_', but will appear as 'wpmetadata_' in the request object ! 
         $descriptor['metadata_title'] = array(
           'label-message' => 'metadata-title',
           'class' => 'HTMLTextField',
@@ -355,7 +356,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
             );
         }
 
-        $html_form = new HTMLForm($descriptor, $this->getContext());
+        $html_form = new HTMLForm($descriptor, $out->getContext());
         $html_form->setSubmitText($out->msg('metadata-submit'));
         $html_form->addHiddenField('collection_title', $collection_title);
         $html_form->addHiddenField('save_metadata_posted', 'save_metadata_posted');
@@ -401,13 +402,14 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
      */
     public function showEditPageSingleCollectionForm($error_message = '', $collection_title, $manuscript_old_title, $manuscript_url_old_title) {
 
+        global $wgArticleUrl; 
         $out = $this->out;
         $user_name = $this->user_name;
         $max_length = $this->max_string_formfield_length;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
 
-        $edit_token = $this->getUser()->getEditToken();
+        $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button', 'button-active'));
@@ -415,10 +417,11 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
 
         $html .= "<div class='javascripthide'>";
 
-        $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
+        $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $wgArticleUrl . "Special:UserPage' method='post'>";
         $html .= "<input type='submit' class='button-transparent' value='" . $out->msg('userpage-goback') . "'>";
-        $html .= "<input type='hidden' name='single_collection_posted' value='" . htmlspecialchars($collection_title) . "'>";
+        $html .= "<input type='hidden' name='collection_title' value='" . htmlspecialchars($collection_title) . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "<input type='hidden' name='single_collection_posted' value='single_collection_posted'>";
         $html .= "</form>";
 
         $html .= "<h2>" . $out->msg('userpage-edittitle') . " " . $manuscript_old_title . "</h2>";
@@ -442,9 +445,9 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
           'maxlength' => $max_length,
         );
 
-        $html_form = new HTMLForm($descriptor, $this->getContext());
+        $html_form = new HTMLForm($descriptor, $out->getContext());
         $html_form->setSubmitText($out->msg('metadata-submit'));
-        $html_form->addHiddenField('single_collection', $collection_title);
+        $html_form->addHiddenField('collection_title', $collection_title);
         $html_form->addHiddenField('old_title_posted', $manuscript_old_title);
         $html_form->addHiddenField('url_old_title_posted', $manuscript_url_old_title);
         $html_form->addHiddenField('save_new_page_title_collection_posted', 'save_new_collection_title_posted');

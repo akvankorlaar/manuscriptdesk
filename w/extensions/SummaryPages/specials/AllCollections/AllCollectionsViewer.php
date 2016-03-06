@@ -71,13 +71,14 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
             $html .= "<tr>";
             $html .= "<td class='td-three'>";
-            $html .= "<input type='submit' class='button-transparent' name='single_collection_posted' value='" . htmlspecialchars($title) . "'>";
+            $html .= "<input type='submit' class='button-transparent' name='collection_title' value='" . htmlspecialchars($title) . "'>";
             $html .= "</td>";
             $html .= "<td class='td-three'>" . htmlspecialchars($user) . "</td>";
             $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
             $html .= "</tr>";
         }
-
+        
+        $html .= "<input type='hidden' name='single_collection_posted' value='single_collection_posted'>";
         $html .= "</table>";
         $html .= "</form>";
         $html .= "</div>";

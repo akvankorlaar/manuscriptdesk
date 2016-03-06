@@ -230,10 +230,7 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
         __METHOD__,
        'IGNORE' );
     
-    if (!$dbw->affectedRows()){
-        throw new \Exception('error-database');
-    }
-    
+    //no affected rows means nothing to update, so always return true
     return true; 
   }
   

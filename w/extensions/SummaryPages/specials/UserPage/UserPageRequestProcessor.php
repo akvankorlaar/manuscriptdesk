@@ -62,7 +62,7 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
     public function getCollectionTitle() {
         $request = $this->request;
         $validator = $this->validator;
-        return $validator->validateString($request->getText('single_collection'));
+        return $validator->validateString($request->getText('collection_title'));
     }
 
     public function getLinkBackToManuscriptPage() {
@@ -100,12 +100,12 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
         return $saved_metadata;
     }
-    
-    public function editMetadataPosted(){
-        if($this->request->getText('edit_metadata_posted') !== ''){
+
+    public function editMetadataPosted() {
+        if ($this->request->getText('edit_metadata_posted') !== '') {
             return true;
         }
-        
+
         return false;
     }
 
@@ -117,13 +117,32 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         return false;
     }
 
-    public function getEditSinglePageCollectionData() {
+    public function getEditSinglePageCounter() {
+
+        $request = $this->request;
+        $pattern = 'changetitle_button';
+        $counter = '';
+
+        foreach ($request->getValueNames() as $value) {
+            if (strpos($value, $pattern) !== false) {
+                (int) $counter = str_replace($pattern, '', $value);
+            }
+        }
+
+        return $counter;
+    }
+
+    public function getEditSinglePageCollectionData($counter = '') {
         $request = $this->request;
         $validator = $this->validator;
 
-        $old_title = $validator->validateString($request->getText('old_title_posted'));
-        $url_old_title = $validator->validateStringUrl($request->getText('url_old_title_posted'));
+        $old_title = $validator->validateString($request->getText('old_title_posted' . $counter));
+        $url_old_title = $validator->validateStringUrl($request->getText('url_old_title_posted' . $counter));
 
+        if(empty($old_title) || empty($url_old_title)){
+            throw new \Exception('error-request');
+        }
+        
         return array($old_title, $url_old_title);
     }
 
