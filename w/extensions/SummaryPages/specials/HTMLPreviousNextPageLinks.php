@@ -24,9 +24,9 @@
  */
 trait HTMLPreviousNextPageLinks {
 
-    protected function getHTMLPreviousNextPageLinks(OutputPage $out, $offset, $next_offset, $page_name, $button_name) {
+    protected function getHTMLPreviousNextPageLinks(OutputPage $out, $edit_token, $offset, $next_offset, $button_name, $page_name) {
         
-        global $wgNewManuscriptOptions;
+        global $wgNewManuscriptOptions, $wgArticleUrl;
         
         $max_on_page = $wgNewManuscriptOptions['max_on_page'];
         
@@ -34,17 +34,18 @@ trait HTMLPreviousNextPageLinks {
 
         if ($offset >= $max_on_page) {
 
-            $previous_message_hover = $out->msg('allmanuscriptpages-previoushover');
-            $previous_message = $out->msg('allmanuscriptpages-previous');
+            $previous_message_hover = $out->msg('singlemanuscriptpages-previoushover');
+            $previous_message = $out->msg('singlemanuscriptpages-previous');
 
             $previous_offset = ($offset) - ($max_on_page);
 
-            $html .='<form class="summarypage-form" id="previous-link" action="' . $article_url . 'Special:' . $page_name . '" method="post">';
+            $html .='<form class="summarypage-form" id="previous-link" action="' . $wgArticleUrl . 'Special:' . $page_name . '" method="post">';
             $html .= "<input type='hidden' name='offset' value = '$previous_offset'>";
             $html .= "<input type='hidden' name='$button_name' value='$button_name'>";
             $html .= "<input type='submit' class='button-transparent' name='redirect_page_back' title='$previous_message_hover'  value='$previous_message'>";
-
-            $html.= "</form>";
+            $html .= "<input type='hidden' name='default_page_posted' value='default_page_posted'>";
+            $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+            $html .= "</form>";
         }
 
         if (isset($next_offset)) {
@@ -53,15 +54,16 @@ trait HTMLPreviousNextPageLinks {
                 $html.='<br>';
             }
 
-            $next_message_hover = $out->msg('allmanuscriptpages-nexthover');
-            $next_message = $out->msg('allmanuscriptpages-next');
+            $next_message_hover = $out->msg('singlemanuscriptpages-nexthover');
+            $next_message = $out->msg('singlemanuscriptpages-next');
 
-            $html .='<form class="summarypage-form" id="next-link" action="' . $article_url . 'Special:' . $page_name . '" method="post">';
+            $html .= '<form class="summarypage-form" id="next-link" action="' . $wgArticleUrl . 'Special:' . $page_name . '" method="post">';
             $html .= "<input type='hidden' name='offset' value = '$next_offset'>";
             $html .= "<input type='hidden' name='$button_name' value='$button_name'>";
             $html .= "<input type='submit' class='button-transparent' name = 'redirect_page_forward' title='$next_message_hover' value='$next_message'>";
-
-            $html.= "</form>";
+            $html .= "<input type='hidden' name='default_page_posted' value='default_page_posted'>";
+            $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+            $html .= "</form>";
         }
 
         return $html;

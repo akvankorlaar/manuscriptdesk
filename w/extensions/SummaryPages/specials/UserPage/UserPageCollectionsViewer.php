@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
+class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements UserPageViewerInterface {
 
     use HTMLUserPageMenuBar,
         HTMLJavascriptLoaderDots,
@@ -43,24 +43,24 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         $article_url = $wgArticleUrl;
         $user_name = $this->user_name;
 
-        $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+        $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button', 'button-active'));
         $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div class='javascripthide'>";
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $button_name, $offset, $next_offset, 'UserPage');
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $button_name, $offset, $next_offset, 'UserPage');
 
-        $created_message = $this->msg('userpage-created');
+        $created_message = $out->msg('userpage-created');
         $html .= "<br>";
 
         $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-long'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td><b>" . $this->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td class='td-long'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td><b>" . $out->msg('userpage-creationdate') . "</b></td>";
         $html .= "</tr>";
 
         foreach ($page_titles as $key => $array) {
@@ -83,22 +83,22 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         return $out->addHTML($html);
     }
 
-    protected function showEmptyPageTitlesError($button_name) {
+    public function showEmptyPageTitlesError($button_name) {
 
         global $wgArticleUrl;
         $article_url = $wgArticleUrl;
         $out = $this->out;
         $user_name = $this->user_name;
 
-        $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+        $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
         $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div class='javascripthide'>";
-        $html .= "<p>" . $this->msg('userpage-nocollections') . "</p>";
-        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $this->msg('userpage-newcollection') . "</a></p>";
+        $html .= "<p>" . $out->msg('userpage-nocollections') . "</p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:NewManuscript'>" . $out->msg('userpage-newcollection') . "</a></p>";
         $html .= "</div>";
 
         return $out->addHTML($html);
@@ -115,7 +115,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         $article_url = $wgArticleUrl;
         list($meta_data, $pages_within_collection) = $single_collection_data;
 
-        $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+        $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
 
         $edit_token = $out->getUser()->getEditToken();
 
@@ -125,33 +125,33 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         $html .= "<div class='javascripthide'>";
 
         $html .= "<form id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
-        $html .= "<input type='submit' class='button-transparent' name='edit_metadata_posted' value='" . $this->msg('userpage-editmetadatabutton') . "'>";
+        $html .= "<input type='submit' class='button-transparent' name='edit_metadata_posted' value='" . $out->msg('userpage-editmetadatabutton') . "'>";
         $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
         //redirect to Special:NewManuscript, and automatically have the current collection selected
         $html .= "<form id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
-        $html .= "<input type='submit' class='button-transparent' name='add_new_page_posted' title='" . $this->msg('userpage-newcollection') . "' value='Add New Page'>";
+        $html .= "<input type='submit' class='button-transparent' name='add_new_page_posted' title='" . $out->msg('userpage-newcollection') . "' value='Add New Page'>";
         $html .= "<input type='hidden' name='selected_collection' value='" . $collection_title . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
-        $html .= "<h2 style='text-align: center;'>" . $this->msg('userpage-collection') . ": " . $collection_title . "</h2>";
+        $html .= "<h2 style='text-align: center;'>" . $out->msg('userpage-collection') . ": " . $collection_title . "</h2>";
         $html .= "<br>";
-        $html .= "<h3>" . $this->msg('userpage-metadata') . "</h3>";
+        $html .= "<h3>" . $out->msg('userpage-metadata') . "</h3>";
 
         $html .= $this->getHTMLCollectionMetaTable($out, $meta_data);
 
         $html .= "<h3>Pages</h3>";
-        $html .= $this->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $this->msg('userpage-contains2');
+        $html .= $out->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $out->msg('userpage-contains2');
         $html .= "<br>";
 
         $html .= "<form id='userpage-edittitle' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td class='td-three'><b>" . $this->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-three'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
         $html .= "<td class='td-three'></td>";
         $html .= "</tr>";
 
@@ -168,7 +168,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
                 . htmlspecialchars($manuscripts_title) . "</a></td>";
             $html .= "<td class='td-three'>" . htmlspecialchars($manuscripts_date) . "</td>";
             $html .= "<td class='td-three'><input type='submit' class='button-transparent' name='changetitle_button" . $counter . "' "
-                . "value='" . $this->msg('userpage-changetitle') . "'></td>";
+                . "value='" . $out->msg('userpage-changetitle') . "'></td>";
             $html .= "<input type='hidden' name='old_title_posted" . $counter . "' value = '" . htmlspecialchars($manuscripts_title) . "'>";
             $html .= "<input type='hidden' name='url_old_title_posted" . $counter . "' value = '" . htmlspecialchars($manuscripts_url) . "'>";
             $html .= "</tr>";
@@ -216,23 +216,23 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
 
         $max_length = $this->max_string_formfield_length;
 
-        $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+        $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
 
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button', 'button-active'));
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
 
         $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
-        $html .= "<input type='submit' class='button-transparent' value='" . $this->msg('userpage-goback') . "'>";
+        $html .= "<input type='submit' class='button-transparent' value='" . $out->msg('userpage-goback') . "'>";
         $html .= "<input type='hidden' name='single_collection_posted' value='" . htmlspecialchars($collection_title) . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
-        $html .= "<h2>" . $this->msg('userpage-editmetadata') . " " . $collection_title . "</h2>";
-        $html .= $this->msg('userpage-optional');
+        $html .= "<h2>" . $out->msg('userpage-editmetadata') . " " . $collection_title . "</h2>";
+        $html .= $out->msg('userpage-optional');
         $html .= "<br><br>";
 
         if (!empty($error_message)) {
@@ -356,7 +356,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         }
 
         $html_form = new HTMLForm($descriptor, $this->getContext());
-        $html_form->setSubmitText($this->msg('metadata-submit'));
+        $html_form->setSubmitText($out->msg('metadata-submit'));
         $html_form->addHiddenField('collection_title', $collection_title);
         $html_form->addHiddenField('save_metadata_posted', 'save_metadata_posted');
         $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));
@@ -375,18 +375,18 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         $out = $this->out;
         $html = "";
 
-        $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+        $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button', 'button-active'));
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
 
-        $html .= "<p>" . $this->msg('userpage-editcomplete') . "</p>";
+        $html .= "<p>" . $out->msg('userpage-editcomplete') . "</p>";
 
         $html .= "<form id='userpage-linkback' action='" . $article_url . $link_back_to_manuscript_page . "' method='post'>";
-        $html .= "<input type='submit' class='button-transparent' name='linkback' title='" . $this->msg('userpage-linkback1') . "' value='" . $this->msg('userpage-linkback2') . $link_back_to_manuscript_page . "'>";
+        $html .= "<input type='submit' class='button-transparent' name='linkback' title='" . $out->msg('userpage-linkback1') . "' value='" . $out->msg('userpage-linkback2') . $link_back_to_manuscript_page . "'>";
         $html .= "</form>";
 
         $html .= "</div>";
@@ -405,24 +405,24 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         $user_name = $this->user_name;
         $max_length = $this->max_string_formfield_length;
 
-        $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+        $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
 
         $edit_token = $this->getUser()->getEditToken();
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button', 'button-active'));
         $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div class='javascripthide'>";
 
         $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $article_url . "Special:UserPage' method='post'>";
-        $html .= "<input type='submit' class='button-transparent' value='" . $this->msg('userpage-goback') . "'>";
+        $html .= "<input type='submit' class='button-transparent' value='" . $out->msg('userpage-goback') . "'>";
         $html .= "<input type='hidden' name='single_collection_posted' value='" . htmlspecialchars($collection_title) . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
-        $html .= "<h2>" . $this->msg('userpage-edittitle') . " " . $manuscript_old_title . "</h2>";
-        $html .= $this->msg('userpage-edittitleinstruction');
+        $html .= "<h2>" . $out->msg('userpage-edittitle') . " " . $manuscript_old_title . "</h2>";
+        $html .= $out->msg('userpage-edittitleinstruction');
         $html .= "<br><br>";
 
         if (!empty($error_message)) {
@@ -443,7 +443,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer {
         );
 
         $html_form = new HTMLForm($descriptor, $this->getContext());
-        $html_form->setSubmitText($this->msg('metadata-submit'));
+        $html_form->setSubmitText($out->msg('metadata-submit'));
         $html_form->addHiddenField('single_collection', $collection_title);
         $html_form->addHiddenField('old_title_posted', $manuscript_old_title);
         $html_form->addHiddenField('url_old_title_posted', $manuscript_url_old_title);

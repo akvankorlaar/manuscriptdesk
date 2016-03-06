@@ -31,7 +31,7 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
     private $page_name;
 
     public function __construct($out, $page_name) {
-        parent::construct();
+        parent::__construct($out);
         $this->page_name = $page_name;
     }
 
@@ -39,8 +39,9 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
      * This function shows the page after a request has been processed
      */
     public function showSingleLetterOrNumberPage(
-    $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
+    array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
 
+        global $wgArticleUrl;
         $out = $this->out;
         $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
@@ -50,24 +51,24 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
         
         $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $this->page_name, $button_name);
         
-        $out->setPageTitle($this->msg('allcollations'));
+        $out->setPageTitle($out->msg('allcollations'));
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td class='td-trhee'>" . "<b>" . $this->msg('userpage-user') . "</b>" . "</td>";
-        $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-creationdate') . "</b>" . "</td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-trhee'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
-        foreach ($title_array as $key => $array) {
+        foreach ($page_titles as $single_page_data) {
 
-            $title = isset($array['collations_main_title']) ? $array['collations_main_title'] : '';
-            $url = isset($array['collations_url']) ? $array['collations_url'] : '';
-            $user = isset($array['collations_user']) ? $array['collations_user'] : '';
-            $date = isset($array['collations_date']) ? $array['collations_date'] : '';
+            $title = isset($single_page_data['collations_main_title']) ? $single_page_data['collations_main_title'] : '';
+            $url = isset($single_page_data['collations_url']) ? $single_page_data['collations_url'] : '';
+            $user = isset($single_page_data['collations_user']) ? $single_page_data['collations_user'] : '';
+            $date = isset($single_page_data['collations_date']) ? $single_page_data['collations_date'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
+            $html .= "<td class='td-three'><a href='" . $wgArticleUrl . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
             $html .= "<td class='td-three'>" . htmlspecialchars($user) . "</td>";
             $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
@@ -83,11 +84,12 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
     /**
      * This function shows the default page if no request was posted 
      */
-    public function showDefaultPage($error_message, $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet) {
+    public function showDefaultPage($error_message, array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet) {
 
         $out = $this->out;
-        $out->setPageTitle($this->msg('allcollations'));
+        $out->setPageTitle($out->msg('allcollations'));
 
+        $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
@@ -97,7 +99,7 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
             $html .= "<div class = 'error'>$error_message</div>";
         }
 
-        $html .= "<p>" . $this->msg('allcollations-instruction') . "</p>";
+        $html .= "<p>" . $out->msg('allcollations-instruction') . "</p>";
         
         $html .= "</div>";
 
@@ -114,11 +116,11 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
 
-        if ($button_is_numeric) {
-            $html .= "<p>" . $out->msg('allcollations-nocollections-number') . "</p>";
+        if (preg_match('/^[0-9.]*$/', $button_name)) {
+            $html .= "<p>" . $out->msg('allcollations-nocollations-number') . "</p>";
         }
         else {
-            $html .= "<p>" . $out->msg('allcollations-nocollections') . "</p>";
+            $html .= "<p>" . $out->msg('allcollations-nocollations') . "</p>";
         }
         
         $html .= "</div>";

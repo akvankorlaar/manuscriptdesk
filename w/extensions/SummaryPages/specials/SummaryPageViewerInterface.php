@@ -25,7 +25,7 @@
 
 interface SummaryPageViewerInterface{
     
-    public function showSingleLetterOrNumberPage($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset);
+    public function showSingleLetterOrNumberPage(array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset);
     
     public function showDefaultPage($error_message, array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet);
     

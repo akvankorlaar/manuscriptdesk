@@ -29,6 +29,10 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
         global $wgNewManuscriptOptions;
         $max_on_page = $wgNewManuscriptOptions['max_on_page'];
 
+        $dbr = wfGetDB(DB_SLAVE);
+        $title_array = array();
+        $next_offset = null;
+
         if (isset($this->user_name)) {
             $conditions = array(
               'manuscripts_user = ' . $dbr->addQuotes($this->user_name),
@@ -42,9 +46,6 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
             );
         }
 
-        $dbr = wfGetDB(DB_SLAVE);
-        $title_array = array();
-        $next_offset = null;
 
         $res = $dbr->select(
             'manuscripts', //from

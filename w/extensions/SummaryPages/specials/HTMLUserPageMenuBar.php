@@ -28,20 +28,19 @@ trait HTMLUserPageMenuBar {
     /**
      * This function constructs the menu bar for the user page
      */
-    protected function getHTMLUserPageMenuBar($edit_token, array $button_ids = array()) {
+    protected function getHTMLUserPageMenuBar(OutputPage $out, $edit_token, array $button_ids = array()) {
 
         global $wgArticleUrl;
-        $article_url = $wgArticleUrl;
 
-        $manuscripts_message = $this->msg('userpage-mymanuscripts');
-        $collations_message = $this->msg('userpage-mycollations');
-        $collections_message = $this->msg('userpage-mycollections');
+        $manuscripts_message = $out->msg('userpage-mymanuscripts');
+        $collations_message = $out->msg('userpage-mycollations');
+        $collections_message = $out->msg('userpage-mycollections');
 
         $id_manuscripts = isset($button_ids[0]) ? $button_ids[0] : 'button';
         $id_collations = isset($button_ids[1]) ? $button_ids[1] : 'button';
         $id_collections = isset($button_ids[2]) ? $button_ids[2] : 'button';
 
-        $html = '<form class="summarypage-form" action="' . $article_url . 'Special:UserPage" method="post">';
+        $html = '<form class="summarypage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
         $html .= "<input type='submit' name='view_manuscripts_posted' id='$id_manuscripts' value='$manuscripts_message'>";
         $html .= "<input type='submit' name='view_collations_posted' id='$id_collations' value='$collations_message'>";
         $html .= "<input type='submit' name='view_collections_posted' id='$id_collections' value='$collections_message'>";

@@ -31,14 +31,16 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
     private $page_name;
 
     public function __construct($out, $page_name) {
-        parent::construct();
+        parent::__construct($out);
         $this->page_name = $page_name;
     }
 
     public function showSingleLetterOrNumberPage(
-    $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
+    array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
 
         $out = $this->out;
+        $out->setPageTitle($out->msg('singlemanuscriptpages'));
+        
         $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
@@ -49,9 +51,9 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-user') . "</b>" . "</td>";
-        $html .= "<td class='td-three'>" . "<b>" . $this->msg('userpage-creationdate') . "</b>" . "</td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
         foreach ($title_array as $key => $array) {
@@ -78,11 +80,12 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
     /**
      * This function shows the default page if no request was posted 
      */
-    protected function showDefaultPage($error_message, $alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet) {
+    public function showDefaultPage($error_message, array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet) {
 
         $out = $this->out;
-        $out->setPageTitle($this->msg('singlemanuscriptpages'));
+        $out->setPageTitle($out->msg('singlemanuscriptpages'));
 
+        $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
@@ -92,16 +95,16 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
             $html .= "<div class = 'error'>$error_message</div>";
         }
 
-        $html .= "<p>" . $this->msg('singlemanuscriptpages-instruction') . "</p>";
+        $html .= "<p>" . $out->msg('singlemanuscriptpages-instruction') . "</p>";
         $html .= "</div>";
 
         return $out->addHTML($html);
     }
 
-    public function showEmptyPageTitlesError() {
+    public function showEmptyPageTitlesError(array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name) {
 
         $out = $this->out;
-        $out->setPageTitle($out->msg('allcollations'));
+        $out->setPageTitle($out->msg('singlemanuscriptpages'));
 
         $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
@@ -109,10 +112,10 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
         $html .= "<div class='javascripthide'>";
         
         if (preg_match('/^[0-9.]*$/', $button_name)) {
-            $html .= "<p>" . $out->msg('allcollations-nocollections-number') . "</p>";
+            $html .= "<p>" . $out->msg('singlemanuscriptpages-nomanuscripts-number') . "</p>";
         }
         else {
-            $html .= "<p>" . $out->msg('allcollations-nocollections') . "</p>";
+            $html .= "<p>" . $out->msg('singlemanuscriptpages-nomanuscripts') . "</p>";
         }
         
         $html .= "</div>";

@@ -73,7 +73,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
     protected function getDefaultPage($error_message = '') {
         $user_is_a_sysop = $this->checkWhetherUserIsASysop();
-        $this->viewer = new UserPageDefaultViewer();
+        $this->viewer = new UserPageDefaultViewer($this->getOutput());
         $this->viewer->showDefaultPage($error_message, $this->user_name, $user_is_a_sysop);
     }
 

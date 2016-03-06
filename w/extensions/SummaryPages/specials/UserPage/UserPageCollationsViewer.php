@@ -23,7 +23,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class UserPageCollationsViewer {
+class UserPageCollationsViewer implements UserPageViewerInterface {
 
     use HTMLUserPageMenuBar,
         HTMLJavascriptLoaderDots, HTMLPreviousNextPageLinks;
@@ -43,24 +43,24 @@ class UserPageCollationsViewer {
         $article_url = $wgArticleUrl;
         $user_name = $this->user_name;
 
-        $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+        $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button-active', 'button'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button-active', 'button'));
         $html .= $this->getHTMLJavascriptLoaderDots();
         
         $html .= "<div class='javascripthide'>";
         
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $button_name, 'UserPage');
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $button_name, 'UserPage');
 
-        $created_message = $this->msg('userpage-created');
+        $created_message = $out->msg('userpage-created');
         $html .= "<br>";
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-long'>" . "<b>" . $this->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td><b>" . $this->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td class='td-long'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td><b>" . $out->msg('userpage-creationdate') . "</b></td>";
         $html .= "</tr>";
 
         foreach ($page_titles as $single_page_data) {
@@ -83,23 +83,22 @@ class UserPageCollationsViewer {
         return $out->addHTML($html);
     }
 
-    protected function showEmptyPageTitlesError($button_name) {
+    public function showEmptyPageTitlesError($button_name) {
 
         global $wgArticleUrl;
-        $article_url = $wgArticleUrl;
         $out = $this->out;
         $user_name = $this->user_name;
 
-        $out->setPageTitle($this->msg('userpage-welcome') . ' ' . $user_name);
+        $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button-active', 'button'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button-active', 'button'));
         $html .= $this->getHTMLJavascriptLoaderDots();
        
         $html .= "<div class='javascripthide'>";
         
-        $html .= "<p>" . $this->msg('userpage-nocollations') . "</p>";
-        $html .= "<p><a class='userpage-transparent' href='" . $article_url . "Special:BeginCollate'>" . $this->msg('userpage-newcollation') . "</a></p>";
+        $html .= "<p>" . $out->msg('userpage-nocollations') . "</p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $wgArticleUrl . "Special:BeginCollate'>" . $out->msg('userpage-newcollation') . "</a></p>";
         
         $html .= "</div>";
 

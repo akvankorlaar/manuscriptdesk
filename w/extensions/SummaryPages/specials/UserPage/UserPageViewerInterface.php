@@ -22,30 +22,9 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SpecialSingleManuscriptPages extends SummaryPageBase {
+interface UserPageViewerInterface {
 
-    private $page_name = 'SingleManuscriptPages';
+    public function showPage($button_name, $page_titles, $offset, $next_offset);
 
-    public function __construct() {
-
-        //call the parent constructor. The parent constructor (in 'summaryPages' class) will call the 'SpecialPage' class (grandparent) 
-        parent::__construct($this->page_name);
-    }
-
-    protected function getViewer() {
-        return new SingleManuscriptPagesViewer($this->getOutput(), $this->page_name);
-    }
-
-    protected function getWrapper() {
-        return new SingleManuscriptPagesWrapper();
-    }
-
-    protected function getRequestProcessor() {
-        return new SummaryPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
-    }
-
-    protected function getSpecialPageName() {
-        return $this->page_name;
-    }
-
+    public function showEmptyPageTitlesError($button_name);
 }

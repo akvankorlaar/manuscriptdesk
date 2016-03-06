@@ -41,6 +41,7 @@ $messages['en'] = array(
   'error-edittoken' => 'The edit token is not ok',
   'error-nopermission' => 'You do not have permission to access the functionality of this page',
   'error-newpage' => 'The new Wiki Page could not be created',
+  'error-request' => 'Something went wrong when processing your request',
   'manuscriptdesk-newpage' => 'You can add custom information to this page. The saved analysis will be preserved.'
 );
 

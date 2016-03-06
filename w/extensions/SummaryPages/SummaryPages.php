@@ -71,6 +71,7 @@ $wgAutoloadClasses['UserPageCollectionsViewer'] = $dir . '/specials/UserPage/Use
 $wgAutoloadClasses['UserPageDefaultViewer'] = $dir . '/specials/UserPage/UserPageDefaultViewer.php';
 $wgAutoloadClasses['UserPageManuscriptsViewer'] = $dir . '/specials/UserPage/UserPageManuscriptsViewer.php';
 $wgAutoloadClasses['UserPageRequestProcessor'] = $dir . '/specials/UserPage/UserPageRequestProcessor.php';
+$wgAutoloadClasses['UserPageViewerInterface'] = $dir . '/specials/UserPage/UserPageViewerInterface.php';
 
 $wgAutoloadClasses['HTMLCollectionMetaTable'] = $dir . '/specials/HTMLCollectionMetaTable.php';
 $wgAutoloadClasses['HTMLJavascriptLoaderDots'] = $dir . '/specials/HTMLJavascriptLoaderDots.php';
