@@ -25,7 +25,7 @@
 
 class SpecialAllCollations extends SummaryPageBase {
 
-    private $page_name = 'allCollations';
+    private $page_name = 'AllCollations';
 
     public function __construct() {
 

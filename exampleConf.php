@@ -32,12 +32,13 @@
 $wgExtensionAssetsPath = $IP . '/extensions/';
 
 //these files are autoloaded to enable the extensions
+require_once( $wgExtensionAssetsPath . 'ManuscriptDeskBase/ManuscriptDeskBase.php' );
 require_once( $wgExtensionAssetsPath . 'JBTEIToolbar/JBTEIToolbar.php' );
 require_once( $wgExtensionAssetsPath . 'TEITags/TEITags.php' );
-require_once( $wgExtensionAssetsPath . 'collate/collate.php');
+require_once( $wgExtensionAssetsPath . 'Collate/Collate.php');
 require_once( $wgExtensionAssetsPath . 'newManuscript/newManuscript.php');
-require_once( $wgExtensionAssetsPath . 'summaryPages/summaryPages.php');
-require_once( $wgExtensionAssetsPath . 'stylometricAnalysis/stylometricAnalysis.php');
+require_once( $wgExtensionAssetsPath . 'SummaryPages/SummaryPages.php');
+require_once( $wgExtensionAssetsPath . 'StylometricAnalysis/StylometricAnalysis.php');
 
 //$wgArticlePath is the base url that is used to create all internal links 
 $wgArticlePath = "/md/$1";
@@ -208,6 +209,14 @@ function onSkinBuildSidebar(Skin $skin, &$bar) {
     unset($bar['navigation'][2]);
     unset($bar['navigation'][3]);
     unset($bar['navigation'][4]);
+    unset($bar['navigation'][5]);
+    unset($bar['navigation'][6]);
+    unset($bar['navigation'][7]);
+    unset($bar['navigation'][8]);
+    unset($bar['navigation'][9]);
+    unset($bar['navigation'][10]);
+    unset($bar['navigation'][11]);
+    unset($bar['navigation'][12]);
 
     return true;
 }
@@ -217,26 +226,19 @@ $wgHooks['PersonalUrls'][] = 'onPersonalUrls';
 
 /**
  * This function changes the link to the user page depending on which group the user is in
- * 
- * @param array $personal_urls
- * @param Title $title
- * @param SkinTemplate $skin
  */
 function onPersonalUrls(array &$personal_urls, Title $title, SkinTemplate $skin) {
 
     global $wgArticleUrl, $wgUser;
 
-    $wg_user = $wgUser;
-
     //do not display the link to Special:UserPage if the user is not in the ManuscriptEditors group
-    if (!in_array('ManuscriptEditors', $wg_user->getGroups())) {
+    if (!in_array('ManuscriptEditors', $wgUser->getGroups())) {
         unset($personal_urls['userpage']);
         return true;
     }
 
     //if the current user is in the ManuscriptEditors group, change the link      
-    $article_url = $wgArticleUrl;
-    $personal_urls['userpage']['href'] = $article_url . 'Special:UserPage';
+    $personal_urls['userpage']['href'] = $wgArticleUrl . 'Special:UserPage';
     return true;
 }
 

@@ -43,7 +43,7 @@ class CollateRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         $collection_urls = array();
         $collection_titles = array();
 
-        foreach ($posted_names as $key => $checkbox) {
+        foreach ($posted_names as $checkbox) {
 
             //remove the numbers from $checkbox
             $checkbox_without_numbers = trim(str_replace(range(0, 9), '', $checkbox));
