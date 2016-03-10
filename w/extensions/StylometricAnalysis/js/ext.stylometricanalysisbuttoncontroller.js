@@ -38,19 +38,19 @@
     if (collection_checked >= min_number_checked && collection_checked <= max_number_checked) {
       $("#stylometricanalysis-submitbutton").removeAttr("disabled");
       $("#stylometricanalysis-submitbutton").css("cursor", "pointer");
-      $(".javascript-error").empty();
+      $(".javascripterror").empty();
 
     } else {
       $("#stylometricanalysis-submitbutton").attr("disabled", "disabled");
       $("#stylometricanalysis-submitbutton").css("cursor", "default");
 
       if (collection_checked < min_number_checked) {
-        $(".javascript-error").empty();
+        $(".javascripterror").empty();
       }
 
-      if ($('.javascript-error').is(':empty')) {
+      if ($('.javascripterror').is(':empty')) {
         if (collection_checked > max_number_checked) {
-          $(".javascript-error").append(mw.msg('stylometricanalysis-error-manycollections'));
+          $(".javascripterror").append(mw.msg('stylometricanalysis-error-manycollections'));
         }
       }
     }

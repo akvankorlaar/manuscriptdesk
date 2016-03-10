@@ -164,7 +164,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         if ($page_title_with_namespace === 'Special:StylometricAnalysis') {
             
             $css_modules = array('ext.stylometricanalysiscss', 'ext.manuscriptdeskbasecss');
-            $javascript_modules = array('ext.collatebuttoncontroller','ext.javascriptloader');
+            $javascript_modules = array('ext.stylometricanalysisbuttoncontroller','ext.javascriptloader');
             $out->addModuleStyles($css_modules);          
             $out->addModules($javascript_modules);   
             

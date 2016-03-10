@@ -168,7 +168,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $texts = array();
         $a = 1;
         foreach ($this->collection_data as $single_collection_data) {
-            $all_texts_for_one_collection = $this->getAllTextsForOneCollection($single_collection_data);
+            $text_processor = new ManuscriptDeskBaseTextProcessor();
+            $all_texts_for_one_collection = $text_processor->getAllTextsForOneCollection($single_collection_data);
             $this->checkForStylometricAnalysisCollectionErrors($all_texts_for_one_collection);
             $collection_name = isset($single_collection_data['collection_name']) ? $single_collection_data['collection_name'] : 'collection' . $a;
 

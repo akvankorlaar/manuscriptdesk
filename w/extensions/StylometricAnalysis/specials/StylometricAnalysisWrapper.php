@@ -134,7 +134,8 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
                 $old_full_outputpath1 = $full_outputpath1_array[$index];
                 $old_full_outputpath2 = $full_outputpath2_array[$index];
 
-                $this->deleteOldPystylOutputImages($old_full_outputpath1, $old_full_outputpath2);
+                $this->deleteOutputImage($old_full_outputpath1);
+                $this->deleteOutputImage($old_full_outputpath2);
                 $this->deleteOldEntriesFromTempstylometricanalysisTable($old_time);
             }
         }
@@ -142,16 +143,18 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         return true;
     }
 
-    private function deleteOldPystylOutputImages($old_full_outputpath1, $old_full_outputpath2) {
+    private function deleteOutputImage($full_outputpath) {
+        if (!is_file($full_outputpath)) {
+            return;
+        }
 
-        if (!is_file($old_full_outputpath1) || !is_file($old_full_outputpath2)) {
+        unlink($full_outputpath);
+
+        if (is_file($full_outputpath)) {
             throw new \Exception('stylometricanalysis-error-database');
         }
 
-        unlink($old_full_outputpath1);
-        unlink($old_full_outputpath2);
-
-        return true;
+        return;
     }
 
     private function deleteOldEntriesFromTempstylometricanalysisTable($old_time) {

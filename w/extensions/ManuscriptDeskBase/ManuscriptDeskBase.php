@@ -22,7 +22,6 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 /**
  * Usage: Add the following line in LocalSettings.php:
  * require_once( "$IP/extensions/ManuscriptDeskBase/ManuscriptDeskBase.php" );
@@ -48,7 +47,6 @@ $wgExtensionCredits['parserhook'][] = array(
 //Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
-
 //Auto load classes 
 $wgAutoloadClasses['ManuscriptDeskBaseHooks'] = $dir . 'ManuscriptDeskBaseHooks.php';
 $wgAutoloadClasses['ManuscriptDeskBaseSpecials'] = $dir . 'ManuscriptDeskBaseSpecials.php';
@@ -71,13 +69,9 @@ $wgResourceModules['ext.javascriptloader'] = array(
 );
 
 $wgResourceModules['ext.manuscriptdeskbasecss'] = array(
-  'localBasePath' => dirname(__FILE__),
-  'styles' => '/css/ext.manuscriptdeskbasecss.css',
+  'styles' => array(
+    'css/ext.manuscriptdeskbasecss.css'
+    ),
+    'localBasePath' => __DIR__,
+    'remoteExtPath'=> 'ManuscriptDeskBase',
 );
-
-
-////Extra file loaded later 
-//$wgResourceModules['ext.collatecss'] = array(
-//  'localBasePath' => dirname(__FILE__),
-//  'styles' => '/css/ext.collatecss.css',
-//);

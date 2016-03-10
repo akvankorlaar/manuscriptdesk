@@ -1,4 +1,4 @@
-ja<?php
+<?php
 
 /**
  * This file is part of the collate extension
@@ -37,13 +37,17 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $user_collection_data = $this->HTMLSpecialCharachtersArray($user_collection_data);
 
         $out->setPageTitle($out->msg('stylometricanalysis-welcome'));
+        
+        $html = '';
+        $html .= $this->getHTMLJavascriptLoader();
+        $html .= "<div class='javascripthide'>";
 
         $about_message = $out->msg('stylometricanalysis-about');
         $version_message = $out->msg('stylometricanalysis-version');
         $software_message = $out->msg('stylometricanalysis-software');
         $lastedit_message = $out->msg('stylometricanalysis-lastedit');
 
-        $html = "<table id='stylometricanalysis-infobox'>";
+        $html .= "<table id='stylometricanalysis-infobox'>";
         $html .= "<tr><th>$about_message</th></tr>";
         $html .= "<tr><td>$version_message</td></tr>";
         $html .= "<tr><td>$software_message <a href= '' target='_blank'>Pystyl</a>.</td></tr>";
@@ -107,8 +111,8 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
 
         $html .="</form>";
         $html .= "<br>";
-
-        $html .= $this->addStylometricAnalysisLoaderImage();
+        
+        $html .= "</div>";
 
         $out->addHTML($html);
 
@@ -133,7 +137,10 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $out->setPageTitle($out->msg('stylometricanalysis-options'));
 
         $html = "";
-        $html .= "<div id='stylometricanalysis-wrap'>";
+                      
+        $html .= $this->getHTMLJavascriptLoader();
+        $html .= "<div class='javascripthide'>";
+        
         $html .= "<a href='" . $article_url . "Special:StylometricAnalysis' class='link-transparent' title='Go Back'>Go Back</a>";
         $html .= "<br><br>";
         $html .= $out->msg('stylometricanalysis-chosencollections') . $collections_message . "<br>";
@@ -146,8 +153,6 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         }
 
         $html .= "</div>";
-
-        $html .= $this->addStylometricAnalysisLoaderImage();
 
         $out->addHTML($html);
 
@@ -357,6 +362,10 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $save_button_title = $out->msg('stylometricanalysis-savetitle');
 
         $html = "";
+        
+        $html .= $this->getHTMLJavascriptLoader();
+        $html .= "<div class='javascripthide'>";
+        
         $html .= "<div id='stylometricanalysis-buttons'>";
 
         $html .= "<form class='stylometricanalysis-form-two' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
@@ -408,8 +417,8 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $html .= "Minimum DF: " . $minimumdf . "<br>";
         $html .= "Maximum DF: " . $maximumdf;
         $html .= "</div>";
-
-        $html .= $this->addStylometricAnalysisLoaderImage();
+        
+        $html .= "</div>";
 
         $out->addHTML($html);
         return true;

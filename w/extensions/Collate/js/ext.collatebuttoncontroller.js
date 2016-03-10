@@ -61,19 +61,19 @@
     if (total_checked >= min_number_pages && total_pages <= max_number_pages) {
       $("#collate-submitbutton").removeAttr("disabled");
       $("#collate-submitbutton").css("cursor", "pointer");
-      $(".javascript-error").empty();
+      $(".javascripterror").empty();
 
     } else {
       $("#collate-submitbutton").attr("disabled", "disabled");
       $("#collate-submitbutton").css("cursor", "default");
 
       if (total_checked < min_number_pages) {
-        $(".javascript-error").empty();
+        $(".javascripterror").empty();
       }
 
-      if ($('.javascript-error').is(':empty')) {
+      if ($('.javascripterror').is(':empty')) {
         if (total_pages > max_number_pages) {
-          $(".javascript-error").append(mw.msg('collate-error-manytexts'));
+          $(".javascripterror").append(mw.msg('collate-error-manytexts'));
         }
       }
     }
