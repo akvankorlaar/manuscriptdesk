@@ -125,34 +125,34 @@ class ManuscriptDeskBaseValidator {
         if ($formfield_name === 'wpmetadata_websource') {
 
             if (strlen($formfield_value) > $max_length) {
-                throw new \Exception('validation-error-morethanfiftycharachters');
+                throw new \Exception('validation-morethanfiftycharachters');
             }
 
             //allow alphanumeric charachters, whitespace, and '-./:'  
             elseif (!preg_match("/^[A-Za-z0-9\-.\/:\s]+$/", $formfield_value)) {
-                throw new \Exception('validation-error-websourcecharachters');
+                throw new \Exception('validation-websourcecharachters');
             }
         }
         
         elseif ($formfield_name === 'wpmetadata_notes') {
 
             if (strlen($formfield_value) > ($max_length * 20)) {
-                throw new \Exception('validation-error-noteslength');
+                throw new \Exception('validation-noteslength');
             }
             //allow alphanumeric charachters, whitespace, and ',.;!?' 
             elseif (!preg_match("/^[A-Za-z0-9,.;!?\s]+$/", $formfield_value)) {
-                throw new \Exception('validation-error-notescharachters');
+                throw new \Exception('validation-notescharachters');
             }
         }
         else {
 
             if (strlen($formfield_value) > $max_length) {
-                throw new \Exception('validation-error-morethanfiftycharachters');
+                throw new \Exception('validation-morethanfiftycharachters');
             }
 
             //allow alphanumeric charachters and whitespace  
             elseif (!preg_match("/^[A-Za-z0-9\s]+$/", $formfield_value)) {
-                throw new \Exception('validation-error-metadatacharachters');
+                throw new \Exception('validation-metadatacharachters');
             }
         }
 

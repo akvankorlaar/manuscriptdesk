@@ -368,13 +368,13 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         
         $html .= "<div id='stylometricanalysis-buttons'>";
 
-        $html .= "<form class='stylometricanalysis-form-two' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
+        $html .= "<form id='stylometricanalysis-form-two' class='manuscriptdesk-form' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
         $html .= "<input type='submit' id='stylometricanalysis-submitbutton-two' title='$perform_new_analysis' value='$perform_new_analysis'>";
         $html .= "<input type='hidden' name='redirect_posted' value='redirect_posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
-        $html .= "<form class='stylometricanalysis-form-two' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
+        $html .= "<form id='stylometricanalysis-form-three' class='manuscriptdesk-form' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
         $html .= "<input type='submit' id='stylometricanalysis-submitbutton-two' title='$save_button_title' value='$save_button_value'>";
         $html .= "<input type='hidden' name='save_page_posted' value='save_page_posted'>";
         $html .= "<input type='hidden' name='time' value='$time'>";

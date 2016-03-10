@@ -49,13 +49,12 @@
   background-color: #F2FCFF;
 }
 
-.manuscriptdesk-form {
-  overflow-y: auto;  
+#stylometricanalysis-form-two {
   position: relative;
-  width: 100%;
+  display: inline-block;
 }
 
-.stylometricanalysis-form-two {
+#stylometricanalysis-form-three {
   position: relative;
   display: inline-block;
 }

@@ -146,7 +146,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $html .= $out->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $out->msg('userpage-contains2');
         $html .= "<br>";
 
-        $html .= "<form summarypage-form' id='userpage-edittitle' action='" . $article_url . "Special:UserPage' method='post'>";
+        $html .= "<form summarypage-form' id='userpage-edittitle' class='summarypage-form' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
         $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";

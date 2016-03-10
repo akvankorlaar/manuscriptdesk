@@ -128,7 +128,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
         $html .= "<td>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
-        foreach ($pages_within_collection as $key => $array) {
+        foreach ($pages_within_collection as $array) {
 
             $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
             $manuscripts_title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
