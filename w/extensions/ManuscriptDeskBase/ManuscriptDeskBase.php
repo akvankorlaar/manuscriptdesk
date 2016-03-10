@@ -59,6 +59,7 @@ $wgExtensionMessagesFiles['ManuscriptDeskBaseMessages'] = $dir . 'ManuscriptDesk
 $wgAutoloadClasses['ManuscriptDeskBaseViewer'] = $dir . 'BaseViews' . '/' . 'ManuscriptDeskBaseViewer.php';
 $wgAutoloadClasses['HTMLUploadError'] = $dir . 'BaseViews' . '/' . 'HTMLUploadError.php';
 $wgAutoloadClasses['HTMLJavascriptLoader'] = $dir . 'BaseViews' . '/' . 'HTMLJavascriptLoader.php';
+$wgAutoloadClasses['HTMLCollectionMetaTable'] = $dir . 'BaseViews' . '/' . 'HTMLCollectionMetaTable.php';
 
 $wgResourceModules['ext.javascriptloader'] = array(
   'scripts' => array(

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the newManuscript extension
  * Copyright (C) 2015 Arent van Korlaar
@@ -21,47 +22,46 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
+trait HTMLCollectionMetaTable {
 
-trait HTMLCollectionMetaTable{
-      
-  /**
-   * This function renders the metadata table 
-   */
-  protected function getHTMLCollectionMetaTable(OutputPage $out, array $meta_data){
-    
-    //get the data  
-    $metatitle =         isset($meta_data['collections_metatitle']) ? $meta_data['collections_metatitle'] : '';
-    $metaauthor =        isset($meta_data['collections_metaauthor']) ? $meta_data['collections_metaauthor'] : '';
-    $metayear =          isset($meta_data['collections_metayear']) ? $meta_data['collections_metayear'] :'';
-    $metapages =         isset($meta_data['collections_metapages']) ? $meta_data['collections_metapages'] : '';
-    $metacategory =      isset($meta_data['collections_metacategory']) ? $meta_data['collections_metacategory'] : '';
-    $metaproduced =      isset($meta_data['collections_metaproduced']) ? $meta_data['collections_metaproduced'] : '';
-    $metaproducer =      isset($meta_data['collections_metaproducer']) ? $meta_data['collections_metaproducer'] : '';
-    $metaeditors =       isset($meta_data['collections_metaeditors']) ? $meta_data['collections_metaeditors'] : '';
-    $metajournal =       isset($meta_data['collections_metajournal']) ? $meta_data['collections_metajournal'] : '';
-    $metajournalnumber = isset($meta_data['collections_metajournalnumber']) ? $meta_data['collections_metajournalnumber'] : '';
-    $metatranslators =   isset($meta_data['collections_metatranslators']) ? $meta_data['collections_metatranslators'] : '';
-    $metawebsource =     isset($meta_data['collections_metawebsource']) ? $meta_data['collections_metawebsource'] : '';
-    $metaid =            isset($meta_data['collections_metaid']) ? $meta_data['collections_metaid'] : '';
-    $metanotes =         isset($meta_data['collections_metanotes']) ? $meta_data['collections_metanotes'] : '';
-    
-    //get the messages
-    $metadata_title = $out->msg('metadata-title');
-    $metadata_name = $out->msg('metadata-name');
-    $metadata_year = $out->msg('metadata-year');
-    $metadata_pages = $out->msg('metadata-pages');
-    $metadata_category = $out->msg('metadata-category');
-    $metadata_produced = $out->msg('metadata-produced');
-    $metadata_producer = $out->msg('metadata-producer');
-    $metadata_editors = $out->msg('metadata-editors');
-    $metadata_journal = $out->msg('metadata-journal');
-    $metadata_journalnumber = $out->msg('metadata-journalnumber');
-    $metadata_translators = $out->msg('metadata-translators');
-    $metadata_websource = $out->msg('metadata-websource');
-    $metadata_id = $out->msg('metadata-id');
-       
-    //construct the table
-     $html_table = " 
+    /**
+     * This function renders the metadata table 
+     */
+    protected function getHTMLCollectionMetaTable(OutputPage $out, array $meta_data) {
+
+        //get the data  
+        $metatitle = isset($meta_data['collections_metatitle']) ? $meta_data['collections_metatitle'] : '';
+        $metaauthor = isset($meta_data['collections_metaauthor']) ? $meta_data['collections_metaauthor'] : '';
+        $metayear = isset($meta_data['collections_metayear']) ? $meta_data['collections_metayear'] : '';
+        $metapages = isset($meta_data['collections_metapages']) ? $meta_data['collections_metapages'] : '';
+        $metacategory = isset($meta_data['collections_metacategory']) ? $meta_data['collections_metacategory'] : '';
+        $metaproduced = isset($meta_data['collections_metaproduced']) ? $meta_data['collections_metaproduced'] : '';
+        $metaproducer = isset($meta_data['collections_metaproducer']) ? $meta_data['collections_metaproducer'] : '';
+        $metaeditors = isset($meta_data['collections_metaeditors']) ? $meta_data['collections_metaeditors'] : '';
+        $metajournal = isset($meta_data['collections_metajournal']) ? $meta_data['collections_metajournal'] : '';
+        $metajournalnumber = isset($meta_data['collections_metajournalnumber']) ? $meta_data['collections_metajournalnumber'] : '';
+        $metatranslators = isset($meta_data['collections_metatranslators']) ? $meta_data['collections_metatranslators'] : '';
+        $metawebsource = isset($meta_data['collections_metawebsource']) ? $meta_data['collections_metawebsource'] : '';
+        $metaid = isset($meta_data['collections_metaid']) ? $meta_data['collections_metaid'] : '';
+        $metanotes = isset($meta_data['collections_metanotes']) ? $meta_data['collections_metanotes'] : '';
+
+        //get the messages
+        $metadata_title = $out->msg('metadata-title');
+        $metadata_name = $out->msg('metadata-name');
+        $metadata_year = $out->msg('metadata-year');
+        $metadata_pages = $out->msg('metadata-pages');
+        $metadata_category = $out->msg('metadata-category');
+        $metadata_produced = $out->msg('metadata-produced');
+        $metadata_producer = $out->msg('metadata-producer');
+        $metadata_editors = $out->msg('metadata-editors');
+        $metadata_journal = $out->msg('metadata-journal');
+        $metadata_journalnumber = $out->msg('metadata-journalnumber');
+        $metadata_translators = $out->msg('metadata-translators');
+        $metadata_websource = $out->msg('metadata-websource');
+        $metadata_id = $out->msg('metadata-id');
+
+        //construct the table
+        $html_table = " 
     <table id='metatable' align='center'>
       <tr>
           <th style ='text-align: center;' colspan='4'>
@@ -160,8 +160,8 @@ trait HTMLCollectionMetaTable{
        </tr>
     </table>
   ";
-     
-   return $html_table; 
-  }
-  
+
+        return $html_table;
+    }
+
 }

@@ -26,39 +26,38 @@
   /**
    * This function calculates how many pages are in the checked collections 
    */
-  function calculateCollectionPages() {
+  function calculateNumberOfPagesInCheckedCollections() {
 
-    var collection_pages = 0;
+    var number_of_pages_in_checked_collections = 0;
 
     $.each($("input[class='collate-checkbox-col']:checked"), function () {
-
       var current_value = $(this).val();
       var object = jQuery.parseJSON(current_value);
       var number_elements = object.length;
-      collection_pages = collection_pages + number_elements;
+      number_of_pages_in_checked_collections = number_of_pages_in_checked_collections + number_elements;
     });
 
-    return changeSubmit(collection_pages);
+    return changeSubmit(number_of_pages_in_checked_collections);
   }
 
   /**
    * This function disables or enables the submit button, depending on how many checkboxes are checked, and how many pages are in the checked checkboxes
    */
-  function changeSubmit(collection_pages) {
+  function changeSubmit(number_of_pages_in_checked_collections) {
 
     //the maximum number of pages a user is allowed to collate
     var max_number_pages = mw.config.get('wgmax_collation_pages');
     var min_number_pages = mw.config.get('wgmin_collation_pages');
 
     //count the number of checked checkboxes
-    var normal_checked = $("input[class='collate-checkbox']:checked").length;
-    var collection_checked = $("input[class='collate-checkbox-col']:checked").length;
+    var normal_checkboxes_checked = $("input[class='collate-checkbox']:checked").length;
+    var collection_checkboxes_checked = $("input[class='collate-checkbox-col']:checked").length;
 
-    var total_checked = normal_checked + collection_checked;
-    var total_pages = normal_checked + collection_pages;
+    var total_checkboxes_checked = normal_checkboxes_checked + collection_checkboxes_checked;
+    var total_pages_in_checked_checkboxes = normal_checkboxes_checked + number_of_pages_in_checked_collections;
 
     //enable the submit button if at least min_number_pages are checked, but the pages within these checkboxes does not exceed max_number_pages                            
-    if (total_checked >= min_number_pages && total_pages <= max_number_pages) {
+    if (total_checkboxes_checked >= min_number_pages && total_pages_in_checked_checkboxes <= max_number_pages) {
       $("#collate-submitbutton").removeAttr("disabled");
       $("#collate-submitbutton").css("cursor", "pointer");
       $(".javascripterror").empty();
@@ -67,12 +66,12 @@
       $("#collate-submitbutton").attr("disabled", "disabled");
       $("#collate-submitbutton").css("cursor", "default");
 
-      if (total_checked < min_number_pages) {
+      if (total_checkboxes_checked < min_number_pages) {
         $(".javascripterror").empty();
       }
 
       if ($('.javascripterror').is(':empty')) {
-        if (total_pages > max_number_pages) {
+        if (total_pages_in_checked_checkboxes > max_number_pages) {
           $(".javascripterror").append(mw.msg('collate-error-manytexts'));
         }
       }
@@ -80,8 +79,8 @@
   }
 
   //call the function calculateCollectionPages on change
-  $('.collate-checkbox').change(calculateCollectionPages);
-  $('.collate-checkbox-col').change(calculateCollectionPages);
+  $('.collate-checkbox').change(calculateNumberOfPagesInCheckedCollections);
+  $('.collate-checkbox-col').change(calculateNumberOfPagesInCheckedCollections);
 
   $(document).ready(function () {
     $("#collate-submitbutton").attr("disabled", "disabled");
