@@ -94,7 +94,7 @@
   background-color: #F2FCFF;
 }
 
-#javascript-error {
+.javascript-error {
   font-size: larger;
   color: #cc0000;
 }

@@ -27,7 +27,8 @@ trait HTMLJavascriptLoaderDots{
 
     protected function getHTMLJavascriptLoaderDots() {
 
-        $html = "<h3 class='javascriptloader' style='display: none;'>Loading";
+        $html = '';
+        $html .= "<h3 class='javascriptloader' style='display: none;'>Loading";
         $html .= "<span class='javascriptspan'></span>";
         $html .= "</h3>";
 

@@ -21,14 +21,6 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-/**
- * This file is mainly concerned with showing the loader gif, and javascript validation. There is also server side validation in SpecialBeginCollate,
- * so the javascript validation is just to increase user-experience and reduce some irrelevant requests sent to the server
- * 
- * @param {type} mw
- * @param {type} $
- * @returns {undefined}
- */
 (function (mw, $) {
 
   /**
@@ -46,44 +38,23 @@
     if (collection_checked >= min_number_checked && collection_checked <= max_number_checked) {
       $("#stylometricanalysis-submitbutton").removeAttr("disabled");
       $("#stylometricanalysis-submitbutton").css("cursor", "pointer");
-      $("#javascript-error").empty();
+      $(".javascript-error").empty();
 
     } else {
       $("#stylometricanalysis-submitbutton").attr("disabled", "disabled");
       $("#stylometricanalysis-submitbutton").css("cursor", "default");
 
       if (collection_checked < min_number_checked) {
-        $("#javascript-error").empty();
+        $(".javascript-error").empty();
       }
 
-      if ($('#javascript-error').is(':empty')) {
+      if ($('.javascript-error').is(':empty')) {
         if (collection_checked > max_number_checked) {
-          $("#javascript-error").append(mw.msg('stylometricanalysis-error-manycollections'));
+          $(".javascript-error").append(mw.msg('stylometricanalysis-error-manycollections'));
         }
       }
     }
   }
-
-  $('#stylometricanalysis-form').submit(function () {
-    $('#stylometricanalysis-infobox').hide();
-    $('p').hide();
-    $('.error').hide();
-    $('#stylometricanalysis-form').hide();
-    $('#stylometricanalysis-loaderdiv').show();
-  });
-
-  $('.visualClear').submit(function () {
-    $('#stylometricanalysis-wrap').hide();
-    $('.visualClear').hide();
-    $('#stylometricanalysis-loaderdiv').show();
-  });
-  
-  $('.stylometricanalysis-form-two').submit(function () {
-    $('#stylometricanalysis-buttons').hide();
-    $('#visualization-wrap').hide();
-    $('#analysisconfiguration').hide();
-    $('#stylometricanalysis-loaderdiv').show();
-  });
 
   //call the function changeSubmit on change
   $('.stylometricanalysis-checkbox').change(changeSubmit);

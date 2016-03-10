@@ -64,28 +64,28 @@ $wgAutoloadClasses['SpecialCollate'] = $dir . '/specials/SpecialCollate.php';
 $wgSpecialPages['Collate'] = 'SpecialCollate';
 
 //Extra file loaded later 
-$wgResourceModules['ext.collate'] = array(
+$wgResourceModules['ext.collatecss'] = array(
   'localBasePath' => dirname(__FILE__),
-  'styles' => '/css/ext.collate.css',
+  'styles' => '/css/ext.collatecss.css',
 );
 
-$wgResourceModules['ext.collateloader'] = array(
+$wgResourceModules['ext.collatebuttoncontroller'] = array(
   'scripts' => array(
-    'js/ext.collateloader.js',
+    'js/ext.collatebuttoncontroller.js',
   ),
   'localBasePath' => __DIR__,
-  'remoteExtPath' => 'collate',
+  'remoteExtPath' => 'Collate',
   'messages' => array(
     'collate-error-manytexts',
   ),
 );
 
 //Instantiate the CollateHooks class and register the hooks
-$CollateHooks = new CollateHooks();
+$collate_hooks = new CollateHooks();
 
-$wgHooks['MediaWikiPerformAction'][] = array($CollateHooks, 'onMediaWikiPerformAction');
-$wgHooks['AbortMove'][] = array($CollateHooks, 'onAbortMove');
-$wgHooks['ArticleDelete'][] = array($CollateHooks, 'onArticleDelete');
-$wgHooks['PageContentSave'][] = array($CollateHooks, 'onPageContentSave');
-$wgHooks['BeforePageDisplay'][] = array($CollateHooks, 'onBeforePageDisplay');
-$wgHooks['ResourceLoaderGetConfigVars'][] = array($CollateHooks, 'onResourceLoaderGetConfigVars');
+$wgHooks['MediaWikiPerformAction'][] = array($collate_hooks, 'onMediaWikiPerformAction');
+$wgHooks['AbortMove'][] = array($collate_hooks, 'onAbortMove');
+$wgHooks['ArticleDelete'][] = array($collate_hooks, 'onArticleDelete');
+$wgHooks['PageContentSave'][] = array($collate_hooks, 'onPageContentSave');
+$wgHooks['BeforePageDisplay'][] = array($collate_hooks, 'onBeforePageDisplay');
+$wgHooks['ResourceLoaderGetConfigVars'][] = array($collate_hooks, 'onResourceLoaderGetConfigVars');

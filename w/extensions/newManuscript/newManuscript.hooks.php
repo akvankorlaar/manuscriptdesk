@@ -157,7 +157,11 @@ class newManuscriptHooks {
          
     if($wiki->getAction($request) !== 'view' ){
       return true; 
-    }            
+    }     
+    
+    if (!in_array('ManuscriptEditors', $user->getGroups())) {
+       return true;
+    }
     
     $this->assignGlobalsToProperties();
     

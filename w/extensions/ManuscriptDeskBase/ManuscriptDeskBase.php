@@ -48,6 +48,14 @@ $wgExtensionCredits['parserhook'][] = array(
 //Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
+$wgResourceModules['ext.javascriptloader'] = array(
+  'scripts' => array(
+    'js/ext.javascriptloader.js',
+  ),
+  'localBasePath' => __DIR__,
+  'remoteExtPath' => 'ManuscriptDeskBase',
+);
+
 //Auto load classes 
 $wgAutoloadClasses['ManuscriptDeskBaseHooks'] = $dir . 'ManuscriptDeskBaseHooks.php';
 $wgAutoloadClasses['ManuscriptDeskBaseSpecials'] = $dir . 'ManuscriptDeskBaseSpecials.php';

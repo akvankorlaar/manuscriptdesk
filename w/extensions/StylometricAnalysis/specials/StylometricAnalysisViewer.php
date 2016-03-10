@@ -1,4 +1,4 @@
-<?php
+ja<?php
 
 /**
  * This file is part of the collate extension
@@ -23,18 +23,8 @@
  * @copyright 2015 Arent van Korlaar
  */
 class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
-
-    /**
-     * This function adds html used for the gif loader image
-     */
-    private function addStylometricAnalysisLoaderImage() {
-        //shows after submit has been clicked
-        $html = "<div id='stylometricanalysis-loaderdiv'>";
-        $html .= "<img id='stylometricanalysis-loadergif' src='/w/extensions/collate/specials/assets/362.gif' style='width: 64px; height: 64px;"
-            . " position: relative; left: 50%;'>";
-        $html .= "</div>";
-        return $html;
-    }
+    
+    use HTMLJavascriptLoader; 
 
     /**
      * This function constructs the HTML for the default page
@@ -44,7 +34,6 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         global $wgArticleUrl;
 
         $out = $this->out;
-        $article_url = $wgArticleUrl;
         $user_collection_data = $this->HTMLSpecialCharachtersArray($user_collection_data);
 
         $out->setPageTitle($out->msg('stylometricanalysis-welcome'));
@@ -63,14 +52,14 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
 
         $html .= "<p>" . $out->msg('stylometricanalysis-instruction1') . '</p>';
 
-        $html .= "<div id='javascript-error'></div>";
+        $html .= "<div class='javascript-error'></div>";
 
         //display the error 
         if (!empty($error_message)) {
             $html .= "<div class = 'error'>" . $error_message . "</div>";
         }
 
-        $html .= "<form id='stylometricanalysis-form' action='" . $article_url . "Special:StylometricAnalysis' method='post'>";
+        $html .= "<form id='stylometricanalysis-form' action='" . $wgArticleUrl . "Special:StylometricAnalysis' method='post'>";
         $html .= "<h3>" . $out->msg('stylometricanalysis-collectionheader') . "</h3>";
 
         $html .= "<table class='stylometricanalysis-table'>";

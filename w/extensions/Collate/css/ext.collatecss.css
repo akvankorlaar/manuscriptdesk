@@ -29,25 +29,25 @@ pre {
   height: 0px !important; 
 }
 
-.begincollate-table td {
+.collate-table td {
   width: 20%;
 }
 
-.begincollate-table {
+.collate-table {
   width: 100%;
 }
 
-#begincollate-form {
+#collate-form {
   overflow-y: auto;  
   position: relative;
   width: 100%;
 }
 
-.begincollate-span {
+.collate-span {
   font-size: 85%;
 }
 
-#begincollate-submitbutton {
+#collate-submitbutton {
   width: 30em; 
   height: 1.5em; 
   cursor: default; 
@@ -55,7 +55,7 @@ pre {
   background-color: #F2FCFF;
 }
 
-#begincollate-infobox {
+#collate-infobox {
   padding: 0.3em;
   float: right; 
   width: 500px;
@@ -68,40 +68,40 @@ pre {
   line-height: 1.5em; 
 }
 
-#begincollate-infobox th {
+#collate-infobox th {
   background: #F2FCFF; 
   color: #black;
   padding: 0.3em; 
   font-size: 1.1em;  
 }
 
-#begincollate-infobox-lasttd {
+#collate-infobox-lasttd {
   background: #F2FCFF; 
   padding: 0.3em; 
   color: black;
 }
 
-#javascript-error {
+.javascript-error {
   font-size: larger;
   color: #cc0000;
 }
 
-#begincollate-loaderdiv {
+#collate-loaderdiv {
   display: none;
 }
 
-.begincollate-form-two {
+.collate-form-two {
   position: relative;
   display: inline-block;
 }
 
-.begincollate-submitbutton-two {
+.collate-submitbutton-two {
   width: 30em; 
   height: 1.5em; 
   cursor: pointer;
   background-color: #F2FCFF;
 }
 
-.begincollate-transparent {
+.collate-transparent {
   background-color: #F2FCFF;
 }

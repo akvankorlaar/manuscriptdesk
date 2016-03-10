@@ -26,12 +26,10 @@
   var dots = 0;
 
   function showLoader() {
-    $('.javascriptloader').show();
     $('.javascripthide').hide();
-    
-    
-    $('#userpage-table').hide();
+    //$('#userpage-table').hide();
     $('.visualClear').hide();
+    $('.javascriptloader').show();
   }
 
   /**
@@ -48,12 +46,7 @@
     }
   }
   
-  
   $('.summarypage-form').submit(showLoader);
-
-
-  $('#userpage-editmetadata').submit(showLoader);
-  $('#userpage-addnewpage').submit(showLoader);
   $('.visualClear').submit(showLoader);
 
   /**
@@ -64,4 +57,3 @@
   });
 
 }(mediaWiki, jQuery));
-
