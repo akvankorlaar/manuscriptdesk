@@ -134,7 +134,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
     private function stylometricAnalysisSavePageWasRequested(User $user) {
         $request = $user->getRequest();
 
-        if (!$request->getText('save_current_page')) {
+        if (!$request->getText('save_page_posted')) {
             return false;
         }
 
