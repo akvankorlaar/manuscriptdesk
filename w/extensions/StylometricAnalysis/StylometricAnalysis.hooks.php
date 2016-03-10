@@ -22,11 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class StylometricAnalysisHooks {
-
-    public function __construct() {
-        
-    }
+class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
 
     public function onMediaWikiPerformAction($output, $article, $title, $user, $request, $wiki) {
 
@@ -41,10 +37,8 @@ class StylometricAnalysisHooks {
             $database_wrapper = new StylometricAnalysisWrapper($user->getName());
             $data = $database_wrapper->getStylometricanalysisData($page_title_with_namespace);
 
-            $page = new StylometricAnalysisNamespacePage();
-            $html_output = $page->renderPage($data);
-
-            $output->addHTML($html_output);
+            $viewer = new StylometricAnalysisViewer($output);
+            $viewer->showStylometricAnalysisNamespacePage($data);
 
             return true;
         } catch (Exception $e) {
@@ -78,7 +72,6 @@ class StylometricAnalysisHooks {
             return false;
         }
 
-
         return true;
     }
 
@@ -88,43 +81,22 @@ class StylometricAnalysisHooks {
      */
     public function onArticleDelete(WikiPage &$wikiPage, User &$user, &$reason, &$error) {
 
-        if (!$this->isStylometricAnalysisNamespace($wikiPage)) {
+        $title = $wikiPage->getTitle();
+        
+        if (!$this->isStylometricAnalysisNamespace($title)) {
             return true;
         }
 
-        if (!$this->currentUserCreatedThePage() && !$this->currentUserIsASysop()) {
-            //deny deletion because the current user did not create this collation, and the user is not an administrator
+        if (!$this->currentUserCreatedThePage($title, $user) && !$this->currentUserIsASysop($user)) {
             $error = '<br>' . $this->getMessage('stylometricanalysishooks-nodeletepermission') . '.';
             return false;
         }
 
         try {
             $database_wrapper = new StylometricAnalysisWrapper($user->getName());
-            $database_wrapper->deleteDatabaseEntry($title_object->getPrefixedURL());
+            $database_wrapper->deleteStylometricAnalysisDatabaseEntry($title_object->getPrefixedURL());
         } catch (Exception $e) {
             return true;
-        }
-        
-        return true;
-    }
-
-    private function currentUserCreatedThePage(Title $title_object, User $user) {
-        $page_title = $title_object->getPartialURL();
-        $page_title_array = explode("/", $page_title);
-        $user_fromurl = isset($page_title_array[0]) ? $page_title_array[0] : null;
-        $user_name = $user->getName();
-
-        if ($user_fromurl === null || $user_name !== $user_fromurl) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function currentUserIsASysop(User $user) {
-        $user_groups = $user->getGroups();
-        if (!in_array('sysop', $user_groups)) {
-            return false;
         }
 
         return true;
@@ -148,22 +120,11 @@ class StylometricAnalysisHooks {
         return true;
     }
 
-    private function isStylometricAnalysisNamespace(WikiPage $wikiPage) {
-        $title_object = $wikiPage->getTitle();
-        $namespace = $title_object->getNamespace();
+    private function isStylometricAnalysisNamespace($object) {
+
+        $namespace = $this->getNamespaceFromObject($object);
 
         if ($namespace !== NS_STYLOMETRICANALYSIS) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function currentPageExists(WikiPage $wikiPage) {
-        $title_object = $wikiPage->getTitle();
-        $page_title_with_namespace = $title_object->getPrefixedUrl();
-
-        if (!$title_object->exists()) {
             return false;
         }
 
@@ -173,7 +134,7 @@ class StylometricAnalysisHooks {
     private function stylometricAnalysisSavePageWasRequested(User $user) {
         $request = $user->getRequest();
 
-        if (!$request->getText('save_current_page')) {
+        if (!$request->getText('save_page_posted')) {
             return false;
         }
 
@@ -198,12 +159,17 @@ class StylometricAnalysisHooks {
      */
     public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
 
-        $title_object = $out->getTitle();
-        $page_title = $title_object->getPrefixedURL();
+        $page_title_with_namespace = $out->getTitle()->getPrefixedURL();
 
-        if ($page_title === 'Special:StylometricAnalysis') {
-            $out->addModuleStyles('ext.stylometricanalysis');
-            $out->addModules('ext.stylometricanalysisloader');
+        if ($page_title_with_namespace === 'Special:StylometricAnalysis') {
+            
+            $css_modules = array('ext.stylometricanalysiscss', 'ext.manuscriptdeskbasecss');
+            $javascript_modules = array('ext.stylometricanalysisbuttoncontroller','ext.javascriptloader');
+            $out->addModuleStyles($css_modules);          
+            $out->addModules($javascript_modules);   
+            
+        }elseif($this->isStylometricAnalysisNamespace($out)){
+            $out->addModuleStyles('ext.stylometricanalysiscss');
         }
         
         return true;
@@ -215,13 +181,6 @@ class StylometricAnalysisHooks {
     public function onUnitTestsList(&$files) {
         $files = array_merge($files, glob(__DIR__ . '/tests/phpunit/*Test.php'));
         return true;
-    }
-
-    /**
-     * This function retrieves the message from the i18n file for String $identifier
-     */
-    public function getMessage($identifier) {
-        return wfMessage($identifier)->text();
     }
 
 }

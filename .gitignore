@@ -32,45 +32,48 @@ w/*
 w/extensions/*
 w/skins/*
 !w/extensions/ManuscriptDeskBase
-!w/extensions/collate
+!w/extensions/Collate
 !w/extensions/newManuscript
 !w/extensions/JBTEIToolbar
 !w/extensions/TEITags
-!w/extensions/summaryPages
+!w/extensions/SummaryPages
 !w/extensions/StylometricAnalysis
 !w/skins/CbpTranscriptionEnhanced
 
 !w/extensions/ManuscriptDeskBase/*
-!w/extensions/collate/*
+!w/extensions/Collate/*
 !w/extensions/newManuscript/*
 !w/extensions/JBTEIToolbar/*
 !w/extensions/TEITags/*
-!w/extensions/summaryPages/*
+!w/extensions/SummaryPages/*
 !w/extensions/StylometricAnalysis/*
 !w/skins/CbpTranscriptionEnhanced/*
 
 #these last 2 paragraphs are to ensure that folders within folders, and folders within folders within folders are not ignored
-!w/extensions/collate/*/*
+!w/extensions/ManuscriptDeskBase/*/*
+!w/extensions/Collate/*/*
 !w/extensions/newManuscript/*/*
 !w/extensions/JBTEIToolbar/*/*
 !w/extensions/TEITags/*/*
-!w/extensions/summaryPages/*/*
+!w/extensions/SummaryPages/*/*
 !w/extensions/StylometricAnalysis/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*
 
-!w/extensions/collate/*/*/*
+!w/extensions/ManuscriptDeskBase/*/*/*
+!w/extensions/Collate/*/*/*
 !w/extensions/newManuscript/*/*/*
 !w/extensions/JBTEIToolbar/*/*/*
 !w/extensions/TEITags/*/*/*
-!w/extensions/summaryPages/*/*/*
+!w/extensions/SummaryPages/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*
 
-!w/extensions/collate/*/*/*/*
+!w/extensions/ManuscriptDeskBase/*/*/*/*
+!w/extensions/Collate/*/*/*/*
 !w/extensions/newManuscript/*/*/*/*
 !w/extensions/JBTEIToolbar/*/*/*/*
 !w/extensions/TEITags/*/*/*/*
-!w/extensions/summaryPages/*/*/*/*
+!w/extensions/SummaryPages/*/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*/*
 

@@ -2,115 +2,111 @@
 
 /**
  * Copyright (C) 2013 Richard Davis
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License Version 2, as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*
-* @package MediaWiki
-* @subpackage Extensions
-* @author Richard Davis <r.davis@ulcc.ac.uk>
-* @author Ben Parish <b.parish@ulcc.ac.uk>
-* @copyright 2013 Richard Davis
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License Version 2, as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * @package MediaWiki
+ * @subpackage Extensions
+ * @author Richard Davis <r.davis@ulcc.ac.uk>
+ * @author Ben Parish <b.parish@ulcc.ac.uk>
+ * @copyright 2013 Richard Davis
  * 
- * Sept 2015: Added 8 new tags. Placed the css into a new module in order to load 
- * it separately with AddModuleStyles(), and to not make it load again when addModules() is called @Arent van Korlaar 
-*/
-
+ * 2015/2016: Modifications @ Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com>
+ */
 # Alert the user that this is not a valid entry point to MediaWiki if they try to access the special pages file directly.
-if ( !defined( 'MEDIAWIKI' ) ) {
-	echo <<<EOT
+if (!defined('MEDIAWIKI')) {
+    echo <<<EOT
 To install my extension, put the following line in LocalSettings.php:
 require_once( "\$IP/extensions/JBTEIToolbar/JBTEIToolbar.php" );
 EOT;
-	exit( 1 );
+    exit(1);
 }
 
-$wgAutoloadClasses[ 'JBTEIToolbarHooks' ]   = __DIR__ . '/JBTEIToolbar.hooks.php';
-$wgExtensionMessagesFiles[ 'JBTEIToolbar' ] = __DIR__ . '/JBTEIToolbar.i18n.php';
+$wgAutoloadClasses['JBTEIToolbarHooks'] = __DIR__ . '/JBTEIToolbar.hooks.php';
+$wgExtensionMessagesFiles['JBTEIToolbar'] = __DIR__ . '/JBTEIToolbar.i18n.php';
 
-$wgExtensionCredits[ 'jbteitoolbar' ][] = array(
-    'path' 	      =>  __FILE__,
-    'name'        => 'JBTEIToolbar',
-    'author'      => 'Richard Davis',
-    'type'		  => 'parserhook',
-    'url'         => 'http://www.transcribe-bentham.da.ulcc.ac.uk',
-    'version'     => '0.2',
-    'description' => new Message( 'jbteitoolbar-descr' )
+$wgExtensionCredits['jbteitoolbar'][] = array(
+  'path' => __FILE__,
+  'name' => 'JBTEIToolbar',
+  'author' => 'Richard Davis',
+  'type' => 'parserhook',
+  'url' => 'http://www.transcribe-bentham.da.ulcc.ac.uk',
+  'version' => '0.2',
+  'description' => new Message('jbteitoolbar-descr')
 );
 
-$wgResourceModules['ext.JBTEIToolbar' ] = array(
-  'localBasePath' => dirname( __FILE__ ),
-  'scripts'       => 'js/ext.jbteitoolbar.js',
-  'messages'      => array(  /* Label text */
-                            'toolbar-label-line-break'
-                            ,'toolbar-label-page-break'
-                            ,'toolbar-label-heading'
-                            ,'toolbar-label-paragraph'
-                            ,'toolbar-label-addition'
-                            ,'toolbar-label-deletion'
-                            ,'toolbar-label-unclear'
-                            ,'toolbar-label-gap'
-                            ,'toolbar-label-note'
-                            ,'toolbar-label-underline'
-                            ,'toolbar-label-superscript'
-                            ,'toolbar-label-spelling'
-                            ,'toolbar-label-foreign'
-                            ,'toolbar-label-ampersand'
-                            ,'toolbar-label-long-dash'
-                            ,'toolbar-label-comment'
-                            ,'toolbar-label-retrace'
-                            ,'toolbar-label-date'
-                            ,'toolbar-label-name'
-                            ,'toolbar-label-num'
-                            ,'toolbar-label-title'
-                            ,'toolbar-label-metamark'
-                            ,'toolbar-label-restore'
-                            ,'toolbar-label-supplied'
+$wgResourceModules['ext.JBTEIToolbar'] = array(
+  'localBasePath' => dirname(__FILE__),
+  'scripts' => 'js/ext.jbteitoolbar.js',
+  'messages' => array(/* Label text */
+    'toolbar-label-line-break'
+    , 'toolbar-label-page-break'
+    , 'toolbar-label-heading'
+    , 'toolbar-label-paragraph'
+    , 'toolbar-label-addition'
+    , 'toolbar-label-deletion'
+    , 'toolbar-label-unclear'
+    , 'toolbar-label-gap'
+    , 'toolbar-label-note'
+    , 'toolbar-label-underline'
+    , 'toolbar-label-superscript'
+    , 'toolbar-label-spelling'
+    , 'toolbar-label-foreign'
+    , 'toolbar-label-ampersand'
+    , 'toolbar-label-long-dash'
+    , 'toolbar-label-comment'
+    , 'toolbar-label-retrace'
+    , 'toolbar-label-date'
+    , 'toolbar-label-name'
+    , 'toolbar-label-num'
+    , 'toolbar-label-title'
+    , 'toolbar-label-metamark'
+    , 'toolbar-label-restore'
+    , 'toolbar-label-supplied'
 
 
-										  /* Peri text */
-                            ,'toolbar-peri-heading'
-                            ,'toolbar-peri-paragraph'
-                            ,'toolbar-peri-addition'
-                            ,'toolbar-peri-deletion'
-                            ,'toolbar-peri-unclear'
-                            ,'toolbar-peri-gap'         
-                            ,'toolbar-peri-note'
-                            ,'toolbar-peri-underline'
-                            ,'toolbar-peri-superscript'
-                            ,'toolbar-peri-spelling'
-                            ,'toolbar-peri-foreign'
-                            ,'toolbar-peri-comment'
-                            ,'toolbar-peri-retrace'
-                            ,'toolbar-peri-date'
-                            ,'toolbar-peri-name'
-                            ,'toolbar-peri-num'
-                            ,'toolbar-peri-title'
-                            ,'toolbar-peri-metamark'
-                            ,'toolbar-peri-restore'
-                            ,'toolbar-peri-supplied'
-
-                            ,'submit-error-message'
-
-						)
+    /* Peri text */
+    , 'toolbar-peri-heading'
+    , 'toolbar-peri-paragraph'
+    , 'toolbar-peri-addition'
+    , 'toolbar-peri-deletion'
+    , 'toolbar-peri-unclear'
+    , 'toolbar-peri-gap'
+    , 'toolbar-peri-note'
+    , 'toolbar-peri-underline'
+    , 'toolbar-peri-superscript'
+    , 'toolbar-peri-spelling'
+    , 'toolbar-peri-foreign'
+    , 'toolbar-peri-comment'
+    , 'toolbar-peri-retrace'
+    , 'toolbar-peri-date'
+    , 'toolbar-peri-name'
+    , 'toolbar-peri-num'
+    , 'toolbar-peri-title'
+    , 'toolbar-peri-metamark'
+    , 'toolbar-peri-restore'
+    , 'toolbar-peri-supplied'
+    , 'submit-error-message'
+  )
 );
 
-$wgResourceModules['ext.JBTEIToolbarcss' ] = array(
-    'localBasePath' => dirname( __FILE__ ),
-    'styles'        => 'css/ext.jbteitoolbar.css',
-  );
+$wgResourceModules['ext.JBTEIToolbarcss'] = array(
+  'localBasePath' => dirname(__FILE__),
+  'styles' => 'css/ext.jbteitoolbar.css',
+);
 
-$JBTEIToolbarHooks 							 = new JBTEIToolbarHooks();
+$JBTEIToolbarHooks = new JBTEIToolbarHooks();
 
-$wgHooks['EditPage::showEditForm:initial'][] = array( $JBTEIToolbarHooks , 'editPageShowEditFormInitial' );
+$wgHooks['EditPage::showEditForm:initial'][] = array($JBTEIToolbarHooks, 'editPageShowEditFormInitial');
 

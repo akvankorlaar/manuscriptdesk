@@ -50,10 +50,9 @@ $dir = __DIR__ . '/';
 
 //Auto load classes 
 $wgAutoloadClasses['StylometricAnalysisHooks'] = $dir . '/StylometricAnalysis.hooks.php';
-$wgAutoloadClasses['StylometricAnalysisNamespacePage'] = $dir . '/StylometricAnalysisNamespacePage.php';
 $wgExtensionMessagesFiles['StylometricAnalysis'] = $dir . '/StylometricAnalysis.i18n.php';
 $wgAutoloadClasses['StylometricAnalysisViewer'] = $dir . '/specials/StylometricAnalysisViewer.php';
-$wgAutoloadClasses['FormDataGetter'] = $dir . '/specials/FormDataGetter.php';
+$wgAutoloadClasses['StylometricAnalysisRequestProcessor'] = $dir . '/specials/StylometricAnalysisRequestProcessor.php';
 $wgAutoloadClasses['StylometricAnalysisWrapper'] = $dir . '/specials/StylometricAnalysisWrapper.php';
 
 ////Register auto load for the special page classes and register special pages
@@ -62,26 +61,26 @@ $wgAutoloadClasses['SpecialStylometricAnalysis'] = $dir . '/specials/SpecialStyl
 $wgSpecialPages['StylometricAnalysis'] = 'SpecialStylometricAnalysis';
 
 //Extra file loaded later 
-$wgResourceModules['ext.stylometricanalysis'] = array(
+$wgResourceModules['ext.stylometricanalysiscss'] = array(
   'localBasePath' => dirname(__FILE__) . '/css',
-  'styles' => '/ext.stylometricanalysis.css',
+  'styles' => '/ext.stylometricanalysiscss.css',
 );
 
-$wgResourceModules['ext.stylometricanalysisloader'] = array(
+$wgResourceModules['ext.stylometricanalysisbuttoncontroller'] = array(
   'localBasePath' => dirname(__FILE__) . '/js',
-  'scripts' => '/ext.stylometricanalysisloader.js',
+  'scripts' => '/ext.stylometricanalysisbuttoncontroller.js',
   'messages' => array(
     'stylometricanalysis-error-manycollections',
   ),
 );
 
 //Instantiate the stylometricAnalysisHooks class and register the hooks
-$StylometricAnalysisHooks = new StylometricAnalysisHooks();
+$stylometric_analysis_hooks = new StylometricAnalysisHooks();
 
-$wgHooks['MediaWikiPerformAction'][] = array($StylometricAnalysisHooks, 'onMediaWikiPerformAction');
-$wgHooks['AbortMove'][] = array($StylometricAnalysisHooks, 'onAbortMove');
-$wgHooks['ArticleDelete'][] = array($StylometricAnalysisHooks, 'onArticleDelete');
-$wgHooks['PageContentSave'][] = array($StylometricAnalysisHooks,'onPageContentSave');
-$wgHooks['BeforePageDisplay'][] = array($StylometricAnalysisHooks, 'onBeforePageDisplay');
-$wgHooks['ResourceLoaderGetConfigVars'][] = array($StylometricAnalysisHooks, 'onResourceLoaderGetConfigVars');
-$wgHooks['UnitTestsList'][] = array($StylometricAnalysisHooks, 'onUnitTestsList');
+$wgHooks['MediaWikiPerformAction'][] = array($stylometric_analysis_hooks, 'onMediaWikiPerformAction');
+$wgHooks['AbortMove'][] = array($stylometric_analysis_hooks, 'onAbortMove');
+$wgHooks['ArticleDelete'][] = array($stylometric_analysis_hooks, 'onArticleDelete');
+$wgHooks['PageContentSave'][] = array($stylometric_analysis_hooks,'onPageContentSave');
+$wgHooks['BeforePageDisplay'][] = array($stylometric_analysis_hooks, 'onBeforePageDisplay');
+$wgHooks['ResourceLoaderGetConfigVars'][] = array($stylometric_analysis_hooks, 'onResourceLoaderGetConfigVars');
+$wgHooks['UnitTestsList'][] = array($stylometric_analysis_hooks, 'onUnitTestsList');

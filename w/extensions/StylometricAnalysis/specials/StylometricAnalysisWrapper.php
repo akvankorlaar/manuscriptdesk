@@ -23,10 +23,7 @@
  * @copyright 2015 Arent van Korlaar
  * 
  */
-
-class StylometricAnalysisWrapper {
-
-    private $user_name;
+class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
 
     public function __construct($user_name = '') {
         $this->user_name = $user_name;
@@ -35,8 +32,12 @@ class StylometricAnalysisWrapper {
     /**
      * This function checks if any uploaded manuscripts are part of a larger collection of manuscripts by retrieving data from the 'manuscripts' table
      */
-    public function checkForManuscriptCollections($minimum_pages_per_collection = 0, $minimum_collections = 0) {
+    public function getManuscriptsCollectionData() {
 
+        global $wgStylometricAnalysisOptions;
+
+        $minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
+        $minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
         $dbr = wfGetDB(DB_SLAVE);
         $collection_urls = array();
         $user_name = $this->user_name;
@@ -57,7 +58,6 @@ class StylometricAnalysisWrapper {
         );
 
         if ($res->numRows() > 0) {
-            //while there are still titles in this query
             while ($s = $res->fetchObject()) {
 
                 //check if the current collection has been added
@@ -85,7 +85,7 @@ class StylometricAnalysisWrapper {
         }
 
         if (count($collection_urls) < $minimum_collections) {
-            throw new Exception('stylometricanalysis-error-fewcollections');
+            throw new \Exception('error-fewuploads');
         }
 
         return $collection_urls;
@@ -122,7 +122,6 @@ class StylometricAnalysisWrapper {
 
         //while there are still titles in this query
         while ($s = $res->fetchObject()) {
-
             $time_array[] = $s->tempstylometricanalysis_time;
             $full_outputpath1_array[] = $s->tempstylometricanalysis_full_outputpath1;
             $full_outputpath2_array[] = $s->tempstylometricanalysis_full_outputpath2;
@@ -135,7 +134,8 @@ class StylometricAnalysisWrapper {
                 $old_full_outputpath1 = $full_outputpath1_array[$index];
                 $old_full_outputpath2 = $full_outputpath2_array[$index];
 
-                $this->deleteOldPystylOutputImages($old_full_outputpath1, $old_full_outputpath2);
+                $this->deleteOutputImage($old_full_outputpath1);
+                $this->deleteOutputImage($old_full_outputpath2);
                 $this->deleteOldEntriesFromTempstylometricanalysisTable($old_time);
             }
         }
@@ -143,16 +143,18 @@ class StylometricAnalysisWrapper {
         return true;
     }
 
-    private function deleteOldPystylOutputImages($old_full_outputpath1, $old_full_outputpath2) {
-
-        if (!is_file($old_full_outputpath1) || !is_file($old_full_outputpath2)) {
-            throw new Exception('stylometricanalysis-error-database');
+    private function deleteOutputImage($full_outputpath) {
+        if (!is_file($full_outputpath)) {
+            return;
         }
 
-        unlink($old_full_outputpath1);
-        unlink($old_full_outputpath2);
+        unlink($full_outputpath);
 
-        return true;
+        if (is_file($full_outputpath)) {
+            throw new \Exception('stylometricanalysis-error-database');
+        }
+
+        return;
     }
 
     private function deleteOldEntriesFromTempstylometricanalysisTable($old_time) {
@@ -168,18 +170,19 @@ class StylometricAnalysisWrapper {
             ), __METHOD__);
 
         if (!$dbw->affectedRows()) {
-            throw new Exception('stylometricanalysis-error-database');
+            throw new \Exception('stylometricanalysis-error-database');
         }
 
         return true;
     }
 
-    public function storeTempStylometricAnalysis($time = 0, $full_outputpath1, $full_outputpath2, $full_linkpath1, $full_linkpath2, array $config_array, $new_page_url, $date) {
+    public function storeTempStylometricAnalysis(array $collection_name_data, $time = 0, $new_page_url = '', $date = 0, $full_linkpath1 = '', $full_linkpath2 = '', $full_outputpath1 = '', $full_outputpath2 = '', array $pystyl_config) {
 
         $dbw = wfGetDB(DB_MASTER);
 
         $user_name = $this->user_name;
-        $json_config_array = json_encode($config_array);
+        $json_collection_name_data = json_encode($collection_name_data);
+        $json_pystyl_config = json_encode($pystyl_config);
 
         $dbw->insert(
             'tempstylometricanalysis', //select table
@@ -189,15 +192,16 @@ class StylometricAnalysisWrapper {
           'tempstylometricanalysis_full_outputpath1' => $full_outputpath1,
           'tempstylometricanalysis_full_outputpath2' => $full_outputpath2,
           'tempstylometricanalysis_full_linkpath1' => $full_linkpath1,
-          'tempstylometricanalysis_full_linkpath2' => $full_linkpath2,     
-          'tempstylometricanalysis_json_config_array' => $json_config_array,
-          'tempstylometricanalysis_new_page_url' => $new_page_url,        
+          'tempstylometricanalysis_full_linkpath2' => $full_linkpath2,
+          'tempstylometricanalysis_json_pystyl_config' => $json_pystyl_config,
+          'tempstylometricanalysis_json_collection_name_data' => $json_collection_name_data,
+          'tempstylometricanalysis_new_page_url' => $new_page_url,
           'tempstylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
         );
 
         if (!$dbw->affectedRows()) {
-            throw new Exception('stylometricanalysis-error-database');
+            throw new \Exception('stylometricanalysis-error-database');
         }
 
         return true;
@@ -218,8 +222,9 @@ class StylometricAnalysisWrapper {
           'tempstylometricanalysis_full_outputpath1',
           'tempstylometricanalysis_full_outputpath2',
           'tempstylometricanalysis_full_linkpath1',
-          'tempstylometricanalysis_full_linkpath2',    
-          'tempstylometricanalysis_json_config_array',
+          'tempstylometricanalysis_full_linkpath2',
+          'tempstylometricanalysis_json_pystyl_config',
+          'tempstylometricanalysis_json_collection_name_data',
           'tempstylometricanalysis_new_page_url',
           'tempstylometricanalysis_date'
             ), array(
@@ -229,7 +234,7 @@ class StylometricAnalysisWrapper {
         );
 
         if ($res->numRows() !== 1) {
-            throw new Exception('stylometricanalysis-error-database');
+            throw new \Exception('stylometricanalysis-error-database');
         }
 
         $s = $res->fetchObject();
@@ -237,8 +242,9 @@ class StylometricAnalysisWrapper {
         $full_outputpath1 = $s->tempstylometricanalysis_full_outputpath1;
         $full_outputpath2 = $s->tempstylometricanalysis_full_outputpath2;
         $full_linkpath1 = $s->tempstylometricanalysis_full_linkpath1;
-        $full_linkpath2 = $s->tempstylometricanalysis_full_linkpath2; 
-        $json_config_array = $s->tempstylometricanalysis_json_config_array;
+        $full_linkpath2 = $s->tempstylometricanalysis_full_linkpath2;
+        $json_pystyl_config = $s->tempstylometricanalysis_json_pystyl_config;
+        $json_collection_name_data = $s->tempstylometricanalysis_json_collection_name_data;
         $new_page_url = $s->tempstylometricanalysis_new_page_url;
         $date = $s->tempstylometricanalysis_date;
 
@@ -252,15 +258,16 @@ class StylometricAnalysisWrapper {
           'stylometricanalysis_full_outputpath1' => $full_outputpath1,
           'stylometricanalysis_full_outputpath2' => $full_outputpath2,
           'stylometricanalysis_full_linkpath1' => $full_linkpath1,
-          'stylometricanalysis_full_linkpath2' => $full_linkpath2,     
-          'stylometricanalysis_json_config_array' => $json_config_array,
+          'stylometricanalysis_full_linkpath2' => $full_linkpath2,
+          'stylometricanalysis_json_pystyl_config' => $json_pystyl_config,
+          'stylometricanalysis_json_collection_name_data' => $json_collection_name_data,
           'stylometricanalysis_new_page_url' => $new_page_url,
           'stylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
         );
 
         if (!$dbw->affectedRows()) {
-            throw new Exception('stylometricanalysis-error-database');
+            throw new \Exception('stylometricanalysis-error-database');
         }
 
         return true;
@@ -285,7 +292,7 @@ class StylometricAnalysisWrapper {
         );
 
         if ($res->numRows() !== 1) {
-            throw new Exception('stylometricanalysis-error-database');
+            throw new \Exception('stylometricanalysis-error-database');
         }
 
         $s = $res->fetchObject();
@@ -308,8 +315,9 @@ class StylometricAnalysisWrapper {
           'stylometricanalysis_full_outputpath1',
           'stylometricanalysis_full_outputpath2',
           'stylometricanalysis_full_linkpath1',
-          'stylometricanalysis_full_linkpath2',    
-          'stylometricanalysis_json_config_array',
+          'stylometricanalysis_full_linkpath2',
+          'stylometricanalysis_json_pystyl_config',
+          'stylometricanalysis_json_collection_name_data',
           'stylometricanalysis_new_page_url',
           'stylometricanalysis_date',
             ), array(
@@ -319,7 +327,7 @@ class StylometricAnalysisWrapper {
         );
 
         if ($res->numRows() !== 1) {
-            throw new Exception('stylometricanalysis-error-database');
+            throw new \Exception('stylometricanalysis-error-database');
         }
 
         $s = $res->fetchObject();
@@ -329,14 +337,15 @@ class StylometricAnalysisWrapper {
         $data['full_outputpath1'] = $s->stylometricanalysis_full_outputpath1;
         $data['full_outputpath2'] = $s->stylometricanalysis_full_outputpath2;
         $data['full_linkpath1'] = $s->stylometricanalysis_full_linkpath1;
-        $data['full_linkpath2'] = $s->stylometricanalysis_full_linkpath2; 
-        $data['config_array'] = (array) json_decode($s->stylometricanalysis_json_config_array);
+        $data['full_linkpath2'] = $s->stylometricanalysis_full_linkpath2;
+        $data['pystyl_config'] = (array) json_decode($s->stylometricanalysis_json_pystyl_config);
+        $data['collection_name_data'] = (array) json_decode($s->stylometricanalysis_json_collection_name_data);
         $data['date'] = $s->stylometricanalysis_date;
 
         return $data;
     }
 
-    public function deleteDatabaseEntry($page_title_with_namespace) {
+    public function deleteStylometricAnalysisDatabaseEntry($page_title_with_namespace) {
 
         $dbw = wfGetDB(DB_MASTER);
 
@@ -348,7 +357,7 @@ class StylometricAnalysisWrapper {
         );
 
         if (!$dbw->affectedRows()) {
-            throw new Exception('stylometricanalysis-error-database');
+            throw new \Exception('stylometricanalysis-error-database');
         }
 
         return true;

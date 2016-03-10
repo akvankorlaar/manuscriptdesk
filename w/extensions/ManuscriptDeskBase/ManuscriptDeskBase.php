@@ -42,13 +42,37 @@ $wgExtensionCredits['parserhook'][] = array(
   'version' => '0.0.1',
   'url' => 'https://manuscriptdesk.uantwerpen.be',
   'description' => 'This extension provides base classes and messages for the Manuscript Desk',
-  'descriptionmsg' => 'manuscriptdeskbase-desc'
 );
 
 //Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
 //Auto load classes 
+$wgAutoloadClasses['ManuscriptDeskBaseHooks'] = $dir . 'ManuscriptDeskBaseHooks.php';
 $wgAutoloadClasses['ManuscriptDeskBaseSpecials'] = $dir . 'ManuscriptDeskBaseSpecials.php';
 $wgAutoloadClasses['ManuscriptDeskBaseValidator'] = $dir . 'ManuscriptDeskBaseValidator.php';
-$wgExtensionMessagesFiles['ManuscriptDeskBaseMessages'] = $dir . '/ManuscriptDeskBaseMessages.i18n.php';
+$wgAutoloadClasses['ManuscriptDeskBaseWrapper'] = $dir . 'ManuscriptDeskBaseWrapper.php';
+$wgAutoloadClasses['ManuscriptDeskBaseRequestProcessor'] = $dir . 'ManuscriptDeskBaseRequestProcessor.php';
+$wgAutoloadClasses['ManuscriptDeskBaseTextProcessor'] = $dir . 'ManuscriptDeskBaseTextProcessor.php';
+$wgExtensionMessagesFiles['ManuscriptDeskBaseMessages'] = $dir . 'ManuscriptDeskBaseMessages.i18n.php';
+
+$wgAutoloadClasses['ManuscriptDeskBaseViewer'] = $dir . 'BaseViews' . '/' . 'ManuscriptDeskBaseViewer.php';
+$wgAutoloadClasses['HTMLUploadError'] = $dir . 'BaseViews' . '/' . 'HTMLUploadError.php';
+$wgAutoloadClasses['HTMLJavascriptLoader'] = $dir . 'BaseViews' . '/' . 'HTMLJavascriptLoader.php';
+$wgAutoloadClasses['HTMLCollectionMetaTable'] = $dir . 'BaseViews' . '/' . 'HTMLCollectionMetaTable.php';
+
+$wgResourceModules['ext.javascriptloader'] = array(
+  'scripts' => array(
+    'js/ext.javascriptloader.js',
+  ),
+  'localBasePath' => __DIR__,
+  'remoteExtPath' => 'ManuscriptDeskBase',
+);
+
+$wgResourceModules['ext.manuscriptdeskbasecss'] = array(
+  'styles' => array(
+    'css/ext.manuscriptdeskbasecss.css'
+    ),
+    'localBasePath' => __DIR__,
+    'remoteExtPath'=> 'ManuscriptDeskBase',
+);

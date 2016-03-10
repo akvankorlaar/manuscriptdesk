@@ -22,138 +22,157 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class ManuscriptDeskBaseSpecials extends SpecialPage {
+abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
+
+    protected $user_name;
+    protected $viewer;
+    protected $wrapper;
+    protected $request_processor;
 
     public function __construct($page_name) {
         parent::__construct($page_name);
     }
 
+    protected function setVariables() {
+        $user = $this->getUser();
+        $this->user_name = $user->getName();
+        $this->viewer = $this->getViewer();
+        $this->wrapper = $this->getWrapper();
+        $this->request_processor = $this->getRequestProcessor();
+    }
+
     /**
-     * This function checks if the edit token was posted
+     * Main entry point for Special Pages in the Manuscript Desk
      */
-    protected function tokenWasPosted() {
-        $edit_token = $this->getEditToken();
-        if ($edit_token === '') {
+    public function execute() {
+
+        try {
+            $this->setVariables();
+            $this->checkManuscriptDeskPermission();
+
+            if ($this->request_processor->requestWasPosted()) {
+                $this->processRequest();
+                return true;
+            }
+
+            $this->getDefaultPage();
+            return true;
+        } catch (Exception $e) {
+            $this->handleExceptions($e);
             return false;
         }
-
-        return true;
-    }
-
-    /**
-     * This function gets the edit token
-     */
-    protected function getEditToken() {
-        $request = $this->getRequest();
-        return $request->getText('wpEditToken');
-    }
-
-    /**
-     * This function checks the edit token
-     */
-    protected function checkEditToken() {
-        $edit_token = $this->getEditToken();
-        if ($this->getUser()->matchEditToken($edit_token) === false) {
-            throw new Exception('manuscriptdesk-error-edittoken');
-        }
-
-        return true;
     }
 
     /**
      * This function checks if the user has the appropriate permissions
      */
-    protected function checkPermission() {
-        $out = $this->getOutput();
-        $user_object = $out->getUser();
-        //user does not have permission
-        if (!in_array('ManuscriptEditors', $user_object->getGroups())) {
-            throw new Exception('manuscriptdesk-nopermission');
+    protected function checkManuscriptDeskPermission() {
+        $user = $this->getUser();
+
+        if (!in_array('ManuscriptEditors', $user->getGroups())) {
+            throw new \Exception('error-nopermission');
         }
 
         return true;
     }
 
     /**
-     * This function checks if a request was posted
+     * Create a new wikipage and return a $local_url
      */
-    protected function requestWasPosted() {
+    protected function createNewWikiPage($new_url, $content = '') {
+        
+        $content = empty($content) ? '<!--' . $this->msg('manuscriptdesk-newpage') . '-->' : $content; 
+        
+        $title = $this->createTitleObjectNewPage($new_url);
+      
+        $local_url = $title->getLocalURL();
+        $context = $this->getContext();
+        $article = Article::newFromTitle($title, $context);
 
-        $request = $this->getRequest();
+        $editor_object = new EditPage($article);
+        $content_new = new wikitextcontent($content);
+        $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97, false, null, $editor_object->contentFormat);
 
-        if (!$request->wasPosted()) {
-            return false;
+        if (!$doEditStatus->isOK()) {
+            $errors = $doEditStatus->getErrorsArray();
+            throw new \Exception('error-newpage');        
         }
 
-        return true;
+        return $local_url;
+    }
+    
+    private function createTitleObjectNewPage($new_page_url){
+        
+        if (null === Title::newFromText($new_page_url)) {
+            throw new \Exception('error-newpage');
+        }
+        
+        $title = Title::newFromText($new_page_url);
+
+        if ($title->exists()) {
+           throw new \Exception('error-newpage');
+        }
+      
+        return $title; 
+    }
+
+    protected function handleExceptions(Exception $exception_error) {
+
+        $viewer = $this->getViewer();
+        $error_identifier = $exception_error->getMessage();
+        $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
+
+        if ($error_identifier === 'error-nopermission') {
+            return $viewer->showNoPermissionError($error_message);
+        }
+
+        if ($error_identifier === 'error-fewuploads') {
+            return $viewer->showFewUploadsError($error_message);
+        }
+
+        return $this->getDefaultPage($error_message);
+    }
+
+    protected function constructErrorMessage(Exception $exception_error, $error_identifier) {
+
+        global $wgShowExceptionDetails;
+
+        if ($wgShowExceptionDetails === true) {
+            $error_file = $exception_error->getFile();
+            $error_line = $exception_error->getLine();
+            $trace = $exception_error->getTrace();
+            $error_message = $this->msg($error_identifier) . ' ' . $error_file . ' ' . $error_line;
+        }
+        else {
+            $error_message = $this->msg($error_identifier);
+        }
+
+        return $error_message;
     }
 
     /**
-     * This function retrieves the wiki text from a page
+     * Return viewer object for the special page
+     * 
+     * @return ManuscriptDeskBaseViewer object
      */
-    protected function getSinglePageText($title_object) {
-
-        $article_object = Wikipage::factory($title_object);
-        $raw_text = $article_object->getRawText();
-
-        $filtered_raw_text = $this->filterText($raw_text);
-
-        return $filtered_raw_text;
-    }
+    abstract protected function getViewer();
 
     /**
-     * This function filters out tags, and text in between certain tags. It also trims the text, and adds a single space to the last charachter if needed 
+     * Return wrapper object for the special page
+     * 
+     * @return ManuscriptDeskBaseWrapper object
      */
-    protected function filterText($raw_text) {
+    abstract protected function getWrapper();
 
-        //filter out the following tags, and all text in between the tags
-        //pagemetatable tag
-        $raw_text = preg_replace('/<pagemetatable>[^<]+<\/pagemetatable>/i', '', $raw_text);
+    /**
+     * Return request processor object for the special page
+     * 
+     * @return ManuscriptDeskBaseRequestProcessor object
+     */
+    abstract protected function getRequestProcessor();
 
-        //del tag
-        $raw_text = preg_replace('/<del>[^<]+<\/del>/i', '', $raw_text);
-
-        //note tag
-        $raw_text = preg_replace('/<note>[^<]+<\/note>/i', '', $raw_text);
-
-        //filter out any other tags, but keep all text in between the tags
-        $raw_text = strip_tags($raw_text);
-
-        $raw_text = trim($raw_text);
-
-        //check if it is possible to get the last charachter of the page
-        if (substr($raw_text, -1) !== false) {
-            $last_charachter = substr($raw_text, -1);
-
-            if ($last_charachter !== '-') {
-                //If the last charachter of the current page is '-', this may indicate that the first word of the next page 
-                //is linked to the last word of this page because they form a single word. In other cases, add a space after the last charachter of the current page 
-                $raw_text = $raw_text . ' ';
-            }
-        }
-
-        return $raw_text;
-    }
-    
-  protected function createNewWikiPage($new_url){
-    
-    $title_object = Title::newFromText($new_url);
-    $local_url = $title_object->getLocalURL();
-    $context = $this->getContext();   
-    $article = Article::newFromTitle($title_object, $context);
-       
-    //make a new page
-    $editor_object = new EditPage($article);
-    $content_new = new wikitextcontent('<!--' . $this->msg('newmanuscript-newpage') . '-->');
-    $doEditStatus = $editor_object->mArticle->doEditContent($content_new, $editor_object->summary, 97,
-                        false, null, $editor_object->contentFormat);
-    
-    if (!$doEditStatus->isOK() ) {
-        throw new \Exception('newmanuscript-error-newpage');
-        //$errors = $doEditStatus->getErrorsArray();
-    }
-    
-    return $local_url;
-  }
-    
+    /**
+     * Get the default page for this special page
+     */
+    abstract protected function getDefaultPage($error_message);
 }

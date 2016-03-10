@@ -44,14 +44,18 @@ class ManuscriptDeskBaseValidator {
             return $input;
         }
 
+        if (empty($input)) {
+            throw new \Exception('validation-empty');
+        }
+
         //check if all charachters are alphanumeric, or '/' or ':' (in case of url)
         if (!preg_match('/^[a-zA-Z0-9:\/]*$/', $input)) {
-            throw new Exception('validation-charachters');
+            throw new \Exception('validation-notalphanumeric');
         }
 
         //check for empty variables or unusually long string lengths
-        if (empty($input) || strlen($input) > ($this->max_length * 10)) {
-            throw new Exception('validation-charlength');
+        if (strlen($input) > ($this->max_length * 10)) {
+            throw new \Exception('validation-toolongstring');
         }
 
         return $input;
@@ -71,14 +75,17 @@ class ManuscriptDeskBaseValidator {
             return $input;
         }
 
-        //check if all charachters are alphanumeric
-        if (!preg_match('/^[a-zA-Z0-9]*$/', $input)) {
-            throw new Exception('validation-charachters');
+        if (empty($input)) {
+            throw new \Exception('validation-empty');
         }
 
-        //check for empty variables or unusually long string lengths
-        if (empty($input) || strlen($input) > ($this->max_length * 10)) {
-            throw new Exception('validation-charlength');
+        //check if all charachters are alphanumeric
+        if (!preg_match('/^[a-zA-Z0-9]*$/', $input)) {
+            throw new \Exception('validation-notalphanumeric');
+        }
+
+        if (strlen($input) > ($this->max_length * 10)) {
+            throw new \Exception('validation-morethanfiftycharachters');
         }
 
         return $input;
@@ -87,22 +94,69 @@ class ManuscriptDeskBaseValidator {
     /**
      * This function checks if basic form conditions are met for numbers. Field specific validation is done later 
      */
-    public function validateNumber($input) {
+    public function validateStringNumber($input) {
+
+        //string containting 0 is also seen as empty
+        if (empty($input) && $input !== '0') {
+            throw new \Exception('validation-empty');
+        }
 
         //check if all the input consists of numbers or '.'
         if (!preg_match('/^[0-9.]*$/', $input)) {
-            throw new Exception('validation-number');
-        }
-
-        if (empty($input) && $input !== '0') {
-            throw new Exception('validation-empty');
+            throw new \Exception('validation-notanumber');
         }
 
         if (strlen($input) > $this->max_length) {
-            throw new Exception('validation-maxlength');
+            throw new \Exception('validation-morethanfiftycharachters');
         }
 
         return $input;
+    }
+
+    public function validateSavedCollectionMetadataField($formfield_value, $formfield_name) {
+
+        $max_length = $this->max_length;
+
+        if (empty($formfield_value)) {
+            //empty metadata values are allowed
+            return $formfield_value;
+        }
+
+        if ($formfield_name === 'wpmetadata_websource') {
+
+            if (strlen($formfield_value) > $max_length) {
+                throw new \Exception('validation-morethanfiftycharachters');
+            }
+
+            //allow alphanumeric charachters, whitespace, and '-./:'  
+            elseif (!preg_match("/^[A-Za-z0-9\-.\/:\s]+$/", $formfield_value)) {
+                throw new \Exception('validation-websourcecharachters');
+            }
+        }
+        
+        elseif ($formfield_name === 'wpmetadata_notes') {
+
+            if (strlen($formfield_value) > ($max_length * 20)) {
+                throw new \Exception('validation-noteslength');
+            }
+            //allow alphanumeric charachters, whitespace, and ',.;!?' 
+            elseif (!preg_match("/^[A-Za-z0-9,.;!?\s]+$/", $formfield_value)) {
+                throw new \Exception('validation-notescharachters');
+            }
+        }
+        else {
+
+            if (strlen($formfield_value) > $max_length) {
+                throw new \Exception('validation-morethanfiftycharachters');
+            }
+
+            //allow alphanumeric charachters and whitespace  
+            elseif (!preg_match("/^[A-Za-z0-9\s]+$/", $formfield_value)) {
+                throw new \Exception('validation-metadatacharachters');
+            }
+        }
+
+        return $formfield_value;
     }
 
 }

@@ -1,48 +1,3 @@
-CREATE TABLE IF NOT EXISTS `alphabetnumbers` (
-  `a` int(10) unsigned NOT NULL DEFAULT '0',
-  `b` int(10) unsigned NOT NULL DEFAULT '0',
-  `c` int(10) unsigned NOT NULL DEFAULT '0',
-  `d` int(10) unsigned NOT NULL DEFAULT '0',
-  `e` int(10) unsigned NOT NULL DEFAULT '0',
-  `f` int(10) unsigned NOT NULL DEFAULT '0',
-  `g` int(10) unsigned NOT NULL DEFAULT '0',
-  `h` int(10) unsigned NOT NULL DEFAULT '0',
-  `i` int(10) unsigned NOT NULL DEFAULT '0',
-  `j` int(10) unsigned NOT NULL DEFAULT '0',
-  `k` int(10) unsigned NOT NULL DEFAULT '0',
-  `l` int(10) unsigned NOT NULL DEFAULT '0',
-  `m` int(10) unsigned NOT NULL DEFAULT '0',
-  `n` int(10) unsigned NOT NULL DEFAULT '0',
-  `o` int(10) unsigned NOT NULL DEFAULT '0',
-  `p` int(10) unsigned NOT NULL DEFAULT '0',
-  `q` int(10) unsigned NOT NULL DEFAULT '0',
-  `r` int(10) unsigned NOT NULL DEFAULT '0',
-  `s` int(10) unsigned NOT NULL DEFAULT '0',
-  `t` int(10) unsigned NOT NULL DEFAULT '0',
-  `u` int(10) unsigned NOT NULL DEFAULT '0',
-  `v` int(10) unsigned NOT NULL DEFAULT '0',
-  `w` int(10) unsigned NOT NULL DEFAULT '0',
-  `x` int(10) unsigned NOT NULL DEFAULT '0',
-  `y` int(10) unsigned NOT NULL DEFAULT '0',
-  `z` int(10) unsigned NOT NULL DEFAULT '0',
-  `zero` int(10) unsigned NOT NULL DEFAULT '0',
-  `one` int(10) unsigned NOT NULL DEFAULT '0',
-  `two` int(10) unsigned NOT NULL DEFAULT '0',
-  `three` int(10) unsigned NOT NULL DEFAULT '0',
-  `four` int(10) unsigned NOT NULL DEFAULT '0',
-  `five` int(10) unsigned NOT NULL DEFAULT '0',
-  `six` int(10) unsigned NOT NULL DEFAULT '0',
-  `seven` int(10) unsigned NOT NULL DEFAULT '0',
-  `eight` int(10) unsigned NOT NULL DEFAULT '0',
-  `nine` int(10) unsigned NOT NULL DEFAULT '0',
-  `alphabetnumbers_context` varbinary(255) NOT NULL, 
-  UNIQUE KEY `alphabetnumbers_context` (`alphabetnumbers_context`)
-) ENGINE=InnoDB DEFAULT CHARSET=binary;
-
-INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('SingleManuscriptPages'); 
-INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('AllCollections'); 
-INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('AllCollations'); 
-
 CREATE TABLE IF NOT EXISTS `collations` (
   `collations_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `collations_user` varbinary(255) NOT NULL,
@@ -111,7 +66,8 @@ CREATE TABLE IF NOT EXISTS `tempstylometricanalysis` (
   `tempstylometricanalysis_full_outputpath2` varbinary(500) NOT NULL,
   `tempstylometricanalysis_full_linkpath1` varbinary(500) NOT NULL,
   `tempstylometricanalysis_full_linkpath2` varbinary(500) NOT NULL,
-  `tempstylometricanalysis_json_config_array` TEXT NOT NULL,
+  `tempstylometricanalysis_json_pystyl_config` TEXT NOT NULL,
+  `tempstylometricanalysis_json_collection_name_array` TEXT NOT NULL,
   `tempstylometricanalysis_new_page_url` varbinary(500) NOT NULL,
   `tempstylometricanalysis_date` varbinary(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=binary;
@@ -123,7 +79,53 @@ CREATE TABLE IF NOT EXISTS `stylometricanalysis` (
   `stylometricanalysis_full_outputpath2` varbinary(500) NOT NULL,
   `stylometricanalysis_full_linkpath1` varbinary(500) NOT NULL,
   `stylometricanalysis_full_linkpath2` varbinary(500) NOT NULL,
-  `stylometricanalysis_json_config_array` TEXT NOT NULL,
+  `stylometricanalysis_json_pystyl_config` TEXT NOT NULL,
+  `stylometricanalysis_json_collection_name_array` TEXT NOT NULL,
   `stylometricanalysis_new_page_url` varbinary(500) NOT NULL,
   `stylometricanalysis_date` varbinary(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=binary;
+
+CREATE TABLE IF NOT EXISTS `alphabetnumbers` (
+  `a` int(10) unsigned NOT NULL DEFAULT '0',
+  `b` int(10) unsigned NOT NULL DEFAULT '0',
+  `c` int(10) unsigned NOT NULL DEFAULT '0',
+  `d` int(10) unsigned NOT NULL DEFAULT '0',
+  `e` int(10) unsigned NOT NULL DEFAULT '0',
+  `f` int(10) unsigned NOT NULL DEFAULT '0',
+  `g` int(10) unsigned NOT NULL DEFAULT '0',
+  `h` int(10) unsigned NOT NULL DEFAULT '0',
+  `i` int(10) unsigned NOT NULL DEFAULT '0',
+  `j` int(10) unsigned NOT NULL DEFAULT '0',
+  `k` int(10) unsigned NOT NULL DEFAULT '0',
+  `l` int(10) unsigned NOT NULL DEFAULT '0',
+  `m` int(10) unsigned NOT NULL DEFAULT '0',
+  `n` int(10) unsigned NOT NULL DEFAULT '0',
+  `o` int(10) unsigned NOT NULL DEFAULT '0',
+  `p` int(10) unsigned NOT NULL DEFAULT '0',
+  `q` int(10) unsigned NOT NULL DEFAULT '0',
+  `r` int(10) unsigned NOT NULL DEFAULT '0',
+  `s` int(10) unsigned NOT NULL DEFAULT '0',
+  `t` int(10) unsigned NOT NULL DEFAULT '0',
+  `u` int(10) unsigned NOT NULL DEFAULT '0',
+  `v` int(10) unsigned NOT NULL DEFAULT '0',
+  `w` int(10) unsigned NOT NULL DEFAULT '0',
+  `x` int(10) unsigned NOT NULL DEFAULT '0',
+  `y` int(10) unsigned NOT NULL DEFAULT '0',
+  `z` int(10) unsigned NOT NULL DEFAULT '0',
+  `zero` int(10) unsigned NOT NULL DEFAULT '0',
+  `one` int(10) unsigned NOT NULL DEFAULT '0',
+  `two` int(10) unsigned NOT NULL DEFAULT '0',
+  `three` int(10) unsigned NOT NULL DEFAULT '0',
+  `four` int(10) unsigned NOT NULL DEFAULT '0',
+  `five` int(10) unsigned NOT NULL DEFAULT '0',
+  `six` int(10) unsigned NOT NULL DEFAULT '0',
+  `seven` int(10) unsigned NOT NULL DEFAULT '0',
+  `eight` int(10) unsigned NOT NULL DEFAULT '0',
+  `nine` int(10) unsigned NOT NULL DEFAULT '0',
+  `alphabetnumbers_context` varbinary(255) NOT NULL, 
+  UNIQUE KEY `alphabetnumbers_context` (`alphabetnumbers_context`)
+) ENGINE=InnoDB DEFAULT CHARSET=binary;
+
+INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('SingleManuscriptPages'); 
+INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('AllCollections'); 
+INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('AllCollations'); 
