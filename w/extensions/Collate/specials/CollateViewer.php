@@ -168,12 +168,12 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $html .= $this->getHTMLJavascriptLoader();
         $html .= "<div class='javascripthide'>";
         $html .= "<div id = 'collate-buttons'>";
-        $html .= "<form class='collate-form-two' action='" . $wgArticleUrl . "Special:Collate' method='post'>";
+        $html .= "<form class='manuscriptdesk-form-two' action='" . $wgArticleUrl . "Special:Collate' method='post'>";
         $html .= "<input type='submit' class='collate-submitbutton-two' name='redirect_posted' title='$redirect_hover_message'  value='$redirect_message'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
-        $html .= "<form class='collate-form-two' action='" . $wgArticleUrl . "Special:Collate' method='post'>";
+        $html .= "<form class='manuscriptdesk-form-two' action='" . $wgArticleUrl . "Special:Collate' method='post'>";
         $html .= "<input type='submit' class='collate-submitbutton-two' name='save_page_posted' title='$save_hover_message' value='$save_message'>";
         $html .= "<input type='hidden' name='time' value='$time'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";

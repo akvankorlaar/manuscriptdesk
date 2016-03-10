@@ -49,16 +49,6 @@
   background-color: #F2FCFF;
 }
 
-#stylometricanalysis-form-two {
-  position: relative;
-  display: inline-block;
-}
-
-#stylometricanalysis-form-three {
-  position: relative;
-  display: inline-block;
-}
-
 #stylometricanalysis-infobox {
   padding: 0.3em;
   float: right; 
