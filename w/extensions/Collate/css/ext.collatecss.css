@@ -37,7 +37,7 @@ pre {
   width: 100%;
 }
 
-#collate-form {
+.manuscriptdesk-form {
   overflow-y: auto;  
   position: relative;
   width: 100%;
@@ -79,15 +79,6 @@ pre {
   background: #F2FCFF; 
   padding: 0.3em; 
   color: black;
-}
-
-.javascript-error {
-  font-size: larger;
-  color: #cc0000;
-}
-
-#collate-loaderdiv {
-  display: none;
 }
 
 .collate-form-two {

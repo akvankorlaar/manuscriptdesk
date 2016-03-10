@@ -162,9 +162,12 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         $page_title_with_namespace = $out->getTitle()->getPrefixedURL();
 
         if ($page_title_with_namespace === 'Special:StylometricAnalysis') {
-            $out->addModuleStyles('ext.stylometricanalysiscss');
-            $out->addModules('ext.stylometricanalysisbuttoncontroller');
-            $out->addModules('ext.javascriptloader');
+            
+            $css_modules = array('ext.stylometricanalysiscss', 'ext.manuscriptdeskbasecss');
+            $javascript_modules = array('ext.collatebuttoncontroller','ext.javascriptloader');
+            $out->addModuleStyles($css_modules);          
+            $out->addModules($javascript_modules);   
+            
         }elseif($this->isStylometricAnalysisNamespace($out)){
             $out->addModuleStyles('ext.stylometricanalysiscss');
         }

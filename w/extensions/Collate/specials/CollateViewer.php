@@ -60,7 +60,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
             $html .= "<p>" . $out->msg('collate-instruction2') . "</p>";
         }
 
-        $html .= "<div class='javascript-error'></div>";
+        $html .= "<div class='javascripterror'></div>";
 
         if (!empty($error_message)) {
             $html .= "<br>";
@@ -69,7 +69,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
 
         $manuscript_message = $out->msg('collate-manuscriptpages');
 
-        $html .= "<form id='collate-form' action='" . $wgArticleUrl . "Special:Collate' method='post'>";
+        $html .= "<form class='manuscriptdesk-form' action='" . $wgArticleUrl . "Special:Collate' method='post'>";
         $html .= "<h3>$manuscript_message</h3>";
         $html .= "<table class='collate-table'>";
 

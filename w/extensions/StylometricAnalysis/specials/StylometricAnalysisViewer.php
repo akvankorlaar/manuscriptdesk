@@ -52,14 +52,14 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
 
         $html .= "<p>" . $out->msg('stylometricanalysis-instruction1') . '</p>';
 
-        $html .= "<div class='javascript-error'></div>";
+        $html .= "<div class='javascripterror'></div>";
 
         //display the error 
         if (!empty($error_message)) {
             $html .= "<div class = 'error'>" . $error_message . "</div>";
         }
 
-        $html .= "<form id='stylometricanalysis-form' action='" . $wgArticleUrl . "Special:StylometricAnalysis' method='post'>";
+        $html .= "<form class='manuscriptdesk-form' action='" . $wgArticleUrl . "Special:StylometricAnalysis' method='post'>";
         $html .= "<h3>" . $out->msg('stylometricanalysis-collectionheader') . "</h3>";
 
         $html .= "<table class='stylometricanalysis-table'>";

@@ -48,13 +48,6 @@ $wgExtensionCredits['parserhook'][] = array(
 //Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
-$wgResourceModules['ext.javascriptloader'] = array(
-  'scripts' => array(
-    'js/ext.javascriptloader.js',
-  ),
-  'localBasePath' => __DIR__,
-  'remoteExtPath' => 'ManuscriptDeskBase',
-);
 
 //Auto load classes 
 $wgAutoloadClasses['ManuscriptDeskBaseHooks'] = $dir . 'ManuscriptDeskBaseHooks.php';
@@ -66,4 +59,25 @@ $wgAutoloadClasses['ManuscriptDeskBaseTextProcessor'] = $dir . 'ManuscriptDeskBa
 $wgExtensionMessagesFiles['ManuscriptDeskBaseMessages'] = $dir . 'ManuscriptDeskBaseMessages.i18n.php';
 
 $wgAutoloadClasses['ManuscriptDeskBaseViewer'] = $dir . 'BaseViews' . '/' . 'ManuscriptDeskBaseViewer.php';
-$wgAutoloadClasses['ManuscriptDeskBaseViews'] = $dir . 'BaseViews' . '/' . 'HTMLUploadError.php';
+$wgAutoloadClasses['HTMLUploadError'] = $dir . 'BaseViews' . '/' . 'HTMLUploadError.php';
+$wgAutoloadClasses['HTMLJavascriptLoader'] = $dir . 'BaseViews' . '/' . 'HTMLJavascriptLoader.php';
+
+$wgResourceModules['ext.javascriptloader'] = array(
+  'scripts' => array(
+    'js/ext.javascriptloader.js',
+  ),
+  'localBasePath' => __DIR__,
+  'remoteExtPath' => 'ManuscriptDeskBase',
+);
+
+$wgResourceModules['ext.manuscriptdeskbasecss'] = array(
+  'localBasePath' => dirname(__FILE__),
+  'styles' => '/css/ext.manuscriptdeskbasecss.css',
+);
+
+
+////Extra file loaded later 
+//$wgResourceModules['ext.collatecss'] = array(
+//  'localBasePath' => dirname(__FILE__),
+//  'styles' => '/css/ext.collatecss.css',
+//);

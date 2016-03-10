@@ -21,11 +21,6 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-/**
- * This file is mainly concerned with showing the loader gif, and javascript validation. There is also server side validation in SpecialNewManuscript,
- * so the javascript validation is just to increase user-experience and reduce some irrelevant requests sent to the server
- */
-
 (function (mw, $){
      
     /**

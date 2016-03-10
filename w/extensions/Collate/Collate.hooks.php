@@ -138,9 +138,11 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
         $page_title_with_namespace = $out->getTitle()->getPrefixedURL();
 
         if ($this->isCollationsNamespace($out) || $page_title_with_namespace === 'Special:Collate') {
-            $out->addModuleStyles('ext.collatecss');
-            $out->addModules('ext.collatebuttoncontroller');
-            $out->addMOdules('ext.javascriptloader');
+            
+            $css_modules = array('ext.collatecss', 'ext.manuscriptdeskbasecss');
+            $javascript_modules = array('ext.collatebuttoncontroller','ext.javascriptloader');
+            $out->addModuleStyles($css_modules);          
+            $out->addModules($javascript_modules);         
         }
 
         return true;
