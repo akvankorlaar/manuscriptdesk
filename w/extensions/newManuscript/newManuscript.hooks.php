@@ -753,14 +753,14 @@ class newManuscriptHooks {
     }
 
     private function addMetatableToManuscriptPage(OutputPage $out, $page_title_with_namespace) {
-        $collection = $this->new_manuscript_wrapper->getCollectionTitle($page_title_with_namespace);
+        $collection_title = $this->new_manuscript_wrapper->getCollectionTitle($page_title_with_namespace);
 
         if (empty($collection_title)) {
             return;
         }
 
-        $meta_data = $this->getCollectionMetadata($collection);
-        $html = $this->getHTMLCollectionMetaTable($meta_data);
+        $meta_data = $this->getCollectionMetadata($collection_title);
+        $html = $this->getHTMLCollectionMetaTable($out, $meta_data);
         $out->addHTML($html);
         return;
     }
