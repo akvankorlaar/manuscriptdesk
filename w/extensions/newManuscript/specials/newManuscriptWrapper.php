@@ -463,4 +463,109 @@ class newManuscriptWrapper {
         return '';
     }
 
+    public function getManuscriptsTitleFromUrl($url_without_namespace) {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'manuscripts', //from
+            array(
+          'manuscripts_title', //values
+            ), array(
+          'manuscripts_url = ' . $dbr->addQuotes($url_without_namespace), //conditions
+            )
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        return $res->fetchObject()->manuscripts_title;
+    }
+
+    public function getUserNameFromUrl($url_without_namespace) {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'manuscripts', //from
+            array(
+          'manuscripts_user', //values
+            ), array(
+          'manuscripts_url = ' . $dbr->addQuotes($url_without_namespace), //conditions
+            )
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        return $res->fetchObject()->manuscripts_user;
+    }
+
+    public function getCollectionTitleFromUrl($url_without_namespace) {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'manuscripts', //from
+            array(
+          'manuscripts_collection', //values
+            ), array(
+          'manuscripts_url = ' . $dbr->addQuotes($url_without_namespace), //conditions
+            )
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        return $res->fetchObject()->manuscripts_collection;
+    }
+
+    public function getPreviousAndNextPageUrl($collection_title, $page_title_with_namespace) {
+        $dbr = wfGetDB(DB_SLAVE);
+        $no_previous_page = false;
+        $previous_page_url = null;
+        $next_page_url = null;
+
+        $res = $dbr->select(
+            'manuscripts', //from
+            array(
+          'manuscripts_url', //values
+          'manuscripts_lowercase_title',
+            ), array(
+          'manuscripts_collection = ' . $dbr->addQuotes($collection_title), //conditions
+            ), __METHOD__, array(
+          'ORDER BY' => 'manuscripts_lowercase_title',
+            )
+        );
+
+        while ($s = $res->fetchObject()) {
+
+            //once the current page has been found in the database
+            if ($s->manuscripts_url === $page_title_with_namespace) {
+
+                //set the last entry to $previous_page_url, if it exists
+                if (isset($previous_url)) {
+                    $previous_page_url = $previous_url;
+                    continue;
+                }
+                else {
+                    $no_previous_page = true;
+                    continue;
+                }
+            }
+
+            //once $previous_page_url has been set, or if there is $no_previous_page, set the $next_page_url
+            if (isset($previous_page_url) || $no_previous_page === true) {
+                $next_page_url = $s->manuscripts_url;
+                break;
+            }
+            //otherwise, the current page has not been found yet  
+            else {
+                $previous_url = $s->manuscripts_url;
+            }
+        }
+
+        return array($previous_page_url, $next_page_url);
+    }
+
 }
