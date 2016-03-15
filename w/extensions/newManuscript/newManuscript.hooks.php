@@ -551,7 +551,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             return true;
         }
 
-        if (!$this->currentPageExists($wikiPage) && !$this->manuscriptSavePageWasPosted($user)) {
+        //could also check if there is a corresponding image on server
+        if (!$this->currentPageExists($wikiPage) && !$this->savePageWasRequested($user)) {
             $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-nopermission') . "."));
             return true;
         }
@@ -567,21 +568,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         }
 
         return true;
-    }
-
-    private function manuscriptSavePageWasPosted(User $user) {
-
-        //make a requestprocessor object
-        //check if the edit token was posted, and check if this token was ok
-        //check if save_page_posted was posted
-//        $reqeuest = $user->getRequest();
-//        
-//        //Todo validate edit token 
-//        if (!$request->getText('save_page_posted')) {
-//            return false;
-//        }
-        
-        return false; 
     }
 
     private function textExceedsMaximumAllowedLength($number_of_charachters_new_save, $max_charachters_manuscript) {
@@ -630,7 +616,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $meta_data = $this->getCollectionMetadata($collection_title);
         $html = $this->getHTMLCollectionMetaTable($out, $meta_data);
         $out->addHTML($html);
-
 
         return;
     }

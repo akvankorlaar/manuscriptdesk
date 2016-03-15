@@ -22,12 +22,12 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-abstract class ManuscriptDeskBaseRequestProcessor {
+class ManuscriptDeskBaseRequestProcessor {
 
     protected $request;
     protected $validator;
 
-    public function __construct(WebRequest $request, ManuscriptDeskBaseValidator $validator) {
+    public function __construct(WebRequest $request, ManuscriptDeskBaseValidator $validator = null) {
         $this->request = $request;
         $this->validator = $validator;
     }

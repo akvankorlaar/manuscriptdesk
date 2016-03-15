@@ -68,19 +68,9 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
             return true;
         }
 
-        if (!$this->currentPageExists($wikiPage) && !$this->collateSavePageWasRequested($user)) {
+        if (!$this->currentPageExists($wikiPage) && !$this->savePageWasRequested($user)) {
             $status->fatal(new RawMessage($this->getMessage('collatehooks-nopermission')));
             return true;
-        }
-
-        return true;
-    }
-
-    private function collateSavePageWasRequested(User $user) {
-        $request = $user->getRequest();
-        //Todo validate edit token 
-        if (!$request->getText('save_page_posted')) {
-            return false;
         }
 
         return true;

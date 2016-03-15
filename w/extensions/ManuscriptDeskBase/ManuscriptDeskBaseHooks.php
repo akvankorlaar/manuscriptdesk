@@ -46,7 +46,7 @@ abstract class ManuscriptDeskBaseHooks {
 
         return true;
     }
-    
+
     /**
      * Assert whether the current user is a sysop
      */
@@ -78,6 +78,17 @@ abstract class ManuscriptDeskBaseHooks {
         $title_object = $wikiPage->getTitle();
 
         if (!$title_object->exists()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function savePageWasRequested(User $user) {
+        $request = $user->getRequest();
+        $request_processor = new ManuscriptDeskBaseRequestProcessor($request);
+
+        if (!$request_processor->checkEditToken($user) || !$request_processor->savePagePosted()) {
             return false;
         }
 
