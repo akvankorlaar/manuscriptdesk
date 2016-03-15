@@ -41,6 +41,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $creator_user_name;
     private $manuscripts_title;
     private $collection_title;
+    private $partial_url; 
     private $out;
     private $user;
     private $title;
@@ -85,7 +86,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         try {
             $this->setOutputPage($out);
-            $this->setPageData();
+            $this->setPageData($out->getTitle()->getPartialURL());
             $html = $this->getHTMLIframeForZoomviewer();
             $out->addHTML($html);
             $out->addModuleStyles('ext.zoomviewer');
@@ -129,10 +130,10 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         try {
             $this->setPageObjects();
-            $this->setPageData();
+            $this->setPageData($out->getTitle()->getPrefixedUrl());
 
             $html = '';
-            $html .= $this->getCollectionHeader();
+            $html .= $this->getHTMLCollectionHeader();
             $html .= $this->getHTMLManuscriptViewLinks();
             $html .= $this->getHTMLIframeForZoomviewer();
             $out->addHTML($html);
@@ -149,32 +150,18 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $this->setTitle($title);
     }
 
-    private function setPageData() {
+    private function setPageData($partial_url) {
         $this->setWrapper();
-        $this->collection_title = $this->wrapper->getCollectionTitleFromUrl($url_without_namespace);
-        $this->creator_user_name = $this->wrapper->getUserNameFromUrl($url_without_namespace);
-        $this->manuscripts_title = $this->wrapper->getManuscriptsTitleFromUrl($url_without_namespace);
-    }
+        $this->partial_url = $partial_url; 
+        $this->creator_user_name = $this->wrapper->getUserNameFromUrl($partial_url);
+        $this->manuscripts_title = $this->wrapper->getManuscriptsTitleFromUrl($partial_url);
 
-    private function getHTMLManuscriptViewLinks() {
-        $html = "";
-        $html .= "<table id='link-wrap'>";
-        $html .= "<tr>";
-        $html .= $this->getLinkToOriginalManuscriptImage();
-        $html .= $this->getLinkToEditCollection();
-        $html .= $this->getPreviousNextPageLinks();
-        $html .= "</tr>";
-        $html .= "</table>";
-        return $html;
-    }
-
-    private function getCollectionHeader() {
-        $collection_title = $this->collection_title;
-        if ($this->collectionTitleIsValid()) {
-            return '<h2>' . htmlspecialchars($collection_title) . '</h2><br>';
+        $collection_title = $this->wrapper->getCollectionTitleFromUrl($partial_url);
+        if ($this->collectionTitleIsValid($collection_title)) {
+            return $this->collection_title = $collection_title;
         }
 
-        return '';
+        return;
     }
 
     private function collectionTitleIsValid() {
@@ -186,16 +173,36 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
-    private function getLinkToEditCollection() {
-        if ($this->collectionTitleIsValid()) {
-            $current_user_name = $this->user->getName();
-            //only allow the owner of the collection to edit collection data
-            if ($this->creator_user_name === $current_user_name) {
-                return $this->getHTMLLinkToEditCollection();
-            }
+    private function getHTMLManuscriptViewLinks() {
+        $html = "";
+        $html .= "<table id='link-wrap'>";
+        $html .= "<tr>";
+        $html .= $this->getHTMLLinkToOriginalManuscriptImage();
+        $html .= $this->getHTMLLinkToEditCollection();
+        $html .= $this->getHTMLPreviousNextPageLinks();
+        $html .= "</tr>";
+        $html .= "</table>";
+        return $html;
+    }
+
+    private function getHTMLCollectionHeader() {
+        if (isset($this->collection_title)) {
+            return '<h2>' . htmlspecialchars($collection_title) . '</h2><br>';
         }
 
         return '';
+    }
+
+    private function currentUserIsTheOwnerOfThePage(User $user = null) {
+
+        $user = isset($user) ? $user : $this->user;
+        $current_user_name = $user->getName();
+        //only allow the owner of the collection to edit collection data
+        if ($this->creator_user_name !== $current_user_name) {
+            return false;
+        }
+
+        return true;
     }
 
     private function currentUserIsAManuscriptEditor(User $user) {
@@ -208,59 +215,68 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
     private function getHTMLLinkToEditCollection() {
 
-        global $wgArticleUrl;
+        if ($this->currentUserIsTheOwnerOfThePage() && isset($this->collection_title)) {
 
-        $collection_title = $this->collection_title;
-        $page_title_with_namespace = $this->title->getPrefixedURL();
-        $edit_token = $this->user->getEditToken();
+            global $wgArticleUrl;
 
-        $html = "";
-        $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
-        $html .= "<input class='button-transparent' type='submit' name='editlink' value='Edit Collection Metadata'>";
-        $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
-        $html .= "<input type='hidden' name='link_back_to_manuscript_page' value='" . $page_title_with_namespace . "'>";
-        $html .= "<input type='hidden' name='edit_metadata_posted' value = 'edit_metadata_posted'>";
-        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
-        $html .= "</form>";
+            $collection_title = $this->collection_title;
+            $partial_url = $this->partial_url;
+            $edit_token = $this->user->getEditToken();
 
-        return $html;
+            $html = "";
+            $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
+            $html .= "<input class='button-transparent' type='submit' name='editlink' value='Edit Collection Metadata'>";
+            $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
+            $html .= "<input type='hidden' name='link_back_to_manuscript_page' value='" . $partial_url . "'>";
+            $html .= "<input type='hidden' name='edit_metadata_posted' value = 'edit_metadata_posted'>";
+            $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+            $html .= "</form>";
+
+            return $html;
+        }
+
+        return '';
     }
 
     /**
      * This function gets the links to the previous and the next page of the collection, if they exist 
      */
-    private function getPreviousNextPageLinks() {
+    private function getHTMLPreviousNextPageLinks() {
 
-        global $wgArticleUrl;
+        if (isset($this->collection_title)) {
 
-        $page_title_with_namespace = $this->title->getPrefixedURL();
-        $collection_title = $this->collection_title;
-        list($previous_page_url, $next_page_url) = $this->wrapper->getPreviousAndNextPageUrl($collection_title, $page_title_with_namespace);
+            global $wgArticleUrl;
 
-        $html = "";
-        $html .= "<td>";
+            $partial_url = $this->partial_url;
+            $collection_title = $this->collection_title;
+            list($previous_page_url, $next_page_url) = $this->wrapper->getPreviousAndNextPageUrl($collection_title, $partial_url);
 
-        if (isset($previous_page_url)) {
-            $html .= "<a href='" . $wgArticleUrl . htmlspecialchars($previous_page_url) . "' class='link-transparent' title='Go to Previous Page'>Go to Previous Page</a>";
+            $html = "";
+            $html .= "<td>";
+
+            if (isset($previous_page_url)) {
+                $html .= "<a href='" . $wgArticleUrl . htmlspecialchars($previous_page_url) . "' class='link-transparent' title='Go to Previous Page'>Go to Previous Page</a>";
+            }
+
+            if (isset($previous_page_url) && isset($next_page_url)) {
+                $html .= "<br>";
+            }
+
+            if (isset($next_page_url)) {
+                $html .= "<a href='" . $wgArticleUrl . htmlspecialchars($next_page_url) . "' class='link-transparent' title='Go to Next Page'>Go to Next Page</a>";
+            }
+
+            $html .= "</td>";
+            return $html;
         }
 
-        if (isset($previous_page_url) && isset($next_page_url)) {
-            $html .= "<br>";
-        }
-
-        if (isset($next_page_url)) {
-            $html .= "<a href='" . $wgArticleUrl . htmlspecialchars($next_page_url) . "' class='link-transparent' title='Go to Next Page'>Go to Next Page</a>";
-        }
-
-        $html .= "</td>";
-
-        return $html;
+        return '';
     }
 
     /**
      * This function returns the link to the original image
      */
-    private function getLinkToOriginalManuscriptImage() {
+    private function getHTMLLinkToOriginalManuscriptImage() {
 
         $partial_original_image_path = $this->constructPartialOriginalImagePath();
         $full_original_image_path = $this->constructFullOriginalImagePath($partial_original_image_path);
@@ -370,7 +386,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     public static function register(Parser &$parser) {
         // Register the hook with the parser
-        $parser->setHook('pagemetatable', array('newManuscriptHooks', 'renderPageMetaTable'));
+        $parser->setHook('pagemetatable', array('NewManuscriptHooks', 'renderPageMetaTable'));
         return true;
     }
 
@@ -407,23 +423,44 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             return true;
         }
 
-        $this->setPageData();
-        $current_user_name = $user->getName();
+        $this->setPageData($wiki_page->getTitle()->getPrefixedUrl());
 
-        if ($current_user_name !== $this->creator_user_name && !$this->currentUserIsASysop($user)) {
+        if (!$this->currentUserIsTheOwnerOfThePage($user) && !$this->currentUserIsASysop($user)) {
             //deny deletion because the current user did not create this manuscript, and the user is not an administrator
             $error = "<br>" . $this->getMessage('newmanuscripthooks-nodeletepermission') . ".";
             return false;
         }
-
+        
+        $this->deleteFilesAndDatabaseEntries();
+        $this->subtractAlphabetNumbersTable();
+    }
+    
+    private function deleteFilesAndDatabaseEntries(){
         $this->deleteZoomImageFiles();
         $this->deleteOriginalImage();
 
-        $collection_title = $this->collection_title;
-        $page_title_with_namespace = $title->getPrefixedUrl();
-        $this->wrapper->deleteDatabaseEntry($collection_title, $page_title_with_namespace);
-        $this->wrapper->subtractAlphabetnumbers($filename_fromurl, $collection_title);
+        $this->wrapper->deleteFromManuscripts($this->partial_url);
+
+        if (isset($this->collection_title)) {
+            $this->wrapper->checkAndDeleteCollectionifNeeded($this->collection_title);
+        }
+
         return true;
+    }
+    
+    private function subtractAlphabetNumbersTable(){
+        $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($this->partial_url);
+        $alphabetnumbes_context = $this->determineAlphabetNumbersContextFromCollectionTitle();
+        $this->wrapper->subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbes_context);
+    }
+
+    private function determineAlphabetNumbersContextFromCollectionTitle() {
+        if (!isset($this->collection_title)) {
+            return 'SingleManuscriptPages';
+        }
+        else {
+            return 'AllCollections';
+        }
     }
 
     /**
@@ -522,22 +559,12 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     /**
      * This function prevents users from saving new wiki pages on NS_MANUSCRIPTS when there is no corresponding file in the database,
      * and it checks if the content is not larger than $max_charachters_manuscript  
-     * 
-     * @param type $wikiPage
-     * @param type $user
-     * @param type $content
-     * @param type $summary
-     * @param type $isMinor
-     * @param type $isWatch
-     * @param type $section
-     * @param type $flags
-     * @param type $status
      */
     public function onPageContentSave(&$wikiPage, &$user, &$content, &$summary, $isMinor, $isWatch, $section, &$flags, &$status) {
 
         $this->assignGlobalsToProperties();
 
-        $page_title_with_namespace = $this->page_title;
+        $partial_url = $this->partial_url;
         $page_title = $this->page_title;
         $namespace = $this->namespace;
 

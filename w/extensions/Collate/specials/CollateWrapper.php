@@ -336,25 +336,4 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         return true;
     }
 
-    public function getManuscriptsLowercaseTitle($page_title_with_namespace = '') {
-        $dbr = wfGetDB(DB_SLAVE);
-        $user_name = $this->user_name;
-
-        $res = $dbr->select(
-            'manuscripts', //from
-            array(
-          'manuscripts_url', //values
-          'manuscripts_lowercase_title',
-            ), array(
-          'manuscripts_url = ' . $dbr->addQuotes($page_title_with_namespace),
-            ), __METHOD__
-        );
-
-        if ($res->numRows() !== 0) {
-            throw new \Exception('collate-error-database');
-        }
-
-        return $res->fetchObject()->main_lowercase_title;
-    }
-
 }

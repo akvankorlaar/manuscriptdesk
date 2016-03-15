@@ -33,7 +33,7 @@ abstract class ManuscriptDeskBaseWrapper {
     /**
      * Assert whether $user_name has created the current $page_title_with_namespace
      */
-    public function currentUserCreatedThePage($current_user_name, $page_title_with_namespace) {
+    public function currentUserCreatedThePage($current_user_name, $partial_url) {
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -43,7 +43,7 @@ abstract class ManuscriptDeskBaseWrapper {
           'manuscripts_user', //values
           'manuscripts_url',
             ), array(
-          'manuscripts_url = ' . $dbr->addQuotes($page_title_with_namespace),
+          'manuscripts_url = ' . $dbr->addQuotes($partial_url),
             ), __METHOD__
         );
 
@@ -63,7 +63,7 @@ abstract class ManuscriptDeskBaseWrapper {
     /**
      * Subtract entries in the alphabetnumbers table when a page is deleted
      */
-    public function subtractAlphabetnumbers($main_title_lowercase = '', $alphabetnumbers_context = '') {
+    public function subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbers_context) {
 
         if (!is_string($main_title_lowercase) || !is_string($alphabetnumbers_context)) {
             return true;
@@ -78,7 +78,7 @@ abstract class ManuscriptDeskBaseWrapper {
     /**
      * Increments entries in the alphabetnumbers table when a page is added
      */
-    public function incrementAlphabetNumbers($main_title_lowercase = '', $alphabetnumbers_context = '') {
+    public function incrementAlphabetNumbers($main_title_lowercase, $alphabetnumbers_context) {
 
         if (!is_string($main_title_lowercase) || !is_string($alphabetnumbers_context)) {
             return true;
@@ -162,7 +162,7 @@ abstract class ManuscriptDeskBaseWrapper {
         $dbw->update(
             'alphabetnumbers', //select table
             array(
-          $first_charachter_of_page => $number_of_pages,//insert values
+          $first_charachter_of_page => $number_of_pages, //insert values
             ), array(
           'alphabetnumbers_context = ' . $dbw->addQuotes($alphabetnumbers_context),
             ), __METHOD__
@@ -174,7 +174,7 @@ abstract class ManuscriptDeskBaseWrapper {
 
         return true;
     }
-    
+
     public function getAlphabetNumbersData($alphabetnumbers_context = '') {
 
         $dbr = wfGetDB(DB_SLAVE);
@@ -268,6 +268,27 @@ abstract class ManuscriptDeskBaseWrapper {
         }
 
         return $number_array;
+    }
+
+    public function getManuscriptsLowercaseTitle($partial_url) {
+        $dbr = wfGetDB(DB_SLAVE);
+        $user_name = $this->user_name;
+
+        $res = $dbr->select(
+            'manuscripts', //from
+            array(
+          'manuscripts_url', //values
+          'manuscripts_lowercase_title',
+            ), array(
+          'manuscripts_url = ' . $dbr->addQuotes($partial_url),
+            ), __METHOD__
+        );
+
+        if ($res->numRows() !== 0) {
+            throw new \Exception('collate-error-database');
+        }
+
+        return $res->fetchObject()->main_lowercase_title;
     }
 
 }

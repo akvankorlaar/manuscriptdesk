@@ -122,7 +122,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
             }
 
             $manuscripts_lowercase_title = $database_wrapper->getManuscriptsLowercaseTitle($page_title_with_namespace);
-            $database_wrapper->subtractAlphabetnumbers($manuscripts_lowercase_title, 'AllCollations');
+            $database_wrapper->subtractAlphabetNumbers($manuscripts_lowercase_title, 'AllCollations');
             $database_wrapper->deleteDatabaseEntry($title->getPrefixedURL());
             return true;
         } catch (Exception $e) {
