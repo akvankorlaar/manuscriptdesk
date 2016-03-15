@@ -84,7 +84,7 @@ $wgResourceModules['ext.newmanuscriptloader' ] = array(
 );
 
 //Instantiate the newManuscriptHooks class and register the hooks
-$newManuscriptHooks = new newManuscriptHooks();
+$newManuscriptHooks = new NewManuscriptHooks();
 
 $wgHooks['EditPage::showEditForm:fields'][] = array($newManuscriptHooks, 'onEditPageShowEditFormInitial' );
 $wgHooks['MediaWikiPerformAction'][] = array($newManuscriptHooks, 'onMediaWikiPerformAction');

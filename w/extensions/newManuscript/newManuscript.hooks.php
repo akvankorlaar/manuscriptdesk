@@ -27,7 +27,7 @@
  * This file incorporates work covered by the following copyright and
  * permission notice: 
  */
-class newManuscriptHooks extends ManuscriptDeskBaseHooks {
+class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
     use HTMLCollectionMetaTable;
 
@@ -38,17 +38,6 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
      * making sure a manuscript page can be deleted only by the user that has uploaded it (unless the user is a sysop), and preventing users from making
      * normal wiki pages on NS_MANUSCRIPTS (the manuscripts namespace identified by 'manuscripts:' in the URL)
      */
-    private $images_root_dir;
-    private $page_title;
-    private $page_title_with_namespace;
-    private $namespace;
-    private $document_root;
-    private $manuscript_url_count_size;
-    private $allowed_file_extensions;
-    private $zoomimage_check_before_delete;
-    private $original_image_check_before_delete;
-    private $max_charachters_manuscript;
-    private $view;
     private $creator_user_name;
     private $manuscripts_title;
     private $collection_title;
@@ -61,47 +50,49 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
         
     }
 
-    /**
-     * Assign globals to properties
-     * Creates default values when these have not been set
-     */
-    private function assignGlobalsToProperties() {
-
-        global $wgLang, $wgOut, $wgNewManuscriptOptions, $wgWebsiteRoot;
-
-        $this->manuscript_url_count_size = $wgNewManuscriptOptions['url_count_size'];
-        $this->images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
-        $this->page_title = strip_tags($wgOut->getTitle()->getPartialURL());
-        $this->page_title_with_namespace = strip_tags($wgOut->getTitle()->getPrefixedURL());
-        $this->namespace = $wgOut->getTitle()->getNamespace();
-
-        $this->allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
-        $this->max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
-
-        $this->zoomimage_check_before_delete = false;
-        $this->original_image_check_before_delete = false;
-
-        $this->view = false;
-
-        return true;
-    }
+//    /**
+//     * Assign globals to properties
+//     * Creates default values when these have not been set
+//     */
+//    private function assignGlobalsToProperties() {
+//
+//        global $wgLang, $wgOut, $wgNewManuscriptOptions, $wgWebsiteRoot;
+//
+//        $this->manuscript_url_count_size = $wgNewManuscriptOptions['url_count_size'];
+//        $this->images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
+//        $this->page_title = strip_tags($wgOut->getTitle()->getPartialURL());
+//        $this->page_title_with_namespace = strip_tags($wgOut->getTitle()->getPrefixedURL());
+//        $this->namespace = $wgOut->getTitle()->getNamespace();
+//
+//        $this->max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
+//
+//        $this->zoomimage_check_before_delete = false;
+//        $this->original_image_check_before_delete = false;
+//
+//        $this->view = false;
+//
+//        return true;
+//    }
 
     /**
      * This function loads the zoomviewer if the editor is in edit mode. 
      */
     public function onEditPageShowEditFormInitial(EditPage $editPage, OutputPage &$out) {
 
-        $this->setOutputPage($out);
-        $this->setWrapper();
-
         if (!$this->manuscriptIsInEditMode() || !$this->currentPageIsAValidManuscriptPage()) {
             return true;
         }
 
-        $html = $this->getHTMLIframeForZoomviewer();
-        $out->addHTML($html);
-        $out->addModuleStyles('ext.zoomviewer');
-        return true;
+        try {
+            $this->setOutputPage($out);
+            $this->setPageData();
+            $html = $this->getHTMLIframeForZoomviewer();
+            $out->addHTML($html);
+            $out->addModuleStyles('ext.zoomviewer');
+            return true;
+        } catch (Exception $e) {
+            return true;
+        }
     }
 
     private function currentPageIsAValidManuscriptPage() {
@@ -132,32 +123,41 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     public function onMediaWikiPerformAction(OutputPage $out, Article $article, Title $title, User $user, WebRequest $request, MediaWiki $wiki) {
 
-        $this->setOutputPage($out);
-        $this->setUser($user);
-        $this->setTitle($title);
-        $this->setWrapper();
-
         if ($wiki->getAction($request) !== 'view' || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage()) {
             return true;
         }
 
-        $html = '';
-        $html .= $this->getHTMLManuscriptView();
-        $html .= $this->getHTMLIframeForZoomviewer();
-        $out->addHTML($html);
-        $out->addModuleStyles('ext.zoomviewer');
-        return true;
+        try {
+            $this->setPageObjects();
+            $this->setPageData();
+
+            $html = '';
+            $html .= $this->getCollectionHeader();
+            $html .= $this->getHTMLManuscriptViewLinks();
+            $html .= $this->getHTMLIframeForZoomviewer();
+            $out->addHTML($html);
+            $out->addModuleStyles('ext.zoomviewer');
+            return true;
+        } catch (Exception $e) {
+            return true;
+        }
     }
 
-    private function getHTMLManuscriptView() {
+    private function setPageObjects(OutputPage $out, User $user, Title $title) {
+        $this->setOutputPage($out);
+        $this->setUser($user);
+        $this->setTitle($title);
+    }
 
-        $url_without_namespace = $title->getPartialURL();
+    private function setPageData() {
+        $this->setWrapper();
         $this->collection_title = $this->wrapper->getCollectionTitleFromUrl($url_without_namespace);
         $this->creator_user_name = $this->wrapper->getUserNameFromUrl($url_without_namespace);
         $this->manuscripts_title = $this->wrapper->getManuscriptsTitleFromUrl($url_without_namespace);
+    }
 
+    private function getHTMLManuscriptViewLinks() {
         $html = "";
-        $html .= $this->getCollectionHeader();
         $html .= "<table id='link-wrap'>";
         $html .= "<tr>";
         $html .= $this->getLinkToOriginalManuscriptImage();
@@ -165,7 +165,6 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
         $html .= $this->getPreviousNextPageLinks();
         $html .= "</tr>";
         $html .= "</table>";
-
         return $html;
     }
 
@@ -188,8 +187,6 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function getLinkToEditCollection() {
-
-        $collection_title = $this->collection_title;
         if ($this->collectionTitleIsValid()) {
             $current_user_name = $this->user->getName();
             //only allow the owner of the collection to edit collection data
@@ -265,26 +262,17 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     private function getLinkToOriginalManuscriptImage() {
 
-        global $wgWebsiteRoot;
-
         $partial_original_image_path = $this->constructPartialOriginalImagePath();
-        $original_image_path = $wgWebsiteRoot . '/' . $partial_original_image_path;
+        $full_original_image_path = $this->constructFullOriginalImagePath($partial_original_image_path);
 
-        if (is_dir($original_image_path)) {
-            $file_scan = scandir($original_image_path);
-            $image_file = isset($file_scan[2]) ? $file_scan[2] : "";
-
-            if ($image_file !== "") {
-                $full_original_image_path = $original_image_path . '/' . $image_file;
-
-                if ($this->isImage($full_original_image_path)) {
-                    $link_original_image_path = $partial_original_image_path . '/' . $image_file;
-                    return "<td><a class='link-transparent' href='$link_original_image_path' target='_blank'>" . $this->getMessage('newmanuscripthooks-originalimage') . "</a></td>";
-                }
-            }
+        if (!$this->fullOriginalImagePathIsOk($full_original_image_path)) {
+            return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
         }
 
-        return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
+        $image_file_name = basename($full_original_image_path) . PHP_EOL;
+
+        $link_original_image_path = $partial_original_image_path . '/' . $image_file_name;
+        return "<td><a class='link-transparent' href='$link_original_image_path' target='_blank'>" . $this->getMessage('newmanuscripthooks-originalimage') . "</a></td>";
     }
 
     /**
@@ -304,12 +292,14 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
     /**
      * This function checks if the file is an image. This has been done earlier and more thouroughly when uploading, but these checks are just to make sure
      */
-    private function isImage($path) {
+    private function isAllowedImage($path) {
+
+        $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
 
         if (pathinfo($path, PATHINFO_EXTENSION) !== null) {
             $extension = pathinfo($path, PATHINFO_EXTENSION);
 
-            if (in_array($extension, $this->allowed_file_extensions) && getimagesize($path) === true) {
+            if (in_array($extension, $allowed_file_extensions) && getimagesize($path) === true) {
                 return true;
             }
         }
@@ -321,9 +311,7 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
      * Generates the HTML for the iframe
      */
     private function getHTMLIframeForZoomviewer() {
-
         global $wgScriptPath, $wgLang;
-
         $viewer_type = $this->getViewerType();
         $viewer_path = $this->getViewerPath();
         $image_file_path = $this->constructImageFilePath();
@@ -370,19 +358,9 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
      * Constructs the full path of the image to be passed to the iframe
      */
     private function constructImageFilePath() {
-
-        try {
-
-            global $wgNewManuscriptOptions;
-            $images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
-            $url_without_namespace = $this->out->getTitle()->getPartialURL();
-            $database_wrapper = $this->wrapper;
-            $creator_user_name = $database_wrapper->getUserNameFromUrl($url_without_namespace);
-            $manuscripts_title = $database_wrapper->getManuscriptsTitleFromUrl($url_without_namespace);
-            return '/' . $images_root_dir . '/' . $user_name . '/' . $manuscripts_title . '/';
-        } catch (Exception $e) {
-            return true;
-        }
+        global $wgNewManuscriptOptions;
+        $images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
+        return '/' . $images_root_dir . '/' . $this->creator_user_name . '/' . $this->manuscripts_title . '/';
     }
 
     /**
@@ -391,7 +369,6 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
      * is called. The metatable refers to meta data on a collection level, while the pagemetatable tags enable users to insert page-specific meta data
      */
     public static function register(Parser &$parser) {
-
         // Register the hook with the parser
         $parser->setHook('pagemetatable', array('newManuscriptHooks', 'renderPageMetaTable'));
         return true;
@@ -401,26 +378,17 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
      * This function renders the pagemetatable, when the tags are encountered in the wikitext
      */
     public static function renderPageMetaTable($input, $args, Parser $parser) {
-
-        $page_meta_table = new pageMetaTable();
+        $page_meta_table = new PageMetaTableFromTags();
         $page_meta_table->extractOptions($input);
-
         return $page_meta_table->renderTable($input);
     }
 
     /**
      * This function prevents users from moving a manuscript page
-     * 
-     * @param Title $oldTitle
-     * @param Title $newTitle
-     * @param User $user
-     * @param type $error
-     * @param type $reason
-     * @return boolean
      */
     public function onAbortMove(Title $oldTitle, Title $newTitle, User $user, &$error, $reason) {
 
-        if ($oldTitle->getNamespace() !== NS_MANUSCRIPTS) {
+        if (!$this->isInManuscriptsNamespace($oldTitle)) {
             return true;
         }
 
@@ -432,143 +400,120 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
     /**
      * This function runs every time mediawiki gets a delete request. This function prevents
      * users from deleting manuscripts they have not uploaded
-     * 
-     * @param WikiPage $article
-     * @param User $user
-     * @param type $reason
-     * @param type $error
      */
-    public function onArticleDelete(WikiPage &$article, User &$user, &$reason, &$error) {
+    public function onArticleDelete(WikiPage &$wiki_page, User &$user, &$reason, &$error) {
 
-        $this->assignGlobalsToProperties();
-
-        $page_title = $this->page_title;
-        $namespace = $this->namespace;
-
-        if ($namespace !== NS_MANUSCRIPTS) {
-            //this is not a manuscript page. Allow deletion
+        if (!$this->isInManuscriptsNamespace($wiki_page)) {
             return true;
         }
 
-        $user_name = $user->getName();
-        $user_groups = $user->getGroups();
-        $page_title_array = explode("/", $page_title);
-        $user_fromurl = isset($page_title_array[0]) ? $page_title_array[0] : null;
+        $this->setPageData();
+        $current_user_name = $user->getName();
 
-        if (($user_fromurl === null || $user_name !== $user_fromurl) && !in_array('sysop', $user_groups)) {
+        if ($current_user_name !== $this->creator_user_name && !$this->currentUserIsASysop($user)) {
             //deny deletion because the current user did not create this manuscript, and the user is not an administrator
             $error = "<br>" . $this->getMessage('newmanuscripthooks-nodeletepermission') . ".";
             return false;
         }
 
-        $document_root = $this->document_root;
-        $images_root_dir = $this->images_root_dir;
-
-        $filename_fromurl = isset($page_title_array[1]) ? $page_title_array[1] : null;
-
-        $zoom_images_file = $document_root . DIRECTORY_SEPARATOR . $images_root_dir . DIRECTORY_SEPARATOR . $user_fromurl . DIRECTORY_SEPARATOR . $filename_fromurl;
-
-        $url_count_size = $this->manuscript_url_count_size;
-
-        //do not delete any additional files on server if the zoom images file does not exist,
-        //if the url does not have the format of a manuscripts page, or if $filename_fromurl is null
-        if (!file_exists($zoom_images_file) || count($page_title_array) !== $url_count_size || !isset($filename_fromurl)) {
-
-            return true;
-        }
-
-        $this->user_fromurl = $user_fromurl;
-        $this->filename_fromurl = $filename_fromurl;
-
-        $this->deleteExportFiles($zoom_images_file);
-
+        $this->deleteZoomImageFiles();
         $this->deleteOriginalImage();
 
-        $collection_name = $this->new_manuscript_wrapper->getCollectionTitle($this->page_title_with_namespace);
-        $this->new_manuscript_wrapper->deleteDatabaseEntry($collection_name, $this->page_title_with_namespace);
-        $this->new_manuscript_wrapper->subtractAlphabetnumbers($filename_fromurl, $collection_name);
-
+        $collection_title = $this->collection_title;
+        $page_title_with_namespace = $title->getPrefixedUrl();
+        $this->wrapper->deleteDatabaseEntry($collection_title, $page_title_with_namespace);
+        $this->wrapper->subtractAlphabetnumbers($filename_fromurl, $collection_title);
         return true;
     }
 
     /**
      * Check if all the default files are present, and delete all files
      */
-    private function deleteExportFiles($zoom_images_file) {
+    private function deleteZoomImageFiles($zoom_image_files_path) {
 
-        $tile_group_url = $zoom_images_file . DIRECTORY_SEPARATOR . 'TileGroup0';
-        $image_properties_url = $zoom_images_file . DIRECTORY_SEPARATOR . 'ImageProperties.xml';
+        $zoom_image_files_path = $this->constructZoomImageFilesPath();
+
+        if (!$this->zoomImagePathIsOk($zoom_image_files_path)) {
+            return;
+        }
+
+        return $this->recursiveDeleteFromPath($zoom_image_files_path);
+    }
+
+    private function constructZoomImageFilesPath() {
+        global $wgWebsiteRoot, $wgNewManuscriptOptions;
+        $images_root_dir = $wgNewManuscriptOptions['images_root_dir'];
+        $zoom_image_files_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $images_root_dir . DIRECTORY_SEPARATOR . $this->creator_user_name . DIRECTORY_SEPARATOR . $this->manuscripts_title;
+    }
+
+    private function zoomImagePathIsOk($zoom_image_files_path) {
+        $tile_group_url = $zoom_image_files_path . DIRECTORY_SEPARATOR . 'TileGroup0';
+        $image_properties_url = $zoom_image_files_path . DIRECTORY_SEPARATOR . 'ImageProperties.xml';
 
         if (!is_dir($tile_group_url) || !is_file($image_properties_url)) {
             return false;
         }
 
-        $this->zoomimage_check_before_delete = true;
-
-        return $this->deleteAllFiles($zoom_images_file);
+        return true;
     }
 
     /**
      * This function checks if the original image path file is valid, and then calls deleteAllFiles()
-     * 
-     * @return boolean
      */
     private function deleteOriginalImage() {
 
         $partial_original_image_path = $this->constructPartialOriginalImagePath();
-        $original_image_path = $this->document_root . $partial_original_image_path;
+        $full_original_image_path = $this->constructFullOriginalImagePath($partial_original_image_path);
+
+        if (!$this->fullOriginalImagePathIsOk()) {
+            return;
+        }
+
+        return $this->recursiveDeleteFromPath($original_image_path);
+    }
+
+    private function constructFullOriginalImagePath($partial_original_image_path) {
+        global $wgWebsiteRoot;
+
+        $original_image_path = $wgWebsiteRoot . '/' . $partial_original_image_path;
 
         if (!is_dir($original_image_path)) {
-            return false;
+            return '';
         }
 
         $file_scan = scandir($original_image_path);
-        $image_file = isset($file_scan[2]) ? $file_scan[2] : "";
+        $image_file_name = isset($file_scan[2]) ? $file_scan[2] : "";
 
-        if ($image_file === "") {
-            return false;
+        if ($image_file_name === "") {
+            return '';
         }
 
-        $full_original_image_path = $original_image_path . $image_file;
-
-        if (!$this->isImage($full_original_image_path)) {
-            return false;
-        }
-
-        if (count($file_scan) > 3) {
-            return false;
-        }
-
-        $this->original_image_check_before_delete = true;
-
-        return $this->deleteAllFiles($original_image_path);
+        return $original_image_path . '/' . $image_file_name;
     }
 
-    /**
-     * This function deletes all files in $zoom_images_file. First a last check is done.
-     * After this the function deletes files in $path
-     *  
-     * @param type $path
-     * @return boolean
-     */
-    private function deleteAllFiles($path) {
+    private function fullOriginalImagePathIsOk($full_original_image_path) {
 
-        if ($this->zoomimage_check_before_delete || $this->original_image_check_before_delete) {
+        if (empty($full_original_image_path) || !$this->isAllowedImage($full_original_image_path)) {
+            return false;
+        }
 
-            //start deleting files         
-            if (is_dir($path) === true) {
-                $files = array_diff(scandir($path), array('.', '..'));
+        return true;
+    }
 
-                foreach ($files as $file) {
-                    //recursive call
-                    $this->deleteAllFiles(realpath($path) . DIRECTORY_SEPARATOR . $file);
-                }
+    private function recursiveDeleteFromPath($path) {
 
-                return rmdir($path);
+        if (is_dir($path) === true) {
+            $files = array_diff(scandir($path), array('.', '..'));
+
+            foreach ($files as $file) {
+                //recursive call
+                $this->recursiveDeleteFromPath(realpath($path) . DIRECTORY_SEPARATOR . $file);
             }
-            else if (is_file($path) === true) {
-                return unlink($path);
-            }
+
+            return rmdir($path);
+        }
+        else if (is_file($path) === true) {
+            return unlink($path);
         }
 
         return false;
@@ -710,7 +655,7 @@ class newManuscriptHooks extends ManuscriptDeskBaseHooks {
             return;
         }
 
-        return $this->wrapper = new newManuscriptWrapper();
+        return $this->wrapper = new NewManuscriptWrapper();
     }
 
     private function setOutputPage(OutputPage $out) {

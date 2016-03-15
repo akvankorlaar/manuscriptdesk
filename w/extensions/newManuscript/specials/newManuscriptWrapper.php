@@ -22,20 +22,17 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class newManuscriptWrapper {
+class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
 
-    private $user_name;
     private $maximum_pages_per_collection;
 
-    public function __construct($user_name = "", $maximum_pages_per_collection = null) {
-        $this->user_name = $user_name;
+    public function __construct($user_name, $maximum_pages_per_collection) {
+        parent::__construct($user_name);
         $this->maximum_pages_per_collection = $maximum_pages_per_collection;
     }
 
     /**
      * This function retrieves the collections of the current user
-     *  
-     * @return type
      */
     public function getCollectionsCurrentUser() {
 

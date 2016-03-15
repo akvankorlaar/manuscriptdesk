@@ -172,7 +172,7 @@ class SpecialNewManuscript extends SpecialPage {
    
     $context = new DerivativeContext($this->getContext());
     
-    $new_manuscript_wrapper = new newManuscriptWrapper($this->user_name);
+    $new_manuscript_wrapper = new NewManuscriptWrapper($this->user_name);
     //get the collections of the current user to display the user's current collections
     $collections_current_user = $new_manuscript_wrapper->getCollectionsCurrentUser();
     
@@ -334,7 +334,7 @@ class SpecialNewManuscript extends SpecialPage {
       return $this->showUploadError($this->msg($wikipage_status));
     }
     
-    $new_manuscript_wrapper = new newManuscriptWrapper();
+    $new_manuscript_wrapper = new NewManuscriptWrapper();
     
     $date = date("d-m-Y H:i:s");  
     
@@ -421,7 +421,7 @@ class SpecialNewManuscript extends SpecialPage {
       $collection_error = 'newmanuscript-error-collectiontoolong';
       
     }else{
-      $new_manuscript_wrapper = new newManuscriptWrapper($this->user_name, $this->maximum_pages_per_collection);
+      $new_manuscript_wrapper = new NewManuscriptWrapper($this->user_name, $this->maximum_pages_per_collection);
       $collection_error = $new_manuscript_wrapper->checkTables($posted_collection);
     }
     

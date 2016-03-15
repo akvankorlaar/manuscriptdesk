@@ -33,7 +33,7 @@ abstract class ManuscriptDeskBaseWrapper {
     /**
      * Assert whether $user_name has created the current $page_title_with_namespace
      */
-    public function currentUserCreatedThePage($page_title_with_namespace = '', $user_name = '') {
+    public function currentUserCreatedThePage($current_user_name, $page_title_with_namespace) {
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -53,7 +53,7 @@ abstract class ManuscriptDeskBaseWrapper {
 
         $s = $res->fetchObject();
 
-        if ($s->manuscripts_user !== $user_name) {
+        if ($s->manuscripts_user !== $current_user_name) {
             return false;
         }
 
