@@ -65,9 +65,6 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
 
     /**
      * This functions checks if the collection already reached the maximum allowed manuscript pages, or if the current user is the creator of the collection
-     * 
-     * @param type $posted_collection
-     * @return string
      */
     public function checkTables($posted_collection) {
 
@@ -182,101 +179,6 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
             return false;
         }
     }
-    
-    /**
-     * This function increments the alphabetnumbers table. The first letter or digit of the $posted_title is extracted, and the value is incremented in the appropriate place.
-     * The alphabetnumbers table is used to visualize the number of pages in different categories (used in for example: Special:AllCollections)
-     * 
-     * @param type $collection_title
-     * @param type $user_name    
-     * @return boolean
-     */
-    public function storeAlphabetnumbers($posted_title, $collection_name) {
-
-        if ($collection_name === 'none') {
-            $alphabetnumbers_context = 'SingleManuscriptPages';
-            $first_char = substr($posted_title, 0, 1);
-        }
-        else {
-            $alphabetnumbers_context = 'AllCollections';
-            $first_char = substr($collection_name, 0, 1);
-        }
-
-        if (preg_match('/[0-9]/', $first_char)) {
-
-            switch ($first_char) {
-                case '0':
-                    $first_char = 'zero';
-                    break;
-                case '1':
-                    $first_char = 'one';
-                    break;
-                case '2':
-                    $first_char = 'two';
-                    break;
-                case '3':
-                    $first_char = 'three';
-                    break;
-                case '4':
-                    $first_char = 'four';
-                    break;
-                case '5':
-                    $first_char = 'five';
-                    break;
-                case '6':
-                    $first_char = 'six';
-                    break;
-                case '7':
-                    $first_char = 'seven';
-                    break;
-                case '8':
-                    $first_char = 'eight';
-                    break;
-                case '9':
-                    $first_char = 'nine';
-                    break;
-            }
-        }
-
-        //first select the old value, increment it by one, and update the value. Ideally this should be done in 1 update statement, but there seems to be no other way using
-        //Mediawiki's database wrapper
-        $dbr = wfGetDB(DB_SLAVE);
-
-        $res = $dbr->select(
-            'alphabetnumbers', //from
-            array(//values
-          $first_char,
-            ), array(
-          'alphabetnumbers_context = ' . $dbr->addQuotes($alphabetnumbers_context),
-            ), __METHOD__
-        );
-
-        //there should only be 1 result
-        if ($res->numRows() === 1) {
-            $s = $res->fetchObject();
-            $intvalue = (int) (($s->$first_char) + 1);
-
-            $dbw = wfGetDB(DB_MASTER);
-
-            $dbw->update(
-                'alphabetnumbers', //select table
-                array(//insert values
-              $first_char => $intvalue,
-                ), array(
-              'alphabetnumbers_context = ' . $dbw->addQuotes($alphabetnumbers_context),
-                ), __METHOD__
-            );
-
-            if ($dbw->affectedRows()) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-
-        return false;
-    }
 
     /**
      * This function deletes the entry for $page_title in the 'manuscripts' table
@@ -318,7 +220,8 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         //If the collection is empty, delete the collection
         if ($res->numRows() !== 0) {
             return;
-        }else{    
+        }
+        else {
             return $this->deleteFromCollections($collection_name);
         }
     }

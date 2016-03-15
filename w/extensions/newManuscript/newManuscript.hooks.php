@@ -41,7 +41,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $creator_user_name;
     private $manuscripts_title;
     private $collection_title;
-    private $partial_url; 
+    private $partial_url;
     private $out;
     private $user;
     private $title;
@@ -50,30 +50,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     public function __construct() {
         
     }
-
-//    /**
-//     * Assign globals to properties
-//     * Creates default values when these have not been set
-//     */
-//    private function assignGlobalsToProperties() {
-//
-//        global $wgLang, $wgOut, $wgNewManuscriptOptions, $wgWebsiteRoot;
-//
-//        $this->manuscript_url_count_size = $wgNewManuscriptOptions['url_count_size'];
-//        $this->images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
-//        $this->page_title = strip_tags($wgOut->getTitle()->getPartialURL());
-//        $this->page_title_with_namespace = strip_tags($wgOut->getTitle()->getPrefixedURL());
-//        $this->namespace = $wgOut->getTitle()->getNamespace();
-//
-//        $this->max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
-//
-//        $this->zoomimage_check_before_delete = false;
-//        $this->original_image_check_before_delete = false;
-//
-//        $this->view = false;
-//
-//        return true;
-//    }
 
     /**
      * This function loads the zoomviewer if the editor is in edit mode. 
@@ -124,7 +100,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     public function onMediaWikiPerformAction(OutputPage $out, Article $article, Title $title, User $user, WebRequest $request, MediaWiki $wiki) {
 
-        if ($wiki->getAction($request) !== 'view' || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage()) {
+        if (!$this->manuscriptisInViewMode($out) || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage()) {
             return true;
         }
 
@@ -144,6 +120,15 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         }
     }
 
+    private function manuscriptIsInViewMode(OutputPage $out) {
+        $context = $out->getContext();
+        if (Action::getActionName($context) !== 'view') {
+            return false;
+        }
+
+        return true;
+    }
+
     private function setPageObjects(OutputPage $out, User $user, Title $title) {
         $this->setOutputPage($out);
         $this->setUser($user);
@@ -152,7 +137,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
     private function setPageData($partial_url) {
         $this->setWrapper();
-        $this->partial_url = $partial_url; 
+        $this->partial_url = $partial_url;
         $this->creator_user_name = $this->wrapper->getUserNameFromUrl($partial_url);
         $this->manuscripts_title = $this->wrapper->getManuscriptsTitleFromUrl($partial_url);
 
@@ -430,12 +415,12 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             $error = "<br>" . $this->getMessage('newmanuscripthooks-nodeletepermission') . ".";
             return false;
         }
-        
+
         $this->deleteFilesAndDatabaseEntries();
         $this->subtractAlphabetNumbersTable();
     }
-    
-    private function deleteFilesAndDatabaseEntries(){
+
+    private function deleteFilesAndDatabaseEntries() {
         $this->deleteZoomImageFiles();
         $this->deleteOriginalImage();
 
@@ -447,8 +432,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         return true;
     }
-    
-    private function subtractAlphabetNumbersTable(){
+
+    private function subtractAlphabetNumbersTable() {
         $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($this->partial_url);
         $alphabetnumbes_context = $this->determineAlphabetNumbersContextFromCollectionTitle();
         $this->wrapper->subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbes_context);
@@ -562,48 +547,49 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     public function onPageContentSave(&$wikiPage, &$user, &$content, &$summary, $isMinor, $isWatch, $section, &$flags, &$status) {
 
-        $this->assignGlobalsToProperties();
-
-        $partial_url = $this->partial_url;
-        $page_title = $this->page_title;
-        $namespace = $this->namespace;
-
-        if ($namespace !== NS_MANUSCRIPTS) {
-            //this is not a manuscript. Allow saving
+        if (!$this->isInManuscriptsNamespace($wikiPage)) {
             return true;
         }
 
-        $document_root = $this->document_root;
-        $images_root_dir = $this->images_root_dir;
-
-        $page_title_array = explode("/", $page_title);
-
-        $user_fromurl = isset($page_title_array[0]) ? $page_title_array[0] : null;
-        $filename_fromurl = isset($page_title_array[1]) ? $page_title_array[1] : null;
-
-        $zoom_images_file = $document_root . DIRECTORY_SEPARATOR . $images_root_dir . DIRECTORY_SEPARATOR . $user_fromurl . DIRECTORY_SEPARATOR . $filename_fromurl;
-
-        if (!file_exists($zoom_images_file) || !isset($user_fromurl) || !isset($filename_fromurl)) {
-
-            //the page is in NS_MANUSCRIPTS but there is no corresponding file in the database, so don't allow saving    
+        if (!$this->currentPageExists($wikiPage) && !$this->manuscriptSavePageWasPosted($user)) {
             $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-nopermission') . "."));
             return true;
         }
 
-        $new_content = $content->mText;
+        global $wgNewManuscriptOptions;
+        $max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
+        $number_of_charachters_new_save = strlen($content->mText);
 
-        $charachters_current_save = strlen($new_content);
-
-        //check if this page does not have more charachters than $max_charachters_manuscript
-        if ($charachters_current_save > $this->max_charachters_manuscript) {
-
-            $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-maxchar1') . " " . $charachters_current_save . " " .
-                $this->getMessage('newmanuscripthooks-maxchar2') . " " . $this->max_charachters_manuscript . " " . $this->getMessage('newmanuscripthooks-maxchar3') . "."));
+        if ($this->textExceedsMaximumAllowedLength($number_of_charachters_new_save, $max_charachters_manuscript)) {
+            $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-maxchar1') . " " . $number_of_charachters_new_save . " " .
+                $this->getMessage('newmanuscripthooks-maxchar2') . " " . $max_charachters_manuscript . " " . $this->getMessage('newmanuscripthooks-maxchar3') . "."));
             return true;
         }
 
-        //this is a manuscript page, there is a corresponding file in the database, and $max_charachters_manuscript has not been reached, so allow saving
         return true;
+    }
+
+    private function manuscriptSavePageWasPosted(User $user) {
+
+        //make a requestprocessor object
+        //check if the edit token was posted, and check if this token was ok
+        //check if save_page_posted was posted
+//        $reqeuest = $user->getRequest();
+//        
+//        //Todo validate edit token 
+//        if (!$request->getText('save_page_posted')) {
+//            return false;
+//        }
+        
+        return false; 
+    }
+
+    private function textExceedsMaximumAllowedLength($number_of_charachters_new_save, $max_charachters_manuscript) {
+        if ($number_of_charachters_new_save > $max_charachters_manuscript) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -611,47 +597,45 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
 
-        $title_object = $out->getTitle();
+        try {
 
-        //mPrefixedText is the page title with the namespace
-        $page_title_with_namespace = $title_object->mPrefixedText;
+            $partial_url = $out->getTitle()->mPrefixedText;
 
-        if ($title_object->getNamespace() === NS_MANUSCRIPTS) {
-            //add css for the metatable and the zoomviewer
-            $out->addModuleStyles('ext.metatable');
-
-            //meta table has to rendered here, because in this way it will be appended after the text html, and not before
-            if ($this->view) {
-                $this->addMetatableToManuscriptPage($out, $page_title_with_namespace);
+            if ($this->isInManuscriptsNamespace($out)) {
+                $out->addModuleStyles('ext.metatable');
+                if ($this->manuscriptIsInViewMode($out)) {
+                    $this->addMetatableToManuscriptsPage($out);
+                }
             }
-        }
-        elseif ($page_title_with_namespace === 'Special:NewManuscript') {
-            $out->addModuleStyles('ext.newmanuscriptcss');
-            $out->addModules('ext.newmanuscriptloader');
-        }
+            elseif ($partial_url === 'Special:NewManuscript') {
+                $out->addModuleStyles('ext.newmanuscriptcss');
+                $out->addModules('ext.newmanuscriptloader');
+            }
 
-        return true;
+            return true;
+        } catch (Exception $e) {
+            return true;
+        }
     }
 
-    private function addMetatableToManuscriptPage(OutputPage $out, $page_title_with_namespace) {
-        $collection_title = $this->new_manuscript_wrapper->getCollectionTitle($page_title_with_namespace);
+    private function addMetatableToManuscriptsPage(OutputPage $out) {
 
-        if (empty($collection_title)) {
+        $this->setWrapper();
+        $collection_title = $this->wrapper->getCollectionTitleFromUrl($partial_url);
+
+        if (!$this->collectionTitleIsValid($collection_title)) {
             return;
         }
 
         $meta_data = $this->getCollectionMetadata($collection_title);
         $html = $this->getHTMLCollectionMetaTable($out, $meta_data);
         $out->addHTML($html);
+
+
         return;
     }
 
     private function getCollectionMetadata($collection_title) {
-
-        if (!isset($collection_title)) {
-            return '';
-        }
-
         $database_wrapper = new AllCollectionsWrapper();
         return $database_wrapper->getSingleCollectionMetadata($collection_title);
     }

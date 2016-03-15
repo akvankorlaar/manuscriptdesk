@@ -78,7 +78,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
 
     private function collateSavePageWasRequested(User $user) {
         $request = $user->getRequest();
-
+        //Todo validate edit token 
         if (!$request->getText('save_page_posted')) {
             return false;
         }
