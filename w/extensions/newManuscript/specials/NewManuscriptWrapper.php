@@ -24,11 +24,27 @@
  */
 class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
 
-    private $maximum_pages_per_collection;
+    public function getNumberOfUploadsForCurrentUser() {
 
-    public function __construct($user_name, $maximum_pages_per_collection) {
-        parent::__construct($user_name);
-        $this->maximum_pages_per_collection = $maximum_pages_per_collection;
+        $dbr = wfGetDB(DB_SLAVE);
+        $number_of_uploads = 0;
+
+        $res = $dbr->select(
+            'manuscripts', //from
+            array(
+          'manuscripts_title', //values
+            ), array(
+          'manuscripts_user = ' . $dbr->addQuotes($this->user_name), //conditions
+            ), __METHOD__, array(
+          'ORDER BY' => 'manuscripts_lowercase_title',
+            )
+        );
+
+        while ($s = $res->fetchObject()) {
+            $number_of_uploads +=1;
+        }
+
+        return $number_of_uploads;
     }
 
     /**
@@ -41,7 +57,6 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         $user_name = $this->user_name;
         $collections_current_user = array();
 
-        //Database query
         $res = $dbr->select(
             'collections', //from
             array(
@@ -54,20 +69,48 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
             )
         );
 
-        //while there are results
         while ($s = $res->fetchObject()) {
-
             $collections_current_user[] = $s->collections_title;
         }
 
         return $collections_current_user;
     }
 
+    public function checkWhetherCurrentUserIsTheOwnerOfTheCollection($posted_collection_title) {
+        $dbr = wfGetDB(DB_SLAVE);
+        $res = $dbr->select(
+            'collections', //from
+            array(//values
+          'collections_title',
+          'collections_user',
+            ), array(
+          'collections_title = ' . $dbr->addQuotes($posted_collection_title),
+            ), __METHOD__, array(
+          'ORDER BY' => 'collections_title',
+            )
+        );
+
+        if ($res->numRows() === 1) {
+            $s = $res->fetchObject();
+            $collections_user = $s->collections_user;
+
+            //if the user is not the owner of the collection, throw an exception
+            if ($collections_user !== $this->user_name) {
+                throw new \Exception('newmanuscript-error-notcollectionsuser');
+            }
+        }
+
+        //current collection does not exist yet
+        return;
+    }
+
     /**
      * This functions checks if the collection already reached the maximum allowed manuscript pages, or if the current user is the creator of the collection
      */
-    public function checkTables($posted_collection) {
+    public function checkCollectionDoesNotExceedMaximumPages($posted_collection_title) {
 
+        global $wgNewManuscriptOptions;
+        $maximum_pages_per_collection = $wgNewManuscriptOptions['maximum_pages_per_collection'];
         $dbr = wfGetDB(DB_SLAVE);
 
         $res = $dbr->select(
@@ -76,48 +119,21 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_url', //values
             ), array(
           'manuscripts_user = ' . $dbr->addQuotes($this->user_name), //conditions
-          'manuscripts_collection = ' . $dbr->addQuotes($posted_collection),
+          'manuscripts_collection = ' . $dbr->addQuotes($posted_collection_title),
             ), __METHOD__, array(
           'ORDER BY' => 'manuscripts_lowercase_title',
             )
         );
 
-        if ($res->numRows() > $this->maximum_pages_per_collection) {
-            return 'newmanuscript-error-collectionmaxreached';
+        if ($res->numRows() > $maximum_pages_per_collection) {
+            throw new \Exception('newmanuscript-error-collectionmaxreached');
         }
 
-        $res = $dbr->select(
-            'collections', //from
-            array(//values
-          'collections_title',
-          'collections_user',
-            ), array(
-          'collections_title = ' . $dbr->addQuotes($posted_collection),
-            ), __METHOD__, array(
-          'ORDER BY' => 'collections_title',
-            )
-        );
-
-        //if the user is not the owner of the collection, return an error
-        if ($res->numRows() === 1) {
-            $s = $res->fetchObject();
-            $collections_user = $s->collections_user;
-
-            if ($collections_user !== $this->user_name) {
-                return 'newmanuscript-error-notcollectionsuser';
-            }
-        }
-
-        return "";
+        return;
     }
 
     /**
      * This function insert data into the manuscripts table
-     * 
-     * @param type $posted_title
-     * @param type $user_name    
-     * @param type $new_page_url
-     * @return boolean
      */
     public function storeManuscripts($posted_title, $collection, $user_name, $new_page_url, $date) {
 
@@ -151,10 +167,6 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
 
     /**
      * This function insert data into the collections table
-     * 
-     * @param type $collection_title
-     * @param type $user_name    
-     * @return boolean
      */
     public function storeCollections($collection_name, $user_name, $date) {
 

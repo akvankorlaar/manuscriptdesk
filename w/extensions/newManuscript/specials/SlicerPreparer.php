@@ -22,7 +22,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-class prepareSlicer {
+class SlicerPreparer {
   
 /**
  * Class prepareSlicer. Prepares all paths needed by the slicer, and sends the right information to slicer.pl.

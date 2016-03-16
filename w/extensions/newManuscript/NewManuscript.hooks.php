@@ -109,7 +109,11 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             $this->setPageData($out->getTitle()->getPrefixedUrl());
 
             $html = '';
-            $html .= $this->getHTMLCollectionHeader();
+
+            if (isset($this->collection_title)) {
+                $html .= $this->getHTMLCollectionHeader();
+            }
+
             $html .= $this->getHTMLManuscriptViewLinks();
             $html .= $this->getHTMLIframeForZoomviewer();
             $out->addHTML($html);
@@ -163,19 +167,23 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $html .= "<table id='link-wrap'>";
         $html .= "<tr>";
         $html .= $this->getHTMLLinkToOriginalManuscriptImage();
-        $html .= $this->getHTMLLinkToEditCollection();
-        $html .= $this->getHTMLPreviousNextPageLinks();
+
+        if (isset($this->collection_title)) {
+            
+            if ($this->currentUserIsTheOwnerOfThePage()) {
+                $html .= $this->getHTMLLinkToEditCollection();
+            }
+            
+            $html .= $this->getHTMLPreviousNextPageLinks();
+        }
+
         $html .= "</tr>";
         $html .= "</table>";
         return $html;
     }
 
     private function getHTMLCollectionHeader() {
-        if (isset($this->collection_title)) {
-            return '<h2>' . htmlspecialchars($collection_title) . '</h2><br>';
-        }
-
-        return '';
+        return '<h2>' . htmlspecialchars($collection_title) . '</h2><br>';
     }
 
     private function currentUserIsTheOwnerOfThePage(User $user = null) {
@@ -200,27 +208,22 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
     private function getHTMLLinkToEditCollection() {
 
-        if ($this->currentUserIsTheOwnerOfThePage() && isset($this->collection_title)) {
+        global $wgArticleUrl;
 
-            global $wgArticleUrl;
+        $collection_title = $this->collection_title;
+        $partial_url = $this->partial_url;
+        $edit_token = $this->user->getEditToken();
 
-            $collection_title = $this->collection_title;
-            $partial_url = $this->partial_url;
-            $edit_token = $this->user->getEditToken();
+        $html = "";
+        $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
+        $html .= "<input class='button-transparent' type='submit' name='editlink' value='Edit Collection Metadata'>";
+        $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
+        $html .= "<input type='hidden' name='link_back_to_manuscript_page' value='" . $partial_url . "'>";
+        $html .= "<input type='hidden' name='edit_metadata_posted' value = 'edit_metadata_posted'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
 
-            $html = "";
-            $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
-            $html .= "<input class='button-transparent' type='submit' name='editlink' value='Edit Collection Metadata'>";
-            $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
-            $html .= "<input type='hidden' name='link_back_to_manuscript_page' value='" . $partial_url . "'>";
-            $html .= "<input type='hidden' name='edit_metadata_posted' value = 'edit_metadata_posted'>";
-            $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
-            $html .= "</form>";
-
-            return $html;
-        }
-
-        return '';
+        return $html;
     }
 
     /**
@@ -228,34 +231,29 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     private function getHTMLPreviousNextPageLinks() {
 
-        if (isset($this->collection_title)) {
+        global $wgArticleUrl;
 
-            global $wgArticleUrl;
+        $partial_url = $this->partial_url;
+        $collection_title = $this->collection_title;
+        list($previous_page_url, $next_page_url) = $this->wrapper->getPreviousAndNextPageUrl($collection_title, $partial_url);
 
-            $partial_url = $this->partial_url;
-            $collection_title = $this->collection_title;
-            list($previous_page_url, $next_page_url) = $this->wrapper->getPreviousAndNextPageUrl($collection_title, $partial_url);
+        $html = "";
+        $html .= "<td>";
 
-            $html = "";
-            $html .= "<td>";
-
-            if (isset($previous_page_url)) {
-                $html .= "<a href='" . $wgArticleUrl . htmlspecialchars($previous_page_url) . "' class='link-transparent' title='Go to Previous Page'>Go to Previous Page</a>";
-            }
-
-            if (isset($previous_page_url) && isset($next_page_url)) {
-                $html .= "<br>";
-            }
-
-            if (isset($next_page_url)) {
-                $html .= "<a href='" . $wgArticleUrl . htmlspecialchars($next_page_url) . "' class='link-transparent' title='Go to Next Page'>Go to Next Page</a>";
-            }
-
-            $html .= "</td>";
-            return $html;
+        if (isset($previous_page_url)) {
+            $html .= "<a href='" . $wgArticleUrl . htmlspecialchars($previous_page_url) . "' class='link-transparent' title='Go to Previous Page'>Go to Previous Page</a>";
         }
 
-        return '';
+        if (isset($previous_page_url) && isset($next_page_url)) {
+            $html .= "<br>";
+        }
+
+        if (isset($next_page_url)) {
+            $html .= "<a href='" . $wgArticleUrl . htmlspecialchars($next_page_url) . "' class='link-transparent' title='Go to Next Page'>Go to Next Page</a>";
+        }
+
+        $html .= "</td>";
+        return $html;
     }
 
     /**
@@ -295,6 +293,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     private function isAllowedImage($path) {
 
+        global $wgNewManuscriptOptions; 
+        
         $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
 
         if (pathinfo($path, PATHINFO_EXTENSION) !== null) {
@@ -418,6 +418,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         $this->deleteFilesAndDatabaseEntries();
         $this->subtractAlphabetNumbersTable();
+        return true;
     }
 
     private function deleteFilesAndDatabaseEntries() {
@@ -547,27 +548,32 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     public function onPageContentSave(&$wikiPage, &$user, &$content, &$summary, $isMinor, $isWatch, $section, &$flags, &$status) {
 
-        if (!$this->isInManuscriptsNamespace($wikiPage)) {
+        try {
+
+            if (!$this->isInManuscriptsNamespace($wikiPage)) {
+                return true;
+            }
+
+            //could also check if there is a corresponding image on server
+            if (!$this->currentPageExists($wikiPage) && !$this->savePageWasRequested($user)) {
+                $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-nopermission') . "."));
+                return true;
+            }
+
+            global $wgNewManuscriptOptions;
+            $max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
+            $number_of_charachters_new_save = strlen($content->mText);
+
+            if ($this->textExceedsMaximumAllowedLength($number_of_charachters_new_save, $max_charachters_manuscript)) {
+                $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-maxchar1') . " " . $number_of_charachters_new_save . " " .
+                    $this->getMessage('newmanuscripthooks-maxchar2') . " " . $max_charachters_manuscript . " " . $this->getMessage('newmanuscripthooks-maxchar3') . "."));
+                return true;
+            }
+
+            return true;
+        } catch (Exception $e) {
             return true;
         }
-
-        //could also check if there is a corresponding image on server
-        if (!$this->currentPageExists($wikiPage) && !$this->savePageWasRequested($user)) {
-            $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-nopermission') . "."));
-            return true;
-        }
-
-        global $wgNewManuscriptOptions;
-        $max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
-        $number_of_charachters_new_save = strlen($content->mText);
-
-        if ($this->textExceedsMaximumAllowedLength($number_of_charachters_new_save, $max_charachters_manuscript)) {
-            $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-maxchar1') . " " . $number_of_charachters_new_save . " " .
-                $this->getMessage('newmanuscripthooks-maxchar2') . " " . $max_charachters_manuscript . " " . $this->getMessage('newmanuscripthooks-maxchar3') . "."));
-            return true;
-        }
-
-        return true;
     }
 
     private function textExceedsMaximumAllowedLength($number_of_charachters_new_save, $max_charachters_manuscript) {
@@ -590,6 +596,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             if ($this->isInManuscriptsNamespace($out)) {
                 $out->addModuleStyles('ext.metatable');
                 if ($this->manuscriptIsInViewMode($out)) {
+                    //doing this here ensures the table will be displayed at the bottom of the 
                     $this->addMetatableToManuscriptsPage($out);
                 }
             }
