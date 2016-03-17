@@ -47,10 +47,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $title;
     private $wrapper;
 
-    public function __construct() {
-        
-    }
-
     /**
      * This function loads the zoomviewer if the editor is in edit mode. 
      */

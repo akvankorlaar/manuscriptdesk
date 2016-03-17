@@ -135,48 +135,45 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
     /**
      * This function insert data into the manuscripts table
      */
-    public function storeManuscripts($posted_title, $collection, $user_name, $new_page_url, $date) {
+    public function storeManuscripts($posted_manuscript_title, $posted_collection_title, $user_name, $new_page_url, $date) {
 
         $date2 = date('YmdHis');
-        $lowercase_title = strtolower($posted_title);
-        $lowercase_collection = strtolower($collection);
+        $lowercase_title = strtolower($posted_manuscript_title);
+        $lowercase_collection = strtolower($posted_collection_title);
 
         $dbw = wfGetDB(DB_MASTER);
 
         $dbw->insert('manuscripts', //select table
             array(//insert values
           'manuscripts_id' => null,
-          'manuscripts_title' => $posted_title,
+          'manuscripts_title' => $posted_manuscript_title,
           'manuscripts_user' => $user_name,
           'manuscripts_url' => $new_page_url,
           'manuscripts_date' => $date,
           'manuscripts_lowercase_title' => $lowercase_title,
-          'manuscripts_collection' => $collection,
+          'manuscripts_collection' => $posted_collection_title,
           'manuscripts_lowercase_collection' => $lowercase_collection,
           'manuscripts_datesort' => $date2,
             ), __METHOD__, 'IGNORE');
-        if ($dbw->affectedRows()) {
-            //insert succeeded
-            return true;
+        if (!$dbw->affectedRows()) {
+            throw new Exception('error-database');
         }
-        else {
-            //return error
-            return false;
-        }
+        
+        return; 
     }
 
     /**
      * This function insert data into the collections table
      */
-    public function storeCollections($collection_name, $user_name, $date) {
+    public function storeCollections($posted_collection_title, $user_name, $date) {
 
         $dbw = wfGetDB(DB_MASTER);
 
-        $collections_title_lowercase = strtolower($collection_name);
+        $collections_title_lowercase = strtolower($posted_collection_title);
 
         $dbw->insert('collections', //select table
             array(//insert values
-          'collections_title' => $collection_name,
+          'collections_title' => $posted_collection_title,
           'collections_title_lowercase' => $collections_title_lowercase,
           'collections_user' => $user_name,
           'collections_date' => $date,
