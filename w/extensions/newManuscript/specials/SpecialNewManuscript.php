@@ -25,13 +25,6 @@
 class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
     public function __construct() {
-
-//    global $wgNewManuscriptOptions,$wgWebsiteRoot; 
-//   	 
-//    $this->max_upload_size = $wgNewManuscriptOptions['max_upload_size'];
-//    $this->allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
-//    
-
         parent::__construct('NewManuscript');
     }
 
@@ -51,7 +44,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
         if ($number_of_uploads <= $max_manuscripts) {
             throw new \Exception('newmanuscript-maxreached');
-            ;
+            
         }
         else {
             return;
@@ -64,97 +57,36 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         if ($posted_collection_title !== 'none') {
             $this->checkForCollectionErrors($posted_collection_title);
         }
-        
-        $new_page_url = $this->constructNewPageUrl($posted_manuscript_title);
-        $save_direcotry = $this->constructSaveDirectory($posted_manuscript_title);
 
-        $title_object = $uploadbase_object->getTitle();
-        //get the $file_name from the $title_object
-        $file_name = isset($title_object) ? $title_object->getText() : "";
+        $temp_path = $this->checkUploadedImage();
 
-        if (null !== pathinfo($file_name, PATHINFO_EXTENSION)) {
-            $extension = pathinfo($file_name, PATHINFO_EXTENSION);
-        }
-        else {
-            $extension = null;
-        }
+        $save_directory = $this->constructSaveDirectory($posted_manuscript_title);
+        $full_path_to_new_file = $save_directory . DIRECTORY_SEPARATOR . $posted_title . '.' . $extension;
 
-        $magic = MimeMagic::singleton();
-        $temp_path = $uploadbase_object->getTempPath();
-
-        //this function tries to guess the mime type by, for example, opening the file, and checking the headers. See 'includes/MimeMagic.php 
-        $mime = strtolower($magic->guessMimeType($temp_path));
-
-        $target_file = $target_dir . DIRECTORY_SEPARATOR . $posted_title . '.' . $extension;
-
-        //check for various aspects that could return an error   
-        if ($title_error !== "" && $collection_error !== "") {
-            return $this->showUploadError($this->msg($title_error) . "<br>" . $this->msg($collection_error));
-        }
-
-        if ($title_error !== "") {
-            return $this->showUploadError($this->msg($title_error));
-        }
-
-        if ($collection_error !== "") {
-            return $this->showUploadError($this->msg($collection_error));
-        }
-
-        if ($temp_path === "") {
-            return $this->showUploadError($this->msg('newmanuscript-error-nofile'));
-        }
-
-        if (getimagesize($_FILES["wpUploadFile"]["tmp_name"]) === false) {
-            return $this->showUploadError($this->msg('newmanuscript-error-noimage'));
-        }
-
-        if (file_exists($target_file)) {
+        if (file_exists($full_path_to_new_file)) {
             //following error will only trigger if somehow an earlier attempt with this title did not complete (yet). In the case this error triggers, it means
             //that the initial upload exists, but there is no corresponding wiki page (yet), otherwise a $title_error should not be empty.
             // Additional testing needed to see if this error is necessary. 
-            return $this->showUploadError($this->msg('newmanuscript-error-page'));
+            throw new \Exception('newmanuscript-error-page');
         }
 
-        if ($uploadbase_object->getFileSize() > $this->max_upload_size) {
-            return $this->showUploadError($this->msg('newmanuscript-error-toolarge'));
+        if (!file_exists($save_directory)) {
+            mkdir($save_directory, 0755, true);
         }
 
-        if ($extension === "") {
-            return $this->showUploadError($this->msg('newmanuscript-error-noextension'));
-        }
-
-        if (!in_array($extension, $this->allowed_file_extensions)) {
-            return $this->showUploadError($this->msg('newmanuscript-error-fileformat'));
-        }
-
-        //strpos should be equaled to false.. not to ! ...
-        if (!strpos($mime, $this->allowed_file_extensions[0]) && !strpos($mime, $this->allowed_file_extensions[1]) && !strpos($mime, $this->allowed_file_extensions[2]) && !strpos($mime, $this->allowed_file_extensions[3])) {
-            return $this->showUploadError($this->msg('newmanuscript-error-fileformat'));
-        }
-
-        if ($uploadbase_object::detectScript($temp_path, $mime, $extension) === true) {
-            return $this->showUploadError($this->msg('newmanuscript-error-scripts'));
-        }
-
-        //make the target directory if it does not exist yet
-        if (!file_exists($target_dir)) {
-            mkdir($target_dir, 0755, true);
-        }
-
-        $upload_succesfull = move_uploaded_file($temp_path, $target_file);
+        $upload_succesfull = move_uploaded_file($temp_path, $full_path_to_new_file);
 
         if (!$upload_succesfull) {
             wfErrorLog($this->msg('newmanuscript-error-upload') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
             return $this->showUploadError($this->msg('newmanuscript-error-upload'));
         }
 
-        $prepare_slicer = new SlicerPreparer($posted_title, $target_file, $extension);
+        $prepare_slicer = new SlicerPreparer($posted_title, $full_path_to_new_file, $extension);
 
-        //execute the slicer
         $status = $prepare_slicer->execute();
 
         if ($status !== true) {
-            unlink($target_file);
+            unlink($full_path_to_new_file);
 
             if (strpos($status, 'slicer-error-execute') === true) {
                 //something went wrong when executing the slicer, so delete all export files, if they exist
@@ -169,7 +101,6 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
             return $this->showUploadError($slicer_error_message);
         }
 
-        //create a new wikipage
         $wikipage_status = $this->createNewWikiPage();
 
         if ($wikipage_status !== true) {
@@ -188,7 +119,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
             $collectionstable_status = $new_manuscript_wrapper->storeCollections($collection_title, $user_name, $date);
         }
 
-        //store information about the new uploaded manuscript page in the 'manuscripts' table
+        $new_page_url = $this->constructNewPageUrl($posted_manuscript_title);
         $manuscriptstable_status = $new_manuscript_wrapper->storeManuscripts($posted_title, $collection_title, $user_name, $new_page_url, $date);
 
         if (!$manuscriptstable_status) {
@@ -203,6 +134,87 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
         //redirect to the new page
         return $this->getOutput()->redirect($local_url);
+    }
+
+    private function checkUploadedImage() {
+        $this->checkWhetherFileIsImage();
+        $upload_base = $this->getUploadBaseObject();
+        $file_name = $this->getFileName($upload_base);
+        $extension = $this->getExtensionFromFileName($file_name);
+        $temp_path = $this->getTempPath($upload_base);
+        $mime_type = $this->getGuessedMimeType($temp_path);
+
+        if ($uploadbase_object::detectScript($temp_path, $mime_type, $extension) === true) {
+            throw new \Exception('newmanuscript-error-scripts');
+        }
+        
+        return $temp_path; 
+    }
+
+    private function getFileName(UploadBase $upload_base) {
+        $title = $upload_base->getTitle();
+
+        if (!isset($title)) {
+            throw new \Exception('error-request');
+        }
+
+        return $title->getText();
+    }
+
+    private function getExtensionFromFileName($file_name) {
+
+        global $wgNewManuscriptOptions;
+        $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
+
+        if (pathinfo($file_name, PATHINFO_EXTENSION === null)) {
+            throw new \Exception('newmanuscript-error-noextension');
+        }
+
+        $extension = pathinfo($file_name, PATHINFO_EXTENSION);
+
+        if ($extension === "") {
+            throw new \Exception('newmanuscript-error-noextension');
+        }
+
+        if (!in_array($extension, $allowed_file_extensions)) {
+            throw new \Exception('newmanuscript-error-fileformat');
+        }
+
+        return $extension;
+    }
+
+    private function getTempPath(UploadBase $upload_base) {
+        $temp_path = $upload_base->getTempPath();
+
+        if ($temp_path === '') {
+            throw new \Exception('newmanuscript-error-nofile');
+        }
+
+        return $temp_path;
+    }
+
+    private function getGuessedMimeType($temp_path) {
+        
+        global $wgNewManuscriptOptions;
+        $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
+        
+        $magic = MimeMagic::singleton();
+        $mime = strtolower($magic->guessMimeType($temp_path));
+
+        if (!in_array($mime, $allowed_file_extensions)) {
+            throw new \Exception('newmanuscript-error-fileformat');
+        }
+
+        return $mime;
+    }
+
+    private function checkWhetherFileIsImage() {
+
+        if (getimagesize($_FILES["wpUploadFile"]["tmp_name"]) === false) {
+            throw new \Exception('newmanuscript-error-noimage');
+        }
+
+        return;
     }
 
     private function constructNewPageUrl($posted_manuscript_title) {
@@ -221,10 +233,26 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         $this->wrapper->checkCollectionDoesNotExceedMaximumPages($posted_collection_title);
         return;
     }
-    
-    private function constructSaveDirectory($posted_manuscript_title){
-        global $wgWebsiteRoot, $wgNewManuscriptOptions;            
-        return $wgWebsiteRoot . DIRECTORY_SEPARATOR .  $wgNewManuscriptOptions['original_images_dir'] . DIRECTORY_SEPARATOR . $this->user_name . DIRECTORY_SEPARATOR . $posted_manuscript_title;  
+
+    private function constructSaveDirectory($posted_manuscript_title) {
+        global $wgWebsiteRoot, $wgNewManuscriptOptions;
+        return $wgWebsiteRoot . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['original_images_dir'] . DIRECTORY_SEPARATOR . $this->user_name . DIRECTORY_SEPARATOR . $posted_manuscript_title;
+    }
+
+    private function getUploadBaseObject() {
+        global $wgNewManuscriptOptions;
+        $max_upload_size = $wgNewManuscriptOptions['max_upload_size'];
+        $upload_base = UploadBase::createFromRequest($this->getRequest());
+
+        if (!isset($upload_base)) {
+            throw new \Exception('error-request');
+        }
+
+        if ($uploadbase_object->getFileSize() > $max_upload_size) {
+            throw new \Exception('newmanuscript-error-toolarge');
+        }
+
+        return $upload_base;
     }
 
     protected function getRequestprocessor() {
