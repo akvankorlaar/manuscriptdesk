@@ -137,7 +137,7 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
      */
     public function storeManuscripts($posted_manuscript_title, $posted_collection_title, $user_name, $new_page_url, $date) {
 
-        $date2 = date('YmdHis');
+        $datesort_date = date('YmdHis');
         $lowercase_title = strtolower($posted_manuscript_title);
         $lowercase_collection = strtolower($posted_collection_title);
 
@@ -153,10 +153,10 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_lowercase_title' => $lowercase_title,
           'manuscripts_collection' => $posted_collection_title,
           'manuscripts_lowercase_collection' => $lowercase_collection,
-          'manuscripts_datesort' => $date2,
+          'manuscripts_datesort' => $datesort_date,
             ), __METHOD__, 'IGNORE');
         if (!$dbw->affectedRows()) {
-            throw new Exception('error-database');
+            throw new Exception('error-database-manuscripts');
         }
         
         return; 
@@ -169,24 +169,18 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
 
         $dbw = wfGetDB(DB_MASTER);
 
-        $collections_title_lowercase = strtolower($posted_collection_title);
+        $posted_collection_title_lowercase = strtolower($posted_collection_title);
 
         $dbw->insert('collections', //select table
             array(//insert values
           'collections_title' => $posted_collection_title,
-          'collections_title_lowercase' => $collections_title_lowercase,
+          'collections_title_lowercase' => $posted_collection_title_lowercase,
           'collections_user' => $user_name,
           'collections_date' => $date,
             ), __METHOD__, 'IGNORE'); //ensures that duplicate $collection_name is ignored
 
-        if ($dbw->affectedRows()) {
-            //collection did not exist yet
-            return true;
-        }
-        else {
-            //collection already exists
-            return false;
-        }
+        //if collection does not exist yet $dbw->affectedRows() will return false
+        return; 
     }
 
     /**

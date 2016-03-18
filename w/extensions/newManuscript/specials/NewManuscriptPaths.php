@@ -200,5 +200,51 @@ class NewManuscriptPaths {
     public function imageUploaded() {
         return $this->image_uploaded;
     }
+    
+//    /**
+//     * Delete all exported files in case something went wrong 
+//     */
+//    public function deleteExportFiles() {
+//
+//        $zoom_images_file = $this->full_export_path;
+//        $slice_directory = $this->user_export_path . DIRECTORY_SEPARATOR . 'slice';
+//
+//        //check if the temporary directory 'slice' exists. If it does, it should be deleted. 
+//        if (file_exists($slice_directory)) {
+//            $this->deleteAllFiles($slice_directory);
+//        }
+//
+//        $tile_group_url = $zoom_images_file . DIRECTORY_SEPARATOR . 'TileGroup0';
+//        $image_properties_url = $zoom_images_file . DIRECTORY_SEPARATOR . 'ImageProperties.xml';
+//
+//        if (!is_dir($tile_group_url) || !is_file($image_properties_url)) {
+//            return false;
+//        }
+//
+//        return $this->deleteAllFiles($zoom_images_file);
+//    }
+//
+//    /**
+//     * The function recursively deleted all directories and files contained in $zoom_images_file
+//     */
+//    private function deleteAllFiles($zoom_images_file) {
+//
+//        if (is_dir($zoom_images_file) === true) {
+//            $files = array_diff(scandir($zoom_images_file), array('.', '..'));
+//
+//            foreach ($files as $file) {
+//                //recursive call
+//                $this->deleteAllFiles(realpath($zoom_images_file) . DIRECTORY_SEPARATOR . $file);
+//            }
+//
+//            return rmdir($zoom_images_file);
+//        }
+//        elseif (is_file($zoom_images_file) === true) {
+//            return unlink($zoom_images_file);
+//        }
+//
+//        return false;
+//    }
+
 
 }

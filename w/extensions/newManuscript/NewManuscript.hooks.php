@@ -432,17 +432,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
     private function subtractAlphabetNumbersTable() {
         $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($this->partial_url);
-        $alphabetnumbes_context = $this->determineAlphabetNumbersContextFromCollectionTitle();
+        $alphabetnumbes_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($this->collection_title);
         $this->wrapper->subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbes_context);
-    }
-
-    private function determineAlphabetNumbersContextFromCollectionTitle() {
-        if (!isset($this->collection_title)) {
-            return 'SingleManuscriptPages';
-        }
-        else {
-            return 'AllCollections';
-        }
     }
 
     /**

@@ -291,4 +291,13 @@ abstract class ManuscriptDeskBaseWrapper {
         return $res->fetchObject()->main_lowercase_title;
     }
 
+    public function determineAlphabetNumbersContextFromCollectionTitle($collection_title) {
+        if (!isset($collection_title) || $collection_title === 'none') {
+            return 'SingleManuscriptPages';
+        }
+        else {
+            return 'AllCollections';
+        }
+    }
+
 }

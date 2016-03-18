@@ -93,27 +93,21 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
     private function updateDatabase($posted_collection_title) {
 
-        $user_name = $this->user_name; 
         $date = date("d-m-Y H:i:s");
 
         if ($posted_collection_title !== "none") {
-           $this->wrapper->storeCollections($posted_collection_title, $user_name, $date);
+           $this->wrapper->storeCollections($posted_collection_title, $this->user_name, $date);
         }
 
-        $this->wrapper->storeManuscripts($posted_manuscript_title, $posted_collection_title, $user_name, $new_page_url, $date);
-
-        if (!$manuscriptstable_status) {
-            //delete all exported files if writing to the database failed, and show an error
-            $slicer_preparer->deleteExportFiles();
-            wfErrorLog($this->msg('newmanuscript-error-database') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
-            return $this->showUploadError($this->msg('newmanuscript-error-database'));
-        }
-
-        $this->wrapper->storeAlphabetnumbers($posted_manuscript_title, $posted_collection_title);
+        $this->wrapper->storeManuscripts($posted_manuscript_title, $posted_collection_title, $this->user_name, $new_page_url, $date);
+        $alphabetnumbers_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($posted_collection_title);
+        $this->wrapper->incrementAlphabetNumbers(strtolower($posted_manuscript_title), $alphabetnumbers_context);
+        return; 
     }
 
-
     protected function tempHandleExceptions() {
+        
+        //slicer-error-execute
         if ($status !== true) {
             unlink($initial_upload_full_path);
 
@@ -135,6 +129,14 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
             $slicer_preparer->deleteExportFiles();
             wfErrorLog($this->msg($wikipage_status) . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
             return $this->showUploadError($this->msg($wikipage_status));
+        }
+        
+        //error-database-manuscripts
+                if (!$manuscriptstable_status) {
+            //delete all exported files if writing to the database failed, and show an error
+            $slicer_preparer->deleteExportFiles();
+            wfErrorLog($this->msg('newmanuscript-error-database') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
+            return $this->showUploadError($this->msg('newmanuscript-error-database'));
         }
     }
 
