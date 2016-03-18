@@ -115,31 +115,13 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
             return $viewer->showNoPermissionError($error_message);
         }
         
-        if($error_identifier === 'slicer-error-execute') {
+        if($error_identifier === 'slicer-error-execute' || $error_identifier === 'error-newpage' || $error_identifier === 'error-database-manuscripts') {
             unlink($this->paths->getInitialUploadFullPath());
-            wfErrorLog($status . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
+            wfErrorLog($error_identifier . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
             $this->paths->deleteSlicerExportFiles();
         }
 
         return $this->getDefaultPage($error_message);
-    }
-
-    protected function tempHandleExceptions() {
-
-        if ($wikipage_status !== true) {
-            //something went wrong when creating a new wikipage, so delete all export files, if they exist
-            $slicer_preparer->deleteSlicerExportFiles();
-            wfErrorLog($this->msg($wikipage_status) . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
-            return $this->showUploadError($this->msg($wikipage_status));
-        }
-        
-        //error-database-manuscripts
-                if (!$manuscriptstable_status) {
-            //delete all exported files if writing to the database failed, and show an error
-            $slicer_preparer->deleteSlicerExportFiles();
-            wfErrorLog($this->msg('newmanuscript-error-database') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
-            return $this->showUploadError($this->msg('newmanuscript-error-database'));
-        }
     }
 
     protected function getRequestprocessor() {

@@ -205,7 +205,6 @@ class NewManuscriptPaths {
      * Delete all exported files in case something went wrong 
      */
     public function deleteSlicerExportFiles() {
-
         $this->deleteSliceDirectory();
         $this->deleteFullExportPathFiles();
         return;

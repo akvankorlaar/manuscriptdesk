@@ -54,6 +54,10 @@ class SlicerExecuter {
         $user_export_path = $this->paths->getUserExportPath();
         $extension = $this->paths->getExtension();
         
+        if(!$this->paths->imageUploaded()){
+            throw new \Exception('slicer-error-execute');
+        }
+        
         $shell_command = $perl_path . ' ' . $slicer_path . ' --input_file ' . $initial_upload_full_path . ' --output_path ' . $user_export_path . ' --extension ' . $extension;
         $shell_command = str_replace('\\', '/', $shell_command); //is this needed? 
         $shell_command = escapeshellcmd($shell_command);
