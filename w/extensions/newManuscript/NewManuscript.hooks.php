@@ -26,6 +26,8 @@
  * Todo: Who owns this file, who has copyright for it? Some of the functions are from Richard Davis ... 
  * This file incorporates work covered by the following copyright and
  * permission notice: 
+ * 
+ * Todo: Some of the functions (the path functions) should be handled by the NewManuscriptPaths class
  */
 class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 

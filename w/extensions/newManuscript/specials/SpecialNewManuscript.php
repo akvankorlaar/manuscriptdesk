@@ -104,29 +104,31 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         $this->wrapper->incrementAlphabetNumbers(strtolower($posted_manuscript_title), $alphabetnumbers_context);
         return; 
     }
+    
+    protected function handleExceptions(Exception $exception_error) {
 
-    protected function tempHandleExceptions() {
+        $viewer = $this->getViewer();
+        $error_identifier = $exception_error->getMessage();
+        $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
+
+        if ($error_identifier === 'error-nopermission') {
+            return $viewer->showNoPermissionError($error_message);
+        }
         
-        //slicer-error-execute
-        if ($status !== true) {
-            unlink($initial_upload_full_path);
-
-            if (strpos($status, 'slicer-error-execute') === true) {
-                //something went wrong when executing the slicer, so delete all export files, if they exist
-                wfErrorLog($status . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
-                $slicer_executer->deleteExportFiles();
-                $status = 'slicer-error-execute';
-            }
-
-            $slicer_error_message = $this->msg($status);
-
-            return $this->showUploadError($slicer_error_message);
+        if($error_identifier === 'slicer-error-execute') {
+            unlink($this->paths->getInitialUploadFullPath());
+            wfErrorLog($status . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
+            $this->paths->deleteSlicerExportFiles();
         }
 
+        return $this->getDefaultPage($error_message);
+    }
+
+    protected function tempHandleExceptions() {
 
         if ($wikipage_status !== true) {
             //something went wrong when creating a new wikipage, so delete all export files, if they exist
-            $slicer_preparer->deleteExportFiles();
+            $slicer_preparer->deleteSlicerExportFiles();
             wfErrorLog($this->msg($wikipage_status) . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
             return $this->showUploadError($this->msg($wikipage_status));
         }
@@ -134,7 +136,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         //error-database-manuscripts
                 if (!$manuscriptstable_status) {
             //delete all exported files if writing to the database failed, and show an error
-            $slicer_preparer->deleteExportFiles();
+            $slicer_preparer->deleteSlicerExportFiles();
             wfErrorLog($this->msg('newmanuscript-error-database') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
             return $this->showUploadError($this->msg('newmanuscript-error-database'));
         }

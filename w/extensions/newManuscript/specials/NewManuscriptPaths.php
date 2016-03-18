@@ -32,7 +32,7 @@ class NewManuscriptPaths {
     private $user_export_path;
     private $full_export_path;
     private $extension;
-    private $new_page_url; 
+    private $new_page_url;
     private $image_uploaded = false;
 
     public function __construct($user_name, $posted_manuscript_title, $extension) {
@@ -116,7 +116,7 @@ class NewManuscriptPaths {
 
         return $this->image_uploaded = true;
     }
-    
+
     public function setNewPageUrl() {
         global $wgNewManuscriptOptions;
         $manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
@@ -188,63 +188,69 @@ class NewManuscriptPaths {
 
         return $slicer_path;
     }
-    
-    public function getNewPageUrl(){
-        if(!isset($this->new_page_url)){
+
+    public function getNewPageUrl() {
+        if (!isset($this->new_page_url)) {
             throw new \Exception('error-request');
         }
-        
+
         return $this->new_page_url;
     }
 
     public function imageUploaded() {
         return $this->image_uploaded;
     }
-    
-//    /**
-//     * Delete all exported files in case something went wrong 
-//     */
-//    public function deleteExportFiles() {
-//
-//        $zoom_images_file = $this->full_export_path;
-//        $slice_directory = $this->user_export_path . DIRECTORY_SEPARATOR . 'slice';
-//
-//        //check if the temporary directory 'slice' exists. If it does, it should be deleted. 
-//        if (file_exists($slice_directory)) {
-//            $this->deleteAllFiles($slice_directory);
-//        }
-//
-//        $tile_group_url = $zoom_images_file . DIRECTORY_SEPARATOR . 'TileGroup0';
-//        $image_properties_url = $zoom_images_file . DIRECTORY_SEPARATOR . 'ImageProperties.xml';
-//
-//        if (!is_dir($tile_group_url) || !is_file($image_properties_url)) {
-//            return false;
-//        }
-//
-//        return $this->deleteAllFiles($zoom_images_file);
-//    }
-//
-//    /**
-//     * The function recursively deleted all directories and files contained in $zoom_images_file
-//     */
-//    private function deleteAllFiles($zoom_images_file) {
-//
-//        if (is_dir($zoom_images_file) === true) {
-//            $files = array_diff(scandir($zoom_images_file), array('.', '..'));
-//
-//            foreach ($files as $file) {
-//                //recursive call
-//                $this->deleteAllFiles(realpath($zoom_images_file) . DIRECTORY_SEPARATOR . $file);
-//            }
-//
-//            return rmdir($zoom_images_file);
-//        }
-//        elseif (is_file($zoom_images_file) === true) {
-//            return unlink($zoom_images_file);
-//        }
-//
-//        return false;
-//    }
 
+    /**
+     * Delete all exported files in case something went wrong 
+     */
+    public function deleteSlicerExportFiles() {
+
+        $this->deleteSliceDirectory();
+        $this->deleteFullExportPathFiles();
+        return;
+    }
+
+    private function deleteSliceDirectory() {
+        $slice_directory = $this->getUserExportPath() . DIRECTORY_SEPARATOR . 'slice';
+
+        //check if the temporary directory 'slice' exists. If it does, it should be deleted. 
+        if (file_exists($slice_directory)) {
+            $this->recursiveDeleteFromPath($slice_directory);
+        }
+
+        return;
+    }
+
+    private function deleteFullExportPathFiles() {
+        $full_export_path = $this->getFullExportPath();
+        $tile_group_url = $full_export_path . DIRECTORY_SEPARATOR . 'TileGroup0';
+        $image_properties_url = $full_export_path . DIRECTORY_SEPARATOR . 'ImageProperties.xml';
+
+        if (is_dir($tile_group_url) && is_file($image_properties_url)) {
+            return $this->recursiveDeleteFromPath($full_export_path);
+        }
+
+        return;
+    }
+
+    private function recursiveDeleteFromPath($path) {
+
+        if (is_dir($path) === true) {
+            $files = array_diff(scandir($path), array('.', '..'));
+
+            foreach ($files as $file) {
+                //recursive call
+                $this->recursiveDeleteFromPath(realpath($path) . DIRECTORY_SEPARATOR . $file);
+            }
+
+            return rmdir($path);
+        }
+        else if (is_file($path) === true) {
+            return unlink($path);
+        }
+
+        return false;
+    }
 
 }

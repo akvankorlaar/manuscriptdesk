@@ -118,7 +118,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
 
     protected function handleExceptions(Exception $exception_error) {
 
-        $viewer = $this->getViewer();
+        $viewer = $this->viewer;
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
