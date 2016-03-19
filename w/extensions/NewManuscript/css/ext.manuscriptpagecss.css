@@ -21,9 +21,80 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-.mw-htmlform-submit {
-  color: grey; 
-  width: 30em;  
-  height: 1.5em;
-  background-color: #F2FCFF;
+/*pre overrides earlier mediawiki CSS, and is needed for correct table display.*/  
+pre {
+  border: none !important;
+  padding: 0px !important;
+  background-color: transparent !important; 
+  font-family: sans-serif, Georgia, Serif;
+}
+
+table#page-metatable { 
+  width:100%; 
+  font-size: 100%;
+}
+
+table#page-metatable th { 
+  vertical-align: top;
+  text-align: right;
+  background-color: #f7f7f7; 
+  width: 25%;
+}
+
+table#page-metatable td { 
+  vertical-align: top; 
+  width: 25%;
+}
+
+table#metatable { 
+  width:100%; 
+  font-size: 100%;
+}
+
+table#metatable th { 
+  vertical-align: top;
+  text-align: right;
+  background-color: #f7f7f7; 
+  width: 25%;
+}
+
+table#metatable td { 
+  vertical-align: top;
+  width: 25%;
+}
+
+h2 {
+  margin-bottom: 0em;
+}
+
+.button-transparent {
+  background: #F2FCFF;
+  border: none; 
+  padding: 0;
+  font: inherit;
+  color: #black; 
+  cursor: pointer;
+  font-weight: bold; 
+}
+
+.button-transparent:hover {
+  text-decoration: underline; 
+}
+
+.link-transparent {
+  background: #F2FCFF;
+  font-weight: bold;
+  color: black;
+}
+
+#link-wrap {
+  width: 100%;
+}
+
+#link-wrap td {
+  width: 40%;
+}
+
+#mw_content {
+  border-bottom: none!important;
 }

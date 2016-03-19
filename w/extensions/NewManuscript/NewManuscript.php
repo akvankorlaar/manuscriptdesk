@@ -80,6 +80,14 @@ $wgResourceModules['ext.newmanuscriptcss'] = array(
 		'styles'  => 'css/ext.newmanuscriptcss.css',
 );
 
+$wgResourceModules['ext.newmanuscriptbuttoncontroller'] = array(
+  'scripts' => array(
+    'js/ext.newmanuscriptbuttoncontroller.js',
+  ),
+  'localBasePath' => __DIR__,
+  'remoteExtPath' => 'NewManuscript',
+);
+
 //Instantiate the NewManuscriptHooks class and register the hooks
 $new_manuscript_hooks = new NewManuscriptHooks();
 

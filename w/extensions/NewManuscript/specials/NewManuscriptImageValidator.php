@@ -63,7 +63,7 @@ class NewManuscriptImageValidator {
             throw new \Exception('error-request');
         }
 
-        if ($uploadbase_object->getFileSize() > $max_upload_size) {
+        if ($upload_base->getFileSize() > $max_upload_size) {
             throw new \Exception('newmanuscript-error-toolarge');
         }
 
