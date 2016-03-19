@@ -24,7 +24,7 @@
 
 /**
  * Usage: Add the following line in LocalSettings.php:
- * require_once( "$IP/extensions/newManuscript/newManuscript.php" );
+ * require_once( "$IP/extensions/NewManuscript/NewManuscript.php" );
  */
 
 # Alert the user that this is not a valid entry point to MediaWiki if they try to access the special pages file directly.
@@ -40,7 +40,7 @@ $wgExtensionCredits['parserhook'][] = array(
 	'name'           => 'newManuscript',
 	'author'         => 'Arent van Korlaar',
 	'version'        => '0.0.1',
-	'url'            => '',
+	'url'            => 'https://manuscriptdesk.uantwerpen.be',
 	'description'    => 'This extension permits users to create new manuscript pages for the Manuscript Desk.',
 );
 
@@ -48,28 +48,31 @@ $wgExtensionCredits['parserhook'][] = array(
 $dir = __DIR__ . '/';
 
 //Auto load classes 
-$wgAutoloadClasses['newManuscriptHooks']    = $dir . '/newManuscript.hooks.php';
-$wgAutoloadClasses['pageMetaTable'] = $dir . 'specials/pageMetaTable.php';
-$wgAutoloadClasses['newManuscriptForm'] = $dir . 'specials/newManuscriptForm.php';
-$wgAutoloadClasses['prepareSlicer'] = $dir . 'specials/prepareSlicer.php';
-$wgAutoloadClasses['newManuscriptWrapper'] = $dir . 'specials/newManuscriptWrapper.php';
-$wgExtensionMessagesFiles['NewManuscript']  = __DIR__ . '/newManuscript.i18n.php';
+$wgAutoloadClasses['NewManuscriptImageValidator']    = $dir . 'specials/NewManuscriptImageValidator.php';
+$wgAutoloadClasses['NewManuscriptPaths']    = $dir . 'specials/NewManuscriptPaths.php';
+$wgAutoloadClasses['NewManuscriptRequestProcessor']    = $dir . 'specials/NewManuscriptRequestProcessor.php';
+$wgAutoloadClasses['NewManuscriptUploadForm']    = $dir . 'specials/NewManuscriptUploadForm.php';
+$wgAutoloadClasses['NewManuscriptViewer']    = $dir . 'specials/NewManuscriptViewer.php';
+$wgAutoloadClasses['NewManuscriptWrapper']    = $dir . 'specials/NewManuscriptWrapper.php';
+$wgAutoloadClasses['PageMetTableFromTags']    = $dir . 'specials/PageMetaTableFromTags.php';
+$wgAutoloadClasses['SlicerExecuter']    = $dir . 'specials/SlicerExecuter.php';
+$wgAutoloadClasses['SpecialNewManuscript'] = $dir . 'specials/SpecialNewManuscript.php';
+
+$wgExtensionMessagesFiles['NewManuscript']  = $dir . 'NewManuscript.i18n.php';
+$wgAutoloadClasses['newManuscriptHooks']    = $dir . 'NewManuscript.hooks.php';
 
 //Register auto load for the special page classes and register special pages
-$wgAutoloadClasses['SpecialNewManuscript'] = $dir . '/specials/SpecialNewManuscript.php';
-
 $wgSpecialPages['NewManuscript'] = 'SpecialNewManuscript';
 
 //Extra files containing CSS and javascript loaded later 
-
-$wgResourceModules['ext.zoomviewer'] = array(
+$wgResourceModules['ext.zoomviewercss'] = array(
 		'localBasePath' => dirname( __FILE__ ),  
 		'styles'  => 'css/ext.zoomviewer.css',
 );
 
-$wgResourceModules['ext.metatable'] = array(
+$wgResourceModules['ext.manuscriptpagecss'] = array(
 		'localBasePath' => dirname( __FILE__ ),  
-		'styles'  => 'css/ext.metatable.css',
+		'styles'  => 'css/ext.manuscriptpagecss.css',
 );
 
 $wgResourceModules['ext.newmanuscriptcss'] = array(
@@ -77,20 +80,14 @@ $wgResourceModules['ext.newmanuscriptcss'] = array(
 		'styles'  => 'css/ext.newmanuscriptcss.css',
 );
 
-$wgResourceModules['ext.newmanuscriptloader' ] = array(
-		'scripts'  => 'js/ext.newmanuscriptloader.js',
-    'localBasePath' => __DIR__,
-    'remoteExtPath' => 'newManuscript',
-);
-
 //Instantiate the newManuscriptHooks class and register the hooks
-$newManuscriptHooks = new NewManuscriptHooks();
+$new_manuscript_hooks = new NewManuscriptHooks();
 
-$wgHooks['EditPage::showEditForm:fields'][] = array($newManuscriptHooks, 'onEditPageShowEditFormInitial' );
-$wgHooks['MediaWikiPerformAction'][] = array($newManuscriptHooks, 'onMediaWikiPerformAction');
-$wgHooks['ParserFirstCallInit'][] = array($newManuscriptHooks, 'register');
-$wgHooks['AbortMove'][] = array($newManuscriptHooks, 'onAbortMove');
-$wgHooks['ArticleDelete'][] = array($newManuscriptHooks, 'onArticleDelete');
-$wgHooks['PageContentSave'][] = array($newManuscriptHooks,'onPageContentSave');
-$wgHooks['BeforePageDisplay'][] = array($newManuscriptHooks, 'onBeforePageDisplay');
-$wgHooks['ParserAfterTidy'][] = array($newManuscriptHooks, 'onParserAfterTidy');
+$wgHooks['EditPage::showEditForm:fields'][] = array($new_manuscript_hooks, 'onEditPageShowEditFormInitial' );
+$wgHooks['MediaWikiPerformAction'][] = array($new_manuscript_hooks, 'onMediaWikiPerformAction');
+$wgHooks['ParserFirstCallInit'][] = array($new_manuscript_hooks, 'register');
+$wgHooks['AbortMove'][] = array($new_manuscript_hooks, 'onAbortMove');
+$wgHooks['ArticleDelete'][] = array($new_manuscript_hooks, 'onArticleDelete');
+$wgHooks['PageContentSave'][] = array($new_manuscript_hooks,'onPageContentSave');
+$wgHooks['BeforePageDisplay'][] = array($new_manuscript_hooks, 'onBeforePageDisplay');
+$wgHooks['ParserAfterTidy'][] = array($new_manuscript_hooks, 'onParserAfterTidy');

@@ -63,7 +63,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             $this->setPageData($out->getTitle()->getPartialURL());
             $html = $this->getHTMLIframeForZoomviewer();
             $out->addHTML($html);
-            $out->addModuleStyles('ext.zoomviewer');
+            $out->addModuleStyles('ext.zoomviewercss');
             return true;
         } catch (Exception $e) {
             return true;
@@ -115,7 +115,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             $html .= $this->getHTMLManuscriptViewLinks();
             $html .= $this->getHTMLIframeForZoomviewer();
             $out->addHTML($html);
-            $out->addModuleStyles('ext.zoomviewer');
+            $out->addModuleStyles('ext.zoomviewercss');
             return true;
         } catch (Exception $e) {
             return true;
@@ -167,11 +167,11 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $html .= $this->getHTMLLinkToOriginalManuscriptImage();
 
         if (isset($this->collection_title)) {
-            
+
             if ($this->currentUserIsTheOwnerOfThePage()) {
                 $html .= $this->getHTMLLinkToEditCollection();
             }
-            
+
             $html .= $this->getHTMLPreviousNextPageLinks();
         }
 
@@ -291,8 +291,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     private function isAllowedImage($path) {
 
-        global $wgNewManuscriptOptions; 
-        
+        global $wgNewManuscriptOptions;
+
         $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
 
         if (pathinfo($path, PATHINFO_EXTENSION) !== null) {
@@ -582,16 +582,15 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
             $partial_url = $out->getTitle()->mPrefixedText;
 
-            if ($this->isInManuscriptsNamespace($out)) {
-                $out->addModuleStyles('ext.metatable');
-                if ($this->manuscriptIsInViewMode($out)) {
-                    //doing this here ensures the table will be displayed at the bottom of the 
-                    $this->addMetatableToManuscriptsPage($out);
-                }
+            if ($this->isInManuscriptsNamespace($out) && $this->manuscriptIsInViewMode($out)) {
+                //doing this here ensures the table will be displayed at the bottom of the 
+                $this->addMetatableToManuscriptsPage($out);
+                $out->addModuleStyles('ext.manuscriptpagecss');
             }
             elseif ($partial_url === 'Special:NewManuscript') {
                 $out->addModuleStyles('ext.newmanuscriptcss');
-                $out->addModules('ext.newmanuscriptloader');
+                $out->addModuleStyles('ext.manuscriptdeskbasecss');
+                $out->addModules('ext.javascriptloader');
             }
 
             return true;
