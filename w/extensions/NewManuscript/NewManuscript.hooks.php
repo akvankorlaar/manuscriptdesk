@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
+ * This file is part of the NewManuscript extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     use HTMLCollectionMetaTable;
 
     /**
-     * This is the newManuscriptHooks class for the NewManuscript extension. Various aspects relating to interacting with 
+     * This is the NewManuscriptHooks class for the NewManuscript extension. Various aspects relating to interacting with 
      * the manuscript page (and other special pages in the extension)are arranged here, 
      * such as loading the zoomviewer, loading the metatable, adding CSS modules, loading the link to the original image, 
      * making sure a manuscript page can be deleted only by the user that has uploaded it (unless the user is a sysop), and preventing users from making

@@ -36,7 +36,7 @@ require_once( $wgExtensionAssetsPath . 'ManuscriptDeskBase/ManuscriptDeskBase.ph
 require_once( $wgExtensionAssetsPath . 'JBTEIToolbar/JBTEIToolbar.php' );
 require_once( $wgExtensionAssetsPath . 'TEITags/TEITags.php' );
 require_once( $wgExtensionAssetsPath . 'Collate/Collate.php');
-require_once( $wgExtensionAssetsPath . 'newManuscript/newManuscript.php');
+require_once( $wgExtensionAssetsPath . 'NewManuscript/NewManuscript.php');
 require_once( $wgExtensionAssetsPath . 'SummaryPages/SummaryPages.php');
 require_once( $wgExtensionAssetsPath . 'StylometricAnalysis/StylometricAnalysis.php');
 

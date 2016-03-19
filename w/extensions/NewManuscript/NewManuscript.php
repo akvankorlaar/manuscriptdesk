@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the newManuscript extension
+ * This file is part of the NewManuscript extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
 	'path'           => __FILE__,
-	'name'           => 'newManuscript',
+	'name'           => 'NewManuscript',
 	'author'         => 'Arent van Korlaar',
 	'version'        => '0.0.1',
 	'url'            => 'https://manuscriptdesk.uantwerpen.be',
@@ -59,7 +59,7 @@ $wgAutoloadClasses['SlicerExecuter']    = $dir . 'specials/SlicerExecuter.php';
 $wgAutoloadClasses['SpecialNewManuscript'] = $dir . 'specials/SpecialNewManuscript.php';
 
 $wgExtensionMessagesFiles['NewManuscript']  = $dir . 'NewManuscript.i18n.php';
-$wgAutoloadClasses['newManuscriptHooks']    = $dir . 'NewManuscript.hooks.php';
+$wgAutoloadClasses['NewManuscriptHooks']    = $dir . 'NewManuscript.hooks.php';
 
 //Register auto load for the special page classes and register special pages
 $wgSpecialPages['NewManuscript'] = 'SpecialNewManuscript';
@@ -80,7 +80,7 @@ $wgResourceModules['ext.newmanuscriptcss'] = array(
 		'styles'  => 'css/ext.newmanuscriptcss.css',
 );
 
-//Instantiate the newManuscriptHooks class and register the hooks
+//Instantiate the NewManuscriptHooks class and register the hooks
 $new_manuscript_hooks = new NewManuscriptHooks();
 
 $wgHooks['EditPage::showEditForm:fields'][] = array($new_manuscript_hooks, 'onEditPageShowEditFormInitial' );

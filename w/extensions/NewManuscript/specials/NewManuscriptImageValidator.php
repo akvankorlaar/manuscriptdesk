@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
+ * This file is part of the NewManuscript extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software; you can redistribute it and/or modify
