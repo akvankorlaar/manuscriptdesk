@@ -70,7 +70,7 @@ abstract class ManuscriptDeskBaseHooks {
             return $object->getNamespace();
         }
         else {
-            throw Exception('Invalid Object passed to' . __METHOD__);
+            throw new \Exception('Invalid Object passed to' . __METHOD__);
         }
     }
 

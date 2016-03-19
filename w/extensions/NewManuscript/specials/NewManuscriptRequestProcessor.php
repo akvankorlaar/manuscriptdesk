@@ -62,5 +62,14 @@ class NewManuscriptRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
         return $validator->validateString($request->getText('selected_collection'));
     }
+    
+    public function addNewPagePosted(){
+        $request = $this->request;
+        if($request->getText('add_new_page_posted') !== ''){
+            return true;
+        }
+        
+        return false;
+    }
 
 }

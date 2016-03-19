@@ -27,13 +27,14 @@ class NewManuscriptViewer extends ManuscriptDeskBaseViewer {
     
     use HTMLJavascriptLoader; 
 
-    public function showDefaultPage($error_message, array $collections_current_user) {
-        $this->out->setPageTitle($out->msg('newmanuscript'));
+    public function showDefaultPage($error_message, array $collections_current_user, $collection_title) {
+        $out = $this->out; 
+        $out->setPageTitle($out->msg('newmanuscript'));
         $html = $this->getHTMLJavascriptLoader();
-        $this->out->addHTML($html);
+        $out->addHTML($html);
         $collections_message = $this->constructCollectionsMessage($collections_current_user);
         $formatted_error_message = $this->constructFormattedErrorMessage($error_message);
-        $this->getNewManuscriptForm($error_message, $collection_message)->show();
+        $this->getNewManuscriptForm($error_message, $collections_message, $collection_title)->show();
     }
 
     private function constructCollectionsMessage(array $collections_current_user) {
@@ -51,11 +52,11 @@ class NewManuscriptViewer extends ManuscriptDeskBaseViewer {
         return $collections_message;
     }
 
-    private function getNewManuscriptForm($error_message, $collection_message) {
-        $new_manuscript_form = new NewManuscriptUploadForm(new DerivativeContext($this->out->getContext()), $collections_message, $this->selected_collection);
+    private function getNewManuscriptForm($error_message, $collections_message, $collection_title) {
+        $new_manuscript_form = new NewManuscriptUploadForm(new DerivativeContext($this->out->getContext()), $collections_message, $collection_title);
         $new_manuscript_form->addPreText($error_message);
         $new_manuscript_form->setSubmitCallback(array('SpecialnewManuscript', 'showUploadError'));
-        $new_manuscript_form->setSubmitText($$this->out->msg('newmanuscript-submit'));
+        $new_manuscript_form->setSubmitText($this->out->msg('newmanuscript-submit'));
         $new_manuscript_form->setSubmitName('wpUpload');
         // Used message keys: 'accesskey-upload', 'tooltip-upload'
         $new_manuscript_form->setSubmitTooltip('upload');

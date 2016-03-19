@@ -94,5 +94,11 @@ class ManuscriptDeskBaseRequestProcessor {
 
         return true;
     }
+    
+    public function getCollectionTitle() {
+        $request = $this->request;
+        $validator = $this->validator;
+        return $validator->validateString($request->getText('collection_title'));
+    }
 
 }

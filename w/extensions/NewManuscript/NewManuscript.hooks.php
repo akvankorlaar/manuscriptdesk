@@ -28,6 +28,8 @@
  * permission notice: 
  * 
  * Todo: Some of the functions (the path functions) should be handled by the NewManuscriptPaths class
+ * 
+ * Todo: When saving, there should be an image in the database 
  */
 class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
@@ -44,9 +46,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $manuscripts_title;
     private $collection_title;
     private $partial_url;
-    private $out;
-    private $user;
-    private $title;
     private $wrapper;
 
     /**
@@ -54,11 +53,12 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     public function onEditPageShowEditFormInitial(EditPage $editPage, OutputPage &$out) {
 
-        if (!$this->manuscriptIsInEditMode() || !$this->currentPageIsAValidManuscriptPage()) {
-            return true;
-        }
-
         try {
+
+            if (!$this->manuscriptIsInEditMode($out) || !$this->currentPageIsAValidManuscriptPage($out)) {
+                return true;
+            }
+
             $this->setOutputPage($out);
             $this->setPageData($out->getTitle()->getPartialURL());
             $html = $this->getHTMLIframeForZoomviewer();
@@ -70,8 +70,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         }
     }
 
-    private function currentPageIsAValidManuscriptPage() {
-        $out = $this->out;
+    private function currentPageIsAValidManuscriptPage(OutputPage $out) {
         if (!$this->isInManuscriptsNamespace($out) || !$this->manuscriptPageExists($out)) {
             return false;
         }
@@ -79,8 +78,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
-    private function manuscriptIsInEditMode() {
-        $out = $this->out;
+    private function manuscriptIsInEditMode(OutputPage $out) {
         $request = $out->getRequest();
         $value = $request->getText('action');
 
@@ -98,12 +96,13 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     public function onMediaWikiPerformAction(OutputPage $out, Article $article, Title $title, User $user, WebRequest $request, MediaWiki $wiki) {
 
-        if (!$this->manuscriptisInViewMode($out) || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage()) {
+        try{
+        
+        if (!$this->manuscriptisInViewMode($out) || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage($out)) {
             return true;
         }
 
-        try {
-            $this->setPageObjects();
+            $this->setPageObjects($out, $user, $title);
             $this->setPageData($out->getTitle()->getPrefixedUrl());
 
             $html = '';
@@ -112,7 +111,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 $html .= $this->getHTMLCollectionHeader();
             }
 
-            $html .= $this->getHTMLManuscriptViewLinks();
+            $html .= $this->getHTMLManuscriptViewLinks($user);
             $html .= $this->getHTMLIframeForZoomviewer();
             $out->addHTML($html);
             $out->addModuleStyles('ext.zoomviewercss');
@@ -160,7 +159,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
-    private function getHTMLManuscriptViewLinks() {
+    private function getHTMLManuscriptViewLinks(User $user) {
         $html = "";
         $html .= "<table id='link-wrap'>";
         $html .= "<tr>";
@@ -168,8 +167,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         if (isset($this->collection_title)) {
 
-            if ($this->currentUserIsTheOwnerOfThePage()) {
-                $html .= $this->getHTMLLinkToEditCollection();
+            if ($this->currentUserIsTheOwnerOfThePage($user)) {
+                $html .= $this->getHTMLLinkToEditCollection($user);
             }
 
             $html .= $this->getHTMLPreviousNextPageLinks();
@@ -184,9 +183,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return '<h2>' . htmlspecialchars($collection_title) . '</h2><br>';
     }
 
-    private function currentUserIsTheOwnerOfThePage(User $user = null) {
-
-        $user = isset($user) ? $user : $this->user;
+    private function currentUserIsTheOwnerOfThePage(User $user) {
         $current_user_name = $user->getName();
         //only allow the owner of the collection to edit collection data
         if ($this->creator_user_name !== $current_user_name) {
@@ -204,13 +201,13 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
-    private function getHTMLLinkToEditCollection() {
+    private function getHTMLLinkToEditCollection(User $user) {
 
         global $wgArticleUrl;
 
         $collection_title = $this->collection_title;
         $partial_url = $this->partial_url;
-        $edit_token = $this->user->getEditToken();
+        $edit_token = $user->getEditToken();
 
         $html = "";
         $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
@@ -647,33 +644,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         }
 
         return $this->wrapper = new NewManuscriptWrapper();
-    }
-
-    private function setOutputPage(OutputPage $out) {
-
-        if (isset($this->out)) {
-            return;
-        }
-
-        return $this->out = $out;
-    }
-
-    private function setUser(User $user) {
-
-        if (isset($this->user)) {
-            return;
-        }
-
-        return $this->user = $user;
-    }
-
-    private function setTitle(Title $title) {
-
-        if (isset($this->title)) {
-            return;
-        }
-
-        return $this->title = $title;
     }
 
 }

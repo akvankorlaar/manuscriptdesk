@@ -27,11 +27,11 @@
 class NewManuscriptUploadForm extends HTMLForm {
 
     private $collections_message;
-    private $selected_collection;
+    private $collection_title;
 
-    public function __construct(IContextSource $context, $collections_message, $selected_collection = '') {
+    public function __construct(IContextSource $context, $collections_message, $collection_title = '') {
         $this->collections_message = empty($collections_message) ? $collections_message : $collections_message . "<br>";
-        $this->selected_collection = $selected_collection;
+        $this->collection_title = $collection_title;
         $descriptor = $this->getSourceSection();
         parent::__construct($descriptor, $context, 'upload');
     }
@@ -64,14 +64,14 @@ class NewManuscriptUploadForm extends HTMLForm {
         $descriptor['collection_message'] = array(
           'type' => 'info',
           'section' => 'title',
-          'default' => '<br>' . $this->msg('newmanuscript-collections-instruction') . '<br>' . $this->msg('newmanuscript-collections-instruction2') . '<br>' . $collections_message,
+          'default' => '<br>' . $this->msg('newmanuscript-collections-instruction') . '<br>' . $this->msg('newmanuscript-collections-instruction2') . '<br>' . $this->collections_message,
           'raw' => true,
         );
 
         $descriptor['collection_field'] = array(
           'section' => 'title',
           'label' => 'Collection:',
-          'default' => $this->selected_collection,
+          'default' => $this->collection_title,
           'class' => 'HTMLTextField',
           'maxlength' => 50,
         );

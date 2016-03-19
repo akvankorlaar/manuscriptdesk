@@ -24,7 +24,6 @@
  */
 class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
-    private $slicer_executer;
     private $paths;
 
     public function __construct() {
@@ -34,17 +33,24 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     protected function getDefaultPage($error_message = '') {
         $this->checkWhetherUserHasUploadedTooManyManuscripts();
         $collections_current_user = $this->wrapper->getCollectionsCurrentUser();
-        $this->viewer->showDefaultpage($error_message, $collections_current_user);
+        $collection_title = '';
+        
+        if($this->request_processor->addNewPagePosted()){
+            $collection_title = $this->request_processor->getCollectionTitle();
+        }
+        
+        $this->viewer->showDefaultpage($error_message, $collections_current_user, $collection_title);
     }
 
     /**
      * This function checks whether the user has reached the maximum of allowed uploads
      */
     private function checkWhetherUserHasUploadedTooManyManuscripts() {
+        global $wgNewManuscriptOptions; 
         $max_manuscripts = $wgNewManuscriptOptions['max_manuscripts'];
         $number_of_uploads = $this->wrapper->getNumberOfUploadsForCurrentUser();
 
-        if ($number_of_uploads <= $max_manuscripts) {
+        if ($number_of_uploads > $max_manuscripts) {
             throw new \Exception('newmanuscript-maxreached');
         }
         else {
@@ -87,7 +93,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     private function prepareAndExecuteSlicer() {
-        $this->slicer_executer = $slicer_executer = new SlicerExecuter($this->paths);
+        $slicer_executer = new SlicerExecuter($this->paths);
         return $slicer_executer->execute();
     }
 
@@ -111,7 +117,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
-        if ($error_identifier === 'error-nopermission') {
+        if ($error_identifier === 'error-nopermission' || $error_identifier === 'newmanuscript-maxreached') {
             return $viewer->showNoPermissionError($error_message);
         }
         

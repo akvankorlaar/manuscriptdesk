@@ -132,7 +132,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         //redirect to Special:NewManuscript, and automatically have the current collection selected
         $html .= "<form class='summarypage-form' id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
         $html .= "<input type='submit' class='button-transparent' name='add_new_page_posted' title='" . $out->msg('userpage-newcollection') . "' value='Add New Page'>";
-        $html .= "<input type='hidden' name='selected_collection' value='" . $collection_title . "'>";
+        $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
