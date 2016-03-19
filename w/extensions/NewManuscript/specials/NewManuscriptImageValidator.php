@@ -38,7 +38,7 @@ class NewManuscriptImageValidator {
         $temp_path = $this->getTempPath($upload_base);
         $mime_type = $this->getGuessedMimeType($temp_path);
 
-        if ($uploadbase_object::detectScript($temp_path, $mime_type, $extension) === true) {
+        if ($upload_base::detectScript($temp_path, $mime_type, $extension) === true) {
             throw new \Exception('newmanuscript-error-scripts');
         }
 
@@ -117,7 +117,7 @@ class NewManuscriptImageValidator {
         $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
 
         $magic = MimeMagic::singleton();
-        $mime = strtolower($magic->guessMimeType($temp_path));
+        $mime = trim(str_replace('image/','', $magic->guessMimeType($temp_path)));
 
         if (!in_array($mime, $allowed_file_extensions)) {
             throw new \Exception('newmanuscript-error-fileformat');

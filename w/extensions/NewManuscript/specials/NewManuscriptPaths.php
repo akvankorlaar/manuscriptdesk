@@ -96,7 +96,7 @@ class NewManuscriptPaths {
 
     public function setFullExportPath() {
 
-        $full_export_path = $this->getUserExportPath() . DIRECTORY_SEPARATOR . $posted_manuscript_title;
+        $full_export_path = $this->getUserExportPath() . DIRECTORY_SEPARATOR . $this->posted_manuscript_title;
 
         if (is_dir($full_export_path)) {
             throw new \Exception('error-request');

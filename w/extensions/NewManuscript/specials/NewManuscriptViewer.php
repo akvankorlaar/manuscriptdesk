@@ -54,7 +54,8 @@ class NewManuscriptViewer extends ManuscriptDeskBaseViewer {
 
     private function getNewManuscriptForm($error_message, $collections_message, $collection_title) {
         $new_manuscript_form = new NewManuscriptUploadForm(new DerivativeContext($this->out->getContext()), $collections_message, $collection_title);
-        $new_manuscript_form->addPreText($error_message);
+        $formatted_error_message = $this->formatErrorMessage($error_message);
+        $new_manuscript_form->addPreText($formatted_error_message);
         $new_manuscript_form->setSubmitCallback(array('SpecialnewManuscript', 'showUploadError'));
         $new_manuscript_form->setSubmitText($this->out->msg('newmanuscript-submit'));
         $new_manuscript_form->setSubmitName('wpUpload');
@@ -69,6 +70,10 @@ class NewManuscriptViewer extends ManuscriptDeskBaseViewer {
             '<div class="error">' . $error_message . "</div>\n";
 
         return $formatted_error_message;
+    }
+    
+    private function formatErrorMessage($error_message){
+       return  '<div class="javascripthide"><div class="error">' . $error_message . "</div></div>";
     }
 
 }

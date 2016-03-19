@@ -30,15 +30,9 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         parent::__construct('NewManuscript');
     }
 
-    protected function getDefaultPage($error_message = '') {
+    protected function getDefaultPage($error_message = '', $collection_title = '') {
         $this->checkWhetherUserHasUploadedTooManyManuscripts();
-        $collections_current_user = $this->wrapper->getCollectionsCurrentUser();
-        $collection_title = '';
-        
-        if($this->request_processor->addNewPagePosted()){
-            $collection_title = $this->request_processor->getCollectionTitle();
-        }
-        
+        $collections_current_user = $this->wrapper->getCollectionsCurrentUser();        
         $this->viewer->showDefaultpage($error_message, $collections_current_user, $collection_title);
     }
 
@@ -59,7 +53,13 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     protected function processRequest() {
-        list($posted_manuscript_title, $posted_collection_title, $selected_collection) = $this->request_processor->loadUploadFormData();
+        
+        if($this->request_processor->addNewPagePosted()){
+            $collection_title = $this->request_processor->getCollectionTitle();
+            return $this->getDefaultPage('', $collection_title);
+        }
+        
+        list($posted_manuscript_title, $posted_collection_title) = $this->request_processor->loadUploadFormData();
 
         if ($posted_collection_title !== 'none') {
             $this->checkForCollectionErrors($posted_collection_title);
@@ -67,7 +67,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
         $image_validator = new NewManuscriptImageValidator($this->getRequest());
         list($temp_path, $extension) = $image_validator->getAndCheckUploadedImageData();
-        $this->setPaths($posted_collection_title, $extension);
+        $this->setPaths($posted_manuscript_title, $extension);
         $this->paths->moveUploadToInitialUploadDir($temp_path);
         $this->prepareAndExecuteSlicer();
         $local_url = $this->createNewWikiPage($this->paths->getNewPageUrl());
@@ -82,8 +82,8 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         return;
     }
 
-    private function setPaths($posted_collection_title, $extension) {
-        $this->paths = $paths = new NewManuscriptPaths($this->user_name, $posted_collection_title, $extension);
+    private function setPaths($posted_manuscript_title, $extension) {
+        $this->paths = $paths = new NewManuscriptPaths($this->user_name, $posted_manuscript_title, $extension);
         $paths->setInitialUploadFullPath();
         $paths->setBaseExportPath();
         $paths->setUserExportPath();

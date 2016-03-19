@@ -33,8 +33,7 @@ class NewManuscriptRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
         $posted_manuscript_title = $this->getPostedManuscriptTitle();
         $posted_collection = $this->getPostedCollectionTitle();
-        $selected_collection = $this->getSelectedCollection();
-        return array($posted_manuscript_title, $posted_collection, $selected_collection);
+        return array($posted_manuscript_title, $posted_collection);
     }
 
     private function getPostedManuscriptTitle() {
@@ -51,16 +50,6 @@ class NewManuscriptRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         }
 
         $posted_manuscript_title = $validator->validateString($request->getText('wpcollection_field'));
-    }
-
-    private function getSelectedCollection() {
-        $request = $this->request;
-        $validator = $this->validator;
-        if ($request->getText('selected_collection') === '') {
-            return '';
-        }
-
-        return $validator->validateString($request->getText('selected_collection'));
     }
     
     public function addNewPagePosted(){
