@@ -39,7 +39,7 @@ class NewManuscriptRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
     private function getPostedManuscriptTitle() {
         $request = $this->request;
         $validator = $this->validator;
-        $posted_manuscript_title = $validator->validateString($request->getText('wptitle_field'));
+        return $validator->validateString($request->getText('wptitle_field'));
     }
 
     private function getPostedCollectionTitle() {
@@ -49,7 +49,7 @@ class NewManuscriptRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
             return 'none';
         }
 
-        $posted_manuscript_title = $validator->validateString($request->getText('wpcollection_field'));
+        return $validator->validateString($request->getText('wpcollection_field'));
     }
     
     public function addNewPagePosted(){

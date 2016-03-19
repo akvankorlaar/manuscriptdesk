@@ -117,13 +117,15 @@ class NewManuscriptImageValidator {
         $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
 
         $magic = MimeMagic::singleton();
-        $mime = trim(str_replace('image/','', $magic->guessMimeType($temp_path)));
+        $mime_type = $magic->guessMimeType($temp_path);
 
-        if (!in_array($mime, $allowed_file_extensions)) {
-            throw new \Exception('newmanuscript-error-fileformat');
+        foreach ($allowed_file_extensions as $extension) {
+            if (strpos($mime_type, $extension) !== false) {
+                return $mime_type;
+            }
         }
 
-        return $mime;
+        throw new \Exception('newmanuscript-error-fileformat');
     }
 
 }
