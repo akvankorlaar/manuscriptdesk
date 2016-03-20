@@ -293,8 +293,10 @@ class NewManuscriptPaths {
         if (!$this->isAllowedImage($initial_upload_full_path)) {
             return;
         }
+        
+        $initial_upload_base_path = $this->getInitialUploadBasePath();
 
-        return $this->recursiveDeleteFromPath($initial_upload_full_path);
+        return $this->recursiveDeleteFromPath($initial_upload_base_path);
     }
 
     /**

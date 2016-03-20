@@ -277,18 +277,18 @@ abstract class ManuscriptDeskBaseWrapper {
         $res = $dbr->select(
             'manuscripts', //from
             array(
-          'manuscripts_url', //values
           'manuscripts_lowercase_title',
             ), array(
           'manuscripts_url = ' . $dbr->addQuotes($partial_url),
-            ), __METHOD__
+            )
         );
 
-        if ($res->numRows() !== 0) {
-            throw new \Exception('collate-error-database');
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
         }
 
-        return $res->fetchObject()->main_lowercase_title;
+        $s = $res->fetchObject();
+        return $s->manuscripts_lowercase_title;
     }
 
     public function determineAlphabetNumbersContextFromCollectionTitle($collection_title) {

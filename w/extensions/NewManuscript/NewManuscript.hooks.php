@@ -199,6 +199,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $edit_token = $user->getEditToken();
 
         $html = "";
+        $html .= "<td>";
         $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
         $html .= "<input class='button-transparent' type='submit' name='editlink' value='Edit Collection Metadata'>";
         $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
@@ -206,6 +207,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $html .= "<input type='hidden' name='edit_metadata_posted' value = 'edit_metadata_posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
+        $html .= "</td>";
 
         return $html;
     }
@@ -363,8 +365,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 return false;
             }
 
-            $this->deleteFilesAndDatabaseEntries();
             $this->subtractAlphabetNumbersTable();
+            $this->deleteFilesAndDatabaseEntries();
             return true;
         } catch (Exception $e) {
             $error = "<br>" . $this->getMessage('newmanuscripthooks-nodeletepermission') . ".";

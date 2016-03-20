@@ -157,11 +157,8 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     private function deleteDatabaseEntries() {
+        $this->subtractAlphabetNumbersTable();
         $status = $this->wrapper->deleteFromManuscripts($this->paths->getNewPageUrl());
-
-        if ($status === true) {
-            $this->subtractAlphabetNumbersTable();
-        }
 
         if ($this->posted_collection_title !== 'none') {
             $this->wrapper->checkAndDeleteCollectionifNeeded($this->posted_collection_title);
