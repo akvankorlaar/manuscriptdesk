@@ -67,7 +67,7 @@ $wgSpecialPages['NewManuscript'] = 'SpecialNewManuscript';
 //Extra files containing CSS and javascript loaded later 
 $wgResourceModules['ext.zoomviewercss'] = array(
 		'localBasePath' => dirname( __FILE__ ),  
-		'styles'  => 'css/ext.zoomviewer.css',
+		'styles'  => 'css/ext.zoomviewercss.css',
 );
 
 $wgResourceModules['ext.manuscriptpagecss'] = array(

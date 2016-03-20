@@ -273,8 +273,9 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         if ($res->numRows() !== 1) {
             throw new \Exception('error-database');
         }
-
-        return $res->fetchObject()->manuscripts_user;
+        
+        $s = $res->fetchObject();
+        return $s->manuscripts_user;
     }
 
     public function getCollectionTitleFromUrl($url_without_namespace) {
@@ -292,8 +293,9 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         if ($res->numRows() !== 1) {
             throw new \Exception('error-database');
         }
-
-        return $res->fetchObject()->manuscripts_collection;
+        
+        $s = $res->fetchObject();
+        return $s->manuscripts_collection;
     }
 
     public function getPreviousAndNextPageUrl($collection_title, $partial_url) {

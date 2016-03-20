@@ -57,8 +57,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 return true;
             }
 
-            $this->setOutputPage($out);
-            $this->setPageData($out->getTitle()->getPartialURL());
+            $this->setPageData($out->getTitle()->getPrefixedURL());
             $html = $this->getHTMLIframeForZoomviewer();
             $out->addHTML($html);
             $out->addModuleStyles('ext.zoomviewercss');
@@ -81,7 +80,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $value = $request->getText('action');
 
         //submit action will only be true in case the user tries to save a page with too many charachters (see '$this->max_charachters_manuscript')
-        if ($value !== 'edit' || $value !== 'submit') {
+        if ($value !== 'edit' && $value !== 'submit') {
             return false;
         }
 
@@ -100,7 +99,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 return true;
             }
 
-            $this->setPageObjects($out, $user, $title);
             $this->setPageData($out->getTitle()->getPrefixedUrl());
 
             $html = '';
@@ -128,12 +126,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
-    private function setPageObjects(OutputPage $out, User $user, Title $title) {
-        $this->setOutputPage($out);
-        $this->setUser($user);
-        $this->setTitle($title);
-    }
-
     private function setPageData($partial_url) {
         $this->setWrapper();
         $this->partial_url = $partial_url;
@@ -148,8 +140,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return;
     }
 
-    private function collectionTitleIsValid() {
-        $collection_title = $this->collection_title;
+    private function collectionTitleIsValid($collection_title) {
         if (!isset($collection_title) || empty($collection_title) || $collection_title === 'none') {
             return false;
         }
@@ -178,7 +169,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function getHTMLCollectionHeader() {
-        return '<h2>' . htmlspecialchars($collection_title) . '</h2><br>';
+        return '<h2>' . htmlspecialchars($this->collection_title) . '</h2><br>';
     }
 
     private function currentUserIsTheOwnerOfThePage(User $user) {
@@ -270,10 +261,10 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private function getHTMLIframeForZoomviewer() {
         global $wgScriptPath, $wgLang;
         $viewer_type = $this->getViewerType();
-        $viewer_path = $this->getViewerPath();
+        $viewer_path = $this->getViewerPath($viewer_type);
         $image_file_path = $this->constructImageFilePath();
         $language = $wgLang->getCode();
-        $website_name = 'Manuscript Desk';
+        $website_name = 'ManuscriptDesk';
         return '<iframe id="zoomviewerframe" src="' . $wgScriptPath . '/extensions/NewManuscript/' . $viewer_path . '?image=' . $image_file_path . '&amp;lang=' . $language . '&amp;sitename=' . urlencode($website_name) . '"></iframe>';
     }
 
@@ -315,9 +306,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      * Constructs the full path of the image to be passed to the iframe
      */
     private function constructImageFilePath() {
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscript_title);
-        $paths->setExportPaths();
-        return $paths->getFullExportPath();
+        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        return $paths->getWebLinkExportPath();
     }
 
     /**
@@ -527,7 +517,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private function addMetatableToManuscriptsPage(OutputPage $out) {
 
         $this->setWrapper();
-        $collection_title = $this->wrapper->getCollectionTitleFromUrl($partial_url);
+        $collection_title = $this->wrapper->getCollectionTitleFromUrl($this->partial_url);
 
         if (!$this->collectionTitleIsValid($collection_title)) {
             return;

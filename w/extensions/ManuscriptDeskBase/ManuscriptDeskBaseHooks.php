@@ -77,11 +77,11 @@ abstract class ManuscriptDeskBaseHooks {
     protected function currentPageExists(WikiPage $wikiPage) {
         $title_object = $wikiPage->getTitle();
 
-        if (!$title_object->exists()) {
-            return false;
+        if ($title_object->exists()) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     protected function savePageWasRequested(User $user) {

@@ -25,6 +25,8 @@
 class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
     private $paths;
+    private $posted_collection_title;
+    private $posted_manuscript_title;
 
     public function __construct() {
         parent::__construct('NewManuscript');
@@ -66,38 +68,43 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     private function processUploadedNewManuscript() {
 
         list($posted_manuscript_title, $posted_collection_title) = $this->request_processor->loadUploadFormData();
+        $this->posted_manuscript_title = $posted_manuscript_title;
+        $this->posted_collection_title = $posted_collection_title;
 
         if ($posted_collection_title !== 'none') {
-            $this->checkForCollectionErrors($posted_collection_title);
+            $this->checkForCollectionErrors();
         }
 
         $image_validator = new NewManuscriptImageValidator($this->getRequest());
         list($temp_path, $extension) = $image_validator->getAndCheckUploadedImageData();
-        $this->setPaths($posted_manuscript_title, $extension);
+        $this->setPaths($extension);
         $this->paths->moveUploadToInitialUploadDir($temp_path);
         $this->prepareAndExecuteSlicer();
-        $local_url = $this->createNewWikiPage($this->paths->getNewPageUrl());
-        $this->updateDatabase();
+        $new_page_url = $this->paths->getNewPageUrl();
+        $this->updateDatabase($new_page_url);
+        $local_url = $this->createNewWikiPage($new_page_url, 'This page has not been transcribed yet.');
         $this->getOutput()->redirect($local_url);
         return true;
     }
 
-    private function checkForCollectionErrors($posted_collection_title) {
+    private function checkForCollectionErrors() {
+        $posted_collection_title = $this->posted_collection_title;
         $this->wrapper->checkWhetherCurrentUserIsTheOwnerOfTheCollection($posted_collection_title);
         $this->wrapper->checkCollectionDoesNotExceedMaximumPages($posted_collection_title);
         return;
     }
 
-    private function setPaths($posted_manuscript_title, $extension) {
+    private function setPaths($extension) {
+        $posted_manuscript_title = $this->posted_manuscript_title;
         $this->paths = $paths = new NewManuscriptPaths($this->user_name, $posted_manuscript_title, $extension);
         $paths->setInitialUploadFullPath();
         $paths->setExportPaths();
-        
+
         $full_export_path = $paths->getFullExportPath();
         if (is_dir($full_export_path)) {
             throw new \Exception('error-request');
         }
-        
+
         $paths->setNewPageUrl();
         return;
     }
@@ -107,8 +114,10 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         return $slicer_executer->execute();
     }
 
-    private function updateDatabase($posted_collection_title) {
+    private function updateDatabase($new_page_url) {
 
+        $posted_collection_title = $this->posted_collection_title;
+        $posted_manuscript_title = $this->posted_manuscript_title;
         $date = date("d-m-Y H:i:s");
 
         if ($posted_collection_title !== "none") {
@@ -133,12 +142,39 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         }
 
         if ($error_identifier === 'slicer-error-execute' || $error_identifier === 'error-newpage' || $error_identifier === 'error-database-manuscripts') {
-            unlink($this->paths->getInitialUploadFullPath());
+            $paths = $this->paths;
+            if ($paths->initialUploadFullPathIsConstructableFromScan()) {
+                $paths->deleteInitialUploadFullPath();
+            }
+
+            $paths->deleteSlicerExportFiles();
+            $this->deleteDatabaseEntries();
+
             wfErrorLog($error_identifier . "\r\n", $wgWebsiteRoot . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
-            $this->paths->deleteSlicerExportFiles();
         }
 
         return $this->getDefaultPage($error_message);
+    }
+
+    private function deleteDatabaseEntries() {
+        $status = $this->wrapper->deleteFromManuscripts($this->paths->getNewPageUrl());
+
+        if ($status === true) {
+            $this->subtractAlphabetNumbersTable();
+        }
+
+        if ($this->posted_collection_title !== 'none') {
+            $this->wrapper->checkAndDeleteCollectionifNeeded($this->posted_collection_title);
+        }
+
+        return;
+    }
+
+    private function subtractAlphabetNumbersTable() {
+        $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($this->paths->getNewPageUrl());
+        $alphabetnumbes_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($this->posted_collection_title);
+        $this->wrapper->subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbes_context);
+        return;
     }
 
     protected function getRequestprocessor() {

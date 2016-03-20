@@ -107,6 +107,7 @@ $messages['en'] = array(
   'newmanuscripthooks-maxchar2'                   => 'charachters, while',
   'newmanuscripthooks-maxchar3'                   => 'charachters are allowed',
   'newmanuscripthooks-move'                       => 'You are not allowed to move manuscript pages',
+  'newmanuscript-default'                         => 'This page has not been transcribed yet.',
   );
 
 $messages['en-gb'] = $messages['en'];

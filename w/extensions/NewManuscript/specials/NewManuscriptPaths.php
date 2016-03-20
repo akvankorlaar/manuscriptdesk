@@ -45,8 +45,8 @@ class NewManuscriptPaths {
         $extension = $this->extension;
         $posted_manuscript_title = $this->posted_manuscript_title;
         $initial_upload_base_path = $this->getInitialUploadBasePath();
-        $this->checkAndMakeDirectory($initial_upload_base_path);
-        $initial_upload_full_path = $initial_upload_base_path . DIRECTORY_SEPARATOR . $posted_manuscript_title . '.' . $extension;
+        $this->makeDirectoryIfItDoesNotExist($initial_upload_base_path);
+        $initial_upload_full_path = $initial_upload_base_path . '/' . $posted_manuscript_title . '.' . $extension;
 
         if (file_exists($initial_upload_full_path)) {
             //following error will only trigger if somehow an earlier attempt with this title did not complete (yet). In the case this error triggers, it means
@@ -84,22 +84,22 @@ class NewManuscriptPaths {
         global $wgWebsiteRoot, $wgNewManuscriptOptions;
         $posted_manuscript_title = $this->posted_manuscript_title;
         $user_name = $this->user_name;
-        $initial_upload_base_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['original_images_dir'] . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $posted_manuscript_title;
+        $initial_upload_base_path = $wgWebsiteRoot . '/' . $wgNewManuscriptOptions['original_images_dir'] . '/' . $user_name . '/' . $posted_manuscript_title;
         return $initial_upload_base_path;
     }
 
     private function setBaseExportPath() {
         global $wgWebsiteRoot, $wgNewManuscriptOptions;
-        $base_export_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['zoomimages_root_dir'];
+        $base_export_path = $wgWebsiteRoot . '/' . $wgNewManuscriptOptions['zoomimages_root_dir'];
 
-        $this->directoryShouldExist();
+        $this->directoryShouldExist($base_export_path);
 
         return $this->base_export_path = $base_export_path;
     }
 
     private function setUserExportPath() {
 
-        $user_export_path = $this->getBaseExportPath() . DIRECTORY_SEPARATOR . $this->user_name;
+        $user_export_path = $this->getBaseExportPath() . '/' . $this->user_name;
 
         $this->makeDirectoryIfItDoesNotExist($user_export_path);
 
@@ -108,7 +108,7 @@ class NewManuscriptPaths {
 
     private function setFullExportPath() {
 
-        $full_export_path = $this->getUserExportPath() . DIRECTORY_SEPARATOR . $this->posted_manuscript_title;
+        $full_export_path = $this->getUserExportPath() . '/' . $this->posted_manuscript_title . '/';
 
         return $this->full_export_path = $full_export_path;
     }
@@ -125,7 +125,7 @@ class NewManuscriptPaths {
         $upload_succesfull = move_uploaded_file($temp_path, $initial_upload_dir_path);
 
         if (!$upload_succesfull) {
-            wfErrorLog($this->msg('newmanuscript-error-upload') . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
+            wfErrorLog($this->msg('newmanuscript-error-upload') . "\r\n", $web_root . '/' . 'ManuscriptDeskDebugLog.log');
             throw new \Exception('newmanuscript-error-upload');
         }
 
@@ -138,14 +138,6 @@ class NewManuscriptPaths {
         return $this->new_page_url = $manuscripts_namespace_url . $this->user_name . '/' . $this->posted_manuscript_title;
     }
 
-    private function checkAndMakeDirectory($path) {
-        if (is_dir($path)) {
-            throw new \Exception('error-request');
-        }
-
-        return $this->makeNewDirectory($path);
-    }
-
     private function makeDirectoryIfItDoesNotExist($path) {
         if (!is_dir($path)) {
             $this->makeNewDirectory($path);
@@ -155,7 +147,7 @@ class NewManuscriptPaths {
     }
 
     private function directoryShouldExist($path) {
-        if (!is_dir($base_export_path)) {
+        if (!is_dir($path)) {
             throw new \Exception('error-request');
         }
 
@@ -219,7 +211,7 @@ class NewManuscriptPaths {
     public function getSlicerPath() {
         global $wgWebsiteRoot, $wgNewManuscriptOptions;
 
-        $slicer_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['slicer_path'];
+        $slicer_path = $wgWebsiteRoot . '/' . $wgNewManuscriptOptions['slicer_path'];
 
         if (!file_exists($slicer_path)) {
             throw new \Exception('error-request');
@@ -242,7 +234,13 @@ class NewManuscriptPaths {
         $initial_upload_base_path = $this->getInitialUploadBasePath();
         $image_file = $this->getImageFileNameFromScan($initial_upload_base_path);
 
-        return $original_images_dir . '/' . $creator_user_name . '/' . $manuscripts_title . '/' . $image_file;
+        return '/' . $original_images_dir . '/' . $creator_user_name . '/' . $manuscripts_title . '/' . $image_file;
+    }
+    
+    public function getWebLinkExportPath(){
+        global $wgNewManuscriptOptions;
+        
+        return '/' . $wgNewManuscriptOptions['zoomimages_root_dir'] . '/' . $this->user_name . '/' . $this->posted_manuscript_title . '/';     
     }
 
     public function getNewPageUrl() {
@@ -267,7 +265,7 @@ class NewManuscriptPaths {
     }
 
     private function deleteSliceDirectory() {
-        $slice_directory = $this->getUserExportPath() . DIRECTORY_SEPARATOR . 'slice';
+        $slice_directory = $this->getUserExportPath() . '/' . 'slice';
 
         //check if the temporary directory 'slice' exists. If it does, it should be deleted. 
         if (file_exists($slice_directory)) {
@@ -279,8 +277,8 @@ class NewManuscriptPaths {
 
     private function deleteFullExportPathFiles() {
         $full_export_path = $this->getFullExportPath();
-        $tile_group_url = $full_export_path . DIRECTORY_SEPARATOR . 'TileGroup0';
-        $image_properties_url = $full_export_path . DIRECTORY_SEPARATOR . 'ImageProperties.xml';
+        $tile_group_url = $full_export_path . '/' . 'TileGroup0';
+        $image_properties_url = $full_export_path . '/' . 'ImageProperties.xml';
 
         if (!is_dir($tile_group_url) || !is_file($image_properties_url)) {
             return;
@@ -309,10 +307,16 @@ class NewManuscriptPaths {
         $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
 
         if (pathinfo($path, PATHINFO_EXTENSION) !== null) {
-            $extension = pathinfo($path, PATHINFO_EXTENSION);
+            $extension = trim(pathinfo($path, PATHINFO_EXTENSION));
 
-            if (in_array($extension, $allowed_file_extensions) && getimagesize($path) === true) {
-                return true;
+            if (getimagesize($path) === false) {
+                return false;
+            }
+
+            foreach ($allowed_file_extensions as $allowed_extension) {
+                if (strpos($extension, $allowed_extension) !== false) {
+                    return true;
+                }
             }
         }
 
@@ -326,7 +330,7 @@ class NewManuscriptPaths {
 
             foreach ($files as $file) {
                 //recursive call
-                $this->recursiveDeleteFromPath(realpath($path) . DIRECTORY_SEPARATOR . $file);
+                $this->recursiveDeleteFromPath(realpath($path) . '/' . $file);
             }
 
             return rmdir($path);
