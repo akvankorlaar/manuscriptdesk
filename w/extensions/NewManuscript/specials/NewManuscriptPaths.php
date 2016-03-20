@@ -35,18 +35,17 @@ class NewManuscriptPaths {
     private $new_page_url;
     private $image_uploaded = false;
 
-    public function __construct($user_name, $posted_manuscript_title, $extension) {
+    public function __construct($user_name, $posted_manuscript_title, $extension = '') {
         $this->user_name = $user_name;
         $this->posted_manuscript_title = $posted_manuscript_title;
         $this->extension = $extension;
     }
 
     public function setInitialUploadFullPath() {
-
         $extension = $this->extension;
         $posted_manuscript_title = $this->posted_manuscript_title;
-
-        $initial_upload_base_path = $this->constructInitialUploadBasePath();
+        $initial_upload_base_path = $this->getInitialUploadBasePath();
+        $this->checkAndMakeDirectory($initial_upload_base_path);
         $initial_upload_full_path = $initial_upload_base_path . DIRECTORY_SEPARATOR . $posted_manuscript_title . '.' . $extension;
 
         if (file_exists($initial_upload_full_path)) {
@@ -58,51 +57,67 @@ class NewManuscriptPaths {
         return $this->initial_upload_full_path = $initial_upload_full_path;
     }
 
-    private function constructInitialUploadBasePath() {
+    public function initialUploadFullPathIsConstructableFromScan() {
+        $initial_upload_base_path = $this->getInitialUploadBasePath();
+        if (!is_dir($initial_upload_base_path)) {
+            return false;
+        }
+
+        $image_file_name = $this->getImageFileNameFromScan($initial_upload_base_path);
+        $initial_upload_full_path = $initial_upload_base_path . '/' . $image_file_name;
+
+        if ($image_file_name === "" || !$this->isAllowedImage($initial_upload_full_path)) {
+            return false;
+        }
+
+        $this->initial_upload_full_path = $initial_upload_full_path;
+
+        return true;
+    }
+
+    private function getImageFileNameFromScan($path) {
+        $file_scan = scandir($path);
+        return isset($file_scan[2]) ? $file_scan[2] : "";
+    }
+
+    private function getInitialUploadBasePath() {
         global $wgWebsiteRoot, $wgNewManuscriptOptions;
         $posted_manuscript_title = $this->posted_manuscript_title;
         $user_name = $this->user_name;
-        $save_directory_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['original_images_dir'] . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $posted_manuscript_title;
-
-        if (is_dir($save_directory_path)) {
-            throw new \Exception('error-request');
-        }
-
-        $this->makeNewDirectory($save_directory_path);
-        return $save_directory_path;
+        $initial_upload_base_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['original_images_dir'] . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $posted_manuscript_title;
+        return $initial_upload_base_path;
     }
 
-    public function setBaseExportPath() {
+    private function setBaseExportPath() {
         global $wgWebsiteRoot, $wgNewManuscriptOptions;
         $base_export_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $wgNewManuscriptOptions['zoomimages_root_dir'];
 
-        if (!is_dir($base_export_path)) {
-            throw new \Exception('error-request');
-        }
+        $this->directoryShouldExist();
 
         return $this->base_export_path = $base_export_path;
     }
 
-    public function setUserExportPath() {
+    private function setUserExportPath() {
 
         $user_export_path = $this->getBaseExportPath() . DIRECTORY_SEPARATOR . $this->user_name;
 
-        if (!is_dir($user_export_path)) {
-            $this->makeNewDirectory($user_export_path);
-        }
+        $this->makeDirectoryIfItDoesNotExist($user_export_path);
 
         return $this->user_export_path = $user_export_path;
     }
 
-    public function setFullExportPath() {
+    private function setFullExportPath() {
 
         $full_export_path = $this->getUserExportPath() . DIRECTORY_SEPARATOR . $this->posted_manuscript_title;
 
-        if (is_dir($full_export_path)) {
-            throw new \Exception('error-request');
-        }
-
         return $this->full_export_path = $full_export_path;
+    }
+
+    public function setExportPaths() {
+        $this->setBaseExportPath();
+        $this->setUserExportPath();
+        $this->setFullExportPath();
+        return;
     }
 
     public function moveUploadToInitialUploadDir($temp_path) {
@@ -120,7 +135,31 @@ class NewManuscriptPaths {
     public function setNewPageUrl() {
         global $wgNewManuscriptOptions;
         $manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
-        $this->new_page_url = $manuscripts_namespace_url . $this->user_name . '/' . $this->posted_manuscript_title;
+        return $this->new_page_url = $manuscripts_namespace_url . $this->user_name . '/' . $this->posted_manuscript_title;
+    }
+
+    private function checkAndMakeDirectory($path) {
+        if (is_dir($path)) {
+            throw new \Exception('error-request');
+        }
+
+        return $this->makeNewDirectory($path);
+    }
+
+    private function makeDirectoryIfItDoesNotExist($path) {
+        if (!is_dir($path)) {
+            $this->makeNewDirectory($path);
+        }
+
+        return;
+    }
+
+    private function directoryShouldExist($path) {
+        if (!is_dir($base_export_path)) {
+            throw new \Exception('error-request');
+        }
+
+        return;
     }
 
     private function makeNewDirectory($path) {
@@ -189,6 +228,23 @@ class NewManuscriptPaths {
         return $slicer_path;
     }
 
+    /**
+     * Construct the full path of the original image
+     */
+    public function getWebLinkInitialUploadPath() {
+
+        global $wgNewManuscriptOptions;
+
+        $original_images_dir = $wgNewManuscriptOptions['original_images_dir'];
+        $creator_user_name = $this->user_name;
+        $manuscripts_title = $this->posted_manuscript_title;
+
+        $initial_upload_base_path = $this->getInitialUploadBasePath();
+        $image_file = $this->getImageFileNameFromScan($initial_upload_base_path);
+
+        return $original_images_dir . '/' . $creator_user_name . '/' . $manuscripts_title . '/' . $image_file;
+    }
+
     public function getNewPageUrl() {
         if (!isset($this->new_page_url)) {
             throw new \Exception('error-request');
@@ -226,11 +282,41 @@ class NewManuscriptPaths {
         $tile_group_url = $full_export_path . DIRECTORY_SEPARATOR . 'TileGroup0';
         $image_properties_url = $full_export_path . DIRECTORY_SEPARATOR . 'ImageProperties.xml';
 
-        if (is_dir($tile_group_url) && is_file($image_properties_url)) {
-            return $this->recursiveDeleteFromPath($full_export_path);
+        if (!is_dir($tile_group_url) || !is_file($image_properties_url)) {
+            return;
         }
 
-        return;
+        return $this->recursiveDeleteFromPath($full_export_path);
+    }
+
+    public function deleteInitialUploadFullPath() {
+        $initial_upload_full_path = $this->getInitialUploadFullPath();
+
+        if (!$this->isAllowedImage($initial_upload_full_path)) {
+            return;
+        }
+
+        return $this->recursiveDeleteFromPath($initial_upload_full_path);
+    }
+
+    /**
+     * This function checks if the file is an image. This has been done earlier and more thouroughly when uploading, but these checks are just to make sure
+     */
+    private function isAllowedImage($path) {
+
+        global $wgNewManuscriptOptions;
+
+        $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
+
+        if (pathinfo($path, PATHINFO_EXTENSION) !== null) {
+            $extension = pathinfo($path, PATHINFO_EXTENSION);
+
+            if (in_array($extension, $allowed_file_extensions) && getimagesize($path) === true) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function recursiveDeleteFromPath($path) {

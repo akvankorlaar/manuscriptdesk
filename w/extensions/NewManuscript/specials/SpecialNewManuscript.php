@@ -91,9 +91,13 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     private function setPaths($posted_manuscript_title, $extension) {
         $this->paths = $paths = new NewManuscriptPaths($this->user_name, $posted_manuscript_title, $extension);
         $paths->setInitialUploadFullPath();
-        $paths->setBaseExportPath();
-        $paths->setUserExportPath();
-        $paths->setFullExportPath();
+        $paths->setExportPaths();
+        
+        $full_export_path = $paths->getFullExportPath();
+        if (is_dir($full_export_path)) {
+            throw new \Exception('error-request');
+        }
+        
         $paths->setNewPageUrl();
         return;
     }

@@ -62,6 +62,7 @@ class NewManuscriptViewer extends ManuscriptDeskBaseViewer {
         // Used message keys: 'accesskey-upload', 'tooltip-upload'
         $new_manuscript_form->setSubmitTooltip('upload');
         $new_manuscript_form->setId('mw-upload-form');
+        $new_manuscript_form->addHiddenFields('save_page_posted','save_page_posted');
         return $new_manuscript_form;
     }
 

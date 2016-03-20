@@ -28,8 +28,6 @@
  * permission notice: 
  * 
  * Todo: Some of the functions (the path functions) should be handled by the NewManuscriptPaths class
- * 
- * Todo: When saving, there should be an image in the database 
  */
 class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
@@ -96,11 +94,11 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     public function onMediaWikiPerformAction(OutputPage $out, Article $article, Title $title, User $user, WebRequest $request, MediaWiki $wiki) {
 
-        try{
-        
-        if (!$this->manuscriptisInViewMode($out) || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage($out)) {
-            return true;
-        }
+        try {
+
+            if (!$this->manuscriptisInViewMode($out) || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage($out)) {
+                return true;
+            }
 
             $this->setPageObjects($out, $user, $title);
             $this->setPageData($out->getTitle()->getPrefixedUrl());
@@ -256,51 +254,14 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     private function getHTMLLinkToOriginalManuscriptImage() {
 
-        $partial_original_image_path = $this->constructPartialOriginalImagePath();
-        $full_original_image_path = $this->constructFullOriginalImagePath($partial_original_image_path);
+        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
 
-        if (!$this->fullOriginalImagePathIsOk($full_original_image_path)) {
+        if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
         }
 
-        $image_file_name = basename($full_original_image_path) . PHP_EOL;
-
-        $link_original_image_path = $partial_original_image_path . '/' . $image_file_name;
-        return "<td><a class='link-transparent' href='$link_original_image_path' target='_blank'>" . $this->getMessage('newmanuscripthooks-originalimage') . "</a></td>";
-    }
-
-    /**
-     * Construct the full path of the original image
-     */
-    private function constructPartialOriginalImagePath() {
-
-        global $wgNewManuscriptOptions;
-
-        $original_images_dir = $wgNewManuscriptOptions['original_images_dir'];
-        $creator_user_name = $this->creator_user_name;
-        $manuscripts_title = $this->manuscripts_title;
-
-        return $original_images_dir . '/' . $creator_user_name . '/' . $manuscripts_title;
-    }
-
-    /**
-     * This function checks if the file is an image. This has been done earlier and more thouroughly when uploading, but these checks are just to make sure
-     */
-    private function isAllowedImage($path) {
-
-        global $wgNewManuscriptOptions;
-
-        $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
-
-        if (pathinfo($path, PATHINFO_EXTENSION) !== null) {
-            $extension = pathinfo($path, PATHINFO_EXTENSION);
-
-            if (in_array($extension, $allowed_file_extensions) && getimagesize($path) === true) {
-                return true;
-            }
-        }
-
-        return false;
+        $web_link_initial_upload_path = $paths->getWebLinkInitialUploadPath();
+        return "<td><a class='link-transparent' href='$web_link_initial_upload_path' target='_blank'>" . $this->getMessage('newmanuscripthooks-originalimage') . "</a></td>";
     }
 
     /**
@@ -354,9 +315,9 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      * Constructs the full path of the image to be passed to the iframe
      */
     private function constructImageFilePath() {
-        global $wgNewManuscriptOptions;
-        $images_root_dir = $wgNewManuscriptOptions['zoomimages_root_dir'];
-        return '/' . $images_root_dir . '/' . $this->creator_user_name . '/' . $this->manuscripts_title . '/';
+        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscript_title);
+        $paths->setExportPaths();
+        return $paths->getFullExportPath();
     }
 
     /**
@@ -399,133 +360,76 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     public function onArticleDelete(WikiPage &$wiki_page, User &$user, &$reason, &$error) {
 
-        if (!$this->isInManuscriptsNamespace($wiki_page)) {
+        try {
+            if (!$this->isInManuscriptsNamespace($wiki_page)) {
+                return true;
+            }
+
+            $this->setPageData($wiki_page->getTitle()->getPrefixedUrl());
+
+            if (!$this->currentUserIsTheOwnerOfThePage($user) && !$this->currentUserIsASysop($user)) {
+                //deny deletion because the current user did not create this manuscript, and the user is not an administrator
+                $error = "<br>" . $this->getMessage('newmanuscripthooks-nodeletepermission') . ".";
+                return false;
+            }
+
+            $this->deleteFilesAndDatabaseEntries();
+            $this->subtractAlphabetNumbersTable();
             return true;
-        }
-
-        $this->setPageData($wiki_page->getTitle()->getPrefixedUrl());
-
-        if (!$this->currentUserIsTheOwnerOfThePage($user) && !$this->currentUserIsASysop($user)) {
-            //deny deletion because the current user did not create this manuscript, and the user is not an administrator
+        } catch (Exception $e) {
             $error = "<br>" . $this->getMessage('newmanuscripthooks-nodeletepermission') . ".";
             return false;
         }
-
-        $this->deleteFilesAndDatabaseEntries();
-        $this->subtractAlphabetNumbersTable();
-        return true;
     }
 
     private function deleteFilesAndDatabaseEntries() {
-        $this->deleteZoomImageFiles();
-        $this->deleteOriginalImage();
+        $this->deleteFiles();
+        $this->deleteDatabaseEntries();
+        return;
+    }
 
+    private function deleteFiles() {
+        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        $this->deleteZoomImageFiles($paths);
+        $this->deleteOriginalImage($paths);
+        return;
+    }
+
+    private function deleteDatabaseEntries() {
         $this->wrapper->deleteFromManuscripts($this->partial_url);
 
         if (isset($this->collection_title)) {
             $this->wrapper->checkAndDeleteCollectionifNeeded($this->collection_title);
         }
 
-        return true;
+        return;
     }
 
     private function subtractAlphabetNumbersTable() {
         $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($this->partial_url);
         $alphabetnumbes_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($this->collection_title);
         $this->wrapper->subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbes_context);
+        return;
     }
 
     /**
      * Check if all the default files are present, and delete all files
      */
-    private function deleteZoomImageFiles($zoom_image_files_path) {
-
-        $zoom_image_files_path = $this->constructZoomImageFilesPath();
-
-        if (!$this->zoomImagePathIsOk($zoom_image_files_path)) {
-            return;
-        }
-
-        return $this->recursiveDeleteFromPath($zoom_image_files_path);
-    }
-
-    private function constructZoomImageFilesPath() {
-        global $wgWebsiteRoot, $wgNewManuscriptOptions;
-        $images_root_dir = $wgNewManuscriptOptions['images_root_dir'];
-        $zoom_image_files_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $images_root_dir . DIRECTORY_SEPARATOR . $this->creator_user_name . DIRECTORY_SEPARATOR . $this->manuscripts_title;
-    }
-
-    private function zoomImagePathIsOk($zoom_image_files_path) {
-        $tile_group_url = $zoom_image_files_path . DIRECTORY_SEPARATOR . 'TileGroup0';
-        $image_properties_url = $zoom_image_files_path . DIRECTORY_SEPARATOR . 'ImageProperties.xml';
-
-        if (!is_dir($tile_group_url) || !is_file($image_properties_url)) {
-            return false;
-        }
-
-        return true;
+    private function deleteZoomImageFiles(NewManuscriptPaths $paths) {
+        $paths->setExportPaths();
+        $paths->deleteSlicerExportFiles();
+        return;
     }
 
     /**
      * This function checks if the original image path file is valid, and then calls deleteAllFiles()
      */
-    private function deleteOriginalImage() {
-
-        $partial_original_image_path = $this->constructPartialOriginalImagePath();
-        $full_original_image_path = $this->constructFullOriginalImagePath($partial_original_image_path);
-
-        if (!$this->fullOriginalImagePathIsOk()) {
+    private function deleteOriginalImage(NewManuscriptPaths $paths) {
+        if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return;
         }
 
-        return $this->recursiveDeleteFromPath($original_image_path);
-    }
-
-    private function constructFullOriginalImagePath($partial_original_image_path) {
-        global $wgWebsiteRoot;
-
-        $original_image_path = $wgWebsiteRoot . '/' . $partial_original_image_path;
-
-        if (!is_dir($original_image_path)) {
-            return '';
-        }
-
-        $file_scan = scandir($original_image_path);
-        $image_file_name = isset($file_scan[2]) ? $file_scan[2] : "";
-
-        if ($image_file_name === "") {
-            return '';
-        }
-
-        return $original_image_path . '/' . $image_file_name;
-    }
-
-    private function fullOriginalImagePathIsOk($full_original_image_path) {
-
-        if (empty($full_original_image_path) || !$this->isAllowedImage($full_original_image_path)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function recursiveDeleteFromPath($path) {
-
-        if (is_dir($path) === true) {
-            $files = array_diff(scandir($path), array('.', '..'));
-
-            foreach ($files as $file) {
-                //recursive call
-                $this->recursiveDeleteFromPath(realpath($path) . DIRECTORY_SEPARATOR . $file);
-            }
-
-            return rmdir($path);
-        }
-        else if (is_file($path) === true) {
-            return unlink($path);
-        }
-
-        return false;
+        return $paths->deleteInitialUploadFullPath();
     }
 
     /**
@@ -540,26 +444,49 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 return true;
             }
 
-            //could also check if there is a corresponding image on server
-            if (!$this->currentPageExists($wikiPage) && !$this->savePageWasRequested($user)) {
+            if (!$this->currentPageExists($wikiPage) && !$this->newManuscriptIsValid($wikiPage, $user)) {
                 $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-nopermission') . "."));
                 return true;
             }
 
-            global $wgNewManuscriptOptions;
-            $max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
-            $number_of_charachters_new_save = strlen($content->mText);
-
-            if ($this->textExceedsMaximumAllowedLength($number_of_charachters_new_save, $max_charachters_manuscript)) {
-                $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-maxchar1') . " " . $number_of_charachters_new_save . " " .
-                    $this->getMessage('newmanuscripthooks-maxchar2') . " " . $max_charachters_manuscript . " " . $this->getMessage('newmanuscripthooks-maxchar3') . "."));
-                return true;
-            }
-
+            $this->checkIfTextExceedsMaximumLength($content, $status);
             return true;
         } catch (Exception $e) {
+            $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-nopermission') . "."));
             return true;
         }
+    }
+
+    private function newManuscriptIsValid(WikiPage $wikiPage, User $user) {
+        if (!$this->validNewManuscriptWasCreated($wikiPage) || !$this->savePageWasRequested($user)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function validNewManuscriptWasCreated(WikiPage $wikiPage) {
+        $this->setPageData($wikiPage->getTitle()->getPrefixedUrl());
+        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function checkIfTextExceedsMaximumLength($content, $status) {
+        global $wgNewManuscriptOptions;
+        $max_charachters_manuscript = $wgNewManuscriptOptions['max_charachters_manuscript'];
+        $number_of_charachters_new_save = strlen($content->mText);
+
+        if ($this->textExceedsMaximumAllowedLength($number_of_charachters_new_save, $max_charachters_manuscript)) {
+            $status->fatal(new RawMessage($this->getMessage('newmanuscripthooks-maxchar1') . " " . $number_of_charachters_new_save . " " .
+                $this->getMessage('newmanuscripthooks-maxchar2') . " " . $max_charachters_manuscript . " " . $this->getMessage('newmanuscripthooks-maxchar3') . "."));
+            return;
+        }
+
+        return;
     }
 
     private function textExceedsMaximumAllowedLength($number_of_charachters_new_save, $max_charachters_manuscript) {
