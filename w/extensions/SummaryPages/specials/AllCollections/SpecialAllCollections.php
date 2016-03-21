@@ -31,16 +31,31 @@ class SpecialAllCollections extends SummaryPageBase {
         parent::__construct($this->page_name);
     }
 
-    protected function getViewer() {
-        return new AllCollectionsViewer($this->getOutput(), $this->page_name);
+    protected function setViewer() {
+        
+        if(isset($this->viewer)){
+            return;
+        }
+        
+        return $this->viewer = new AllCollectionsViewer($this->getOutput(), $this->page_name);
     }
 
-    protected function getWrapper() {
-        return new AllCollectionsWrapper();
+    protected function setWrapper() {
+        
+        if(isset($this->wrapper)){
+            return;
+        }
+        
+        return $this->wrapper = new AllCollectionsWrapper();
     }
     
-    protected function getRequestProcessor(){
-        return new SummaryPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+    protected function setRequestProcessor(){
+        
+        if(isset($this->request_processor)){
+            return;
+        }
+        
+        return $this->request_processor = new SummaryPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     protected function getSpecialPageName() {

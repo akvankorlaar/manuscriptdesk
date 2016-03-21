@@ -49,6 +49,7 @@ $dir = __DIR__ . '/';
 
 //Auto load classes 
 $wgAutoloadClasses['NewManuscriptImageValidator']    = $dir . 'specials/NewManuscriptImageValidator.php';
+$wgAutoloadClasses['NewManuscriptDatabaseDeleter'] = $dir . 'specials/NewManuscriptDatabaseDeleter.php';
 $wgAutoloadClasses['NewManuscriptPaths']    = $dir . 'specials/NewManuscriptPaths.php';
 $wgAutoloadClasses['NewManuscriptRequestProcessor']    = $dir . 'specials/NewManuscriptRequestProcessor.php';
 $wgAutoloadClasses['NewManuscriptUploadForm']    = $dir . 'specials/NewManuscriptUploadForm.php';

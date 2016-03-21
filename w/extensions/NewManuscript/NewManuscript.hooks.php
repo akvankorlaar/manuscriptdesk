@@ -27,7 +27,7 @@
  * This file incorporates work covered by the following copyright and
  * permission notice: 
  * 
- * Todo: Some of the functions (the path functions) should be handled by the NewManuscriptPaths class
+ * Todo: Some of the variables that refer to the same things have different names. Fix this. 
  */
 class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
@@ -386,22 +386,10 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $this->deleteOriginalImage($paths);
         return;
     }
-
-    private function deleteDatabaseEntries() {
-        $this->wrapper->deleteFromManuscripts($this->partial_url);
-
-        if (isset($this->collection_title)) {
-            $this->wrapper->checkAndDeleteCollectionifNeeded($this->collection_title);
-        }
-
-        return;
-    }
-
-    private function subtractAlphabetNumbersTable() {
-        $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($this->partial_url);
-        $alphabetnumbes_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($this->collection_title);
-        $this->wrapper->subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbes_context);
-        return;
+    
+    private function deleteDatabaseEntries(){
+        $deleter = new NewManuscriptDatabaseDelete($this->wrapper, $this->partial_url, $this->collection_title);
+        return $deleter->excute();
     }
 
     /**

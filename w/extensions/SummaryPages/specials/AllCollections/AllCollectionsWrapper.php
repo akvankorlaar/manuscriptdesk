@@ -181,64 +181,62 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
 
         return $pages_within_collection;
     }
-    
-  /**
-   * This function inserts data into the 'collections' table 
-   */
-  public function updateCollectionsMetadata($saved_metadata, $collection_title){
-        
-    $user_name = $this->user_name;
-    
-    $metatitle =         isset($saved_metadata['wpmetadata_title']) ? $saved_metadata['wpmetadata_title'] : '';
-    $metaauthor =        isset($saved_metadata['wpmetadata_author']) ? $saved_metadata['wpmetadata_author'] : '';
-    $metayear =          isset($saved_metadata['wpmetadata_year']) ? $saved_metadata['wpmetadata_year'] : '';
-    $metapages =         isset($saved_metadata['wpmetadata_pages']) ? $saved_metadata['wpmetadata_pages'] : '';
-    $metacategory =      isset($saved_metadata['wpmetadata_category']) ? $saved_metadata['wpmetadata_category'] : '';
-    $metaproduced =      isset($saved_metadata['wpmetadata_produced']) ? $saved_metadata['wpmetadata_produced'] : '';
-    $metaproducer =      isset($saved_metadata['wpmetadata_producer']) ? $saved_metadata['wpmetadata_producer'] : '';
-    $metaeditors =       isset($saved_metadata['wpmetadata_editors']) ? $saved_metadata['wpmetadata_editors'] : '';
-    $metajournal =       isset($saved_metadata['wpmetadata_journal']) ? $saved_metadata['wpmetadata_journal'] : '';
-    $metajournalnumber = isset($saved_metadata['wpmetadata_journalnumber']) ? $saved_metadata['wpmetadata_journalnumber'] : '';
-    $metatranslators =   isset($saved_metadata['wpmetadata_translators']) ? $saved_metadata['wpmetadata_translators'] : '';
-    $metawebsource =     isset($saved_metadata['wpmetadata_websource']) ? $saved_metadata['wpmetadata_websource'] : '';
-    $metaid =            isset($saved_metadata['wpmetadata_id']) ? $saved_metadata['wpmetadata_id'] : '';
-    $metanotes =         isset($saved_metadata['wpmetadata_notes']) ? $saved_metadata['wpmetadata_notes'] : '';
-    
-    $dbw = wfGetDB(DB_MASTER);
-    
-    $dbw->update('collections', //select table
-      array( //update values
-      'collections_metatitle'         => $metatitle,
-      'collections_metaauthor'        => $metaauthor,
-      'collections_metayear'          => $metayear,
-      'collections_metapages'         => $metapages,
-      'collections_metacategory'      => $metacategory,
-      'collections_metaproduced'      => $metaproduced,  
-      'collections_metaproducer'      => $metaproducer,
-      'collections_metaeditors'       => $metaeditors,
-      'collections_metajournal'       => $metajournal,
-      'collections_metajournalnumber' => $metajournalnumber,
-      'collections_metatranslators'   => $metatranslators,
-      'collections_metawebsource'     => $metawebsource,   
-      'collections_metaid'            => $metaid,
-      'collections_metanotes'         => $metanotes,
-       ),
-        array(
-      'collections_user  = ' . $dbw->addQuotes($user_name),//conditions
-      'collections_title = ' . $dbw->addQuotes($collection_title),
-        ), //conditions
-        __METHOD__,
-       'IGNORE' );
-    
-    //no affected rows means nothing to update, so always return true
-    return true; 
-  }
-  
-  public function updateManuscriptsTableAndDeleteOldPage($manuscript_new_title, $new_page_url, $manuscript_url_old_title, $page_id){
-      
+
+    /**
+     * This function inserts data into the 'collections' table 
+     */
+    public function updateCollectionsMetadata($saved_metadata, $collection_title) {
+
+        $user_name = $this->user_name;
+
+        $metatitle = isset($saved_metadata['wpmetadata_title']) ? $saved_metadata['wpmetadata_title'] : '';
+        $metaauthor = isset($saved_metadata['wpmetadata_author']) ? $saved_metadata['wpmetadata_author'] : '';
+        $metayear = isset($saved_metadata['wpmetadata_year']) ? $saved_metadata['wpmetadata_year'] : '';
+        $metapages = isset($saved_metadata['wpmetadata_pages']) ? $saved_metadata['wpmetadata_pages'] : '';
+        $metacategory = isset($saved_metadata['wpmetadata_category']) ? $saved_metadata['wpmetadata_category'] : '';
+        $metaproduced = isset($saved_metadata['wpmetadata_produced']) ? $saved_metadata['wpmetadata_produced'] : '';
+        $metaproducer = isset($saved_metadata['wpmetadata_producer']) ? $saved_metadata['wpmetadata_producer'] : '';
+        $metaeditors = isset($saved_metadata['wpmetadata_editors']) ? $saved_metadata['wpmetadata_editors'] : '';
+        $metajournal = isset($saved_metadata['wpmetadata_journal']) ? $saved_metadata['wpmetadata_journal'] : '';
+        $metajournalnumber = isset($saved_metadata['wpmetadata_journalnumber']) ? $saved_metadata['wpmetadata_journalnumber'] : '';
+        $metatranslators = isset($saved_metadata['wpmetadata_translators']) ? $saved_metadata['wpmetadata_translators'] : '';
+        $metawebsource = isset($saved_metadata['wpmetadata_websource']) ? $saved_metadata['wpmetadata_websource'] : '';
+        $metaid = isset($saved_metadata['wpmetadata_id']) ? $saved_metadata['wpmetadata_id'] : '';
+        $metanotes = isset($saved_metadata['wpmetadata_notes']) ? $saved_metadata['wpmetadata_notes'] : '';
+
+        $dbw = wfGetDB(DB_MASTER);
+
+        $dbw->update('collections', //select table
+            array(//update values
+          'collections_metatitle' => $metatitle,
+          'collections_metaauthor' => $metaauthor,
+          'collections_metayear' => $metayear,
+          'collections_metapages' => $metapages,
+          'collections_metacategory' => $metacategory,
+          'collections_metaproduced' => $metaproduced,
+          'collections_metaproducer' => $metaproducer,
+          'collections_metaeditors' => $metaeditors,
+          'collections_metajournal' => $metajournal,
+          'collections_metajournalnumber' => $metajournalnumber,
+          'collections_metatranslators' => $metatranslators,
+          'collections_metawebsource' => $metawebsource,
+          'collections_metaid' => $metaid,
+          'collections_metanotes' => $metanotes,
+            ), array(
+          'collections_user  = ' . $dbw->addQuotes($user_name), //conditions
+          'collections_title = ' . $dbw->addQuotes($collection_title),
+            ), //conditions
+            __METHOD__, 'IGNORE');
+
+        //no affected rows means nothing to update, so always return true
+        return true;
+    }
+
+    public function updateManuscriptsTable($manuscript_new_title, $new_page_url, $manuscript_url_old_title) {
+
         $dbw = wfGetDB(DB_MASTER);
         $dbw->begin(__METHOD__);
-             
+
         $dbw->update(
             'manuscripts', //select table
             array(
@@ -247,62 +245,62 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_lowercase_title' => strtolower($manuscript_new_title),
             ), array(
           'manuscripts_url  = ' . $dbw->addQuotes($manuscript_url_old_title), //conditions ..why was url old title used ...
-            ), 
-            __METHOD__, 'IGNORE'
+            ), __METHOD__, 'IGNORE'
         );
 
         if (!$dbw->affectedRows()) {
             $dbw->rollback(__METHOD__);
-            return false; 
+            return false;
         }
+    }
 
+    public function deleteOldPage($page_id) {
+
+        $dbw = wfGetDB(DB_MASTER);
+        $dbw->begin(__METHOD__);
         $dbw->delete(
             'page', //from
             array(
           'page_id' => $page_id //conditions
-            ),
-            __METHOD__
+            ), __METHOD__
         );
 
         if (!$dbw->affectedRows() > 0) {
             $dbw->rollback(__METHOD__);
             return false;
         }
-        
-        return true; 
-  }
-  
-  /**
-   * This function retrieves the page id from the 'page' table 
-   */
-  public function getPageId($page_title){
-      
-    $page_title = str_replace('Manuscripts:','',$page_title);    
-    
-    $dbr = wfGetDB(DB_SLAVE);
-    
-     //Database query
-    $res = $dbr->select(
-        'page', //from
-      array(
-        'page_id',//values
-         ),
-      array(
-        'page_namespace = ' . $dbr->addQuotes(NS_MANUSCRIPTS),
-        'page_title = ' . $dbr->addQuotes($page_title),
-      ),
-      __METHOD__,
-      array(
-        'ORDER BY' => 'page_id', 
-      )
-      );
-        
-    //there should only be one result
-    if ($res->numRows() !== 1){
-        throw new \Exception('error-database');
+
+        return true;
     }
-    
-    return $res->fetchObject()->page_id;          
-  }
+
+    /**
+     * This function retrieves the page id from the 'page' table 
+     */
+    public function getPageId($page_title) {
+
+        $page_title = str_replace('Manuscripts:', '', $page_title);
+
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'page', //from
+            array(
+          'page_id', //values
+            ), array(
+          'page_namespace = ' . $dbr->addQuotes(NS_MANUSCRIPTS),
+          'page_title = ' . $dbr->addQuotes($page_title),
+            ), __METHOD__, array(
+          'ORDER BY' => 'page_id',
+            )
+        );
+
+        //there should only be one result
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        $s = $res->fetchObject();
+        return $s->page_id;
+    }
 
 }

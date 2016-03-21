@@ -32,7 +32,7 @@ class NewManuscriptPaths {
     private $user_export_path;
     private $full_export_path;
     private $extension;
-    private $new_page_url;
+    private $new_page_partial_url;
     private $image_uploaded = false;
 
     public function __construct($user_name, $posted_manuscript_title, $extension = '') {
@@ -132,10 +132,10 @@ class NewManuscriptPaths {
         return $this->image_uploaded = true;
     }
 
-    public function setNewPageUrl() {
+    public function setNewPagePartialUrl() {
         global $wgNewManuscriptOptions;
         $manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
-        return $this->new_page_url = $manuscripts_namespace_url . $this->user_name . '/' . $this->posted_manuscript_title;
+        return $this->new_page_partial_url = $manuscripts_namespace_url . $this->user_name . '/' . $this->posted_manuscript_title;
     }
 
     private function makeDirectoryIfItDoesNotExist($path) {
@@ -243,12 +243,12 @@ class NewManuscriptPaths {
         return '/' . $wgNewManuscriptOptions['zoomimages_root_dir'] . '/' . $this->user_name . '/' . $this->posted_manuscript_title . '/';     
     }
 
-    public function getNewPageUrl() {
-        if (!isset($this->new_page_url)) {
+    public function getNewPagePartialUrl() {
+        if (!isset($this->new_page_partial_url)) {
             throw new \Exception('error-request');
         }
 
-        return $this->new_page_url;
+        return $this->new_page_partial_url;
     }
 
     public function imageUploaded() {

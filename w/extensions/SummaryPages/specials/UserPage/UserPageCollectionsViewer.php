@@ -451,6 +451,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $html_form->addHiddenField('old_title_posted', $manuscript_old_title);
         $html_form->addHiddenField('url_old_title_posted', $manuscript_url_old_title);
         $html_form->addHiddenField('save_new_page_title_collection_posted', 'save_new_collection_title_posted');
+        $html_form->addHiddenField('save_page_posted', 'save_page_posted');
         $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));
         $html_form->show();
     }
