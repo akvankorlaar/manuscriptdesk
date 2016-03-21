@@ -46,7 +46,7 @@ abstract class ManuscriptDeskBaseHooks {
 
         return true;
     }
-    
+
     /**
      * Assert whether the current user is a sysop
      */
@@ -70,14 +70,25 @@ abstract class ManuscriptDeskBaseHooks {
             return $object->getNamespace();
         }
         else {
-            throw Exception('Invalid Object passed to' . __METHOD__);
+            throw new \Exception('Invalid Object passed to' . __METHOD__);
         }
     }
 
     protected function currentPageExists(WikiPage $wikiPage) {
         $title_object = $wikiPage->getTitle();
 
-        if (!$title_object->exists()) {
+        if ($title_object->exists()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function savePageWasRequested(User $user) {
+        $request = $user->getRequest();
+        $request_processor = new ManuscriptDeskBaseRequestProcessor($request);
+
+        if (!$request_processor->checkEditToken($user) || !$request_processor->savePagePosted()) {
             return false;
         }
 

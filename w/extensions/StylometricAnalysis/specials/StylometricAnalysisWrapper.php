@@ -273,7 +273,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         return true;
     }
 
-    public function getNewPageUrl($time = 0) {
+    public function getNewPagePartialUrl($time = 0) {
 
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
@@ -296,7 +296,6 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         $s = $res->fetchObject();
-
         return $s->stylometricanalysis_new_page_url;
     }
 

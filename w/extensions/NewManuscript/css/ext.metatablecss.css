@@ -1,0 +1,100 @@
+/**
+ * This file is part of the NewManuscript extension
+ * Copyright (C) 2015 Arent van Korlaar
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * @package MediaWiki
+ * @subpackage Extensions
+ * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
+ * @copyright 2015 Arent van Korlaar
+ */
+
+/*pre overrides earlier mediawiki CSS, and is needed for correct table display.*/  
+pre {
+  border: none !important;
+  padding: 0px !important;
+  background-color: transparent !important; 
+  font-family: sans-serif, Georgia, Serif;
+}
+
+table#page-metatable { 
+  width:100%; 
+  font-size: 100%;
+}
+
+table#page-metatable th { 
+  vertical-align: top;
+  text-align: right;
+  background-color: #f7f7f7; 
+  width: 25%;
+}
+
+table#page-metatable td { 
+  vertical-align: top; 
+  width: 25%;
+}
+
+table#metatable { 
+  width:100%; 
+  font-size: 100%;
+}
+
+table#metatable th { 
+  vertical-align: top;
+  text-align: right;
+  background-color: #f7f7f7; 
+  width: 25%;
+}
+
+table#metatable td { 
+  vertical-align: top;
+  width: 25%;
+}
+
+h2 {
+  margin-bottom: 0em;
+}
+
+.button-transparent {
+  background: #F2FCFF;
+  border: none; 
+  padding: 0;
+  font: inherit;
+  color: #black; 
+  cursor: pointer;
+  font-weight: bold; 
+}
+
+.button-transparent:hover {
+  text-decoration: underline; 
+}
+
+.link-transparent {
+  background: #F2FCFF;
+  font-weight: bold;
+  color: black;
+}
+
+#link-wrap {
+  width: 100%;
+}
+
+#link-wrap td {
+  width: 40%;
+}
+
+#mw_content {
+  border-bottom: none!important;
+}

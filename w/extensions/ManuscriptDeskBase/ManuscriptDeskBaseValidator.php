@@ -54,7 +54,7 @@ class ManuscriptDeskBaseValidator {
         }
 
         //check for empty variables or unusually long string lengths
-        if (strlen($input) > ($this->max_length * 10)) {
+        if (strlen($input) > ($this->max_length)) {
             throw new \Exception('validation-toolongstring');
         }
 
@@ -84,7 +84,7 @@ class ManuscriptDeskBaseValidator {
             throw new \Exception('validation-notalphanumeric');
         }
 
-        if (strlen($input) > ($this->max_length * 10)) {
+        if (strlen($input) > ($this->max_length)) {
             throw new \Exception('validation-morethanfiftycharachters');
         }
 

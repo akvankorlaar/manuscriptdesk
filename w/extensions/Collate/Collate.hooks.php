@@ -64,26 +64,21 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
      */
     public function onPageContentSave(&$wikiPage, &$user, &$content, &$summary, $isMinor, $isWatch, $section, &$flags, &$status) {
 
-        if (!$this->isCollationsNamespace($wikiPage)) {
+        try {
+
+            if (!$this->isCollationsNamespace($wikiPage)) {
+                return true;
+            }
+
+            if (!$this->currentPageExists($wikiPage) && !$this->savePageWasRequested($user)) {
+                $status->fatal(new RawMessage($this->getMessage('collatehooks-nopermission')));
+                return true;
+            }
+
+            return true;
+        } catch (Exception $e) {
             return true;
         }
-
-        if (!$this->currentPageExists($wikiPage) && !$this->collateSavePageWasRequested($user)) {
-            $status->fatal(new RawMessage($this->getMessage('collatehooks-nopermission')));
-            return true;
-        }
-
-        return true;
-    }
-
-    private function collateSavePageWasRequested(User $user) {
-        $request = $user->getRequest();
-
-        if (!$request->getText('save_page_posted')) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -122,7 +117,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
             }
 
             $manuscripts_lowercase_title = $database_wrapper->getManuscriptsLowercaseTitle($page_title_with_namespace);
-            $database_wrapper->subtractAlphabetnumbers($manuscripts_lowercase_title, 'AllCollations');
+            $database_wrapper->subtractAlphabetNumbers($manuscripts_lowercase_title, 'AllCollations');
             $database_wrapper->deleteDatabaseEntry($title->getPrefixedURL());
             return true;
         } catch (Exception $e) {
@@ -138,11 +133,11 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
         $page_title_with_namespace = $out->getTitle()->getPrefixedURL();
 
         if ($this->isCollationsNamespace($out) || $page_title_with_namespace === 'Special:Collate') {
-            
+
             $css_modules = array('ext.collatecss', 'ext.manuscriptdeskbasecss');
-            $javascript_modules = array('ext.collatebuttoncontroller','ext.javascriptloader');
-            $out->addModuleStyles($css_modules);          
-            $out->addModules($javascript_modules);         
+            $javascript_modules = array('ext.collatebuttoncontroller', 'ext.javascriptloader');
+            $out->addModuleStyles($css_modules);
+            $out->addModules($javascript_modules);
         }
 
         return true;

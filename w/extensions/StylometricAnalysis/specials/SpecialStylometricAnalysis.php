@@ -349,12 +349,12 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
         $wrapper = $this->wrapper;
         $wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
-        return $wrapper->getNewPageUrl($time);
+        return $wrapper->getNewPagePartialUrl($time);
     }
 
     protected function handleExceptions(Exception $exception_error) {
 
-        $viewer = $this->getViewer();
+        $viewer = $this->setViewer();
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
@@ -373,16 +373,30 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $this->getDefaultPage($error_message);
     }
 
-    protected function getViewer() {
-        return new StylometricAnalysisViewer($this->getOutput());
+    protected function setViewer() {
+        
+        if(isset($this->viewer)){
+            return;
+        }
+        
+        return $this->viewer = new StylometricAnalysisViewer($this->getOutput());
     }
 
-    protected function getWrapper() {
-        return new StylometricAnalysisWrapper($this->user_name);
+    protected function setWrapper() {
+        
+        if(isset($this->wrapper)){
+            return;
+        }
+        
+        return $this->wrapper = new StylometricAnalysisWrapper($this->user_name);
     }
 
-    protected function getRequestProcessor() {
-        return new StylometricAnalysisRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+    protected function setRequestProcessor() {
+        
+        if(isset($this->request_processor)){
+            return;
+        }
+        return $this->request_processor = new StylometricAnalysisRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     /**

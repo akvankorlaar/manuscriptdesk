@@ -82,7 +82,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
     public function onArticleDelete(WikiPage &$wikiPage, User &$user, &$reason, &$error) {
 
         $title = $wikiPage->getTitle();
-        
+
         if (!$this->isStylometricAnalysisNamespace($title)) {
             return true;
         }
@@ -108,16 +108,21 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
      */
     public function onPageContentSave(WikiPage &$wikiPage, User &$user, Content &$content, &$summary, $isMinor, $isWatch, $section, &$flags, &$status) {
 
-        if (!$this->isStylometricAnalysisNamespace($wikiPage)) {
+        try {
+
+            if (!$this->isStylometricAnalysisNamespace($wikiPage)) {
+                return true;
+            }
+
+            if (!$this->currentPageExists($wikiPage) && !$this->savePageWasRequested($user)) {
+                $status->fatal(new RawMessage($this->getMessage('stylometricanalysishooks-nopermission')));
+                return true;
+            }
+
+            return true;
+        } catch (Exception $e) {
             return true;
         }
-
-        if (!$this->currentPageExists($wikiPage) && !$this->stylometricAnalysisSavePageWasRequested($user)) {
-            $status->fatal(new RawMessage($this->getMessage('stylometricanalysishooks-nopermission')));
-            return true;
-        }
-
-        return true;
     }
 
     private function isStylometricAnalysisNamespace($object) {
@@ -125,16 +130,6 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         $namespace = $this->getNamespaceFromObject($object);
 
         if ($namespace !== NS_STYLOMETRICANALYSIS) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function stylometricAnalysisSavePageWasRequested(User $user) {
-        $request = $user->getRequest();
-
-        if (!$request->getText('save_page_posted')) {
             return false;
         }
 
@@ -162,16 +157,16 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         $page_title_with_namespace = $out->getTitle()->getPrefixedURL();
 
         if ($page_title_with_namespace === 'Special:StylometricAnalysis') {
-            
+
             $css_modules = array('ext.stylometricanalysiscss', 'ext.manuscriptdeskbasecss');
-            $javascript_modules = array('ext.stylometricanalysisbuttoncontroller','ext.javascriptloader');
-            $out->addModuleStyles($css_modules);          
-            $out->addModules($javascript_modules);   
-            
-        }elseif($this->isStylometricAnalysisNamespace($out)){
+            $javascript_modules = array('ext.stylometricanalysisbuttoncontroller', 'ext.javascriptloader');
+            $out->addModuleStyles($css_modules);
+            $out->addModules($javascript_modules);
+        }
+        elseif ($this->isStylometricAnalysisNamespace($out)) {
             $out->addModuleStyles('ext.stylometricanalysiscss');
         }
-        
+
         return true;
     }
 

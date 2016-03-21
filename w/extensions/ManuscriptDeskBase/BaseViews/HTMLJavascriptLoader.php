@@ -32,7 +32,7 @@ trait HTMLJavascriptLoader{
 
         $html = '';
         $html .= "<div class='javascriptloader'>";
-        $html .= "<img class='javascriptgif' src='/w/extensions/collate/specials/assets/362.gif' style='width: 64px; height: 64px;"
+        $html .= "<img class='javascriptgif' src='/w/extensions/ManuscriptDeskBase/assets/362.gif' style='width: 64px; height: 64px;"
             . " position: relative; left: 50%;'>";
         $html .= "</div>";
         

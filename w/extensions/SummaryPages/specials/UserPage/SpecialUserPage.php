@@ -23,7 +23,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 class SpecialUserPage extends ManuscriptDeskBaseSpecials {
-    
+
     private $form_type = 'default';
 
     public function __construct() {
@@ -52,20 +52,20 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             $this->getEditMetadataForm();
             return true;
         }
-        
-        if($request_processor->saveCollectionMetadataPosted()){
+
+        if ($request_processor->saveCollectionMetadataPosted()) {
             $this->processSaveCollectionMetadata();
-            return true; 
+            return true;
         }
-        
-        if($request_processor->editSinglePageCollectionPosted()){
+
+        if ($request_processor->editSinglePageCollectionPosted()) {
             $this->getEditSinglePageCollectionForm();
-            return true; 
+            return true;
         }
-        
-        if($request_processor->saveNewPageTitleCollectionPosted()){
+
+        if ($request_processor->saveNewPageTitleCollectionPosted()) {
             $this->processNewPageTitleCollection();
-            return true; 
+            return true;
         }
 
         throw new \Exception('error-request');
@@ -99,22 +99,22 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $this->viewer->showPage($button_name, $page_titles, $offset, $next_offset);
         return true;
     }
-    
-    private function getSingleCollectionPage(){
+
+    private function getSingleCollectionPage() {
         $collection_title = $this->request_processor->getCollectionTitle();
         $this->setWrapperAndViewer('view_collections_posted');
         $single_collection_data = $this->wrapper->getSingleCollectionData($collection_title);
         return $this->viewer->showSingleCollectionData($collection_title, $single_collection_data);
     }
-    
-    private function getEditMetadataForm($error_message = ''){
+
+    private function getEditMetadataForm($error_message = '') {
         $collection_title = $this->request_processor->getCollectionTitle();
         $link_back_to_manuscript_page = $this->request_processor->getLinkBackToManuscriptPage();
         $this->setWrapperAndViewer('view_collections_posted');
         $collection_metadata = $this->wrapper->getSingleCollectionMetadata($collection_title);
         return $this->viewer->showEditCollectionMetadata($collection_title, $collection_metadata, $link_back_to_manuscript_page, $error_message);
     }
-    
+
     private function processSaveCollectionMetadata() {
         $this->form_type = 'edit_metadata';
         $saved_metadata = $this->request_processor->getAndValidateSavedCollectionMetadata();
@@ -123,20 +123,20 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $this->wrapper->updateCollectionsMetadata($saved_metadata, $collection_title);
         $link_back_to_manuscript_page = $this->request_processor->getLinkBackToManuscriptPage();
 
-       if (!empty($link_back_to_manuscript_page)) {     
-           return $this->viewer->showRedirectBackToManuscriptPageAfterEditMetadata($link_back_to_manuscript_page);
-       }
+        if (!empty($link_back_to_manuscript_page)) {
+            return $this->viewer->showRedirectBackToManuscriptPageAfterEditMetadata($link_back_to_manuscript_page);
+        }
 
         $single_collection_data = $this->wrapper->getSingleCollectionData($collection_title);
         return $this->viewer->showSingleCollectionData($collection_title, $single_collection_data);
     }
-    
-    private function getEditSinglePageCollectionForm($error_message = ''){
-       $this->setWrapperAndViewer('view_collections_posted');
-       $collection_title = $this->request_processor->getCollectionTitle();
-       $counter = $this->request_processor->getEditSinglePageCounter();
-       list($manuscript_old_title, $manuscript_url_old_title) = $this->request_processor->getEditSinglePageCollectionData($counter);    
-       $this->viewer->showEditPageSingleCollectionForm($error_message, $collection_title, $manuscript_old_title, $manuscript_url_old_title);
+
+    private function getEditSinglePageCollectionForm($error_message = '') {
+        $this->setWrapperAndViewer('view_collections_posted');
+        $collection_title = $this->request_processor->getCollectionTitle();
+        $counter = $this->request_processor->getEditSinglePageCounter();
+        list($manuscript_old_title, $manuscript_url_old_title) = $this->request_processor->getEditSinglePageCollectionData($counter);
+        $this->viewer->showEditPageSingleCollectionForm($error_message, $collection_title, $manuscript_old_title, $manuscript_url_old_title);
     }
 
     /**
@@ -145,7 +145,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     private function processNewPageTitleCollection() {
         $this->form_type = 'edit_single_page';
         $this->setWrapperAndViewer('view_collections_posted');
-        
+
         list($manuscript_old_title, $manuscript_url_old_title) = $this->request_processor->getEditSinglePageCollectionData();
         $manuscript_new_title = $this->request_processor->getManuscriptNewTitleData();
 
@@ -153,100 +153,119 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         if ($manuscript_new_title === $manuscript_old_title) {
             return $this->getSingleCollectionPage();
         }
-        
-        $new_page_url = $this->createNewPageUrl($manuscript_new_title);
-        $this->createNewWikiPageWithOldPageText($manuscript_url_old_title, $manuscript_new_title, $new_page_url);
-                        
-        $page_id = $this->wrapper->getPageId($manuscript_url_old_title);
-        $status = $this->wrapper->updateManuscriptsTableAndDeleteOldPage($manuscript_new_title, $new_page_url, $manuscript_url_old_title, $page_id);
-                
-        if($status === false){
-            //bad error, failed deleting page, or updating the manuscript table
-            wfErrorLog($this->msg('userpage-error-log1') . $new_page_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
-            throw new \Exception('userpage-error-delete');
-        }
-                     
-        list($old_zoomimages_path, $new_zoomimages_path) = $this->createOldAndNewZoomimagesPaths($manuscript_old_title, $manuscript_new_title);
-        list($old_original_images_path, $new_original_images_path) = $this->createOldAndNewOriginalImagesPaths($manuscript_old_title, $manuscript_new_title);
-        $this->renamePaths($old_zoomimages_path, $new_zoomimages_path, $old_original_images_path, $new_original_images_path);
-                
+
+        $new_page_partial_url = $this->createNewPagePartialUrl($manuscript_new_title);
+        $this->renameFilePaths($manuscript_old_title, $manuscript_new_title);
+        $this->updateDatabase($manuscript_url_old_title, $manuscript_new_title, $new_page_partial_url);
+        $this->createNewWikiPageWithOldPageText($manuscript_url_old_title, $new_page_partial_url);
+        $this->deleteOldWikiPage();
         return $this->getSingleCollectionPage();
     }
-    
-    private function createNewPageUrl($manuscript_new_title){
-        global $wgNewManuscriptOptions; 
-        $user_name = $this->user_name; 
+
+    private function createNewPagePartialUrl($manuscript_new_title) {
+        global $wgNewManuscriptOptions;
+        $user_name = $this->user_name;
         $manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
         return trim($manuscripts_namespace_url . $user_name . '/' . $manuscript_new_title);
     }
-    
-    private function createOldAndNewZoomimagesPaths($manuscript_old_title, $manuscript_new_title){        
-        global $wgWebsiteRoot, $wgNewManuscriptOptions;      
+
+    private function updateDatabase($manuscript_url_old_title, $manuscript_new_title, $new_page_partial_url) {
+        $status = $this->wrapper->updateManuscriptsTable($manuscript_new_title, $new_page_partial_url, $manuscript_url_old_title);
+
+        if ($status === false) {
+            //bad error, failed deleting page, or updating the manuscript table
+            wfErrorLog($this->msg('userpage-error-log1') . $new_page_partial_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
+            throw new \Exception('userpage-error-delete');
+        }
+    }
+
+    private function renameFilePaths($manuscript_old_title, $manuscript_new_title) {
+        list($old_zoomimages_path, $new_zoomimages_path) = $this->createOldAndNewZoomimagesPaths($manuscript_old_title, $manuscript_new_title);
+        list($old_original_images_path, $new_original_images_path) = $this->createOldAndNewOriginalImagesPaths($manuscript_old_title, $manuscript_new_title);
+        rename($old_zoomimages_path, $new_zoomimages_path);
+        rename($old_original_images_path, $new_original_images_path);
+        return true;
+    }
+
+    private function createOldAndNewZoomimagesPaths($manuscript_old_title, $manuscript_new_title) {
+        global $wgWebsiteRoot, $wgNewManuscriptOptions;
         $zoomimages_dirname = $wgNewManuscriptOptions['zoomimages_root_dir'];
-        $user_name = $this->user_name; 
-        
+        $user_name = $this->user_name;
+
         $old_zoomimages_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $zoomimages_dirname . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_old_title;
         $new_zoomimages_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $zoomimages_dirname . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_new_title;
-        
-        if(!is_dir($old_zoomimages_path)){
+
+        if (!is_dir($old_zoomimages_path)) {
             throw new \Exception('error-internal');
         }
-        
+
         return array($old_zoomimages_path, $new_zoomimages_path);
     }
-    
-    private function createOldAndNewOriginalImagesPaths($manuscript_old_title, $manuscript_new_title){
-           
-        global $wgWebsiteRoot, $wgNewManuscriptOptions;      
+
+    private function createOldAndNewOriginalImagesPaths($manuscript_old_title, $manuscript_new_title) {
+
+        global $wgWebsiteRoot, $wgNewManuscriptOptions;
         $original_images_dir = $wgNewManuscriptOptions['original_images_dir'];
-        $user_name = $this->user_name; 
+        $user_name = $this->user_name;
 
         $old_original_images_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $original_images_dir . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_old_title;
         $new_original_images_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $original_images_dir . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_new_title;
-        
-        if(!is_dir($old_original_images_path)){
+
+        if (!is_dir($old_original_images_path)) {
             throw new \Exception('error-internal');
         }
-        
+
         return array($old_original_images_path, $new_original_images_path);
     }
-    
-    private function createNewWikiPageWithOldPageText($manuscript_url_old_title, $manuscript_new_title, $new_page_url){
+
+    private function createNewWikiPageWithOldPageText($manuscript_url_old_title, $new_page_url) {
         $text_processor = new ManuscriptDeskBaseTextProcessor();
-        $old_page_text = $text_processor->getSinglePageText($manuscript_url_old_title);     
+        $old_page_text = $text_processor->getSinglePageText($manuscript_url_old_title);
         $this->createNewWikiPage($new_page_url, $old_page_text);
-        return true; 
-    }
-    
-    private function renamePaths($old_zoomimages_path, $new_zoomimages_path, $old_original_images_path, $new_original_images_path){
-        rename($old_zoomimages_path, $new_zoomimages_path);
-        rename($old_original_images_path, $new_original_images_path);
-        return true; 
-    }
-    
-    /**
-     * Callback function. Makes sure the page is redisplayed in case there was an error. 
-     */
-    static function processInput($form_data) {
-        return false;
+        return true;
     }
 
-    protected function getViewer() {
+    private function deleteOldWikiPage() {
+        $page_id = $this->wrapper->getPageId($manuscript_url_old_title);
+        return $this->wrapper->deleteOldPage($page_id);
+    }
+
+    protected function handleExceptions(Exception $exception_error) {
+
+        //Todo: Exception when renaming file name should roll back changes (database/file/wikipage renames)
+        $error_identifier = $exception_error->getMessage();
+        $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
+
+        switch ($this->form_type) {
+            case 'default':
+                return $this->getDefaultPage($error_message);
+                break;
+            case 'edit_metadata':
+                return $this->getEditMetadataForm($error_message);
+                break;
+            case 'edit_single_page':
+                return $this->getEditSinglePageCollectionForm($error_message);
+        }
+
+        return true;
+    }
+
+    protected function setViewer() {
         //empty because viewer has to be determined at runtime
-        return null;
+        return;
     }
 
-    protected function getWrapper() {
+    protected function setWrapper() {
         //empty because wrapper has to be determined at runtime   
-        return null;
+        return;
     }
 
     private function setWrapperAndViewer($button_name) {
-        
-        if(isset($this->wrapper) || isset($this->viewer)){
-            return true; 
+
+        if (isset($this->wrapper) || isset($this->viewer)) {
+            return;
         }
-        
+
         switch ($button_name) {
             case 'view_manuscripts_posted':
                 $this->wrapper = new SingleManuscriptPagesWrapper($this->user_name);
@@ -256,7 +275,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
                 $this->wrapper = new AllCollationsWrapper($this->user_name);
                 $this->viewer = new UserPageCollationsViewer($this->getOutput(), $this->user_name);
                 break;
-            case 'view_collections_posted': 
+            case 'view_collections_posted':
                 $this->wrapper = new AllCollectionsWrapper($this->user_name);
                 $this->viewer = new UserPageCollectionsViewer($this->getOutput(), $this->user_name);
                 break;
@@ -265,31 +284,24 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         if (!isset($this->wrapper) || !isset($this->viewer)) {
             throw new \Exception('error-request');
         }
-        
-        return true; 
+
+        return;
     }
 
-    protected function getRequestProcessor() {
-        return new UserPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
-    }
-    
-    protected function handleExceptions(Exception $exception_error) {
-        
-        $error_identifier = $exception_error->getMessage();
-        $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
-        
-        switch($this->form_type){         
-            case 'default':
-                return $this->getDefaultPage($error_message);
-                break;
-            case 'edit_metadata':
-                return $this->getEditMetadataForm($error_message);
-                break;
-            case 'edit_single_page':
-                return $this->getEditSinglePageCollectionForm($error_message);             
+    protected function setRequestProcessor() {
+
+        if (isset($this->request_processor)) {
+            return;
         }
-        
-        return true; 
+
+        return $this->request_processor = new UserPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+    }
+
+    /**
+     * Callback function. Makes sure the page is redisplayed in case there was an error. 
+     */
+    static function processInput($form_data) {
+        return false;
     }
 
 }

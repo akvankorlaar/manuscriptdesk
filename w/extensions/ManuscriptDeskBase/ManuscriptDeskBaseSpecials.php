@@ -36,9 +36,10 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
     protected function setVariables() {
         $user = $this->getUser();
         $this->user_name = $user->getName();
-        $this->viewer = $this->getViewer();
-        $this->wrapper = $this->getWrapper();
-        $this->request_processor = $this->getRequestProcessor();
+        $this->setViewer();
+        $this->setWrapper();
+        $this->setRequestProcessor();
+        return; 
     }
 
     /**
@@ -118,7 +119,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
 
     protected function handleExceptions(Exception $exception_error) {
 
-        $viewer = $this->getViewer();
+        $viewer = $this->viewer;
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
@@ -155,21 +156,21 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
      * 
      * @return ManuscriptDeskBaseViewer object
      */
-    abstract protected function getViewer();
+    abstract protected function setViewer();
 
     /**
      * Return wrapper object for the special page
      * 
      * @return ManuscriptDeskBaseWrapper object
      */
-    abstract protected function getWrapper();
+    abstract protected function setWrapper();
 
     /**
      * Return request processor object for the special page
      * 
      * @return ManuscriptDeskBaseRequestProcessor object
      */
-    abstract protected function getRequestProcessor();
+    abstract protected function setRequestProcessor();
 
     /**
      * Get the default page for this special page

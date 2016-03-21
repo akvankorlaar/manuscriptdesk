@@ -59,12 +59,6 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         return false;
     }
 
-    public function getCollectionTitle() {
-        $request = $this->request;
-        $validator = $this->validator;
-        return $validator->validateString($request->getText('collection_title'));
-    }
-
     public function getLinkBackToManuscriptPage() {
         $request = $this->request;
         $validator = $this->validator;
