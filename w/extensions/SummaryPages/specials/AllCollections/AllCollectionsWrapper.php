@@ -250,8 +250,10 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
 
         if (!$dbw->affectedRows()) {
             $dbw->rollback(__METHOD__);
-            return false;
+            throw new \Exception('error-database-update');
         }
+        
+        return; 
     }
 
     public function deleteOldPage($page_id) {
@@ -267,10 +269,10 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
 
         if (!$dbw->affectedRows() > 0) {
             $dbw->rollback(__METHOD__);
-            return false;
+            throw new \Exception('error-database-delete');
         }
 
-        return true;
+        return;
     }
 
     /**

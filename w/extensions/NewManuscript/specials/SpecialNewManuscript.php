@@ -80,7 +80,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         $this->setPaths($extension);
         $this->paths->moveUploadToInitialUploadDir($temp_path);
         $this->prepareAndExecuteSlicer();
-        $new_page_url = $this->paths->getNewPagePartialUrl();
+        $new_page_url = $this->paths->getPartialUrl();
         $this->updateDatabase($new_page_url);
         $local_url = $this->createNewWikiPage($new_page_url, 'This page has not been transcribed yet.');
         $this->getOutput()->redirect($local_url);
@@ -105,7 +105,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
             throw new \Exception('error-request');
         }
 
-        $paths->setNewPagePartialUrl();
+        $paths->setPartialUrl();
         return;
     }
 
@@ -115,7 +115,6 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     private function updateDatabase($new_page_url) {
-
         $posted_collection_title = $this->posted_collection_title;
         $posted_manuscript_title = $this->posted_manuscript_title;
         $date = date("d-m-Y H:i:s");
@@ -142,25 +141,15 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         }
 
         if ($error_identifier === 'slicer-error-execute' || $error_identifier === 'error-newpage' || $error_identifier === 'error-database-manuscripts') {
-            $this->deleteFiles();
-            $this->deleteDatabaseEntries();
+            $this->deleteAllData();
             wfErrorLog($error_identifier . "\r\n", $wgWebsiteRoot . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
         }
 
         return $this->getDefaultPage($error_message);
     }
 
-    private function deleteFiles() {
-        $paths = $this->paths;
-        if ($paths->initialUploadFullPathIsConstructableFromScan()) {
-            $paths->deleteInitialUploadFullPath();
-        }
-
-        return $paths->deleteSlicerExportFiles();
-    }
-
-    private function deleteDatabaseEntries() {
-        $deleter = new NewManuscriptDatabaseDeleter($this->wrapper, $this->paths->getNewPagePartialUrl(), $this->posted_collection_title);
+    private function deleteAllData() {
+        $deleter = new NewManuscriptDeleter($this->wrapper, $this->paths, $this->posted_collection_title);
         return $deleter->excute();
     }
 

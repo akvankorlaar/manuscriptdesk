@@ -365,7 +365,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 return false;
             }
 
-            $this->subtractAlphabetNumbersTable();
             $this->deleteFilesAndDatabaseEntries();
             return true;
         } catch (Exception $e) {
@@ -375,41 +374,12 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function deleteFilesAndDatabaseEntries() {
-        $this->deleteFiles();
-        $this->deleteDatabaseEntries();
-        return;
-    }
-
-    private function deleteFiles() {
         $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
-        $this->deleteZoomImageFiles($paths);
-        $this->deleteOriginalImage($paths);
-        return;
-    }
-    
-    private function deleteDatabaseEntries(){
-        $deleter = new NewManuscriptDatabaseDelete($this->wrapper, $this->partial_url, $this->collection_title);
-        return $deleter->excute();
-    }
-
-    /**
-     * Check if all the default files are present, and delete all files
-     */
-    private function deleteZoomImageFiles(NewManuscriptPaths $paths) {
         $paths->setExportPaths();
-        $paths->deleteSlicerExportFiles();
+        $paths->setPartialUrl();
+        $deleter = new NewManuscriptDeleter($this->wrapper, $paths, $this->collection_title);
+        $deleter->execute();
         return;
-    }
-
-    /**
-     * This function checks if the original image path file is valid, and then calls deleteAllFiles()
-     */
-    private function deleteOriginalImage(NewManuscriptPaths $paths) {
-        if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
-            return;
-        }
-
-        return $paths->deleteInitialUploadFullPath();
     }
 
     /**

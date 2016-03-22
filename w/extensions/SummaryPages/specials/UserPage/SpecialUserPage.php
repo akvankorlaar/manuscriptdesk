@@ -25,6 +25,10 @@
 class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
     private $form_type = 'default';
+    private $manuscript_old_title;
+    private $manuscript_new_title; 
+    private $manuscript_url_old_title;
+    private $new_page_partial_url; 
 
     public function __construct() {
         parent::__construct('UserPage');
@@ -148,17 +152,20 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
         list($manuscript_old_title, $manuscript_url_old_title) = $this->request_processor->getEditSinglePageCollectionData();
         $manuscript_new_title = $this->request_processor->getManuscriptNewTitleData();
-
+        
         //if the new title and the old title are equal, do nothing and return 
         if ($manuscript_new_title === $manuscript_old_title) {
             return $this->getSingleCollectionPage();
         }
-
-        $new_page_partial_url = $this->createNewPagePartialUrl($manuscript_new_title);
+        
+        $this->manuscript_old_title = $manuscript_old_title;
+        $this->manuscript_new_title = $manuscript_new_title; 
+        $this->manuscript_url_old_title = $manuscript_url_old_title;
+        $new_page_partial_url = $this->new_page_partial_url = $this->createNewPagePartialUrl($manuscript_new_title);
         $this->renameFilePaths($manuscript_old_title, $manuscript_new_title);
-        $this->updateDatabase($manuscript_url_old_title, $manuscript_new_title, $new_page_partial_url);
+        $this->updateDatabase($manuscript_new_title, $manuscript_url_old_title, $new_page_partial_url);
         $this->createNewWikiPageWithOldPageText($manuscript_url_old_title, $new_page_partial_url);
-        $this->deleteOldWikiPage();
+        $this->deleteOldWikiPage($manuscript_url_old_title);
         return $this->getSingleCollectionPage();
     }
 
@@ -169,14 +176,9 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return trim($manuscripts_namespace_url . $user_name . '/' . $manuscript_new_title);
     }
 
-    private function updateDatabase($manuscript_url_old_title, $manuscript_new_title, $new_page_partial_url) {
+    private function updateDatabase($manuscript_new_title, $manuscript_url_old_title, $new_page_partial_url) {
         $status = $this->wrapper->updateManuscriptsTable($manuscript_new_title, $new_page_partial_url, $manuscript_url_old_title);
-
-        if ($status === false) {
-            //bad error, failed deleting page, or updating the manuscript table
-            wfErrorLog($this->msg('userpage-error-log1') . $new_page_partial_url . $this->msg('userpage-error-log3') . $manuscript_url_old_title . "\r\n", $web_root . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
-            throw new \Exception('userpage-error-delete');
-        }
+        return; 
     }
 
     private function renameFilePaths($manuscript_old_title, $manuscript_new_title) {
@@ -225,7 +227,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function deleteOldWikiPage() {
+    private function deleteOldWikiPage($manuscript_url_old_title) {
         $page_id = $this->wrapper->getPageId($manuscript_url_old_title);
         return $this->wrapper->deleteOldPage($page_id);
     }
@@ -244,6 +246,13 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
                 return $this->getEditMetadataForm($error_message);
                 break;
             case 'edit_single_page':
+                if($error_identifier === 'error-database-update'){
+                    $this->renameFilePaths($this->manuscript_new_title, $this->manuscript_old_title);                
+                }elseif($error_identifier === 'error-newpage' || $error_identifier === 'error-titledoesnotexist'){
+                      $this->renameFilePaths($this->manuscript_new_title, $this->manuscript_old_title);                
+                      $this->updateDatabase($this->manuscript_old_title, $this->new_page_partial_url, $this->manuscript_url_old_title);
+                }
+                
                 return $this->getEditSinglePageCollectionForm($error_message);
         }
 
