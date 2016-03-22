@@ -349,7 +349,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
         $wrapper = $this->wrapper;
         $wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
-        return $wrapper->getNewPagePartialUrl($time);
+        return $wrapper->getPartialUrl($time);
     }
 
     protected function handleExceptions(Exception $exception_error) {

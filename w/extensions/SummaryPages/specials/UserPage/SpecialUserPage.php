@@ -165,7 +165,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $this->renameFilePaths($manuscript_old_title, $manuscript_new_title);
         $this->updateDatabase($manuscript_new_title, $manuscript_url_old_title, $new_page_partial_url);
         $this->createNewWikiPageWithOldPageText($manuscript_url_old_title, $new_page_partial_url);
-        $this->deleteOldWikiPage();
+        $this->deleteOldWikiPage($manuscript_url_old_title);
         return $this->getSingleCollectionPage();
     }
 
@@ -227,7 +227,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    private function deleteOldWikiPage() {
+    private function deleteOldWikiPage($manuscript_url_old_title) {
         $page_id = $this->wrapper->getPageId($manuscript_url_old_title);
         return $this->wrapper->deleteOldPage($page_id);
     }

@@ -32,7 +32,7 @@ class NewManuscriptPaths {
     private $user_export_path;
     private $full_export_path;
     private $extension;
-    private $new_page_partial_url;
+    private $partial_url;
     private $image_uploaded = false;
 
     public function __construct($user_name, $posted_manuscript_title, $extension = '') {
@@ -80,7 +80,7 @@ class NewManuscriptPaths {
         return isset($file_scan[2]) ? $file_scan[2] : "";
     }
 
-    private function getInitialUploadBasePath() {
+    public function getInitialUploadBasePath() {
         global $wgWebsiteRoot, $wgNewManuscriptOptions;
         $posted_manuscript_title = $this->posted_manuscript_title;
         $user_name = $this->user_name;
@@ -132,10 +132,10 @@ class NewManuscriptPaths {
         return $this->image_uploaded = true;
     }
 
-    public function setNewPagePartialUrl() {
+    public function setPartialUrl() {
         global $wgNewManuscriptOptions;
         $manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
-        return $this->new_page_partial_url = $manuscripts_namespace_url . $this->user_name . '/' . $this->posted_manuscript_title;
+        return $this->partial_url = $manuscripts_namespace_url . $this->user_name . '/' . $this->posted_manuscript_title;
     }
 
     private function makeDirectoryIfItDoesNotExist($path) {
@@ -236,19 +236,19 @@ class NewManuscriptPaths {
 
         return '/' . $original_images_dir . '/' . $creator_user_name . '/' . $manuscripts_title . '/' . $image_file;
     }
-    
-    public function getWebLinkExportPath(){
+
+    public function getWebLinkExportPath() {
         global $wgNewManuscriptOptions;
-        
-        return '/' . $wgNewManuscriptOptions['zoomimages_root_dir'] . '/' . $this->user_name . '/' . $this->posted_manuscript_title . '/';     
+
+        return '/' . $wgNewManuscriptOptions['zoomimages_root_dir'] . '/' . $this->user_name . '/' . $this->posted_manuscript_title . '/';
     }
 
-    public function getNewPagePartialUrl() {
-        if (!isset($this->new_page_partial_url)) {
+    public function getPartialUrl() {
+        if (!isset($this->partial_url)) {
             throw new \Exception('error-request');
         }
 
-        return $this->new_page_partial_url;
+        return $this->partial_url;
     }
 
     public function imageUploaded() {
@@ -256,53 +256,9 @@ class NewManuscriptPaths {
     }
 
     /**
-     * Delete all exported files in case something went wrong 
-     */
-    public function deleteSlicerExportFiles() {
-        $this->deleteSliceDirectory();
-        $this->deleteFullExportPathFiles();
-        return;
-    }
-
-    private function deleteSliceDirectory() {
-        $slice_directory = $this->getUserExportPath() . '/' . 'slice';
-
-        //check if the temporary directory 'slice' exists. If it does, it should be deleted. 
-        if (file_exists($slice_directory)) {
-            $this->recursiveDeleteFromPath($slice_directory);
-        }
-
-        return;
-    }
-
-    private function deleteFullExportPathFiles() {
-        $full_export_path = $this->getFullExportPath();
-        $tile_group_url = $full_export_path . '/' . 'TileGroup0';
-        $image_properties_url = $full_export_path . '/' . 'ImageProperties.xml';
-
-        if (!is_dir($tile_group_url) || !is_file($image_properties_url)) {
-            return;
-        }
-
-        return $this->recursiveDeleteFromPath($full_export_path);
-    }
-
-    public function deleteInitialUploadFullPath() {
-        $initial_upload_full_path = $this->getInitialUploadFullPath();
-
-        if (!$this->isAllowedImage($initial_upload_full_path)) {
-            return;
-        }
-        
-        $initial_upload_base_path = $this->getInitialUploadBasePath();
-
-        return $this->recursiveDeleteFromPath($initial_upload_base_path);
-    }
-
-    /**
      * This function checks if the file is an image. This has been done earlier and more thouroughly when uploading, but these checks are just to make sure
      */
-    private function isAllowedImage($path) {
+    public function isAllowedImage($path) {
 
         global $wgNewManuscriptOptions;
 
@@ -320,25 +276,6 @@ class NewManuscriptPaths {
                     return true;
                 }
             }
-        }
-
-        return false;
-    }
-
-    private function recursiveDeleteFromPath($path) {
-
-        if (is_dir($path) === true) {
-            $files = array_diff(scandir($path), array('.', '..'));
-
-            foreach ($files as $file) {
-                //recursive call
-                $this->recursiveDeleteFromPath(realpath($path) . '/' . $file);
-            }
-
-            return rmdir($path);
-        }
-        else if (is_file($path) === true) {
-            return unlink($path);
         }
 
         return false;
