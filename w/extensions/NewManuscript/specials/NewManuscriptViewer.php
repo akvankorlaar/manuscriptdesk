@@ -30,6 +30,7 @@ class NewManuscriptViewer extends ManuscriptDeskBaseViewer {
     public function showDefaultPage($error_message, array $collections_current_user, $collection_title) {
         $out = $this->out; 
         $out->setPageTitle($out->msg('newmanuscript'));
+        
         $html = $this->getHTMLJavascriptLoader();
         $out->addHTML($html);
         $collections_message = $this->constructCollectionsMessage($collections_current_user);

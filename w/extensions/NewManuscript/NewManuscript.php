@@ -90,7 +90,7 @@ $wgResourceModules['ext.newmanuscriptbuttoncontroller'] = array(
 );
 
 //Instantiate the NewManuscriptHooks class and register the hooks
-$new_manuscript_hooks = new NewManuscriptHooks();
+$new_manuscript_hooks = new NewManuscriptHooks(new NewManuscriptWrapper());
 
 $wgHooks['EditPage::showEditForm:fields'][] = array($new_manuscript_hooks, 'onEditPageShowEditFormInitial' );
 $wgHooks['MediaWikiPerformAction'][] = array($new_manuscript_hooks, 'onMediaWikiPerformAction');
@@ -100,3 +100,4 @@ $wgHooks['ArticleDelete'][] = array($new_manuscript_hooks, 'onArticleDelete');
 $wgHooks['PageContentSave'][] = array($new_manuscript_hooks,'onPageContentSave');
 $wgHooks['BeforePageDisplay'][] = array($new_manuscript_hooks, 'onBeforePageDisplay');
 $wgHooks['ParserAfterTidy'][] = array($new_manuscript_hooks, 'onParserAfterTidy');
+$wgHooks['UnitTestsList'][] = array($new_manuscript_hooks, 'onUnitTestsList');

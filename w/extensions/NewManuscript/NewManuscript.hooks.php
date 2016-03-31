@@ -46,6 +46,10 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $partial_url;
     private $wrapper;
 
+    public function __construct(NewManuscriptWrapper $wrapper) {
+        $this->wrapper = $wrapper;
+    }
+
     /**
      * This function loads the zoomviewer if the editor is in edit mode. 
      */
@@ -58,7 +62,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             }
 
             $this->setPageData($out->getTitle()->getPrefixedURL());
-            $html = $this->getHTMLIframeForZoomviewer();
+            $html = $this->getHTMLIframeForZoomviewer($out->getRequest());
             $out->addHTML($html);
             $out->addModuleStyles('ext.zoomviewercss');
             return true;
@@ -98,8 +102,13 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             if (!$this->manuscriptisInViewMode($out) || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage($out)) {
                 return true;
             }
-
+                        
             $this->setPageData($out->getTitle()->getPrefixedUrl());
+            
+            //Format of get request: <full_url>?showoriginalimage=true=
+            if($request->getText('showoriginalimage') === 'true'){
+                return $this->redirectToOriginalImage($out);
+            }
 
             $html = '';
 
@@ -108,13 +117,24 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             }
 
             $html .= $this->getHTMLManuscriptViewLinks($user);
-            $html .= $this->getHTMLIframeForZoomviewer();
+            $html .= $this->getHTMLIframeForZoomviewer($out->getRequest());
             $out->addHTML($html);
             $out->addModuleStyles('ext.zoomviewercss');
             return true;
         } catch (Exception $e) {
             return true;
         }
+    }
+    
+    private function redirectToOriginalImage(OutputPage $out){
+        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+
+        if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
+            return true; 
+        }
+
+        $web_link_initial_upload_path = $paths->getWebLinkInitialUploadPath();
+        return $out->redirect($web_link_initial_upload_path);
     }
 
     private function manuscriptIsInViewMode(OutputPage $out) {
@@ -127,7 +147,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function setPageData($partial_url) {
-        $this->setWrapper();
         $this->partial_url = $partial_url;
         $this->creator_user_name = $this->wrapper->getUserNameFromUrl($partial_url);
         $this->manuscripts_title = $this->wrapper->getManuscriptsTitleFromUrl($partial_url);
@@ -260,9 +279,9 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     /**
      * Generates the HTML for the iframe
      */
-    private function getHTMLIframeForZoomviewer() {
+    private function getHTMLIframeForZoomviewer(WebRequest $request) {
         global $wgScriptPath, $wgLang;
-        $viewer_type = $this->getViewerType();
+        $viewer_type = $this->getViewerType($request);
         $viewer_path = $this->getViewerPath($viewer_type);
         $image_file_path = $this->constructImageFilePath();
         $language = $wgLang->getCode();
@@ -271,15 +290,26 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * Get the default viewer type.
+     * Get the default viewer type. Format of get request: <full_url>?viewertype=zv=
      */
-    private function getViewerType() {
+    private function getViewerType(WebRequest $request) {
 
-        if ($this->browserIsInternetExplorer()) {
-            return 'js';
+        if ($request->getText('viewertype') !== '') {
+            if (strpos($request->getText('viewertype'), 'js') !== false) {
+                return 'js';
+            }
+            else {
+                return 'zv';
+            }
         }
-
-        return 'zv';
+        else {
+            if ($this->browserIsInternetExplorer()) {
+                return 'js';
+            }
+            else {
+                return 'zv';
+            }
+        }
     }
 
     /**
@@ -476,7 +506,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
     private function addMetatableToManuscriptsPage(OutputPage $out) {
 
-        $this->setWrapper();
         $collection_title = $this->wrapper->getCollectionTitleFromUrl($this->partial_url);
 
         if (!$this->collectionTitleIsValid($collection_title)) {
@@ -499,7 +528,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      * This function visualizes <add> and <del> tags that are nested in themselves correctly. It also removes tags that are not available in the editor for visualization.
      * These tags will still be visible in the editor. 
      */
-    public function onParserAfterTidy(&$parser, &$text) {
+    public function onParserAfterTidy(Parser &$parser, &$text) {
 
         //look for stray </add> tags, and replace them with a tei-add span element  
         $text = preg_replace('/<\/span><\/span>(.*?)&lt;\/add&gt;/', '</span></span><span class="tei-add">$1</span>', $text);
@@ -515,13 +544,12 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
-    private function setWrapper() {
-
-        if (isset($this->wrapper)) {
-            return;
-        }
-
-        return $this->wrapper = new NewManuscriptWrapper();
+    /**
+     * Includes the unit tests for stylometricanalysis into the unit test list
+     */
+    public function onUnitTestsList(&$files) {
+        $files = array_merge($files, glob(__DIR__ . '/tests/*Test.php'));
+        return true;
     }
 
 }

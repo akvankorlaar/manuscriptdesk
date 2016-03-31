@@ -108,7 +108,7 @@ class NewManuscriptUploadForm extends HTMLForm {
         $extension_list = '<div id="mw-upload-permitted">' .
             $this->msg(
                 'upload-permitted', $this->getContext()->getLanguage()->commaList(array_unique($allowed_file_extensions))
-            )->parseAsBlock() .
+            )->parseAsBlock() . ' ' . $this->msg('newmanuscript-copyright') .
             "</div>\n";
 
         return $extension_list;
