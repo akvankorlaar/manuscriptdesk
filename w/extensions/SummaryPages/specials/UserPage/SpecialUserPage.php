@@ -141,6 +141,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $counter = $this->request_processor->getEditSinglePageCounter();
         list($manuscript_old_title, $manuscript_url_old_title) = $this->request_processor->getEditSinglePageCollectionData($counter);
         $this->viewer->showEditPageSingleCollectionForm($error_message, $collection_title, $manuscript_old_title, $manuscript_url_old_title);
+        return; 
     }
 
     /**
@@ -234,7 +235,6 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
     protected function handleExceptions(Exception $exception_error) {
 
-        //Todo: Exception when renaming file name should roll back changes (database/file/wikipage renames)
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 

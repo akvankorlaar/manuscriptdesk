@@ -1,6 +1,8 @@
 <?php //
 
-//php phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\StylometricAnalysis\tests\phpunit\specials
+//php phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\NewManuscript\tests
+//set XDEBUG_CONFIG="idekey=netbeans-xdebug" 
+
 //https://jtreminio.com/2013/03/unit-testing-tutorial-part-3-testing-protected-private-methods-coverage-reports-and-crap/
 
 //todo: some methods will probably have to be stubbed when processing the save page form

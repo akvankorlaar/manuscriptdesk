@@ -108,6 +108,7 @@ $messages['en'] = array(
   'newmanuscripthooks-maxchar3'                   => 'charachters are allowed',
   'newmanuscripthooks-move'                       => 'You are not allowed to move manuscript pages',
   'newmanuscript-default'                         => 'This page has not been transcribed yet.',
+  'newmanuscript-copyright'                       => 'NOTICE: the user is responsible for any copyright infringement of the images s/he uploads.',  
   );
 
 $messages['en-gb'] = $messages['en'];
