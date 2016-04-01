@@ -23,7 +23,7 @@
  * @copyright 2015 Arent van Korlaar
  */
 class ManuscriptDeskBaseTextProcessor {
-
+    
     public function __construct() {
         
     }
