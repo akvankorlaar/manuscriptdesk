@@ -33,20 +33,11 @@ if (!defined('MEDIAWIKI')) {
 $messages = array();
 
 $messages['en'] = array(
-  'validation-notalphanumeric' => 'You can only enter alphanumeric charachters (a-z, A-Z, 0-9)',
-  'validation-toolongstring' => 'Unusually long string length detected',
-  'validation-morethanfiftycharachters' => 'You can only enter a maximum of 50 charachters in the form fields',
-  'validation-notanumber' => 'You have entered a non-numeric charachter in one of the number fields',
-  'validation-empty' => 'One of the form fields is empty',
-  'validation-websourcecharachters' => 'The websource field can only contain alphanumeric charachters, whitespace, and' . '-./:' . 'charachters',
-  'validation-noteslength' => 'Your notes contain too many charachters',
-  'validation-notescharachters' => 'Your notes can only contain alphanumeric, whitespace and' . ',.;!?' . 'charachters',
-  'validation-metadatacharachters' => 'Your metadata fields can only contain alphanumeric charachters and whitespace',
-  'error-edittoken' => 'The edit token is not ok',
-  'error-nopermission' => 'You do not have permission to access the functionality of this page',
-  'error-newpage' => 'The new Wiki Page could not be created (perhaps because this page already exists)',
-  'error-request' => 'Something went wrong when processing your request',
-  'manuscriptdesk-newpage' => 'You can add custom information to this page. The saved analysis will be preserved.',
+  'action-complete' => 'The action you requested has been completed succesfully.',
+  'helperscripts' => 'Helper Scripts',
+  'helperscripts-instruction' => 'Choose an Option',
+  'alphabetnumbers-message' => 'Update the Alphabet Numbers table',
+  'delete-manuscripts-message' => 'Delete all Manuscripts',
 );
 
 $messages['en-gb'] = $messages['en'];

@@ -72,7 +72,7 @@ $wgResourceModules['ext.javascriptloader'] = array(
 $wgResourceModules['ext.manuscriptdeskbasecss'] = array(
   'styles' => array(
     'css/ext.manuscriptdeskbasecss.css'
-    ),
-    'localBasePath' => __DIR__,
-    'remoteExtPath'=> 'ManuscriptDeskBase',
+  ),
+  'localBasePath' => __DIR__,
+  'remoteExtPath' => 'ManuscriptDeskBase',
 );

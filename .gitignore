@@ -24,7 +24,6 @@ zoomImages/*
 initialStylometricAnalysis/*
 !initialStylometricAnalysis/.htaccess
 
-#the procedure for specifying the directories not to be ignored in w, is the same as was used for Initialupload
 !w
 w/*
 !w/extensions
@@ -38,6 +37,7 @@ w/skins/*
 !w/extensions/TEITags
 !w/extensions/SummaryPages
 !w/extensions/StylometricAnalysis
+!w/extensions/HelperScripts
 !w/skins/CbpTranscriptionEnhanced
 
 !w/extensions/ManuscriptDeskBase/*
@@ -47,9 +47,9 @@ w/skins/*
 !w/extensions/TEITags/*
 !w/extensions/SummaryPages/*
 !w/extensions/StylometricAnalysis/*
+!w/extensions/HelperScripts/*
 !w/skins/CbpTranscriptionEnhanced/*
 
-#these last 2 paragraphs are to ensure that folders within folders, and folders within folders within folders are not ignored
 !w/extensions/ManuscriptDeskBase/*/*
 !w/extensions/Collate/*/*
 !w/extensions/NewManuscript/*/*
@@ -57,6 +57,7 @@ w/skins/*
 !w/extensions/TEITags/*/*
 !w/extensions/SummaryPages/*/*
 !w/extensions/StylometricAnalysis/*/*
+!w/extensions/HelperScripts/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*
 
 !w/extensions/ManuscriptDeskBase/*/*/*
@@ -66,6 +67,7 @@ w/skins/*
 !w/extensions/TEITags/*/*/*
 !w/extensions/SummaryPages/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*
+!w/extensions/HelperScripts/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*
 
 !w/extensions/ManuscriptDeskBase/*/*/*/*
@@ -75,9 +77,8 @@ w/skins/*
 !w/extensions/TEITags/*/*/*/*
 !w/extensions/SummaryPages/*/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*/*
+!w/extensions/HelperScripts/*/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*/*
-
-#these lines are to ensure that every file in PyStyl is also included
 
 !w/extensions/StylometricAnalysis/*/*/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*/*/*/*

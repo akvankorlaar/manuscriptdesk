@@ -25,7 +25,7 @@
 class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
 
     public function __construct() {
-        parent::__construct('SpecialHelperScripts');
+        parent::__construct('HelperScripts');
     }
 
     public function execute() {

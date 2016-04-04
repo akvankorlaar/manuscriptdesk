@@ -62,7 +62,6 @@ $wgAutoloadClasses['SpecialNewManuscript'] = $dir . 'specials/SpecialNewManuscri
 $wgExtensionMessagesFiles['NewManuscript']  = $dir . 'NewManuscript.i18n.php';
 $wgAutoloadClasses['NewManuscriptHooks']    = $dir . 'NewManuscript.hooks.php';
 
-//Register auto load for the special page classes and register special pages
 $wgSpecialPages['NewManuscript'] = 'SpecialNewManuscript';
 
 //Extra files containing CSS and javascript loaded later 
@@ -90,14 +89,14 @@ $wgResourceModules['ext.newmanuscriptbuttoncontroller'] = array(
 );
 
 //Instantiate the NewManuscriptHooks class and register the hooks
-$new_manuscript_hooks = new NewManuscriptHooks(new NewManuscriptWrapper());
+$helperscripts_hooks = new NewManuscriptHooks(new NewManuscriptWrapper());
 
-$wgHooks['EditPage::showEditForm:fields'][] = array($new_manuscript_hooks, 'onEditPageShowEditFormInitial' );
-$wgHooks['MediaWikiPerformAction'][] = array($new_manuscript_hooks, 'onMediaWikiPerformAction');
-$wgHooks['ParserFirstCallInit'][] = array($new_manuscript_hooks, 'register');
-$wgHooks['AbortMove'][] = array($new_manuscript_hooks, 'onAbortMove');
-$wgHooks['ArticleDelete'][] = array($new_manuscript_hooks, 'onArticleDelete');
-$wgHooks['PageContentSave'][] = array($new_manuscript_hooks,'onPageContentSave');
-$wgHooks['BeforePageDisplay'][] = array($new_manuscript_hooks, 'onBeforePageDisplay');
-$wgHooks['ParserAfterTidy'][] = array($new_manuscript_hooks, 'onParserAfterTidy');
-$wgHooks['UnitTestsList'][] = array($new_manuscript_hooks, 'onUnitTestsList');
+$wgHooks['EditPage::showEditForm:fields'][] = array($helperscripts_hooks, 'onEditPageShowEditFormInitial' );
+$wgHooks['MediaWikiPerformAction'][] = array($helperscripts_hooks, 'onMediaWikiPerformAction');
+$wgHooks['ParserFirstCallInit'][] = array($helperscripts_hooks, 'register');
+$wgHooks['AbortMove'][] = array($helperscripts_hooks, 'onAbortMove');
+$wgHooks['ArticleDelete'][] = array($helperscripts_hooks, 'onArticleDelete');
+$wgHooks['PageContentSave'][] = array($helperscripts_hooks,'onPageContentSave');
+$wgHooks['BeforePageDisplay'][] = array($helperscripts_hooks, 'onBeforePageDisplay');
+$wgHooks['ParserAfterTidy'][] = array($helperscripts_hooks, 'onParserAfterTidy');
+$wgHooks['UnitTestsList'][] = array($helperscripts_hooks, 'onUnitTestsList');

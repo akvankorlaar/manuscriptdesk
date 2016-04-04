@@ -34,8 +34,8 @@ class HelperScriptsViewer extends ManuscriptDeskBaseViewer {
         $out->setPageTitle($out->msg('helperscripts'));
 
         $html = '';
-        $html .= "<div class='javascripthide'>";
         $html .= $this->getHTMLJavascriptLoader();
+        $html .= "<div class='javascripthide'>";
 
         if (!empty($error_message)) {
             $html .= "<br>";
