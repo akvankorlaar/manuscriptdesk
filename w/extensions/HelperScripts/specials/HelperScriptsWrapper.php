@@ -31,7 +31,7 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
         return;
     }
 
-    public function updateAlphabetNumbersSingleManuscripts() {
+    public function updateAlphabetNumbersSingleManuscriptPages() {
         $res = $this->getSingleManuscriptsAlphabetNumbersData();
         $alphabet_numbers = $this->loopThroughResultsAndFillAlphabetNumbersTable($res, 'manuscripts_lowercase_title');
         $this->storeAlphabetNumbers('SingleManuscriptPages', $alphabet_numbers);
@@ -91,9 +91,11 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
         $dbr = wfGetDB(DB_SLAVE);
 
         $res = $dbr->select(
-            'collations', //from
+           'collations', //from
             array(
           'collations_main_title_lowercase', //values
+            ),
+            array(
             )
             , __METHOD__, array(
           'ORDER BY' => 'collations_main_title_lowercase',
@@ -149,7 +151,7 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
 
         $dbw = wfGetDB(DB_MASTER);
 
-        $dbw->update('alplhabetnumbers', //select table
+        $dbw->update('alphabetnumbers', //select table
             array(//insert values
           'a' => $alphabet_numbers['a'],
           'b' => $alphabet_numbers['b'],
@@ -189,12 +191,7 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
           'nine' => $alphabet_numbers['nine'],
             ), array(
           'alphabetnumbers_context = ' . $dbw->addQuotes($alphabetnumbers_context),
-            ), __METHOD__
-        );
-
-        if (!$dbw->affectedRows()) {
-            throw new \Exception('error-database');
-        }
+            ), __METHOD__, 'IGNORE');
 
         return;
     }
@@ -215,6 +212,7 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
           'k' => 0,
           'l' => 0,
           'm' => 0,
+          'n' => 0,
           'o' => 0,
           'p' => 0,
           'q' => 0,
