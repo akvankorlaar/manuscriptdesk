@@ -38,8 +38,10 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
     public function showSingleLetterOrNumberPage(
     array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
 
+        global $wgArticleUrl; 
         $out = $this->out;
         $out->setPageTitle($out->msg('singlemanuscriptpages'));
+        
         
         $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
@@ -47,7 +49,9 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
         
         $html .= "<div class='javascripthide'>";
         
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $offset, $next_offset, $button_name);     
+        $edit_token = $out->getUser()->getEditToken();
+        
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $button_name, $this->page_name); 
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
@@ -56,7 +60,7 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
         $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
-        foreach ($title_array as $key => $array) {
+        foreach ($page_titles as $key => $array) {
 
             $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
             $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
@@ -64,7 +68,7 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
             $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
 
             $html .= "<tr>";
-            $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
+            $html .= "<td class='td-three'><a href='" . $wgArticleUrl . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
             $html .= "<td class='td-three'>" . htmlspecialchars($user) . "</td>";
             $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";

@@ -24,7 +24,7 @@
  */
 class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
 
-    public function getData($button_name, $offset = '', $next_letter_alphabet = '') {
+    public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
 
         global $wgNewManuscriptOptions;
         $max_on_page = $wgNewManuscriptOptions['max_on_page'];
@@ -45,7 +45,6 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
               'manuscripts_collection =' . $dbr->addQuotes('none'),
             );
         }
-
 
         $res = $dbr->select(
             'manuscripts', //from

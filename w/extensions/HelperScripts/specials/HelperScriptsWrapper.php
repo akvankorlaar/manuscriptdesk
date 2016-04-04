@@ -91,11 +91,10 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
         $dbr = wfGetDB(DB_SLAVE);
 
         $res = $dbr->select(
-           'collations', //from
+            'collations', //from
             array(
           'collations_main_title_lowercase', //values
-            ),
-            array(
+            ), array(
             )
             , __METHOD__, array(
           'ORDER BY' => 'collations_main_title_lowercase',
@@ -107,6 +106,7 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
 
     private function loopThroughResultsAndFillAlphabetNumbersTable($res, $result_name) {
 
+        $last_full_result_name = null; 
         $current_loop_letter_or_number = null;
         $current_number_of_entities = null;
 
@@ -115,26 +115,32 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
         if ($res->numRows() > 0) {
             //while there are still titles in this query
             while ($s = $res->fetchObject()) {
+                
+                if($s->$result_name === $last_full_result_name && $result_name === 'manuscripts_lowercase_collection'){
+                    continue;
+                }
+                
+                $last_full_result_name = $s->$result_name; 
+                               
                 $current_letter_or_number = $this->getFirstCharachterOfTitle($s->$result_name);
                 if ($current_letter_or_number === $current_loop_letter_or_number) {
                     $current_number_of_entities += 1;
                 }
                 else {
-                    $current_loop_letter_or_number = $current_letter_or_number;
-
-                    //special case on first loop
-                    if (!isset($current_number_of_entities)) {
-                        continue;
+                    //special case on first loop: $current_number_of_entities is not set
+                    if (isset($current_number_of_entities)) {
+                        $this->insertIntoAlphabetNumbers($alphabet_numbers, $current_loop_letter_or_number, $current_number_of_entities);
+                        $current_number_of_entities = 0;
                     }
 
-                    $this->insertIntoAlphabetNumbers($alphabet_numbers, $current_loop_letter_or_number, $current_number_of_entities);
-                    $current_number_of_entities = 0;
+                    $current_loop_letter_or_number = $current_letter_or_number;
+                    $current_number_of_entities += 1;
                 }
             }
-
-            $this->insertIntoAlphabetNumbers($alphabet_numbers, $current_loop_letter_or_number, $current_number_of_entities);
         }
 
+        $this->insertIntoAlphabetNumbers($alphabet_numbers, $current_loop_letter_or_number, $current_number_of_entities);
+        
         return $alphabet_numbers;
     }
 
