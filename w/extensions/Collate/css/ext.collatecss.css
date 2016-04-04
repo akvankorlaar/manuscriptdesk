@@ -75,13 +75,6 @@ pre {
   color: black;
 }
 
-.collate-submitbutton-two {
-  width: 30em; 
-  height: 1.5em; 
-  cursor: pointer;
-  background-color: #F2FCFF;
-}
-
 .collate-transparent {
   background-color: #F2FCFF;
 }

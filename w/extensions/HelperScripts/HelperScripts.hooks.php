@@ -22,33 +22,32 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-abstract class ManuscriptDeskBaseViewer {
+class HelperScriptsHooks extends ManuscriptDeskBaseHooks {
 
-    protected $out;
-    protected $max_int_formfield_length = 5;
-    protected $max_string_formfield_length = 50; 
+    /**
+     * This function loads additional modules containing CSS before the page is displayed
+     */
+    public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
 
-    public function __construct(OutputPage $out) {
-        $this->out = $out;
-    }
+        $page_title_with_namespace = $out->getTitle()->getPrefixedURL();
 
-    protected function HTMLSpecialCharachtersArray(array &$array) {
-        foreach ($array as $index => &$value) {
-            if (is_string($value)) {
-                $value = htmlspecialchars($value);
-            }
+        if ($page_title_with_namespace === 'Special:HelperScripts') {
 
-            if (is_array($value)) {
-                $this->HTMLSpecialCharachtersArray($value);
-            }
+            $css_modules = array('ext.manuscriptdeskbasecss');
+            $javascript_modules = array( 'ext.javascriptloader');
+            $out->addModuleStyles($css_modules);
+            $out->addModules($javascript_modules);
         }
 
-        return $array;
-    }
-
-    public function showSimpleErrorMessage($error_message = '') {
-        $this->out->addHTML($error_message);
         return true;
     }
-    
+
+    /**
+     * Includes the unit tests for stylometricanalysis into the unit test list
+     */
+    public function onUnitTestsList(&$files) {
+        $files = array_merge($files, glob(__DIR__ . '/tests/phpunit/*Test.php'));
+        return true;
+    }
+
 }

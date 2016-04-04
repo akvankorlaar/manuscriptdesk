@@ -69,7 +69,7 @@ abstract class ManuscriptDeskBaseWrapper {
             return true;
         }
 
-        $first_character_of_page = $this->getFirstCharachter($main_title_lowercase);
+        $first_character_of_page = $this->getFirstCharachterOfTitle($main_title_lowercase);
         $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersSingleValue($first_character_of_page, $alphabetnumbers_context);
         $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter - 1;
         $this->updateAlphabetNumbersSingleValue($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
@@ -84,7 +84,7 @@ abstract class ManuscriptDeskBaseWrapper {
             return true;
         }
 
-        $first_character_of_page = $this->getFirstCharachter($main_title_lowercase);
+        $first_character_of_page = $this->getFirstCharachterOfTitle($main_title_lowercase);
         $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersSingleValue($first_character_of_page, $alphabetnumbers_context);
         $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter + 1;
         $this->updateAlphabetNumbersSingleValue($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
@@ -114,7 +114,7 @@ abstract class ManuscriptDeskBaseWrapper {
         return (int) $s->$first_charachter_of_page;
     }
 
-    private function getFirstCharachter($main_title_lowercase = '') {
+    protected function getFirstCharachterOfTitle($main_title_lowercase = '') {
         $first_char = substr($main_title_lowercase, 0, 1);
 
         if (preg_match('/[0-9]/', $first_char)) {
@@ -294,7 +294,7 @@ abstract class ManuscriptDeskBaseWrapper {
     public function determineAlphabetNumbersContextFromCollectionTitle($collection_title) {
         if (!isset($collection_title) || $collection_title === 'none') {
             return 'SingleManuscriptPages';
-        }
+}
         else {
             return 'AllCollections';
         }

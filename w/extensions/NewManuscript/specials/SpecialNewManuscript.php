@@ -137,7 +137,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
         if ($error_identifier === 'error-nopermission' || $error_identifier === 'newmanuscript-maxreached') {
-            return $viewer->showNoPermissionError($error_message);
+            return $viewer->showSimpleErrorMessage($error_message);
         }
 
         if ($error_identifier === 'slicer-error-execute' || $error_identifier === 'error-newpage' || $error_identifier === 'error-database-manuscripts') {

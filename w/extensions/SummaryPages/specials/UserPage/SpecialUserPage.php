@@ -76,18 +76,9 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     protected function getDefaultPage($error_message = '') {
-        $user_is_a_sysop = $this->checkWhetherUserIsASysop();
+        $user_is_a_sysop = $this->currentUserIsASysop();
         $this->viewer = new UserPageDefaultViewer($this->getOutput());
         $this->viewer->showDefaultPage($error_message, $this->user_name, $user_is_a_sysop);
-    }
-
-    private function checkWhetherUserIsASysop() {
-        $user = $this->getUser();
-        if (!in_array('sysop', $user->getGroups())) {
-            return false;
-        }
-
-        return true;
     }
 
     private function processDefaultPage() {

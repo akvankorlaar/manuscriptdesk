@@ -1,7 +1,5 @@
 # The Manuscript Desk
 
-**The programs and files are still incomplete (work in progress) , and so installing these extensions is not recommended yet.** 
-
 **The project is now in its testing phase, and can be found on https://manuscriptdesk.uantwerpen.be.**
 
 The Manuscript Desk builds on [Mediawiki Software](https://www.mediawiki.org/wiki/MediaWiki) and MediaWiki extensions created for the [Transcribe Bentham Project](http://blogs.ucl.ac.uk/transcribe-bentham/).

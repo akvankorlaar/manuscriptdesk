@@ -39,7 +39,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         $this->setViewer();
         $this->setWrapper();
         $this->setRequestProcessor();
-        return; 
+        return;
     }
 
     /**
@@ -77,15 +77,24 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         return true;
     }
 
+    protected function currentUserIsASysop() {
+        $user = $this->getUser();
+        if (!in_array('sysop', $user->getGroups())) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Create a new wikipage and return a $local_url
      */
     protected function createNewWikiPage($new_url, $content = '') {
-        
-        $content = empty($content) ? '<!--' . $this->msg('manuscriptdesk-newpage') . '-->' : $content; 
-        
+
+        $content = empty($content) ? '<!--' . $this->msg('manuscriptdesk-newpage') . '-->' : $content;
+
         $title = $this->createTitleObjectNewPage($new_url);
-      
+
         $local_url = $title->getLocalURL();
         $context = $this->getContext();
         $article = Article::newFromTitle($title, $context);
@@ -96,25 +105,25 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
 
         if (!$doEditStatus->isOK()) {
             $errors = $doEditStatus->getErrorsArray();
-            throw new \Exception('error-newpage');        
+            throw new \Exception('error-newpage');
         }
 
         return $local_url;
     }
-    
-    private function createTitleObjectNewPage($new_page_url){
-        
+
+    private function createTitleObjectNewPage($new_page_url) {
+
         if (null === Title::newFromText($new_page_url)) {
             throw new \Exception('error-newpage');
         }
-        
+
         $title = Title::newFromText($new_page_url);
 
         if ($title->exists()) {
-           throw new \Exception('error-newpage');
+            throw new \Exception('error-newpage');
         }
-      
-        return $title; 
+
+        return $title;
     }
 
     protected function handleExceptions(Exception $exception_error) {
@@ -123,12 +132,8 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
-        if ($error_identifier === 'error-nopermission') {
-            return $viewer->showNoPermissionError($error_message);
-        }
-
-        if ($error_identifier === 'error-fewuploads') {
-            return $viewer->showFewUploadsError($error_message);
+        if ($error_identifier === 'error-nopermission' || $error_identifier === 'error-fewuploads') {
+            return $viewer->showSimpleErrorMessage($error_message);
         }
 
         return $this->getDefaultPage($error_message);
@@ -141,8 +146,8 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         if ($wgShowExceptionDetails === true) {
             $error_file = $exception_error->getFile();
             $error_line = $exception_error->getLine();
-            $trace = $exception_error->getTrace();
-            $error_message = $this->msg($error_identifier) . ' ' . $error_file . ' ' . $error_line;
+            $trace = $this->formatTrace($exception_error->getTrace());
+            $error_message = $this->msg($error_identifier) . ' ' . $error_file . ' ' . $error_line . '<br><br>' . $trace;
         }
         else {
             $error_message = $this->msg($error_identifier);
@@ -150,6 +155,23 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
 
         return $error_message;
     }
+    
+    private function formatTrace(array $trace){
+        $trace_text = '';
+        foreach($trace as $entry){
+            $file = isset($entry['file']) ? $entry['file'] : '';
+            $line = isset($entry['line']) ? $entry['line'] : '';
+            $entry_line = $file . ' ' . $line . '<br>'; 
+            $trace_text .= $entry_line;
+        }
+        
+        return $trace_text; 
+    }
+
+    /**
+     * Get the default page for this special page
+     */
+    abstract protected function getDefaultPage($error_message);
 
     /**
      * Return viewer object for the special page
@@ -171,9 +193,4 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
      * @return ManuscriptDeskBaseRequestProcessor object
      */
     abstract protected function setRequestProcessor();
-
-    /**
-     * Get the default page for this special page
-     */
-    abstract protected function getDefaultPage($error_message);
 }
