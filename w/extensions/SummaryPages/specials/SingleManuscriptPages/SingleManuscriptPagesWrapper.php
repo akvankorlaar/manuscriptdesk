@@ -46,7 +46,6 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
             );
         }
 
-
         $res = $dbr->select(
             'manuscripts', //from
             array(
