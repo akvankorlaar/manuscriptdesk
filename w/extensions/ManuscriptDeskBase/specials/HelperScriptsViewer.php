@@ -61,4 +61,11 @@ class HelperScriptsViewer extends ManuscriptDeskBaseViewer {
         return $out->addHTML($html);
     }
 
+    public function showActionComplete() {
+        $out = $this->out;
+        $out->setPageTitle($out->msg('helperscripts'));
+        $html = "<p>" . $out->msg('action-complete') . "</p>";
+        $out->addHTML($html);      
+    }
+
 }

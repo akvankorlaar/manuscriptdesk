@@ -46,7 +46,8 @@ $messages['en'] = array(
   'error-nopermission' => 'You do not have permission to access the functionality of this page',
   'error-newpage' => 'The new Wiki Page could not be created (perhaps because this page already exists)',
   'error-request' => 'Something went wrong when processing your request',
-  'manuscriptdesk-newpage' => 'You can add custom information to this page. The saved analysis will be preserved.'
+  'manuscriptdesk-newpage' => 'You can add custom information to this page. The saved analysis will be preserved.',
+  'action-complete' => 'The action you requested has been completed succesfully.',
 );
 
 $messages['en-gb'] = $messages['en'];

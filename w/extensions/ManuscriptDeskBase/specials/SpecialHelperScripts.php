@@ -68,20 +68,24 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
     }
 
     private function processDefaultPage() {
-        $button_name = $this->request_processor->getDefaultPageData();
-        
-        if($button_name === 'update_alphabetnumbers_posted'){
-            $this->updateAlphabetNumbersTable();
-        }else{
-                //script that can automatically delete all manuscript pages.. should be very safe--> put in some large authentication code
+
+        if ($this->request_processor->buttonDeleteManuscriptsPosted()) {
+            //script that can automatically delete all manuscript pages.. should be very safe--> put in some large authentication code
         }
-    
+        else {
+            $this->updateAlphabetNumbersTable();
+        }
+
+        return $this->viewer->showActionComplete();
     }
-    
-    private function updateAlphabetNumbersTable(){
-        
+
+    private function updateAlphabetNumbersTable() {
         $this->wrapper->updateAlphabetNumbersCollections();
-  
+
+        $this->wrapper->updateAlphabetNumbersSingleManuscriptPages();
+
+        $this->wrapper->updateAlphabetNumbersCollations();
+        return;
     }
 
     protected function setViewer() {
