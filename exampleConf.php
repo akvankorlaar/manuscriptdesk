@@ -39,6 +39,7 @@ require_once( $wgExtensionAssetsPath . 'Collate/Collate.php');
 require_once( $wgExtensionAssetsPath . 'NewManuscript/NewManuscript.php');
 require_once( $wgExtensionAssetsPath . 'SummaryPages/SummaryPages.php');
 require_once( $wgExtensionAssetsPath . 'StylometricAnalysis/StylometricAnalysis.php');
+require_once( $wgExtensionAssetsPath . 'HelperScripts/HelperScripts.php');
 
 //$wgArticlePath is the base url that is used to create all internal links 
 $wgArticlePath = "/md/$1";
@@ -308,5 +309,5 @@ $wgStylometricAnalysisOptions = array(
   'tempstylometricanalysis_hours_before_delete' => 2, //hours before entries are deleted from the 'tempstylometricanalysis' table 
 );
 
-//sends complete stack trace to output in case of an uncaught exceptions. This should only be true in debugging mode
+//sends complete stack trace to output in case of an uncaught exceptions. This should never be set to true on a production server
 $wgShowExceptionDetails = true;
