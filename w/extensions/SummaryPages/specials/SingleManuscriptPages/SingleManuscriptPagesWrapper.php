@@ -24,7 +24,7 @@
  */
 class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
 
-    public function getData($button_name, $offset = '', $next_letter_alphabet = '') {
+    public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
 
         global $wgNewManuscriptOptions;
         $max_on_page = $wgNewManuscriptOptions['max_on_page'];
