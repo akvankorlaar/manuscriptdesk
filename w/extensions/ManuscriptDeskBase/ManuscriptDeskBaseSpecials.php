@@ -132,12 +132,8 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
-        if ($error_identifier === 'error-nopermission') {
-            return $viewer->showNoPermissionError($error_message);
-        }
-
-        if ($error_identifier === 'error-fewuploads') {
-            return $viewer->showFewUploadsError($error_message);
+        if ($error_identifier === 'error-nopermission' || $error_identifier === 'error-fewuploads') {
+            return $viewer->showSimpleErrorMessage($error_message);
         }
 
         return $this->getDefaultPage($error_message);
@@ -150,14 +146,26 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         if ($wgShowExceptionDetails === true) {
             $error_file = $exception_error->getFile();
             $error_line = $exception_error->getLine();
-            $trace = $exception_error->getTrace();
-            $error_message = $this->msg($error_identifier) . ' ' . $error_file . ' ' . $error_line;
+            $trace = $this->formatTrace($exception_error->getTrace());
+            $error_message = $this->msg($error_identifier) . ' ' . $error_file . ' ' . $error_line . '<br><br>' . $trace;
         }
         else {
             $error_message = $this->msg($error_identifier);
         }
 
         return $error_message;
+    }
+    
+    private function formatTrace(array $trace){
+        $trace_text = '';
+        foreach($trace as $entry){
+            $file = isset($entry['file']) ? $entry['file'] : '';
+            $line = isset($entry['line']) ? $entry['line'] : '';
+            $entry_line = $file . ' ' . $line . '<br>'; 
+            $trace_text .= $entry_line;
+        }
+        
+        return $trace_text; 
     }
 
     /**

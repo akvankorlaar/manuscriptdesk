@@ -46,9 +46,9 @@ abstract class ManuscriptDeskBaseViewer {
         return $array;
     }
 
-    public function showNoPermissionError($error_message = '') {
+    public function showSimpleErrorMessage($error_message = '') {
         $this->out->addHTML($error_message);
         return true;
     }
-
+    
 }

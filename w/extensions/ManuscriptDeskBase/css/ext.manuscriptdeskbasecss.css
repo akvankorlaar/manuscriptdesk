@@ -40,3 +40,10 @@
   position: relative;
   display: inline-block;
 }
+
+.manuscriptdesk-submitbutton {
+  width: 30em; 
+  height: 1.5em; 
+  cursor: pointer;
+  background-color: #F2FCFF;
+}

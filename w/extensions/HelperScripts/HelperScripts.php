@@ -53,6 +53,9 @@ $wgAutoloadClasses['HelperScriptsViewer'] = $dir . 'specials/HelperScriptsViewer
 $wgAutoloadClasses['HelperScriptsWrapper'] = $dir . 'specials/HelperScriptsWrapper.php';
 $wgAutoloadClasses['HelperScriptsRequestProcessor'] = $dir . 'specials/HelperScriptsRequestProcessor.php';
 
+$wgAutoloadClasses['HelperScriptsHooks'] = $dir . 'HelperScripts.hooks.php';
+$wgExtensionMessagesFiles['HelperScripts'] = $dir . 'HelperScripts.i18n.php';
+
 $wgSpecialPages['HelperScripts'] = 'SpecialHelperScripts';
 
 //Instantiate the NewManuscriptHooks class and register the hooks

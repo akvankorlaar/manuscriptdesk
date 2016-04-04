@@ -65,6 +65,8 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
             $this->processDefaultPage();
             return true;
         }
+        
+        throw new \Exception('error-request');
     }
 
     private function processDefaultPage() {

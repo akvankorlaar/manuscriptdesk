@@ -102,11 +102,11 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             if (!$this->manuscriptisInViewMode($out) || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage($out)) {
                 return true;
             }
-                        
+
             $this->setPageData($out->getTitle()->getPrefixedUrl());
-            
+
             //Format of get request: <full_url>?showoriginalimage=true=
-            if($request->getText('showoriginalimage') === 'true'){
+            if ($request->getText('showoriginalimage') === 'true') {
                 return $this->redirectToOriginalImage($out);
             }
 
@@ -125,12 +125,12 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             return true;
         }
     }
-    
-    private function redirectToOriginalImage(OutputPage $out){
+
+    private function redirectToOriginalImage(OutputPage $out) {
         $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
 
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
-            return true; 
+            return true;
         }
 
         $web_link_initial_upload_path = $paths->getWebLinkInitialUploadPath();
@@ -492,10 +492,10 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 $out->addModuleStyles('ext.manuscriptpagecss');
             }
             elseif ($partial_url === 'Special:NewManuscript') {
-                $out->addModuleStyles('ext.newmanuscriptcss');
-                $out->addModules('ext.newmanuscriptbuttoncontroller');
-                $out->addModuleStyles('ext.manuscriptdeskbasecss');
                 $out->addModules('ext.javascriptloader');
+                $out->addModules('ext.newmanuscriptbuttoncontroller');
+                $out->addModuleStyles('ext.newmanuscriptcss');
+                $out->addModuleStyles('ext.manuscriptdeskbasecss');
             }
 
             return true;

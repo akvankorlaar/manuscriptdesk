@@ -42,16 +42,14 @@ class HelperScriptsViewer extends ManuscriptDeskBaseViewer {
             $html .= "<div class = 'error'>$error_message</div>";
         }
 
-        $html .= "<p>" . $out->msg('helperscripts-instruction') . "</p>";
-
         $edit_token = $out->getUser()->getEditToken();
 
         $alphabetnumbers_message = $out->msg('alphabetnumbers-message');
         $delete_manuscripts_message = $out->msg('delete-manuscripts-message');
 
-        $html .= '<form class="manuscriptdesk-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
-        $html .= "<input type='submit' name='update_alphabetnumbers_posted' value='$alphabetnumbers_message'>";
-        $html .= "<input type='submit' name='delete_manuscripts_posted' value='$delete_manuscripts_message'>";
+        $html .= '<form class="manuscriptdesk-form" action="' . $wgArticleUrl . 'Special:HelperScripts" method="post">';
+        $html .= "<input type='submit' class='manuscriptdesk-submitbutton' name='update_alphabetnumbers_posted' value='$alphabetnumbers_message'>";
+        $html .= "<input type='submit' class='manuscriptdesk-submitbutton' name='delete_manuscripts_posted' value='$delete_manuscripts_message'>";
         $html .= "<input type='hidden' name='default_page_posted' value='default_page_posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= '</form>';
@@ -64,8 +62,8 @@ class HelperScriptsViewer extends ManuscriptDeskBaseViewer {
     public function showActionComplete() {
         $out = $this->out;
         $out->setPageTitle($out->msg('helperscripts'));
-        $html = "<p>" . $out->msg('action-complete') . "</p>";
-        $out->addHTML($html);      
+        $html = $out->msg('action-complete');
+        return $out->addHTML($html);      
     }
 
 }

@@ -35,7 +35,6 @@ $messages = array();
 $messages['en'] = array(
   'action-complete' => 'The action you requested has been completed succesfully.',
   'helperscripts' => 'Helper Scripts',
-  'helperscripts-instruction' => 'Choose an Option',
   'alphabetnumbers-message' => 'Update the Alphabet Numbers table',
   'delete-manuscripts-message' => 'Delete all Manuscripts',
 );
