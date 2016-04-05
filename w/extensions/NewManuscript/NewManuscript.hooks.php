@@ -494,7 +494,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             elseif ($partial_url === 'Special:NewManuscript') {
                 $out->addModules('ext.javascriptloader');
                 $out->addModules('ext.newmanuscriptbuttoncontroller');
-                $out->addModuleStyles('ext.newmanuscriptcss');
                 $out->addModuleStyles('ext.manuscriptdeskbasecss');
             }
 

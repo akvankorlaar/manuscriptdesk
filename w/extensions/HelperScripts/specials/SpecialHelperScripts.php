@@ -28,7 +28,7 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
         parent::__construct('HelperScripts');
     }
 
-    public function execute() {
+    public function execute($subpage_arguments) {
 
         try {
             $this->setVariables();
@@ -65,20 +65,23 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
             $this->processDefaultPage();
             return true;
         }
-        
+
+        if ($request_processor->deletePhrasePosted()) {
+            $this->processDeleteManuscripts();
+            return true;
+        }
+
         throw new \Exception('error-request');
     }
 
     private function processDefaultPage() {
-
         if ($this->request_processor->buttonDeleteManuscriptsPosted()) {
-            //script that can automatically delete all manuscript pages.. should be very safe--> put in some large authentication code
+            return $this->viewer->showDeletionForm();
         }
         else {
             $this->updateAlphabetNumbersTable();
+            return $this->viewer->showActionComplete();
         }
-
-        return $this->viewer->showActionComplete();
     }
 
     private function updateAlphabetNumbersTable() {
@@ -87,6 +90,10 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
         $this->wrapper->updateAlphabetNumbersSingleManuscriptPages();
 
         $this->wrapper->updateAlphabetNumbersCollations();
+        return;
+    }
+
+    private function processDeleteManuscripts() {
         return;
     }
 
@@ -115,6 +122,13 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
         }
 
         return $this->request_processor = new HelperScriptsRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+    }
+
+    /**
+     * Callback function. Makes sure the page is redisplayed in case there was an error when entering the deletionform 
+     */
+    static function processInput($form_data) {
+        return false;
     }
 
 }

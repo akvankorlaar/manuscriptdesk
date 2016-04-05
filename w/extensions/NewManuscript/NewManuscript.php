@@ -75,11 +75,6 @@ $wgResourceModules['ext.manuscriptpagecss'] = array(
 		'styles'  => 'css/ext.manuscriptpagecss.css',
 );
 
-$wgResourceModules['ext.newmanuscriptcss'] = array(
-		'localBasePath' => dirname( __FILE__ ),  
-		'styles'  => 'css/ext.newmanuscriptcss.css',
-);
-
 $wgResourceModules['ext.newmanuscriptbuttoncontroller'] = array(
   'scripts' => array(
     'js/ext.newmanuscriptbuttoncontroller.js',

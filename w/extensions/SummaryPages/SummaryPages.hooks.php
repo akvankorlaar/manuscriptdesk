@@ -38,7 +38,7 @@ class SummaryPagesHooks {
             $page_title === 'Special:AllCollations' ||
             $page_title === 'Special:RecentManuscriptPages') {
 
-            $out->addModuleStyles("ext.userPage");
+            $out->addModuleStyles(array('ext.userpagecss','ext.manuscriptdeskbasecss'));
             $out->addModules("ext.javascriptloaderdots");
         }
 

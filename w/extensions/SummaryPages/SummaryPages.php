@@ -89,9 +89,9 @@ $wgSpecialPages['SingleManuscriptPages'] = 'SpecialSingleManuscriptPages';
 $wgSpecialPages['UserPage'] = 'SpecialUserPage';
 
 //Extra file loaded later 
-$wgResourceModules['ext.userPage'] = array(
+$wgResourceModules['ext.userpagecss'] = array(
   'localBasePath' => dirname(__FILE__) . '/css',
-  'styles' => '/ext.userPage.css',
+  'styles' => '/ext.userpagecss.css',
 );
 
 $wgResourceModules['ext.javascriptloaderdots'] = array(

@@ -35,4 +35,41 @@ class HelperScriptsRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         false;
     }
 
+    public function deletePhrasePosted() {
+        $request = $this->request;
+        $validator = $this->validator;
+
+        if ($request->getText('phrase_posted') !== '') {
+            $this->checkIpAddress();
+            $this->checkPhrase();
+            return true;
+        }
+
+        false;
+    }
+
+    private function checkIpAddress() {
+        global $wgAllowedDeleterIp;
+        $request = $this->request;
+        $ip_address = $request->getIP();
+
+        if ($wgAllowedDeleterIp === $ip_address) {
+            return;
+        }
+
+        throw new \Exception('error-request');
+    }
+
+    private function checkPhrase() {
+        global $wgDeleterPassPhrase; 
+        $request = $this->request;
+        $posted_phrase = $request->getText('wpphrase');
+        
+        if($wgDeleterPassPhrase === $posted_phrase){
+            return;
+        }
+        
+        throw new \Exception('error-request');
+    }
+
 }

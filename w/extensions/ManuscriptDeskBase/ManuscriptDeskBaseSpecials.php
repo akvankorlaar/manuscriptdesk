@@ -45,7 +45,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
     /**
      * Main entry point for Special Pages in the Manuscript Desk
      */
-    public function execute() {
+    public function execute($subpage_arguments) {
 
         try {
             $this->setVariables();
