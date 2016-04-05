@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class ManuscriptDeskDeleteWrapper {
+class ManuscriptDeskDeleteWrapper extends ManuscriptDeskBaseWrapper {
 
     /**
      * This function deletes the entry for $page_title in the 'manuscripts' table

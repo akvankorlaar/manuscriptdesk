@@ -27,7 +27,7 @@ class ManuscriptDeskDeleter {
     private $wrapper;
     private $paths;
     private $collection_title;
-    private $manuscripts_url; 
+    private $manuscripts_url;
 
     public function __construct(ManuscriptDeskDeleteWrapper $wrapper, NewManuscriptPaths $paths, $collection_title, $manuscripts_url = null) {
         $this->wrapper = $wrapper;
@@ -52,8 +52,8 @@ class ManuscriptDeskDeleter {
         $this->wrapper->subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbes_context);
         return;
     }
-    
-        private function deleteDatabaseEntries() {
+
+    private function deleteDatabaseEntries() {
         $partial_url = $this->paths->getPartialUrl();
         $collection_title = $this->collection_title;
         $status = $this->wrapper->deleteFromManuscripts($partial_url);
