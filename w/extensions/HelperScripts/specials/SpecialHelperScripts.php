@@ -85,16 +85,17 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
     }
 
     private function updateAlphabetNumbersTable() {
-        $this->wrapper->updateAlphabetNumbersCollections();
-
-        $this->wrapper->updateAlphabetNumbersSingleManuscriptPages();
-
-        $this->wrapper->updateAlphabetNumbersCollations();
+        $wrapper = new UpdateAlphabetNumbersWrapper();
+        $wrapper->updateAlphabetNumbersCollections();
+        $wrapper->updateAlphabetNumbersSingleManuscriptPages();
+        $wrapper->updateAlphabetNumbersCollations();
         return;
     }
 
     private function processDeleteManuscripts() {
-        return;
+        $wrapper = new ManuscriptDeskAllDataDeleteWrapper();
+        $wrapper->deleteManuscriptDeskData();
+        return $this->viewer->showActionComplete();
     }
 
     protected function setViewer() {
@@ -107,12 +108,8 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
     }
 
     protected function setWrapper() {
-
-        if (isset($this->wrapper)) {
-            return;
-        }
-
-        return $this->wrapper = new HelperScriptsWrapper();
+        //has to be determined at runtime
+        return null;
     }
 
     protected function setRequestProcessor() {

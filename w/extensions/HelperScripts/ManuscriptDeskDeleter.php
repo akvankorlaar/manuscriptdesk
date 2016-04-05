@@ -22,34 +22,25 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class NewManuscriptDeleter {
+class ManuscriptDeskDeleter {
 
     private $wrapper;
     private $paths;
     private $collection_title;
+    private $manuscripts_url; 
 
-    public function __construct(NewManuscriptWrapper $wrapper, NewManuscriptPaths $paths, $collection_title) {
+    public function __construct(ManuscriptDeskDeleteWrapper $wrapper, NewManuscriptPaths $paths, $collection_title, $manuscripts_url = null) {
         $this->wrapper = $wrapper;
         $this->paths = $paths;
-        $this->collection_title = $collection_title; 
+        $this->collection_title = $collection_title;
+        $this->manuscripts_url = $manuscripts_url;
     }
 
     public function execute() {
         $this->subtractAlphabetNumbersTable();
         $this->deleteDatabaseEntries();
         $this->deleteFiles();
-        return; 
-    }
-
-    private function deleteDatabaseEntries() {
-        $partial_url = $this->paths->getPartialUrl();
-        $collection_title = $this->collection_title;
-        $status = $this->wrapper->deleteFromManuscripts($partial_url);
-
-        if ($collection_title !== 'none') {
-            $this->wrapper->checkAndDeleteCollectionifNeeded($this->collection_title);
-        }
-
+        $this->deleteWikiPageIfNeeded();
         return;
     }
 
@@ -59,6 +50,18 @@ class NewManuscriptDeleter {
         $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($partial_url);
         $alphabetnumbes_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($collection_title);
         $this->wrapper->subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbes_context);
+        return;
+    }
+    
+        private function deleteDatabaseEntries() {
+        $partial_url = $this->paths->getPartialUrl();
+        $collection_title = $this->collection_title;
+        $status = $this->wrapper->deleteFromManuscripts($partial_url);
+
+        if ($collection_title !== 'none') {
+            $this->wrapper->checkAndDeleteCollectionifNeeded($this->collection_title);
+        }
+
         return;
     }
 
@@ -134,6 +137,16 @@ class NewManuscriptDeleter {
         }
 
         return false;
+    }
+
+    private function deleteWikiPageIfNeeded() {
+
+        if (isset($this->manuscripts_url)) {
+            $page_id = $this->wrapper->getPageId($this->manuscripts_url);
+            $this->wrapper->deletePageFromId($page_id);
+        }
+
+        return;
     }
 
 }

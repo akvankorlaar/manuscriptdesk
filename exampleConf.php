@@ -309,5 +309,8 @@ $wgStylometricAnalysisOptions = array(
   'tempstylometricanalysis_hours_before_delete' => 2, //hours before entries are deleted from the 'tempstylometricanalysis' table 
 );
 
+$wgAllowedDeleterIp = '000.000.000.00'; //ip-address that is allowed to delete in Special:HelperScripts
+$wgDeleterPassPhrase = ''; //password or phrase for deletion in Special:HelperScripts
+
 //sends complete stack trace to output in case of an uncaught exceptions. This should never be set to true on a production server
 $wgShowExceptionDetails = true;

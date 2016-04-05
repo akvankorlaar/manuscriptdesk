@@ -149,7 +149,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     private function deleteAllData() {
-        $deleter = new NewManuscriptDeleter($this->wrapper, $this->paths, $this->posted_collection_title);
+        $deleter = new ManuscriptDeskDeleter(new ManuscriptDeskDeleteWrapper(), $this->paths, $this->posted_collection_title);
         return $deleter->excute();
     }
 

@@ -220,8 +220,9 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     private function deleteOldWikiPage($manuscript_url_old_title) {
-        $page_id = $this->wrapper->getPageId($manuscript_url_old_title);
-        return $this->wrapper->deleteOldPage($page_id);
+        $delete_wrapper = new ManuscriptDeskDeleteWrapper();
+        $page_id = $delete_wrapper->getPageId($manuscript_url_old_title);
+        return $delete_wrapper->deletePageFromId($page_id);
     }
 
     protected function handleExceptions(Exception $exception_error) {

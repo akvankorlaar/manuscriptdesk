@@ -1,12 +1,13 @@
 <?php
 
 /**
- * This file is part of the NewManuscript extension
+ * This file is part of the Collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License Version 2, as
- * published by the Free Software Foundation.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,15 +15,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * @package MediaWiki
  * @subpackage Extensions
- * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
+ * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
+class UpdateAlphabetNumbersWrapper extends ManuscriptDeskBaseWrapper {
 
     public function updateAlphabetNumbersCollections() {
         $res = $this->getAllCollectionsAlphabetNumbersData();
@@ -106,7 +106,7 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
 
     private function loopThroughResultsAndFillAlphabetNumbersTable($res, $result_name) {
 
-        $last_full_result_name = null; 
+        $last_full_result_name = null;
         $current_loop_letter_or_number = null;
         $current_number_of_entities = null;
 
@@ -115,13 +115,13 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
         if ($res->numRows() > 0) {
             //while there are still titles in this query
             while ($s = $res->fetchObject()) {
-                
-                if($s->$result_name === $last_full_result_name && $result_name === 'manuscripts_lowercase_collection'){
+
+                if ($s->$result_name === $last_full_result_name && $result_name === 'manuscripts_lowercase_collection') {
                     continue;
                 }
-                
-                $last_full_result_name = $s->$result_name; 
-                               
+
+                $last_full_result_name = $s->$result_name;
+
                 $current_letter_or_number = $this->getFirstCharachterOfTitle($s->$result_name);
                 if ($current_letter_or_number === $current_loop_letter_or_number) {
                     $current_number_of_entities += 1;
@@ -140,7 +140,7 @@ class HelperScriptsWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         $this->insertIntoAlphabetNumbers($alphabet_numbers, $current_loop_letter_or_number, $current_number_of_entities);
-        
+
         return $alphabet_numbers;
     }
 

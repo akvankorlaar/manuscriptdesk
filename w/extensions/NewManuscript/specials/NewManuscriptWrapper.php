@@ -182,63 +182,7 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         //if collection does not exist yet $dbw->affectedRows() will return false
         return; 
     }
-
-    /**
-     * This function deletes the entry for $page_title in the 'manuscripts' table
-     */
-    public function deleteFromManuscripts($page_title_with_namespace) {
-
-        $dbw = wfGetDB(DB_MASTER);
-
-        $dbw->delete(
-            'manuscripts', //from
-            array(
-          'manuscripts_url' => $page_title_with_namespace), //conditions
-            __METHOD__);
-
-        if (!$dbw->affectedRows()) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * This function checks if the collection is empty, and deletes the collection along with its metadata if this is the case
-     */
-    public function checkAndDeleteCollectionIfNeeded($collection_name) {
-
-        $dbr = wfGetDB(DB_SLAVE);
-
-        //First check if the collection is empty
-        $res = $dbr->select(
-            'manuscripts', //from
-            array(
-          'manuscripts_url',
-            ), array(
-          'manuscripts_collection = ' . $dbr->addQuotes($collection_name),
-            ), __METHOD__
-        );
-
-        //If the collection is empty, delete the collection
-        if ($res->numRows() !== 0) {
-            return;
-        }
-        else {
-            return $this->deleteFromCollections($collection_name);
-        }
-    }
-
-    private function deleteFromCollections($collection_name) {
-        $dbw = wfGetDB(DB_MASTER);
-
-        $dbw->delete(
-            'collections', //from
-            array(
-          'collections_title' => $collection_name //conditions
-            ), __METHOD__);
-    }
-
+   
     public function getManuscriptsTitleFromUrl($partial_url) {
         $dbr = wfGetDB(DB_SLAVE);
 
