@@ -54,8 +54,8 @@ $wgAutoloadClasses['UpdateAlphabetNumbersWrapper'] = $dir . 'specials/UpdateAlph
 $wgAutoloadClasses['ManuscriptDeskAllDataDeleteWrapper'] = $dir . 'specials/ManuscriptDeskAllDataDeleteWrapper.php';
 $wgAutoloadClasses['HelperScriptsRequestProcessor'] = $dir . 'specials/HelperScriptsRequestProcessor.php';
 
-$wgExtensionMessagesFiles['ManuscriptDeskDeleteWrapper'] = $dir . 'ManuscriptDeskDeleteWrapper.php';
-$wgExtensionMessagesFiles['ManuscriptDeskDeleter'] = $dir . 'ManuscriptDeskDeleter.php';
+$wgAutoloadClasses['ManuscriptDeskDeleteWrapper'] = $dir . 'ManuscriptDeskDeleteWrapper.php';
+$wgAutoloadClasses['ManuscriptDeskDeleter'] = $dir . 'ManuscriptDeskDeleter.php';
 
 $wgAutoloadClasses['HelperScriptsHooks'] = $dir . 'HelperScripts.hooks.php';
 $wgExtensionMessagesFiles['HelperScripts'] = $dir . 'HelperScripts.i18n.php';
