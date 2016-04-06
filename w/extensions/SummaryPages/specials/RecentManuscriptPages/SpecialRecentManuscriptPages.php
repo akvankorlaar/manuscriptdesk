@@ -35,7 +35,7 @@ class SpecialRecentManuscriptPages extends SpecialPage {
     /**
      * Main entry point for the page
      */
-    public function execute() {
+    public function execute($subpage_arguments) {
         $page_titles = $this->getData();
         $this->showDefaultPage($page_titles);
         return true;

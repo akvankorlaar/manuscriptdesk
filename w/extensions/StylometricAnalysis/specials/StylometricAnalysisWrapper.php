@@ -344,22 +344,4 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         return $data;
     }
 
-    public function deleteStylometricAnalysisDatabaseEntry($page_title_with_namespace) {
-
-        $dbw = wfGetDB(DB_MASTER);
-
-        $dbw->delete(
-            'stylometricanalysis', //from
-            array(
-          'stylometricanalysis_new_page_url' => $page_title_with_namespace //conditions
-            ), __METHOD__
-        );
-
-        if (!$dbw->affectedRows()) {
-            throw new \Exception('stylometricanalysis-error-database');
-        }
-
-        return true;
-    }
-
 }

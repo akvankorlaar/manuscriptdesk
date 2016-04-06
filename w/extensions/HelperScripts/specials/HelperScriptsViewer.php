@@ -55,15 +55,48 @@ class HelperScriptsViewer extends ManuscriptDeskBaseViewer {
         $html .= '</form>';
 
         $html .= "</div>";
-
         return $out->addHTML($html);
+    }
+
+    public function showDeletionForm() {
+        $out = $this->out;
+        $max_length = $this->max_string_formfield_length;
+
+        $out->setPageTitle($out->msg('helperscripts'));
+
+        $html = '';
+        $html .= $this->getHTMLJavascriptLoader();
+        $html .= "<div class='javascripthide'>";
+
+        if (!empty($error_message)) {
+            $html .= "<br>";
+            $html .= "<div class = 'error'>$error_message</div>";
+        }
+
+        $html .= "</div>";
+        $out->addHTML($html);
+        
+        $descriptor = array();
+
+        $descriptor['phrase'] = array(
+          'label-message' => 'phrase-message',
+          'class' => 'HTMLTextField',
+          'type' => 'password',
+          'maxlength' => ($max_length * 20),
+        );
+
+        $html_form = new HTMLForm($descriptor, $out->getContext());
+        $html_form->setSubmitText($out->msg('delete-submit'));
+        $html_form->addHiddenField('phrase_posted', 'phrase_posted');
+        $html_form->setSubmitCallback(array('SpecialHelperScripts', 'processInput'));
+        return $html_form->show();
     }
 
     public function showActionComplete() {
         $out = $this->out;
         $out->setPageTitle($out->msg('helperscripts'));
         $html = $out->msg('action-complete');
-        return $out->addHTML($html);      
+        return $out->addHTML($html);
     }
 
 }

@@ -354,12 +354,17 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     protected function handleExceptions(Exception $exception_error) {
 
-        $viewer = $this->setViewer();
+        $this->setViewer();
+        $viewer = $this->viewer; 
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
-        if ($error_identifier === 'error-nopermission' || $error_identifier === 'error-fewuploads') {
+        if ($error_identifier === 'error-nopermission') {
             return $viewer->showSimpleErrorMessage($error_message);
+        }
+        
+        if($error_identifier === 'error-fewuploads'){
+            return $viewer->showFewUploadsError($error_identifier);
         }
 
         if ($this->form_type === 'Form2' && isset($this->collection_data) && isset($this->collection_name_data)) {

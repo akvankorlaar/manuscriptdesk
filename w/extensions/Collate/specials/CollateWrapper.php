@@ -91,7 +91,6 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         $manuscript_titles = array();
         $minimum_manuscripts = $wgCollationOptions['wgmin_collation_pages'];
 
-        //Database query
         $res = $dbr->select(
             'manuscripts', //from
             array(
@@ -313,27 +312,6 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
           'titles_array' => (array) json_decode($s->collations_titles_array),
           'collatex_output' => $s->collations_collatex,
         );
-    }
-
-    /**
-     * This function deletes the entry for corresponding to the page in the 'collations' table
-     */
-    public function deleteDatabaseEntry($page_title_with_namespace = '') {
-
-        $dbw = wfGetDB(DB_MASTER);
-
-        $dbw->delete(
-            'collations', //from
-            array(
-          'collations_url' => $page_title_with_namespace //conditions
-            ), __METHOD__
-        );
-
-        if (!$dbw->affectedRows()) {
-            throw new \Exception('database-error');
-        }
-
-        return true;
     }
 
 }

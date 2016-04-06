@@ -90,9 +90,11 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $user_name = $this->user_name;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
+        
+        $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button', 'button-active'));
         $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div class='javascripthide'>";
@@ -453,7 +455,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $html_form->addHiddenField('save_new_page_title_collection_posted', 'save_new_collection_title_posted');
         $html_form->addHiddenField('save_page_posted', 'save_page_posted');
         $html_form->setSubmitCallback(array('SpecialUserPage', 'processInput'));
-        $html_form->show();
+        return $html_form->show();
     }
 
 }

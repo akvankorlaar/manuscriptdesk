@@ -125,7 +125,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
         $this->wrapper->storeManuscripts($posted_manuscript_title, $posted_collection_title, $this->user_name, $new_page_url, $date);
         $alphabetnumbers_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($posted_collection_title);
-        $this->wrapper->incrementAlphabetNumbers(strtolower($posted_manuscript_title), $alphabetnumbers_context);
+        $this->wrapper->modifyAlphabetNumbersSingleValue(strtolower($posted_manuscript_title), $alphabetnumbers_context, 'add');
         return;
     }
 
@@ -149,7 +149,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     private function deleteAllData() {
-        $deleter = new NewManuscriptDeleter($this->wrapper, $this->paths, $this->posted_collection_title);
+        $deleter = new ManuscriptDeskDeleter(new ManuscriptDeskDeleteWrapper(), $this->paths, $this->posted_collection_title);
         return $deleter->excute();
     }
 

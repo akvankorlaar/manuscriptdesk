@@ -90,6 +90,8 @@ class UserPageCollationsViewer implements UserPageViewerInterface {
         $user_name = $this->user_name;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
+        
+        $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button-active', 'button'));
@@ -98,7 +100,7 @@ class UserPageCollationsViewer implements UserPageViewerInterface {
         $html .= "<div class='javascripthide'>";
         
         $html .= "<p>" . $out->msg('userpage-nocollations') . "</p>";
-        $html .= "<p><a class='userpage-transparent' href='" . $wgArticleUrl . "Special:BeginCollate'>" . $out->msg('userpage-newcollation') . "</a></p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $wgArticleUrl . "Special:Collate'>" . $out->msg('userpage-newcollation') . "</a></p>";
         
         $html .= "</div>";
 

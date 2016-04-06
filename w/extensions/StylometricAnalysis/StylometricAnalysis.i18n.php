@@ -45,6 +45,7 @@ $messages['en'] = array(
   'stylometricanalysis-wordformheader' => 'Enter Words (Optional)',
   'stylometricanalysis-contains' => 'Contains:',
   'stylometricanalysis-submit' => 'Submit',
+  'stylometricanalysis-fewuploads' => 'You need to have at least 2 collections, each collection containing at least 10 pages, to perform Stylometric Analysis. ',
   'stylometricanalysis-hover' => 'Submit current selection',
   'stylometricanalysis-options' => 'Stylometric Analysis Options',
   'stylometricanalysis-chosencollections' => 'You have chosen the following collections for the analysis:',

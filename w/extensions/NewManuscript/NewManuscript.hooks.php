@@ -407,7 +407,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
         $paths->setExportPaths();
         $paths->setPartialUrl();
-        $deleter = new NewManuscriptDeleter($this->wrapper, $paths, $this->collection_title);
+        $deleter = new ManuscriptDeskDeleter(new ManuscriptDeskDeleteWrapper(), $paths, $this->collection_title);
         $deleter->execute();
         return;
     }
@@ -494,7 +494,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             elseif ($partial_url === 'Special:NewManuscript') {
                 $out->addModules('ext.javascriptloader');
                 $out->addModules('ext.newmanuscriptbuttoncontroller');
-                $out->addModuleStyles('ext.newmanuscriptcss');
                 $out->addModuleStyles('ext.manuscriptdeskbasecss');
             }
 

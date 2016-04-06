@@ -50,8 +50,12 @@ $dir = __DIR__ . '/';
 //Auto load classes 
 $wgAutoloadClasses['SpecialHelperScripts'] = $dir . 'specials/SpecialHelperScripts.php';
 $wgAutoloadClasses['HelperScriptsViewer'] = $dir . 'specials/HelperScriptsViewer.php';
-$wgAutoloadClasses['HelperScriptsWrapper'] = $dir . 'specials/HelperScriptsWrapper.php';
+$wgAutoloadClasses['UpdateAlphabetNumbersWrapper'] = $dir . 'specials/UpdateAlphabetNumbersWrapper.php';
+$wgAutoloadClasses['HelperScriptsDeleteWrapper'] = $dir . 'specials/HelperScriptsDeleteWrapper.php';
 $wgAutoloadClasses['HelperScriptsRequestProcessor'] = $dir . 'specials/HelperScriptsRequestProcessor.php';
+
+$wgAutoloadClasses['ManuscriptDeskDeleteWrapper'] = $dir . 'ManuscriptDeskDeleteWrapper.php';
+$wgAutoloadClasses['ManuscriptDeskDeleter'] = $dir . 'ManuscriptDeskDeleter.php';
 
 $wgAutoloadClasses['HelperScriptsHooks'] = $dir . 'HelperScripts.hooks.php';
 $wgExtensionMessagesFiles['HelperScripts'] = $dir . 'HelperScripts.i18n.php';

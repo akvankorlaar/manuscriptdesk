@@ -49,7 +49,6 @@ $dir = __DIR__ . '/';
 
 //Auto load classes 
 $wgAutoloadClasses['NewManuscriptImageValidator']    = $dir . 'specials/NewManuscriptImageValidator.php';
-$wgAutoloadClasses['NewManuscriptDeleter'] = $dir . 'specials/NewManuscriptDeleter.php';
 $wgAutoloadClasses['NewManuscriptPaths']    = $dir . 'specials/NewManuscriptPaths.php';
 $wgAutoloadClasses['NewManuscriptRequestProcessor']    = $dir . 'specials/NewManuscriptRequestProcessor.php';
 $wgAutoloadClasses['NewManuscriptUploadForm']    = $dir . 'specials/NewManuscriptUploadForm.php';
@@ -73,11 +72,6 @@ $wgResourceModules['ext.zoomviewercss'] = array(
 $wgResourceModules['ext.manuscriptpagecss'] = array(
 		'localBasePath' => dirname( __FILE__ ),  
 		'styles'  => 'css/ext.manuscriptpagecss.css',
-);
-
-$wgResourceModules['ext.newmanuscriptcss'] = array(
-		'localBasePath' => dirname( __FILE__ ),  
-		'styles'  => 'css/ext.newmanuscriptcss.css',
 );
 
 $wgResourceModules['ext.newmanuscriptbuttoncontroller'] = array(

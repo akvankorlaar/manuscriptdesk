@@ -37,6 +37,8 @@ $messages['en'] = array(
   'helperscripts' => 'Helper Scripts',
   'alphabetnumbers-message' => 'Update the Alphabet Numbers table',
   'delete-manuscripts-message' => 'Delete all Manuscripts',
+  'phrase-message' => 'Password',
+  'delete-submit' => 'Delete All Data in the Manuscript Desk',
 );
 
 $messages['en-gb'] = $messages['en'];
