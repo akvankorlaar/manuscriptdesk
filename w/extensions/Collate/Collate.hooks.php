@@ -108,7 +108,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
                 return true;
             }
 
-            $database_wrapper = new CollateWrapper($user->getName());
+            $database_wrapper = new ManuscriptDeskDeleteWrapper($user->getName());
             $page_title_with_namespace = $title_object->getPrefixedURL();
 
             if (!$database_wrapper->currentUserCreatedThePage($page_title_with_namespace) || !$this->currentUserIsASysop($user)) {
@@ -117,8 +117,8 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
             }
 
             $manuscripts_lowercase_title = $database_wrapper->getManuscriptsLowercaseTitle($page_title_with_namespace);
-            $database_wrapper->subtractAlphabetNumbers($manuscripts_lowercase_title, 'AllCollations');
-            $database_wrapper->deleteDatabaseEntry($title->getPrefixedURL());
+            $database_wrapper->modifyAlphabetNumbersSingleValue($manuscripts_lowercase_title, 'AllCollations', 'subtract');
+            $database_wrapper->deleteFromCollations($title->getPrefixedURL());
             return true;
         } catch (Exception $e) {
             return true;

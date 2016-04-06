@@ -70,7 +70,7 @@ class ManuscriptDeskDeleteWrapper extends ManuscriptDeskBaseWrapper {
         }
     }
 
-    private function deleteFromCollections($collection_name) {
+    public function deleteFromCollections($collection_name) {
         $dbw = wfGetDB(DB_MASTER);
 
         $dbw->delete(
@@ -85,9 +85,11 @@ class ManuscriptDeskDeleteWrapper extends ManuscriptDeskBaseWrapper {
     /**
      * This function retrieves the page id from the 'page' table 
      */
-    public function getPageId($page_title) {
+    public function getPageId($page_title, $namespace = NS_MANUSCRIPTS) {
 
         $page_title = str_replace('Manuscripts:', '', $page_title);
+        $page_title = str_replace('Collations:', '', $page_title);
+        $page_title = str_replace('Stylometricananalysis:', '', $page_title);
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -96,7 +98,7 @@ class ManuscriptDeskDeleteWrapper extends ManuscriptDeskBaseWrapper {
             array(
           'page_id', //values
             ), array(
-          'page_namespace = ' . $dbr->addQuotes(NS_MANUSCRIPTS),
+          'page_namespace = ' . $dbr->addQuotes($namespace),
           'page_title = ' . $dbr->addQuotes($page_title),
             ), __METHOD__, array(
           'ORDER BY' => 'page_id',
@@ -126,6 +128,42 @@ class ManuscriptDeskDeleteWrapper extends ManuscriptDeskBaseWrapper {
         if (!$dbw->affectedRows() > 0) {
             $dbw->rollback(__METHOD__);
             throw new \Exception('error-database-delete');
+        }
+
+        return;
+    }
+
+    public function deleteFromCollations($page_title_with_namespace) {
+
+        $dbw = wfGetDB(DB_MASTER);
+
+        $dbw->delete(
+            'collations', //from
+            array(
+          'collations_url' => $page_title_with_namespace //conditions
+            ), __METHOD__
+        );
+
+        if (!$dbw->affectedRows()) {
+            throw new \Exception('database-error');
+        }
+
+        return;
+    }
+
+    public function deleteFromStylometricAnalysis($page_title_with_namespace) {
+
+        $dbw = wfGetDB(DB_MASTER);
+
+        $dbw->delete(
+            'stylometricanalysis', //from
+            array(
+          'stylometricanalysis_new_page_url' => $page_title_with_namespace //conditions
+            ), __METHOD__
+        );
+
+        if (!$dbw->affectedRows()) {
+            throw new \Exception('stylometricanalysis-error-database');
         }
 
         return;

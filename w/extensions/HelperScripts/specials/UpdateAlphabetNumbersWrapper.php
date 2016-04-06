@@ -137,9 +137,10 @@ class UpdateAlphabetNumbersWrapper extends ManuscriptDeskBaseWrapper {
                     $current_number_of_entities += 1;
                 }
             }
+
+            $this->insertIntoAlphabetNumbers($alphabet_numbers, $current_loop_letter_or_number, $current_number_of_entities);
         }
 
-        $this->insertIntoAlphabetNumbers($alphabet_numbers, $current_loop_letter_or_number, $current_number_of_entities);
 
         return $alphabet_numbers;
     }

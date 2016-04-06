@@ -96,7 +96,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $wrapper = $this->wrapper;
         list($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) = $wrapper->getSavedCollateAnalysisData($time_identifier);
         $wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output);
-        $wrapper->incrementAlphabetNumbers($main_title_lowercase, 'AllCollations');
+        $wrapper->modifyAlphabetNumbersSingleValue($main_title_lowercase, 'AllCollations', 'add');
         $local_url = $this->createNewWikiPage($new_url);
         return $this->getOutput()->redirect($local_url);
     }

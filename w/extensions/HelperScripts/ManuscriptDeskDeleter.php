@@ -49,7 +49,7 @@ class ManuscriptDeskDeleter {
         $collection_title = $this->collection_title;
         $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($partial_url);
         $alphabetnumbes_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($collection_title);
-        $this->wrapper->subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbes_context);
+        $this->wrapper->modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbes_context, 'subtract');
         return;
     }
 
@@ -142,9 +142,9 @@ class ManuscriptDeskDeleter {
     private function deleteWikiPageIfNeeded() {
 
         if (isset($this->manuscripts_url)) {
-            $page_id = $this->wrapper->getPageId($this->manuscripts_url);
+            $page_id = $this->wrapper->getPageId($this->manuscripts_url); 
             $this->wrapper->deletePageFromId($page_id);
-        }
+            }
 
         return;
     }

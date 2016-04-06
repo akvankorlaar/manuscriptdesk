@@ -63,31 +63,24 @@ abstract class ManuscriptDeskBaseWrapper {
     /**
      * Subtract entries in the alphabetnumbers table when a page is deleted
      */
-    public function subtractAlphabetNumbers($main_title_lowercase, $alphabetnumbers_context) {
+    public function modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbers_context, $mode) {
 
-        if (!is_string($main_title_lowercase) || !is_string($alphabetnumbers_context)) {
-            return true;
+        if (!is_string($main_title_lowercase) || !is_string($alphabetnumbers_context || !is_string($mode))) {
+            return;
         }
 
         $first_character_of_page = $this->getFirstCharachterOfTitle($main_title_lowercase);
         $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersSingleValue($first_character_of_page, $alphabetnumbers_context);
-        $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter - 1;
-        $this->updateAlphabetNumbersSingleValue($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
-    }
 
-    /**
-     * Increments entries in the alphabetnumbers table when a page is added
-     */
-    public function incrementAlphabetNumbers($main_title_lowercase, $alphabetnumbers_context) {
-
-        if (!is_string($main_title_lowercase) || !is_string($alphabetnumbers_context)) {
-            return true;
+        if ($mode === 'add') {
+            $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter + 1;
+        }
+        else {
+            $new_number_of_pages_starting_with_this_charachter = $new_number_of_pages_starting_with_this_charachter <= 0 ? 0 : $number_of_pages_starting_with_this_charachter - 1;
         }
 
-        $first_character_of_page = $this->getFirstCharachterOfTitle($main_title_lowercase);
-        $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersSingleValue($first_character_of_page, $alphabetnumbers_context);
-        $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter + 1;
         $this->updateAlphabetNumbersSingleValue($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
+        return;
     }
 
     /**
@@ -156,9 +149,9 @@ abstract class ManuscriptDeskBaseWrapper {
         return $first_char;
     }
 
-    private function updateAlphabetNumbersSingleValue($first_charachter_of_page, $number_of_pages = 0, $alphabetnumbers_context = '') {
+    private function updateAlphabetNumbersSingleValue($first_charachter_of_page, $number_of_pages, $alphabetnumbers_context) {
         $dbw = wfGetDB(DB_MASTER);
-
+        
         $dbw->update(
             'alphabetnumbers', //select table
             array(
@@ -167,12 +160,8 @@ abstract class ManuscriptDeskBaseWrapper {
           'alphabetnumbers_context = ' . $dbw->addQuotes($alphabetnumbers_context),
             ), __METHOD__
         );
-
-        if (!$dbw->affectedRows()) {
-            throw new \Exception('database-error');
-        }
-
-        return true;
+        
+        return;
     }
 
     public function getAlphabetNumbersData($alphabetnumbers_context = '') {
@@ -270,7 +259,7 @@ abstract class ManuscriptDeskBaseWrapper {
         return $number_array;
     }
 
-    public function getManuscriptsLowercaseTitle($partial_url) {
+    public function getManuscriptsLowercaseTitle($partial_url) {      
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
 
@@ -294,7 +283,7 @@ abstract class ManuscriptDeskBaseWrapper {
     public function determineAlphabetNumbersContextFromCollectionTitle($collection_title) {
         if (!isset($collection_title) || $collection_title === 'none') {
             return 'SingleManuscriptPages';
-}
+        }
         else {
             return 'AllCollections';
         }

@@ -93,7 +93,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         }
 
         try {
-            $database_wrapper = new StylometricAnalysisWrapper($user->getName());
+            $database_wrapper = new ManuscriptDeskDeleteWrapper($user->getName());
             $database_wrapper->deleteStylometricAnalysisDatabaseEntry($title_object->getPrefixedURL());
         } catch (Exception $e) {
             return true;

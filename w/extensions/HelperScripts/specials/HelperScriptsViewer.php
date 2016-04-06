@@ -82,7 +82,7 @@ class HelperScriptsViewer extends ManuscriptDeskBaseViewer {
           'label-message' => 'phrase-message',
           'class' => 'HTMLTextField',
           'type' => 'password',
-          'maxlength' => $max_length,
+          'maxlength' => ($max_length * 20),
         );
 
         $html_form = new HTMLForm($descriptor, $out->getContext());

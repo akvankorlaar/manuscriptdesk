@@ -315,25 +315,4 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         );
     }
 
-    /**
-     * This function deletes the entry for corresponding to the page in the 'collations' table
-     */
-    public function deleteDatabaseEntry($page_title_with_namespace = '') {
-
-        $dbw = wfGetDB(DB_MASTER);
-
-        $dbw->delete(
-            'collations', //from
-            array(
-          'collations_url' => $page_title_with_namespace //conditions
-            ), __METHOD__
-        );
-
-        if (!$dbw->affectedRows()) {
-            throw new \Exception('database-error');
-        }
-
-        return true;
-    }
-
 }

@@ -51,7 +51,7 @@ $dir = __DIR__ . '/';
 $wgAutoloadClasses['SpecialHelperScripts'] = $dir . 'specials/SpecialHelperScripts.php';
 $wgAutoloadClasses['HelperScriptsViewer'] = $dir . 'specials/HelperScriptsViewer.php';
 $wgAutoloadClasses['UpdateAlphabetNumbersWrapper'] = $dir . 'specials/UpdateAlphabetNumbersWrapper.php';
-$wgAutoloadClasses['ManuscriptDeskAllDataDeleteWrapper'] = $dir . 'specials/ManuscriptDeskAllDataDeleteWrapper.php';
+$wgAutoloadClasses['HelperScriptsDeleteWrapper'] = $dir . 'specials/HelperScriptsDeleteWrapper.php';
 $wgAutoloadClasses['HelperScriptsRequestProcessor'] = $dir . 'specials/HelperScriptsRequestProcessor.php';
 
 $wgAutoloadClasses['ManuscriptDeskDeleteWrapper'] = $dir . 'ManuscriptDeskDeleteWrapper.php';

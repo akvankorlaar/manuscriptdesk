@@ -93,8 +93,9 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
     }
 
     private function processDeleteManuscripts() {
-        $wrapper = new ManuscriptDeskAllDataDeleteWrapper();
+        $wrapper = new HelperScriptsDeleteWrapper();
         $wrapper->deleteManuscriptDeskData();
+        $this->updateAlphabetNumbersTable();
         return $this->viewer->showActionComplete();
     }
 
