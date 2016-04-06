@@ -65,10 +65,6 @@ abstract class ManuscriptDeskBaseWrapper {
      */
     public function modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbers_context, $mode) {
 
-        if (!is_string($main_title_lowercase) || !is_string($alphabetnumbers_context || !is_string($mode))) {
-            return;
-        }
-
         $first_character_of_page = $this->getFirstCharachterOfTitle($main_title_lowercase);
         $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersSingleValue($first_character_of_page, $alphabetnumbers_context);
 

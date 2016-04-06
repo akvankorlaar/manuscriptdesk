@@ -100,7 +100,7 @@ class UserPageCollationsViewer implements UserPageViewerInterface {
         $html .= "<div class='javascripthide'>";
         
         $html .= "<p>" . $out->msg('userpage-nocollations') . "</p>";
-        $html .= "<p><a class='userpage-transparent' href='" . $wgArticleUrl . "Special:BeginCollate'>" . $out->msg('userpage-newcollation') . "</a></p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $wgArticleUrl . "Special:Collate'>" . $out->msg('userpage-newcollation') . "</a></p>";
         
         $html .= "</div>";
 
