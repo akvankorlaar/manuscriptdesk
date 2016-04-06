@@ -90,6 +90,8 @@ class UserPageCollationsViewer implements UserPageViewerInterface {
         $user_name = $this->user_name;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
+        
+        $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
         $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button-active', 'button'));

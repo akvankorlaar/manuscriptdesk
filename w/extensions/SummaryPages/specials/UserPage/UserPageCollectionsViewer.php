@@ -90,9 +90,11 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $user_name = $this->user_name;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
+        
+        $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($edit_token, array('button', 'button', 'button-active'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button', 'button-active'));
         $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div class='javascripthide'>";

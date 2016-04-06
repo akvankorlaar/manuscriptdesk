@@ -45,6 +45,7 @@ $messages['en'] = array(
   'stylometricanalysis-wordformheader' => 'Enter Words (Optional)',
   'stylometricanalysis-contains' => 'Contains:',
   'stylometricanalysis-submit' => 'Submit',
+  'stylometricanalysis-fewuploads' => 'Your collections do not contain enough manuscripts for you to do stylometric analysis',
   'stylometricanalysis-hover' => 'Submit current selection',
   'stylometricanalysis-options' => 'Stylometric Analysis Options',
   'stylometricanalysis-chosencollections' => 'You have chosen the following collections for the analysis:',

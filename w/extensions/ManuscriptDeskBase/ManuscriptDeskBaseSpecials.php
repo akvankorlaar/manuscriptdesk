@@ -132,8 +132,12 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
-        if ($error_identifier === 'error-nopermission' || $error_identifier === 'error-fewuploads') {
+        if ($error_identifier === 'error-nopermission') {
             return $viewer->showSimpleErrorMessage($error_message);
+        }
+        
+        if($error_identifier === 'error-fewuploads'){
+            return $viewer->showFewUploadsError($error_message);
         }
 
         return $this->getDefaultPage($error_message);

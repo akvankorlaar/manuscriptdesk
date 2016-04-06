@@ -91,7 +91,6 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         $manuscript_titles = array();
         $minimum_manuscripts = $wgCollationOptions['wgmin_collation_pages'];
 
-        //Database query
         $res = $dbr->select(
             'manuscripts', //from
             array(

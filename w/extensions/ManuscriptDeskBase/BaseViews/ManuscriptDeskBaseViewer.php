@@ -26,7 +26,7 @@ abstract class ManuscriptDeskBaseViewer {
 
     protected $out;
     protected $max_int_formfield_length = 5;
-    protected $max_string_formfield_length = 50; 
+    protected $max_string_formfield_length = 50;
 
     public function __construct(OutputPage $out) {
         $this->out = $out;
@@ -48,7 +48,25 @@ abstract class ManuscriptDeskBaseViewer {
 
     public function showSimpleErrorMessage($error_message = '') {
         $this->out->addHTML($error_message);
-        return true;
+        return;
     }
-    
+
+    public function showFewUploadsError($error_message) {
+        $out = $this->out; 
+        $class = get_class($this);
+        $message = '';
+
+        switch ($class) {
+            case 'CollateViewer':
+                $message = $out->msg('collate-fewuploads');
+                break;
+            case 'StylometricAnalysisViewer':
+                $message = $out->msg('stylometricanalysis-fewuploads');
+                break;
+        }
+
+        $out->addHTML($message);
+        return;
+    }
+
 }
