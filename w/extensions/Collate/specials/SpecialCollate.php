@@ -180,30 +180,31 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         return 'Collations:' . $user_name . "/" . $imploded_page_titles . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
 
-    protected function setViewer() {
+    public function setViewer($object = null) {
         
         if(isset($this->viewer)){
             return;
         }
-        return $this->viewer = new CollateViewer($this->getOutput());
+        
+        return $this->viewer = isset($object) ? $object : new CollateViewer($this->getOutput());
     }
 
-    protected function setWrapper() {
+    public function setWrapper($object = null) {
         
         if(isset($this->wrapper)){
             return;
         }
         
-        return $this->wrapper = new CollateWrapper($this->user_name);
+        return $this->wrapper = isset($object) ? $object : new CollateWrapper($this->user_name);
     }
 
-    protected function setRequestProcessor() {
+    public function setRequestProcessor($object = null) {
         
         if(isset($this->request_processor)){
             return;
         }
         
-        return $this->request_processor = new CollateRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = isset($object) ? $object : new CollateRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     protected function getCollatexConverter() {

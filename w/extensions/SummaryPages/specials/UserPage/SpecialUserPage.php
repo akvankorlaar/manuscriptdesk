@@ -251,12 +251,12 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    protected function setViewer() {
+    public function setViewer($object = null) {
         //empty because viewer has to be determined at runtime
         return;
     }
 
-    protected function setWrapper() {
+    public function setWrapper($object = null) {
         //empty because wrapper has to be determined at runtime   
         return;
     }
@@ -289,13 +289,13 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return;
     }
 
-    protected function setRequestProcessor() {
+    public function setRequestProcessor($object = null) {
 
         if (isset($this->request_processor)) {
             return;
         }
 
-        return $this->request_processor = new UserPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = isset($object) ? $object : new UserPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     /**

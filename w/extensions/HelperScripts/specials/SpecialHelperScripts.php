@@ -99,27 +99,27 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
         return $this->viewer->showActionComplete();
     }
 
-    protected function setViewer() {
+    public function setViewer($object = null) {
 
         if (isset($this->viewer)) {
             return;
         }
 
-        return $this->viewer = new HelperScriptsViewer($this->getOutput());
+        return $this->viewer = isset($object) ? $object : new HelperScriptsViewer($this->getOutput());
     }
 
-    protected function setWrapper() {
+    public function setWrapper($object = null) {
         //has to be determined at runtime
-        return null;
+        return;
     }
 
-    protected function setRequestProcessor() {
+    public function setRequestProcessor($object = null) {
 
         if (isset($this->request_processor)) {
             return;
         }
 
-        return $this->request_processor = new HelperScriptsRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = isset($object) ? $object : new HelperScriptsRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     /**

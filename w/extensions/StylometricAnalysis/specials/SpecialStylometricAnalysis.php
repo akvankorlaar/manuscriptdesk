@@ -374,30 +374,30 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $this->getDefaultPage($error_message);
     }
 
-    protected function setViewer() {
+    public function setViewer($object = null) {
         
         if(isset($this->viewer)){
             return;
         }
         
-        return $this->viewer = new StylometricAnalysisViewer($this->getOutput());
+        return $this->viewer = isset($object) ? $object : new StylometricAnalysisViewer($this->getOutput());
     }
 
-    protected function setWrapper() {
+    public function setWrapper($object = null) {
         
         if(isset($this->wrapper)){
             return;
         }
         
-        return $this->wrapper = new StylometricAnalysisWrapper($this->user_name);
+        return $this->wrapper = isset($object) ? $object : new StylometricAnalysisWrapper($this->user_name);
     }
 
-    protected function setRequestProcessor() {
+    public function setRequestProcessor($object = null) {
         
         if(isset($this->request_processor)){
             return;
         }
-        return $this->request_processor = new StylometricAnalysisRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = isset($object) ? $object : new StylometricAnalysisRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     /**

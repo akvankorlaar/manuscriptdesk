@@ -52,28 +52,15 @@ class NewManuscriptHooksTest extends MediaWikiTestCase {
 //        $this->setTitle('test', NS_MANUSCRIPTS);
 //        $wikipage = new WikiPage($this->context->getTitle());
 //    }
-
-    public function testonBeforePageDisplayManuscriptPage() {
-        $this->setTitle('test', NS_MANUSCRIPTS);
-        $this->setRequest(array(array('action' => 'view')));       
-        $skin = new SkinCbpTranscriptionEnhanced();
-        $out = $this->context->getOutput();      
-        
-        $this->t->onBeforePageDisplay($out, $skin); 
-        $modules = $out->mModuleStyles;  
-        $result = strpos('ext.manuscriptpagecss', $modules[0]); 
-        $this->assertEquals(is_int($result), true);                     
-        return; 
-    }
     
-    public function testonBeforePageDisplayNewManuscript(){
+    public function testonBeforePageDisplay(){
         $this->setTitle('NewManuscript', NS_SPECIAL, 'Special:NewManuscript');       
         $skin = new SkinCbpTranscriptionEnhanced();
         $out = $this->context->getOutput();
         
         $this->t->onBeforePageDisplay($out, $skin);       
         $modules = $out->mModuleStyles; 
-        $result = strpos('ext.newmanuscriptcss', $modules[0]); 
+        $result = strpos('ext.manuscriptdeskbasecss', $modules[0]); 
         $this->assertEquals(is_int($result), true);                     
         return; 
     }

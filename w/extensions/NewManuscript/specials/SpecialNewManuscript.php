@@ -36,6 +36,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         $this->checkWhetherUserHasUploadedTooManyManuscripts();
         $collections_current_user = $this->wrapper->getCollectionsCurrentUser();
         $this->viewer->showDefaultpage($error_message, $collections_current_user, $collection_title);
+        return; 
     }
 
     /**
@@ -84,7 +85,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         $this->updateDatabase($new_page_url);
         $local_url = $this->createNewWikiPage($new_page_url, 'This page has not been transcribed yet.');
         $this->getOutput()->redirect($local_url);
-        return true;
+        return;
     }
 
     private function checkForCollectionErrors() {
@@ -132,9 +133,11 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     protected function handleExceptions(Exception $exception_error) {
 
         global $wgWebsiteRoot;
-        $viewer = $this->setViewer();
+        $this->setViewer();
+        $viewer = $this->viewer; 
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
+        $this->error_identifier = $error_identifier; 
 
         if ($error_identifier === 'error-nopermission' || $error_identifier === 'newmanuscript-maxreached') {
             return $viewer->showSimpleErrorMessage($error_message);
@@ -153,31 +156,31 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         return $deleter->excute();
     }
 
-    protected function setRequestProcessor() {
+    public function setRequestProcessor($object = null) {
         
         if(isset($this->request_processor)){
-            return;
+            return; 
         }
         
-        return $this->request_processor = new NewManuscriptRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator);
+        return $this->request_processor = isset($object) ? $object : new NewManuscriptRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator);
     }
 
-    protected function setViewer() {
+    public function setViewer($object = null) {
         
         if(isset($this->viewer)){
-            return;
+            return; 
         }
         
-        return $this->viewer = new NewManuscriptViewer($this->getOutput());
+        return $this->viewer = isset($object) ? $object : new NewManuscriptViewer($this->getOutput());
     }
 
-    protected function setWrapper() {
+    public function setWrapper($object = null) {
         
         if(isset($this->wrapper)){
-            return;
+            return; 
         }
         
-        return $this->wrapper = new NewManuscriptWrapper($this->user_name);
+        return $this->wrapper = isset($object) ? $object : new NewManuscriptWrapper($this->user_name);
     }
 
     /**
