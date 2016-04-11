@@ -26,6 +26,7 @@
 class NewManuscriptImageValidator {
 
     private $request;
+    private $upload_base;
 
     public function __construct(WebRequest $request) {
         $this->request = $request;
@@ -47,7 +48,7 @@ class NewManuscriptImageValidator {
 
     private function checkWhetherFileIsImage() {
 
-        if (getimagesize($_FILES["wpUploadFile"]["tmp_name"]) === false) {
+        if (!isset($_FILES["wpUploadFile"]["tmp_name"]) || getimagesize($_FILES["wpUploadFile"]["tmp_name"]) === false) {
             throw new \Exception('newmanuscript-error-noimage');
         }
 
@@ -57,7 +58,8 @@ class NewManuscriptImageValidator {
     private function getUploadBaseObject() {
         global $wgNewManuscriptOptions;
         $max_upload_size = $wgNewManuscriptOptions['max_upload_size'];
-        $upload_base = UploadBase::createFromRequest($this->request);
+        $this->setUploadBase();
+        $upload_base = $this->upload_base;
 
         if (!isset($upload_base)) {
             throw new \Exception('error-request');
@@ -126,6 +128,15 @@ class NewManuscriptImageValidator {
         }
 
         throw new \Exception('newmanuscript-error-fileformat');
+    }
+
+    public function setUploadBase($object = null) {
+
+        if (isset($this->upload_base)) {
+            return;
+        }
+
+        return $this->upload_base = isset($object) ? $object : UploadBase::createFromRequest($this->request);
     }
 
 }
