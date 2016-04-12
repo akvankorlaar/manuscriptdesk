@@ -35,7 +35,8 @@ class NewManuscriptImageValidator {
     public function getAndCheckUploadedImageData() {
         $this->checkWhetherFileIsImage();
         $upload_base = $this->getUploadBaseObject();
-        $extension = $this->getExtension($upload_base);
+        $file_name = $this->getFileName($upload_base);
+        $extension = $this->getExtension($file_name);
         $temp_path = $this->getTempPath($upload_base);
         $mime_type = $this->getGuessedMimeType($temp_path);
 
@@ -72,10 +73,19 @@ class NewManuscriptImageValidator {
         return $upload_base;
     }
 
-    private function getExtension(UploadBase $upload_base) {
+    private function getFileName(UploadBase $upload_base) {
+        $title = $upload_base->getTitle();
+
+        if (!isset($title)) {
+            throw new \Exception('error-request');
+        }
+
+        return $title->getText();
+    }
+
+    private function getExtension($file_name) {
         global $wgNewManuscriptOptions;
         $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
-        $file_name = $this->getFileName($upload_base);
 
         if (pathinfo($file_name, PATHINFO_EXTENSION === null)) {
             throw new \Exception('newmanuscript-error-noextension');
@@ -94,20 +104,10 @@ class NewManuscriptImageValidator {
         return $extension;
     }
 
-    private function getFileName(UploadBase $upload_base) {
-        $title = $upload_base->getTitle();
-
-        if (!isset($title)) {
-            throw new \Exception('error-request');
-        }
-
-        return $title->getText();
-    }
-
     private function getTempPath(UploadBase $upload_base) {
         $temp_path = $upload_base->getTempPath();
 
-        if ($temp_path === '') {
+        if ($temp_path === '' || $temp_path === null) {
             throw new \Exception('newmanuscript-error-nofile');
         }
 

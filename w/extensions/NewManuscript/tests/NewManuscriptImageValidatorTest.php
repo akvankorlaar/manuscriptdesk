@@ -22,9 +22,6 @@
  * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  * 
- * php phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\NewManuscript\tests
- * php -d xdebug.profiler_enable=On phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\NewManuscript\tests
- * set XDEBUG_CONFIG="idekey=netbeans-xdebug" 
  */
 class NewManuscriptImageValidatorTest extends MediaWikiTestCase {
 
@@ -62,7 +59,7 @@ class NewManuscriptImageValidatorTest extends MediaWikiTestCase {
      * @expectedExceptionMessage error-toolarge
      */
     public function testFileSizeException() {
-        
+
         $stub = $this->getMockBuilder('concreteUploadBase')
             ->setMethods(array())
             ->getMock();
@@ -70,7 +67,7 @@ class NewManuscriptImageValidatorTest extends MediaWikiTestCase {
         $stub->expects($this->once())
             ->method('getFileSize')
             ->will($this->returnValue(100000000000000000000000000));
-        
+
         $this->t->setUploadBase($stub);
 
         $result = $this->invokeMethod($this->t, 'getUploadBaseObject');
@@ -80,20 +77,63 @@ class NewManuscriptImageValidatorTest extends MediaWikiTestCase {
      * @expectedException Exception
      * @expectedExceptionMessage error-request
      */
-    public function testgetExtensionException() {
+    public function testgetFileNameException() {
 
         $stub = $this->getMockBuilder('concreteUploadBase')
             ->setMethods(null)
             ->getMock();
 
-        $result = $this->invokeMethod($this->t, 'getExtension', array($stub));
+        $result = $this->invokeMethod($this->t, 'getFileName', array($stub));
+    }
+
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage error-noextension
+     */
+    public function testgetExtensionException() {
+
+        $result = $this->invokeMethod($this->t, 'getExtension', array('somefilewithoutextension'));
+    }
+
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage error-fileformat
+     */
+    public function testgetExtensionFileFormatException() {
+
+        $result = $this->invokeMethod($this->t, 'getExtension', array('file.fakeextension'));
+    }
+
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage error-nofile
+     */
+    public function testgetTempPathException() {
+
+        $stub = $this->getMockBuilder('concreteUploadBase')
+            ->setMethods(null)
+            ->getMock();
+
+        $result = $this->invokeMethod($this->t, 'getTempPath', array($stub));
+    }
+
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage error-fileformat
+     */
+    public function testgetGuessedMimeTypeException() {
+        $result = $this->invokeMethod($this->t, 'getGuessedMimeType', array('some/path/with/fake/extension.fakeextension'));
     }
 
 }
 
-class concreteUploadBase extends UploadBase{
-    
-    public function initializeFromRequest(&$request){
+/**
+ * This class implements the abstract UploadBase class so that it can be stubbed and mocked for testing
+ */
+class concreteUploadBase extends UploadBase {
+
+    public function initializeFromRequest(&$request) {
         return null;
     }
+
 }

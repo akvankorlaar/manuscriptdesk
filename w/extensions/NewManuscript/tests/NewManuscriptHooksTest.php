@@ -22,8 +22,6 @@
  * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  * 
- * php -d xdebug.profiler_enable=On phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\NewManuscript\tests
- * set XDEBUG_CONFIG="idekey=netbeans-xdebug" 
  */
 
 class NewManuscriptHooksTest extends MediaWikiTestCase {

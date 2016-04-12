@@ -21,10 +21,6 @@
  * @subpackage Extensions
  * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
- * 
- * php phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\NewManuscript\tests
- * php -d xdebug.profiler_enable=On phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\NewManuscript\tests
- * set XDEBUG_CONFIG="idekey=netbeans-xdebug" 
  */
 class NewManuscriptPathsTest extends MediaWikiTestCase {
 
@@ -44,7 +40,7 @@ class NewManuscriptPathsTest extends MediaWikiTestCase {
 
     private function mockNewManuscriptPaths() {
         $mock = $this->getMockBuilder('NewManuscriptPaths')
-            ->setConstructorArgs(array('Root','testfilename','.extension'))
+            ->setConstructorArgs(array('Root', 'testfilename', '.extension'))
             ->setMethods(array('makeDirectoryIfItDoesNotExist', 'directoryShouldExist'))
             ->getMock();
 

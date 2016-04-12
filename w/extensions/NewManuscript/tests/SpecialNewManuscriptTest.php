@@ -22,9 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  * 
- * php phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\NewManuscript\tests
- * php -d xdebug.profiler_enable=On phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\NewManuscript\tests
- * set XDEBUG_CONFIG="idekey=netbeans-xdebug" 
+ * Notice: THese tests assume that a user with name 'Root' exists! 
  */
 class UploadNewManuscriptTest extends MediaWikiTestCase {
 
