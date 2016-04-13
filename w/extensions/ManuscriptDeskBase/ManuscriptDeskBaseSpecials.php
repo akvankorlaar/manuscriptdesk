@@ -90,7 +90,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
     /**
      * Create a new wikipage and return a $local_url
      */
-    protected function createNewWikiPage($new_url, $content = '') {
+    public function createNewWikiPage($new_url, $content = '') {
 
         $content = empty($content) ? '<!--' . $this->msg('manuscriptdesk-newpage') . '-->' : $content;
 

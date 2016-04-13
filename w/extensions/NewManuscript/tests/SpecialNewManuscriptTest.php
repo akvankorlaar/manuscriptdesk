@@ -51,7 +51,7 @@ class UploadNewManuscriptTest extends MediaWikiTestCase {
     private function mockSpecialNewManuscript() {
         $special_new_manuscript_mock = $this->getMockBuilder('SpecialNewManuscript')
             ->setConstructorArgs(array())
-            ->setMethods(array('checkEditToken', 'updateDatabase', 'createNewWikiPage'))
+            ->setMethods(array('createNewWikiPage'))
             ->getMock();
 
         return $special_new_manuscript_mock;
@@ -164,11 +164,16 @@ class UploadNewManuscriptTest extends MediaWikiTestCase {
         
          $stub_slicer_executer->expects($this->once())
             ->method('execute');
-
+         
+        $stub_wrapper = $this->getMockBuilder('NewManuscriptWrapper')
+            ->setConstructorArgs(array('Root'))
+            ->getMock();
+         
         $this->t->setRequestProcessor($mock_request_processor);
         $this->t->setImageValidator($mock_image_validator);
         $this->t->setPaths($stub_paths);
         $this->t->setSlicerExecuter($stub_slicer_executer);
+        $this->t->setWrapper($stub_wrapper);
 
         $this->t->execute($args = '');
         $error = $this->t->getErrorIdentifier();

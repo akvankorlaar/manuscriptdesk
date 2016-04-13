@@ -170,12 +170,4 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
-    /**
-     * Includes the unit tests for stylometricanalysis into the unit test list
-     */
-    public function onUnitTestsList(&$files) {
-        $files = array_merge($files, glob(__DIR__ . '/tests/phpunit/*Test.php'));
-        return true;
-    }
-
 }

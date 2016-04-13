@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `manuscripts` (
   `manuscripts_collection` varbinary(255) NOT NULL,
   `manuscripts_lowercase_collection` varbinary(255) NOT NULL,
   `manuscripts_datesort` varbinary(255) NOT NULL
+  `manuscripts_signature` varbinary(255) NOT NULL DEFAULT 'private'
   UNIQUE KEY `manuscripts_url` (`manuscripts_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=binary;
 

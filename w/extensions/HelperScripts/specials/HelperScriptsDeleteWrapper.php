@@ -65,6 +65,7 @@ class HelperScriptsDeleteWrapper extends ManuscriptDeskBaseWrapper {
                 $paths->setExportPaths();
                 $paths->setPartialUrl();
 
+                $delete_wrapper = new ManuscriptDeskDeleteWrapper();
                 $deleter = new ManuscriptDeskDeleter($delete_wrapper, $paths, $collection_title, $manuscripts_url);
                 $deleter->execute();
             }

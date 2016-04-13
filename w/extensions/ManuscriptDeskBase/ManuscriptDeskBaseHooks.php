@@ -102,4 +102,12 @@ abstract class ManuscriptDeskBaseHooks {
         return wfMessage($identifier)->text();
     }
 
+    /**
+     * Includes the unit tests for stylometricanalysis into the unit test list
+     */
+    public function onUnitTestsList(&$files) {
+        $files = array_merge($files, glob(__DIR__ . '/tests/*Test.php'));
+        return true;
+    }
+
 }

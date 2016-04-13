@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SummaryPagesHooks {
+class SummaryPagesHooks extends ManuscriptDeskBaseHooks {
 
     /**
      * This function adds additional modules containing CSS before the page is displayed
@@ -38,7 +38,7 @@ class SummaryPagesHooks {
             $page_title === 'Special:AllCollations' ||
             $page_title === 'Special:RecentManuscriptPages') {
 
-            $out->addModuleStyles(array('ext.userpagecss','ext.manuscriptdeskbasecss'));
+            $out->addModuleStyles(array('ext.userpagecss', 'ext.manuscriptdeskbasecss'));
             $out->addModules("ext.javascriptloaderdots");
         }
 

@@ -72,7 +72,7 @@ abstract class ManuscriptDeskBaseWrapper {
             $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter + 1;
         }
         else {
-            $new_number_of_pages_starting_with_this_charachter = $new_number_of_pages_starting_with_this_charachter <= 0 ? 0 : $number_of_pages_starting_with_this_charachter - 1;
+            $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter <= 0 ? 0 : $number_of_pages_starting_with_this_charachter - 1;
         }
 
         $this->updateAlphabetNumbersSingleValue($first_character_of_page, $new_number_of_pages_starting_with_this_charachter, $alphabetnumbers_context);
