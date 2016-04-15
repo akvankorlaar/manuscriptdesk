@@ -61,6 +61,8 @@ $wgAutoloadClasses['SpecialNewManuscript'] = $dir . 'specials/SpecialNewManuscri
 $wgExtensionMessagesFiles['NewManuscript']  = $dir . 'NewManuscript.i18n.php';
 $wgAutoloadClasses['NewManuscriptHooks']    = $dir . 'NewManuscript.hooks.php';
 
+$wgAutoloadClasses['DatabaseTestInserter'] = $dir . '/tests/DatabaseTestInserter.php';
+
 $wgSpecialPages['NewManuscript'] = 'SpecialNewManuscript';
 
 //Extra files containing CSS and javascript loaded later 

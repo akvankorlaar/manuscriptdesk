@@ -147,7 +147,7 @@ abstract class ManuscriptDeskBaseWrapper {
 
     private function updateAlphabetNumbersSingleValue($first_charachter_of_page, $number_of_pages, $alphabetnumbers_context) {
         $dbw = wfGetDB(DB_MASTER);
-        
+
         $dbw->update(
             'alphabetnumbers', //select table
             array(
@@ -156,7 +156,7 @@ abstract class ManuscriptDeskBaseWrapper {
           'alphabetnumbers_context = ' . $dbw->addQuotes($alphabetnumbers_context),
             ), __METHOD__
         );
-        
+
         return;
     }
 
@@ -255,7 +255,7 @@ abstract class ManuscriptDeskBaseWrapper {
         return $number_array;
     }
 
-    public function getManuscriptsLowercaseTitle($partial_url) {      
+    public function getManuscriptsLowercaseTitle($partial_url) {
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
 
@@ -283,6 +283,52 @@ abstract class ManuscriptDeskBaseWrapper {
         else {
             return 'AllCollections';
         }
+    }
+
+    public function getManuscriptSignature($url_with_namespace) {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'manuscripts', //from
+            array(
+          'manuscripts_signature', //values
+          'manuscripts_url',
+            ), array(
+          'manuscripts_url = ' . $dbr->addQuotes($url_with_namespace),
+            )
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        $s = $res->fetchObject();
+
+        $signature = $s->manuscripts_signature;
+
+        return $signature;
+    }
+
+    public function setManuscriptSignature($url_with_namespace, $signature) {
+
+        if ($signature !== 'private' && $signature !== 'public') {
+            throw new \Exception('error-database');
+        }
+
+        $dbw = wfGetDB(DB_MASTER);
+
+        $dbw->update('manuscripts', //select table
+            array(//insert values
+          'manuscripts_signature' => $signature,
+            ), array(//conditions
+          'manuscripts_url = ' . $dbw->addQuotes($url_with_namespace),
+            ), __METHOD__, 'IGNORE');
+
+        if (!$dbw->affectedRows()) {
+            throw new Exception('error-database');
+        }
+
+        return true;
     }
 
 }

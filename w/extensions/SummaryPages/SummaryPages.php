@@ -82,15 +82,11 @@ $wgAutoloadClasses['SummaryPageBase'] = $dir . '/specials/SummaryPageBase.php';
 $wgAutoloadClasses['SummaryPageRequestProcessor'] = $dir . '/specials/SummaryPageRequestProcessor.php';
 $wgAutoloadClasses['SummaryPageViewerInterface'] = $dir . '/specials/SummaryPageViewerInterface.php';
 
-$wgAutoloadClasses['ImageSignatureWrapper'] = $dir . '/specials/ImageSignatureWrapper.php';
-
 $wgSpecialPages['AllCollations'] = 'SpecialAllCollations';
 $wgSpecialPages['AllCollections'] = 'SpecialAllCollections';
 $wgSpecialPages['RecentManuscriptPages'] = 'SpecialRecentManuscriptPages';
 $wgSpecialPages['SingleManuscriptPages'] = 'SpecialSingleManuscriptPages';
 $wgSpecialPages['UserPage'] = 'SpecialUserPage';
-
-$wgAutoloadClasses['DatabaseTestInserter'] = $dir . '/tests/DatabaseTestInserter.php';
 
 //Extra file loaded later 
 $wgResourceModules['ext.userpagecss'] = array(

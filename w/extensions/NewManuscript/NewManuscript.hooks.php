@@ -99,7 +99,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         try {
 
-            if (!$this->manuscriptisInViewMode($out) || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage($out)) {
+            if (!$this->manuscriptisInViewMode($out) || !$this->currentPageIsAValidManuscriptPage($out)) {
                 return true;
             }
 
@@ -110,20 +110,20 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 return $this->redirectToOriginalImage($out);
             }
 
-            $html = '';
+        $html = '';
 
-            if (isset($this->collection_title)) {
-                $html .= $this->getHTMLCollectionHeader();
-            }
+        if (isset($this->collection_title)) {
+            $html .= $this->getHTMLCollectionHeader();
+        }
 
-            $html .= $this->getHTMLManuscriptViewLinks($user);
-            $html .= $this->getHTMLIframeForZoomviewer($out->getRequest());
-            $out->addHTML($html);
-            $out->addModuleStyles('ext.zoomviewercss');
+        $html .= $this->getHTMLManuscriptViewLinks($user);
+        $html .= $this->getHTMLIframeForZoomviewer($out->getRequest());
+        $out->addHTML($html);
+        $out->addModuleStyles('ext.zoomviewercss');
             return true;
         } catch (Exception $e) {
             return true;
-        }
+    }
     }
 
     private function redirectToOriginalImage(OutputPage $out) {
@@ -175,7 +175,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         if (isset($this->collection_title)) {
 
-            if ($this->currentUserIsTheOwnerOfThePage($user)) {
+        if ($this->currentUserIsTheOwnerOfThePage($user)) {
                 $html .= $this->getHTMLLinkToEditCollection($user);
             }
 

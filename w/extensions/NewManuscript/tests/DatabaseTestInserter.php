@@ -28,7 +28,7 @@ class DatabaseTestInserter {
     private $default_id = 1;
     private $default_value = 'test';
     private $test_url = 'test/url';
-
+    private $test_user = 'testuser';
     /**
      * This function insert data into the manuscripts table
      */
@@ -36,6 +36,7 @@ class DatabaseTestInserter {
 
         $dbw = wfGetDB(DB_MASTER);
 
+        $user = $this->test_user; 
         $value = $this->default_value;
         $id = $this->default_id;
         $test_url = $this->test_url;
@@ -44,7 +45,7 @@ class DatabaseTestInserter {
             array(//insert values
           'manuscripts_id' => $id,
           'manuscripts_title' => $value,
-          'manuscripts_user' => $value,
+          'manuscripts_user' => $user,
           'manuscripts_url' => $test_url,
           'manuscripts_date' => $value,
           'manuscripts_lowercase_title' => $value,

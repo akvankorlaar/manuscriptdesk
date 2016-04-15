@@ -71,10 +71,15 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             $this->processNewPageTitleCollection();
             return true;
         }
+        
+        if($request_processor->changeSignaturePosted()){
+            $this->handleSignatureChange();
+            return true; 
+        }
 
         throw new \Exception('error-request');
     }
-
+    
     protected function getDefaultPage($error_message = '') {
         $user_is_a_sysop = $this->currentUserIsASysop();
         $this->viewer = new UserPageDefaultViewer($this->getOutput());
@@ -125,6 +130,24 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $single_collection_data = $this->wrapper->getSingleCollectionData($collection_title);
         return $this->viewer->showSingleCollectionData($collection_title, $single_collection_data);
     }
+    
+    private function handleSignatureChange() {
+        list($partial_url, $signature) = $this->request_processor->getSignatureChangeData();
+        //$partial_url = $request_getText('link_back_to_manuscript_page'); 
+        //$signature = $request->getText('change_signature_posted');
+        
+        //data indicates which manuscript page/offset user was viewing. 
+        //or it indicates which collection user was viewing
+        //wrapper and viewer should be set appropriately
+        //signaturechange functions should be incorporated in base wrapper
+        //after processing signature change
+        //redirect to normal page user came from originally
+                
+        $wrapper = new SignatureChangeWrapper();
+        $wrapper->setManuscriptSignature($partial_url, $signature);
+        $viewer = new SingleManuscriptPagesViewer($this->user_name);
+        return $viewer->showRedirectBackToManuscriptPageAfterSignatureChange($link_back_to_manuscript_page);
+    }
 
     private function getEditSinglePageCollectionForm($error_message = '') {
         $this->setWrapperAndViewer('view_collections_posted');
@@ -134,7 +157,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $this->viewer->showEditPageSingleCollectionForm($error_message, $collection_title, $manuscript_old_title, $manuscript_url_old_title);
         return; 
     }
-
+    
     /**
      * This function processes the edit when submitting a new manuscript page title
      */

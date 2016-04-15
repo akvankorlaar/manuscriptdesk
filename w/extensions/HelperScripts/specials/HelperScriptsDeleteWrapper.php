@@ -130,8 +130,8 @@ class HelperScriptsDeleteWrapper extends ManuscriptDeskBaseWrapper {
                     $delete_wrapper->deleteFromStylometricAnalysis($page_title_with_namespace);
                 }
                 
-                //$page_id = $delete_wrapper->getPageId($page_title_with_namespace, $namespace);
-                //$delete_wrapper->deletePageFromId($page_id);             
+                $page_id = $delete_wrapper->getPageId($page_title_with_namespace, $namespace);
+                $delete_wrapper->deletePageFromId($page_id);             
             }
         }
 

@@ -21,24 +21,22 @@
  * @subpackage Extensions
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
- * 
- * php -d xdebug.profiler_enable=On phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\SummaryPages
  */
 class SignatureChangeWrapperTest extends MediaWikiTestCase {
 
     private $t;
-    private $test_wrapper;
+    private $database_test_instance_creator;
 
     protected function setUp() {
         parent::setUp();
-        $this->test_wrapper = new DatabaseTestInserter();
-        $this->test_wrapper->createManuscriptsTest();
-        $this->t = new ImageSignatureWrapper();
+        $this->database_test_instance_creator = new DatabaseTestInserter();
+        $this->database_test_instance_creator->createManuscriptsTest();
+        $this->t = new ConcreteManuscriptDeskBaseWrapper('testuser');
     }
 
     protected function tearDown() {
-        $this->test_wrapper->destroyManuscriptsTest();
-        unset($this->test_wrapper);
+        $this->database_test_instance_creator->destroyManuscriptsTest();
+        unset($this->database_test_instance_creator);
         unset($this->t);
         parent::tearDown();
     }
@@ -61,4 +59,9 @@ class SignatureChangeWrapperTest extends MediaWikiTestCase {
         $this->assertEquals($result, true);
     }
 
+}
+
+//a concrete instance of the ManuscriptDeskBaseWrapper used for testing purposes
+class ConcreteManuscriptDeskBaseWrapper extends ManuscriptDeskBaseWrapper {
+    
 }

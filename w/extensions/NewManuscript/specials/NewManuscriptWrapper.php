@@ -158,8 +158,8 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         if (!$dbw->affectedRows()) {
             throw new Exception('error-database-manuscripts');
         }
-        
-        return; 
+
+        return;
     }
 
     /**
@@ -178,11 +178,10 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
           'collections_user' => $user_name,
           'collections_date' => $date,
             ), __METHOD__, 'IGNORE'); //ensures that duplicate $collection_name is ignored
-
         //if collection does not exist yet $dbw->affectedRows() will return false
-        return; 
+        return;
     }
-   
+
     public function getManuscriptsTitleFromUrl($partial_url) {
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -217,12 +216,12 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         if ($res->numRows() !== 1) {
             throw new \Exception('error-database');
         }
-        
+
         $s = $res->fetchObject();
         return $s->manuscripts_user;
     }
 
-    public function getCollectionTitleFromUrl($url_without_namespace) {
+    public function getCollectionTitleFromUrl($url_with_namespace) {
         $dbr = wfGetDB(DB_SLAVE);
 
         $res = $dbr->select(
@@ -230,14 +229,14 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
             array(
           'manuscripts_collection', //values
             ), array(
-          'manuscripts_url = ' . $dbr->addQuotes($url_without_namespace), //conditions
+          'manuscripts_url = ' . $dbr->addQuotes($url_with_namespace), //conditions
             )
         );
 
         if ($res->numRows() !== 1) {
             throw new \Exception('error-database');
         }
-        
+
         $s = $res->fetchObject();
         return $s->manuscripts_collection;
     }

@@ -111,6 +111,14 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         return false;
     }
 
+    public function changeSignaturePosted() {
+        if ($request->getText('change_signature_posted') !== '') {
+            return true;
+        }
+
+        return false;
+    }
+
     public function getEditSinglePageCounter() {
 
         $request = $this->request;
@@ -133,10 +141,10 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         $old_title = $validator->validateString($request->getText('old_title_posted' . $counter));
         $url_old_title = $validator->validateStringUrl($request->getText('url_old_title_posted' . $counter));
 
-        if(empty($old_title) || empty($url_old_title)){
+        if (empty($old_title) || empty($url_old_title)) {
             throw new \Exception('error-request');
         }
-        
+
         return array($old_title, $url_old_title);
     }
 
