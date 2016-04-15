@@ -210,14 +210,6 @@ function onSkinBuildSidebar(Skin $skin, &$bar) {
     unset($bar['navigation'][2]);
     unset($bar['navigation'][3]);
     unset($bar['navigation'][4]);
-    unset($bar['navigation'][5]);
-    unset($bar['navigation'][6]);
-    unset($bar['navigation'][7]);
-    unset($bar['navigation'][8]);
-    unset($bar['navigation'][9]);
-    unset($bar['navigation'][10]);
-    unset($bar['navigation'][11]);
-    unset($bar['navigation'][12]);
 
     return true;
 }
