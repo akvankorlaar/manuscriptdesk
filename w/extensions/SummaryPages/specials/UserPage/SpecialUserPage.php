@@ -26,9 +26,9 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
     private $form_type = 'default';
     private $manuscript_old_title;
-    private $manuscript_new_title; 
+    private $manuscript_new_title;
     private $manuscript_url_old_title;
-    private $new_page_partial_url; 
+    private $new_page_partial_url;
 
     public function __construct() {
         parent::__construct('UserPage');
@@ -71,15 +71,15 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             $this->processNewPageTitleCollection();
             return true;
         }
-        
-        if($request_processor->changeSignaturePosted()){
-            $this->handleSignatureChange();
-            return true; 
+
+        if ($request_processor->changeSignatureManuscriptPosted()) {
+            $this->handleSignatureChangeManuscript();
+            return true;
         }
 
         throw new \Exception('error-request');
     }
-    
+
     protected function getDefaultPage($error_message = '') {
         $user_is_a_sysop = $this->currentUserIsASysop();
         $this->viewer = new UserPageDefaultViewer($this->getOutput());
@@ -89,14 +89,14 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     private function processDefaultPage() {
         list($button_name, $offset) = $this->request_processor->getDefaultPageData();
         $this->setWrapperAndViewer($button_name);
-        list($page_titles, $next_offset) = $this->wrapper->getData($offset);
+        list($page_data, $next_offset) = $this->wrapper->getData($offset);
 
-        if (empty($page_titles)) {
+        if (empty($page_data)) {
             $this->viewer->showEmptyPageTitlesError($button_name);
             return true;
         }
 
-        $this->viewer->showPage($button_name, $page_titles, $offset, $next_offset);
+        $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
         return true;
     }
 
@@ -130,23 +130,13 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $single_collection_data = $this->wrapper->getSingleCollectionData($collection_title);
         return $this->viewer->showSingleCollectionData($collection_title, $single_collection_data);
     }
-    
-    private function handleSignatureChange() {
-        list($partial_url, $signature) = $this->request_processor->getSignatureChangeData();
-        //$partial_url = $request_getText('link_back_to_manuscript_page'); 
-        //$signature = $request->getText('change_signature_posted');
-        
-        //data indicates which manuscript page/offset user was viewing. 
-        //or it indicates which collection user was viewing
-        //wrapper and viewer should be set appropriately
-        //signaturechange functions should be incorporated in base wrapper
-        //after processing signature change
-        //redirect to normal page user came from originally
-                
-        $wrapper = new SignatureChangeWrapper();
-        $wrapper->setManuscriptSignature($partial_url, $signature);
-        $viewer = new SingleManuscriptPagesViewer($this->user_name);
-        return $viewer->showRedirectBackToManuscriptPageAfterSignatureChange($link_back_to_manuscript_page);
+
+    private function handleSignatureChangeManuscript() {
+        list($partial_url, $signature, $button_name, $offset) = $this->request_processor->getManuscriptSignatureChangeData();
+        $this->setWrapperAndViewer($button_name);
+        $this->wrapper->setManuscriptSignature($partial_url, $signature);
+        list($page_data, $next_offset) = $this->wrapper->getData($offset);
+        return $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
     }
 
     private function getEditSinglePageCollectionForm($error_message = '') {
@@ -155,9 +145,9 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $counter = $this->request_processor->getEditSinglePageCounter();
         list($manuscript_old_title, $manuscript_url_old_title) = $this->request_processor->getEditSinglePageCollectionData($counter);
         $this->viewer->showEditPageSingleCollectionForm($error_message, $collection_title, $manuscript_old_title, $manuscript_url_old_title);
-        return; 
+        return;
     }
-    
+
     /**
      * This function processes the edit when submitting a new manuscript page title
      */
@@ -167,14 +157,14 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
         list($manuscript_old_title, $manuscript_url_old_title) = $this->request_processor->getEditSinglePageCollectionData();
         $manuscript_new_title = $this->request_processor->getManuscriptNewTitleData();
-        
+
         //if the new title and the old title are equal, do nothing and return 
         if ($manuscript_new_title === $manuscript_old_title) {
             return $this->getSingleCollectionPage();
         }
-        
+
         $this->manuscript_old_title = $manuscript_old_title;
-        $this->manuscript_new_title = $manuscript_new_title; 
+        $this->manuscript_new_title = $manuscript_new_title;
         $this->manuscript_url_old_title = $manuscript_url_old_title;
         $new_page_partial_url = $this->new_page_partial_url = $this->createNewPagePartialUrl($manuscript_new_title);
         $this->renameFilePaths($manuscript_old_title, $manuscript_new_title);
@@ -193,7 +183,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
     private function updateDatabase($manuscript_new_title, $manuscript_url_old_title, $new_page_partial_url) {
         $status = $this->wrapper->updateManuscriptsTable($manuscript_new_title, $new_page_partial_url, $manuscript_url_old_title);
-        return; 
+        return;
     }
 
     private function renameFilePaths($manuscript_old_title, $manuscript_new_title) {
@@ -261,13 +251,14 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
                 return $this->getEditMetadataForm($error_message);
                 break;
             case 'edit_single_page':
-                if($error_identifier === 'error-database-update'){
-                    $this->renameFilePaths($this->manuscript_new_title, $this->manuscript_old_title);                
-                }elseif($error_identifier === 'error-newpage' || $error_identifier === 'error-titledoesnotexist'){
-                      $this->renameFilePaths($this->manuscript_new_title, $this->manuscript_old_title);                
-                      $this->updateDatabase($this->manuscript_old_title, $this->new_page_partial_url, $this->manuscript_url_old_title);
+                if ($error_identifier === 'error-database-update') {
+                    $this->renameFilePaths($this->manuscript_new_title, $this->manuscript_old_title);
                 }
-                
+                elseif ($error_identifier === 'error-newpage' || $error_identifier === 'error-titledoesnotexist') {
+                    $this->renameFilePaths($this->manuscript_new_title, $this->manuscript_old_title);
+                    $this->updateDatabase($this->manuscript_old_title, $this->new_page_partial_url, $this->manuscript_url_old_title);
+                }
+
                 return $this->getEditSinglePageCollectionForm($error_message);
         }
 

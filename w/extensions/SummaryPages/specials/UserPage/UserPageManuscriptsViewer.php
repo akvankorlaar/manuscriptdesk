@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class UserPageManuscriptsViewer implements UserPageViewerInterface{
+class UserPageManuscriptsViewer implements UserPageViewerInterface {
 
     use HTMLUserPageMenuBar,
         HTMLJavascriptLoaderDots,
@@ -36,7 +36,7 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface{
         $this->user_name = $user_name;
     }
 
-    public function showPage($button_name, $page_titles, $offset, $next_offset) {
+    public function showPage($button_name, $page_data, $offset, $next_offset) {
 
         global $wgArticleUrl;
         $article_url = $wgArticleUrl;
@@ -56,22 +56,26 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface{
         $html .= "<br>";
 
         $html .= "<p>" . $out->msg('userpage-manuscriptinstr') . "</p>";
+
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-long'><b>" . $out->msg('userpage-tabletitle') . "</b></td>";
+        $html .= "<td class='td-three'><b>" . $out->msg('userpage-tabletitle') . "</b></td>";
         $html .= "<td><b>" . $out->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td><b>" . $out->msg('userpage-signature') . "</b></td>";
         $html .= "</tr>";
 
-        foreach ($page_titles as $single_page_data) {
+        foreach ($page_data as $single_page_data) {
 
             $title = isset($single_page_data['manuscripts_title']) ? $single_page_data['manuscripts_title'] : '';
-            $url = isset($single_page_data['manuscripts_url']) ? $single_page_data['manuscripts_url'] : '';
+            $partial_url = isset($single_page_data['manuscripts_url']) ? $single_page_data['manuscripts_url'] : '';
             $date = $single_page_data['manuscripts_date'] !== '' ? $single_page_data['manuscripts_date'] : 'unknown';
+            $signature = isset($single_page_data['manuscripts_signature']) ? $single_page_data['manuscripts_signature'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
+            $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
             $html .= "<td>" . htmlspecialchars($date) . "</td>";
+            $html .= "<td>" . $this->getChangeSignatureForm($partial_url, $signature, $button_name, $offset) . "</td>";
             $html .= "</tr>";
         }
 
@@ -81,6 +85,31 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface{
         return $out->addHTML($html);
     }
 
+    private function getChangeSignatureForm($partial_url, $signature, $button_name, $offset) {
+
+        if($signature === 'private'){
+            $new_signature = 'public';
+        }else{
+            $new_signature = 'private';
+        }
+        
+        global $wgArticleUrl;
+
+        $edit_token = $this->out->getUser()->getEditToken();
+
+        $html = "";
+        $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
+        $html .= "<input class='button-transparent' type='submit' name='editlink' value='$signature'>";
+        $html .= "<input type='hidden' name='partial_url' value='$partial_url'>";
+        $html .= "<input type='hidden' name='change_signature_manuscript_posted' value = '$new_signature'>";
+        $html .= "<input type='hidden' name='button_name' value = '$button_name'>";
+        $html .= "<input type='hidden' name='offset' value = '$offset'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
+
+        return $html;
+    }
+
     public function showEmptyPageTitlesError($button_name) {
 
         global $wgArticleUrl;
@@ -88,7 +117,7 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface{
         $user_name = $this->user_name;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
-        
+
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";

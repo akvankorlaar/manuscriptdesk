@@ -112,6 +112,7 @@ $messages['en'] = array(
   'userpage-admin2'                               => 'bytes left on disk, or',
   'userpage-admin3'                               => 'mb, or',
   'userpage-admin4'                               => 'gb',
+  'userpage-signature'                            => 'Manuscript Signature',  
   'recentmanuscriptpages'                         => 'Recent Manuscript Pages',
   'recentmanuscriptpages-nomanuscripts'           => 'No manuscript pages have been created yet.',
   'recentmanuscriptpages-information'             => 'This page shows the 30 most recently created manuscript pages.',

@@ -30,7 +30,7 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
         $max_on_page = $wgNewManuscriptOptions['max_on_page'];
 
         $dbr = wfGetDB(DB_SLAVE);
-        $title_array = array();
+        $page_data = array();
         $next_offset = null;
 
         if (isset($this->user_name)) {
@@ -53,6 +53,7 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_user',
           'manuscripts_url',
           'manuscripts_date',
+          'manuscripts_signature',    
           'manuscripts_lowercase_title',
             ), $conditions
             , __METHOD__, array(
@@ -67,13 +68,14 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
             while ($s = $res->fetchObject()) {
 
                 //add titles to the title array as long as it is not bigger than max_on_page
-                if (count($title_array) < $max_on_page) {
+                if (count($page_data) < $max_on_page) {
 
-                    $title_array[] = array(
+                    $page_data[] = array(
                       'manuscripts_title' => $s->manuscripts_title,
                       'manuscripts_user' => $s->manuscripts_user,
                       'manuscripts_url' => $s->manuscripts_url,
                       'manuscripts_date' => $s->manuscripts_date,
+                      'manuscripts_signature' => $s->manuscripts_signature,
                     );
                 }
                 else {
@@ -84,7 +86,7 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
             }
         }
 
-        return array($title_array, $next_offset);
+        return array($page_data, $next_offset);
     }
 
 }

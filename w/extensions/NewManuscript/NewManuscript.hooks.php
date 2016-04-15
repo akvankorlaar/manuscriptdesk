@@ -44,6 +44,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $manuscripts_title;
     private $collection_title;
     private $partial_url;
+    private $signature;
     private $wrapper;
 
     public function __construct(NewManuscriptWrapper $wrapper) {
@@ -110,20 +111,14 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 return $this->redirectToOriginalImage($out);
             }
 
-        $html = '';
+            if ($this->userIsAllowedToViewTheImages($user)) {
+                $this->addHTMLToViewPage($user, $out);
+            }
 
-        if (isset($this->collection_title)) {
-            $html .= $this->getHTMLCollectionHeader();
-        }
-
-        $html .= $this->getHTMLManuscriptViewLinks($user);
-        $html .= $this->getHTMLIframeForZoomviewer($out->getRequest());
-        $out->addHTML($html);
-        $out->addModuleStyles('ext.zoomviewercss');
             return true;
         } catch (Exception $e) {
             return true;
-    }
+        }
     }
 
     private function redirectToOriginalImage(OutputPage $out) {
@@ -150,6 +145,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $this->partial_url = $partial_url;
         $this->creator_user_name = $this->wrapper->getUserNameFromUrl($partial_url);
         $this->manuscripts_title = $this->wrapper->getManuscriptsTitleFromUrl($partial_url);
+        $this->signature = $this->wrapper->getManuscriptSignature($partial_url);
 
         $collection_title = $this->wrapper->getCollectionTitleFromUrl($partial_url);
         if ($this->collectionTitleIsValid($collection_title)) {
@@ -167,6 +163,33 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
+    private function userIsAllowedToViewTheImages(User $user) {
+        if ($this->signature === 'public') {
+            return true;
+        }
+        elseif ($this->signature === 'private' && $this->currentUserIsAManuscriptEditor($user)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    private function addHTMLToViewPage(User $user, OutputPage $out) {
+
+        $html = '';
+
+        if (isset($this->collection_title)) {
+            $html .= $this->getHTMLCollectionHeader();
+        }
+
+        $html .= $this->getHTMLManuscriptViewLinks($user);
+        $html .= $this->getHTMLIframeForZoomviewer($out->getRequest());
+        $out->addHTML($html);
+        $out->addModuleStyles('ext.zoomviewercss');
+        return;
+    }
+
     private function getHTMLManuscriptViewLinks(User $user) {
         $html = "";
         $html .= "<table id='link-wrap'>";
@@ -175,7 +198,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         if (isset($this->collection_title)) {
 
-        if ($this->currentUserIsTheOwnerOfThePage($user)) {
+            if ($this->currentUserIsTheOwnerOfThePage($user)) {
                 $html .= $this->getHTMLLinkToEditCollection($user);
             }
 

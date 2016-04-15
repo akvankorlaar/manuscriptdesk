@@ -322,7 +322,8 @@ abstract class ManuscriptDeskBaseWrapper {
           'manuscripts_signature' => $signature,
             ), array(//conditions
           'manuscripts_url = ' . $dbw->addQuotes($url_with_namespace),
-            ), __METHOD__, 'IGNORE');
+            ), __METHOD__
+            );
 
         if (!$dbw->affectedRows()) {
             throw new Exception('error-database');

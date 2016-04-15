@@ -111,12 +111,35 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         return false;
     }
 
-    public function changeSignaturePosted() {
-        if ($request->getText('change_signature_posted') !== '') {
+    public function changeSignatureManuscriptPosted() {
+        $request = $this->request;
+        if ($request->getText('change_signature_manuscript_posted') !== '') {
             return true;
         }
 
         return false;
+    }
+
+    public function getManuscriptSignatureChangeData() {
+        $request = $this->request;
+        $validator = $this->validator;
+        $signature = $validator->validateString($request->getText('change_signature_manuscript_posted'));
+
+        if ($signature !== 'public' && $signature !== 'private') {
+            throw new \Exception('error-request');
+        }
+
+        $partial_url = $validator->validateStringUrl($request->getText('partial_url'));
+
+        $button_name = $request->getText('button_name');
+
+        if ($button_name !== 'view_manuscripts_posted') {
+            throw new \Exception('error-request');
+        }
+
+        $offset = (int) $validator->validateStringNumber($request->getText('offset'));
+
+        return array($partial_url, $signature, $button_name, $offset);
     }
 
     public function getEditSinglePageCounter() {
