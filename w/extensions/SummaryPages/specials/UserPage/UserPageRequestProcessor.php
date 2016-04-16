@@ -119,7 +119,7 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
         return false;
     }
-
+    
     public function getManuscriptSignatureChangeData() {
         $request = $this->request;
         $validator = $this->validator;
@@ -140,6 +140,29 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         $offset = (int) $validator->validateStringNumber($request->getText('offset'));
 
         return array($partial_url, $signature, $button_name, $offset);
+    }
+    
+    public function changeSignatureCollectionPagePosted() {
+        $request = $this->request;
+        if ($request->getText('change_signature_collection_page_posted') !== '') {
+            return true;
+        }
+
+        return false;
+    }
+    
+    public function getCollectionPageSignatureChangeData(){
+        $request = $this->request;
+        $validator = $this->validator;
+        $signature = $validator->validateString($request->getText('change_signature_collection_page_posted'));
+
+        if ($signature !== 'public' && $signature !== 'private') {
+            throw new \Exception('error-request');
+        }
+
+        $partial_url = $validator->validateStringUrl($request->getText('partial_url'));
+        $collection_title = $this->getCollectionTitle();
+        return array($partial_url, $signature, $collection_title);
     }
 
     public function getEditSinglePageCounter() {

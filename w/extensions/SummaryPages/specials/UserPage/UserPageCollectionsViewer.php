@@ -90,7 +90,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $user_name = $this->user_name;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
-        
+
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
@@ -113,7 +113,6 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         global $wgArticleUrl;
         $out = $this->out;
         $user_name = $this->user_name;
-        $article_url = $wgArticleUrl;
         list($meta_data, $pages_within_collection) = $single_collection_data;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
@@ -125,14 +124,14 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
 
-        $html .= "<form class='summarypage-form' id='userpage-editmetadata' action='" . $article_url . "Special:UserPage' method='post'>";
+        $html .= "<form class='summarypage-form' id='userpage-editmetadata' action='" . $wgArticleUrl . "Special:UserPage' method='post'>";
         $html .= "<input type='submit' class='button-transparent' name='edit_metadata_posted' value='" . $out->msg('userpage-editmetadatabutton') . "'>";
         $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
 
         //redirect to Special:NewManuscript, and automatically have the current collection selected
-        $html .= "<form class='summarypage-form' id='userpage-addnewpage' action='" . $article_url . "Special:NewManuscript' method='post'>";
+        $html .= "<form class='summarypage-form' id='userpage-addnewpage' action='" . $wgArticleUrl . "Special:NewManuscript' method='post'>";
         $html .= "<input type='submit' class='button-transparent' name='add_new_page_posted' title='" . $out->msg('userpage-newcollection') . "' value='Add New Page'>";
         $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
@@ -148,43 +147,81 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $html .= $out->msg('userpage-contains') . " " . count($pages_within_collection) . " " . $out->msg('userpage-contains2');
         $html .= "<br>";
 
-        $html .= "<form summarypage-form' id='userpage-edittitle' class='summarypage-form' action='" . $article_url . "Special:UserPage' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td class='td-three'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
-        $html .= "<td class='td-three'></td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-four'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td class='td-four'><b>" . $out->msg('userpage-signature') . "</b></td>";
+        $html .= "<td class='td-four'></td>";
         $html .= "</tr>";
 
         $counter = 0;
 
         foreach ($pages_within_collection as $single_page_data) {
 
-            $manuscripts_url = isset($single_page_data['manuscripts_url']) ? $single_page_data['manuscripts_url'] : '';
+            $partial_url = isset($single_page_data['manuscripts_url']) ? $single_page_data['manuscripts_url'] : '';
             $manuscripts_title = isset($single_page_data['manuscripts_title']) ? $single_page_data['manuscripts_title'] : '';
             $manuscripts_date = isset($single_page_data['manuscripts_date']) ? $single_page_data['manuscripts_date'] : '';
+            $signature = isset($single_page_data['manuscripts_signature']) ? $single_page_data['manuscripts_signature'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>"
+            $html .= "<td class='td-four'><a href='" . $wgArticleUrl . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($partial_url) . "'>"
                 . htmlspecialchars($manuscripts_title) . "</a></td>";
-            $html .= "<td class='td-three'>" . htmlspecialchars($manuscripts_date) . "</td>";
-            $html .= "<td class='td-three'><input type='submit' class='button-transparent' name='changetitle_button" . $counter . "' "
-                . "value='" . $out->msg('userpage-changetitle') . "'></td>";
-            $html .= "<input type='hidden' name='old_title_posted" . $counter . "' value = '" . htmlspecialchars($manuscripts_title) . "'>";
-            $html .= "<input type='hidden' name='url_old_title_posted" . $counter . "' value = '" . htmlspecialchars($manuscripts_url) . "'>";
+            $html .= "<td class='td-four'>" . htmlspecialchars($manuscripts_date) . "</td>";
+            $html .= "<td>" . $this->getChangeSignatureCollectionPageForm($partial_url, $signature, $collection_title) . "</td>";
+            $html .= "<td class='td-four'>" . $this->getEditSinglePageCollectionForm($counter, $collection_title, $manuscripts_title, $partial_url) . "</td>";
             $html .= "</tr>";
 
             $counter+=1;
         }
 
-        $html .= "<input type='hidden' name='edit_single_page_collection_posted' value = 'edit_single_page_collection_posted'>";
-        $html .= "<input type='hidden' name='collection_title' value = '" . $collection_title . "'>";
-        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</table>";
-        $html .= "</form>";
         $html .= "</div>";
 
         return $out->addHTML($html);
+    }
+
+    private function getChangeSignatureCollectionPageForm($partial_url, $signature, $collection_title) {
+
+        global $wgArticleUrl;
+        $edit_token = $this->out->getUser()->getEditToken();
+
+        if ($signature === 'private') {
+            $new_signature = 'public';
+        }
+        else {
+            $new_signature = 'private';
+        }
+
+        $html = "";
+        $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
+        $html .= "<input class='button-transparent' type='submit' name='editlink' value='$signature'>";
+        $html .= "<input type='hidden' name='partial_url' value='$partial_url'>";
+        $html .= "<input type='hidden' name='change_signature_collection_page_posted' value = '$new_signature'>";
+        $html .= "<input type='hidden' name='collection_title' value = '$collection_title'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
+
+        return $html;
+    }
+
+    private function getEditSinglePageCollectionForm($counter, $collection_title, $manuscripts_title, $manuscripts_url) {
+        global $wgArticleUrl;
+        $out = $this->out;
+        $edit_token = $out->getUser()->getEditToken();
+
+        $html = '';
+        $html .= "<form summarypage-form' id='userpage-edittitle' class='summarypage-form' action='" . $wgArticleUrl . "Special:UserPage' method='post'>";
+        $html .= "<input type='submit' class='button-transparent' name='changetitle_button" . $counter . "' "
+            . "value='" . $out->msg('userpage-changetitle') . "'>";
+        $html .= "<input type='hidden' name='old_title_posted" . $counter . "' value = '" . htmlspecialchars($manuscripts_title) . "'>";
+        $html .= "<input type='hidden' name='url_old_title_posted" . $counter . "' value = '" . htmlspecialchars($manuscripts_url) . "'>";
+        $html .= "<input type='hidden' name='edit_single_page_collection_posted' value = 'edit_single_page_collection_posted'>";
+        $html .= "<input type='hidden' name='collection_title' value = '" . $collection_title . "'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
+
+        return $html;
     }
 
     /**
@@ -195,7 +232,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
     public function showEditCollectionMetadata($collection_title, $collection_metadata, $link_back_to_manuscript_page, $error_message = '') {
 
         global $wgArticleUrl;
-        
+
         $collection_metadata = $this->HTMLSpecialCharachtersArray($collection_metadata);
 
         $metatitle = isset($collection_metadata['collections_metatitle']) ? $collection_metadata['collections_metatitle'] : '';
@@ -404,7 +441,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
      */
     public function showEditPageSingleCollectionForm($error_message = '', $collection_title, $manuscript_old_title, $manuscript_url_old_title) {
 
-        global $wgArticleUrl; 
+        global $wgArticleUrl;
         $out = $this->out;
         $user_name = $this->user_name;
         $max_length = $this->max_string_formfield_length;

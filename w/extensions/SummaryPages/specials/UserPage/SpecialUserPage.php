@@ -76,10 +76,15 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             $this->handleSignatureChangeManuscript();
             return true;
         }
+        
+        if($request_processor->changeSignatureCollectionPagePosted()){
+            $this->handleSignatureChangeCollectionPage();
+            return true;
+        }
 
         throw new \Exception('error-request');
     }
-
+    
     protected function getDefaultPage($error_message = '') {
         $user_is_a_sysop = $this->currentUserIsASysop();
         $this->viewer = new UserPageDefaultViewer($this->getOutput());
@@ -137,6 +142,14 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $this->wrapper->setManuscriptSignature($partial_url, $signature);
         list($page_data, $next_offset) = $this->wrapper->getData($offset);
         return $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
+    }
+    
+    private function handleSignatureChangeCollectionPage(){
+        list($partial_url, $signature, $collection_title) = $this->request_processor->getCollectionPageSignatureChangeData();
+        $this->setWrapperAndViewer('view_collections_posted');
+        $this->wrapper->setManuscriptSignature($partial_url, $signature);
+        $single_collection_data = $this->wrapper->getSingleCollectionData($collection_title);
+        return $this->viewer->showSingleCollectionData($collection_title, $single_collection_data);
     }
 
     private function getEditSinglePageCollectionForm($error_message = '') {

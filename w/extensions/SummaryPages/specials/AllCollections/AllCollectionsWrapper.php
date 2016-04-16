@@ -159,6 +159,7 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_title', //values
           'manuscripts_url',
           'manuscripts_date',
+          'manuscripts_signature',    
           'manuscripts_lowercase_title',
             ), array(
           'manuscripts_collection = ' . $dbr->addQuotes($collection_title),
@@ -175,6 +176,7 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
                   'manuscripts_title' => $s->manuscripts_title,
                   'manuscripts_url' => $s->manuscripts_url,
                   'manuscripts_date' => $s->manuscripts_date,
+                  'manuscripts_signature' => $s->manuscripts_signature,
                 );
             }
         }
