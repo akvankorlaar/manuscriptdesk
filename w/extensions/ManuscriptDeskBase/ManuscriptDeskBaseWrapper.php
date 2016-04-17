@@ -48,7 +48,7 @@ abstract class ManuscriptDeskBaseWrapper {
         );
 
         if ($res->numRows() !== 1) {
-            throw new \Exception('manuscriptdeskbase-error-database');
+            throw new \Exception('error-database');
         }
 
         $s = $res->fetchObject();

@@ -41,6 +41,37 @@ class SignatureChangeWrapperTest extends MediaWikiTestCase {
         parent::tearDown();
     }
 
+    public function testcurrentUserCreatedThePage() {
+        $result = $this->t->currentUserCreatedThePage('testuser', 'test/url');
+        $this->assertEquals($result, true);
+    }
+
+    public function testCurrentUserCreatedThePageFalse() {
+        $result = $this->t->currentUserCreatedThePage('otheruser', 'test/url');
+        $this->assertEquals($result, false);
+    }
+
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage error-database
+     */
+    public function testCurrentUserCreatedThePageException() {
+        $this->t->currentUserCreatedThePage('otheruser', 'some/random/url/just/for/testingpurposes');
+    }
+
+    public function testgetManuscriptsLowercaseTitle() {
+        $result = $this->t->getManuscriptsLowercaseTitle('test/url');
+        $this->assertEquals($result, 'test');
+    }
+
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage error-database
+     */
+    public function testgetManuscriptsLowercaseTitleException() {
+        $this->t->getManuscriptsLowercaseTitle('some/random/url/just/for/testing/purposes');
+    }
+
     public function testgetManuscriptSignature() {
         $signature = $this->t->getManuscriptSignature('test/url');
         $this->assertEquals($signature, 'private');
