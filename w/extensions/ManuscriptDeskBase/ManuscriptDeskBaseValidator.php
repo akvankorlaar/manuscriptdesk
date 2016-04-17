@@ -133,14 +133,13 @@ class ManuscriptDeskBaseValidator {
                 throw new \Exception('validation-websourcecharachters');
             }
         }
-        
         elseif ($formfield_name === 'wpmetadata_notes') {
 
             if (strlen($formfield_value) > ($max_length * 20)) {
                 throw new \Exception('validation-noteslength');
             }
             //allow alphanumeric charachters, whitespace, and ',.;!?' 
-            elseif (!preg_match("/^[A-Za-z0-9,.;!?\s]+$/", $formfield_value)) {
+            elseif (!preg_match("/^[A-Za-z0-9,.;:'!?\s]+$/", $formfield_value)) {
                 throw new \Exception('validation-notescharachters');
             }
         }
