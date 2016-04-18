@@ -46,6 +46,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $partial_url;
     private $signature;
     private $wrapper;
+    private $user_has_view_permission = false;
 
     public function __construct(NewManuscriptWrapper $wrapper) {
         $this->wrapper = $wrapper;
@@ -113,6 +114,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
             if ($this->userIsAllowedToViewTheImages($user)) {
                 $this->addHTMLToViewPage($user, $out);
+                $this->user_has_view_permission = true;
             }
 
             return true;
@@ -562,6 +564,15 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         //look for any other escaped tags, and remove them
         $text = preg_replace('/&lt;(.*?)&gt;/s', '', $text);
+
+        return true;
+    }
+
+    public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parseroutput) {
+
+        if (!$this->user_has_view_permission) {
+            $parseroutput->setText($this->getMessage('error-viewpermission'));
+        }
 
         return true;
     }
