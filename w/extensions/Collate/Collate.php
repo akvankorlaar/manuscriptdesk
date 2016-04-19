@@ -92,3 +92,4 @@ $wgHooks['ArticleDelete'][] = array($collate_hooks, 'onArticleDelete');
 $wgHooks['PageContentSave'][] = array($collate_hooks, 'onPageContentSave');
 $wgHooks['BeforePageDisplay'][] = array($collate_hooks, 'onBeforePageDisplay');
 $wgHooks['ResourceLoaderGetConfigVars'][] = array($collate_hooks, 'onResourceLoaderGetConfigVars');
+$wgHooks['OutputPageParserOutput'][] = array($collate_hooks, 'onOutputPageParserOutput');

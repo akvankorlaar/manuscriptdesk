@@ -76,3 +76,4 @@ $wgResourceModules['ext.manuscriptdeskbasecss'] = array(
   'localBasePath' => __DIR__,
   'remoteExtPath' => 'ManuscriptDeskBase',
 );
+

@@ -272,12 +272,12 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
           'collations_titles_array' => $page_titles,
           'collations_collatex' => $collatex_output
             ), __METHOD__, 'IGNORE');
-        
+
         if (!$dbw->affectedRows()) {
             throw new \Exception('collate-error-database');
         }
-        
-        return true; 
+
+        return true;
     }
 
     /**
@@ -312,6 +312,53 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
           'titles_array' => (array) json_decode($s->collations_titles_array),
           'collatex_output' => $s->collations_collatex,
         );
+    }
+
+    public function getCollationsSignature($partial_url) {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'collations', //from
+            array(
+          'collations_signature', //values
+          'collations_url',
+            ), array(
+          'collations_url = ' . $dbr->addQuotes($partial_url),
+            )
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        $s = $res->fetchObject();
+
+        $signature = $s->collations_signature;
+
+        return $signature;
+    }
+
+    public function setCollationsSignature($partial_url, $signature) {
+
+        if ($signature !== 'private' && $signature !== 'public') {
+            throw new \Exception('error-database');
+        }
+
+        $dbw = wfGetDB(DB_MASTER);
+
+        $dbw->update('collations', //select table
+            array(//insert values
+          'collations_signature' => $signature,
+            ), array(//conditions
+          'collations_url = ' . $dbw->addQuotes($partial_url),
+            ), __METHOD__
+        );
+
+        if (!$dbw->affectedRows()) {
+            throw new Exception('error-database');
+        }
+
+        return true;
     }
 
 }

@@ -84,15 +84,14 @@ $wgResourceModules['ext.newmanuscriptbuttoncontroller'] = array(
 );
 
 //Instantiate the NewManuscriptHooks class and register the hooks
-$helperscripts_hooks = new NewManuscriptHooks(new NewManuscriptWrapper());
+$newmanuscript_hooks = new NewManuscriptHooks(new NewManuscriptWrapper());
 
-$wgHooks['EditPage::showEditForm:fields'][] = array($helperscripts_hooks, 'onEditPageShowEditFormInitial');
-$wgHooks['MediaWikiPerformAction'][] = array($helperscripts_hooks, 'onMediaWikiPerformAction');
-$wgHooks['ParserFirstCallInit'][] = array($helperscripts_hooks, 'register');
-$wgHooks['AbortMove'][] = array($helperscripts_hooks, 'onAbortMove');
-$wgHooks['ArticleDelete'][] = array($helperscripts_hooks, 'onArticleDelete');
-$wgHooks['PageContentSave'][] = array($helperscripts_hooks, 'onPageContentSave');
-$wgHooks['BeforePageDisplay'][] = array($helperscripts_hooks, 'onBeforePageDisplay');
-$wgHooks['ParserAfterTidy'][] = array($helperscripts_hooks, 'onParserAfterTidy');
-$wgHooks['UnitTestsList'][] = array($helperscripts_hooks, 'onUnitTestsList');
-$wgHooks['OutputPageParserOutput'][] = array($helperscripts_hooks, 'onOutputPageParserOutput');
+$wgHooks['EditPage::showEditForm:fields'][] = array($newmanuscript_hooks, 'onEditPageShowEditFormInitial');
+$wgHooks['MediaWikiPerformAction'][] = array($newmanuscript_hooks, 'onMediaWikiPerformAction');
+$wgHooks['ParserFirstCallInit'][] = array($newmanuscript_hooks, 'register');
+$wgHooks['AbortMove'][] = array($newmanuscript_hooks, 'onAbortMove');
+$wgHooks['ArticleDelete'][] = array($newmanuscript_hooks, 'onArticleDelete');
+$wgHooks['PageContentSave'][] = array($newmanuscript_hooks, 'onPageContentSave');
+$wgHooks['BeforePageDisplay'][] = array($newmanuscript_hooks, 'onBeforePageDisplay');
+$wgHooks['UnitTestsList'][] = array($newmanuscript_hooks, 'onUnitTestsList');
+$wgHooks['OutputPageParserOutput'][] = array($newmanuscript_hooks, 'onOutputPageParserOutput');

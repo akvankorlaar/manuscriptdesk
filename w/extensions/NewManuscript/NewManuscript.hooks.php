@@ -44,9 +44,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $manuscripts_title;
     private $collection_title;
     private $partial_url;
-    private $signature;
     private $wrapper;
-    private $user_has_view_permission = false;
 
     public function __construct(NewManuscriptWrapper $wrapper) {
         $this->wrapper = $wrapper;
@@ -112,7 +110,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 return $this->redirectToOriginalImage($out);
             }
 
-            if ($this->userIsAllowedToViewTheImages($user)) {
+            if ($this->userIsAllowedToViewThePage($user)) {
                 $this->addHTMLToViewPage($user, $out);
                 $this->user_has_view_permission = true;
             }
@@ -165,18 +163,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
-    private function userIsAllowedToViewTheImages(User $user) {
-        if ($this->signature === 'public') {
-            return true;
-        }
-        elseif ($this->signature === 'private' && $this->currentUserIsAManuscriptEditor($user)) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
     private function addHTMLToViewPage(User $user, OutputPage $out) {
 
         $html = '';
@@ -220,14 +206,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $current_user_name = $user->getName();
         //only allow the owner of the collection to edit collection data
         if ($this->creator_user_name !== $current_user_name) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function currentUserIsAManuscriptEditor(User $user) {
-        if (!in_array('ManuscriptEditors', $user->getGroups())) {
             return false;
         }
 
@@ -511,7 +489,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
             $partial_url = $out->getTitle()->mPrefixedText;
 
-            if ($this->isInManuscriptsNamespace($out) && $this->manuscriptIsInViewMode($out)) {
+            if ($this->isInManuscriptsNamespace($out) && $this->manuscriptIsInViewMode($out) && $this->user_has_view_permission) {
                 //doing this here ensures the table will be displayed at the bottom of the 
                 $this->addMetatableToManuscriptsPage($out);
                 $out->addModuleStyles('ext.manuscriptpagecss');
@@ -548,11 +526,29 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return $database_wrapper->getSingleCollectionMetadata($collection_title);
     }
 
+    public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parser_output) {
+
+        if (!$this->isInManuscriptsNamespace($out)) {
+            return true;
+        }
+
+        if (!$this->user_has_view_permission) {
+            $parser_output->setText($this->getMessage('error-viewpermission'));
+        }
+        else {
+            $this->visualiseStrayTagsAndRemoveNotSupportedTags($parser_output);
+        }
+
+        return true;
+    }
+
     /**
      * This function visualizes <add> and <del> tags that are nested in themselves correctly. It also removes tags that are not available in the editor for visualization.
      * These tags will still be visible in the editor. 
      */
-    public function onParserAfterTidy(Parser &$parser, &$text) {
+    private function visualiseStrayTagsAndRemoveNotSupportedTags(ParserOutput $parser_output) {
+
+        $text = $parser_output->getText();
 
         //look for stray </add> tags, and replace them with a tei-add span element  
         $text = preg_replace('/<\/span><\/span>(.*?)&lt;\/add&gt;/', '</span></span><span class="tei-add">$1</span>', $text);
@@ -565,14 +561,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         //look for any other escaped tags, and remove them
         $text = preg_replace('/&lt;(.*?)&gt;/s', '', $text);
 
-        return true;
-    }
-
-    public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parseroutput) {
-
-        if (!$this->user_has_view_permission) {
-            $parseroutput->setText($this->getMessage('error-viewpermission'));
-        }
+        $parser_output->setText($text);
 
         return true;
     }

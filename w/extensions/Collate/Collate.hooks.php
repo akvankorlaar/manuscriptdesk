@@ -35,9 +35,16 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
                 return true;
             }
 
-            $database_wrapper = new CollateWrapper();
-            $page_title_with_namespace = $title->getPrefixedUrl();
-            $data = $database_wrapper->getCollationsData($page_title_with_namespace);
+            $wrapper = new CollateWrapper();
+            $partial_url = $title->getPrefixedUrl();
+            $this->signature = $wrapper->getCollationsSignature($partial_url);
+
+            if (!$this->userIsAllowedToViewThePage($user)) {
+                return true;
+            }
+
+            $this->user_has_view_permission = true;
+            $data = $wrapper->getCollationsData($partial_url);
 
             $viewer = new CollateViewer($output);
             $viewer->showCollateNamespacePage($data);
@@ -138,6 +145,19 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
             $javascript_modules = array('ext.collatebuttoncontroller', 'ext.javascriptloader');
             $out->addModuleStyles($css_modules);
             $out->addModules($javascript_modules);
+        }
+
+        return true;
+    }
+
+    public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parseroutput) {
+
+        if(!$this->isCollationsNamespace($out)){
+            return true;
+        }
+        
+        if (!$this->user_has_view_permission) {
+            $parseroutput->setText($this->getMessage('error-viewpermission'));
         }
 
         return true;

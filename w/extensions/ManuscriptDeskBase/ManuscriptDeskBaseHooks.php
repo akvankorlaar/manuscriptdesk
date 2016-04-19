@@ -24,8 +24,31 @@
  */
 abstract class ManuscriptDeskBaseHooks {
 
+    protected $signature;
+    protected $user_has_view_permission = false; 
+
     public function __construct() {
         
+    }
+
+    protected function userIsAllowedToViewThePage(User $user) {
+        if ($this->signature === 'public') {
+            return true;
+        }
+        elseif ($this->signature === 'private' && $this->currentUserIsAManuscriptEditor($user)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    private function currentUserIsAManuscriptEditor(User $user) {
+        if (!in_array('ManuscriptEditors', $user->getGroups())) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function isInManuscriptsNamespace($object) {
