@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SummaryPagesHooks extends ManuscriptDeskBaseHooks {
+class SummaryPagesHooks {
 
     /**
      * This function adds additional modules containing CSS before the page is displayed

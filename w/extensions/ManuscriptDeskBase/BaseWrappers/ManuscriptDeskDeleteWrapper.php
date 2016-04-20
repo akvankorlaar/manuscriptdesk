@@ -22,7 +22,15 @@
  * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class ManuscriptDeskDeleteWrapper extends ManuscriptDeskBaseWrapper {
+class ManuscriptDeskDeleteWrapper {
+
+    private $user_name; 
+    private $alphabetnumbers_wrapper;
+
+    public function __construct($user_name = null, AlphabetNumbersWrapper $alphabetnumbers_wrapper) {
+        $this->user_name = $user_name; 
+        $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+    }
 
     /**
      * This function deletes the entry for $page_title in the 'manuscripts' table
@@ -167,6 +175,31 @@ class ManuscriptDeskDeleteWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         return;
+    }
+
+    public function getManuscriptsLowercaseTitle($partial_url) {
+        $dbr = wfGetDB(DB_SLAVE);
+        $user_name = $this->user_name;
+
+        $res = $dbr->select(
+            'manuscripts', //from
+            array(
+          'manuscripts_lowercase_title',
+            ), array(
+          'manuscripts_url = ' . $dbr->addQuotes($partial_url),
+            )
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        $s = $res->fetchObject();
+        return $s->manuscripts_lowercase_title;
+    }
+
+    public function getAlphabetNumbersWrapper() {
+        return $this->alphabetnumbers_wrapper;
     }
 
 }

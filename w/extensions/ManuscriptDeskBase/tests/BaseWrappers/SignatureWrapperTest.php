@@ -22,7 +22,8 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class ManuscriptDeskBaseWrapperTest extends MediaWikiTestCase {
+
+class SignatureWrapperTest extends MediaWikiTestCase {
 
     private $t;
     private $database_test_instance_creator;
@@ -31,7 +32,7 @@ class ManuscriptDeskBaseWrapperTest extends MediaWikiTestCase {
         parent::setUp();
         $this->database_test_instance_creator = new DatabaseTestInserter();
         $this->database_test_instance_creator->createManuscriptsTest();
-        $this->t = new ConcreteManuscriptDeskBaseWrapper('testuser');
+        $this->t = new SignatureWrapper();
     }
 
     protected function tearDown() {
@@ -41,27 +42,22 @@ class ManuscriptDeskBaseWrapperTest extends MediaWikiTestCase {
         parent::tearDown();
     }
 
-    public function testcurrentUserCreatedThePage() {
-        $result = $this->t->currentUserCreatedThePage('testuser', 'test/url');
-        $this->assertEquals($result, true);
-    }
-
-    public function testCurrentUserCreatedThePageFalse() {
-        $result = $this->t->currentUserCreatedThePage('otheruser', 'test/url');
-        $this->assertEquals($result, false);
+    public function testgetManuscriptSignature() {
+        $signature = $this->t->getManuscriptSignature('test/url');
+        $this->assertEquals($signature, 'private');
     }
 
     /**
      * @expectedException Exception
      * @expectedExceptionMessage error-database
      */
-    public function testCurrentUserCreatedThePageException() {
-        $this->t->currentUserCreatedThePage('otheruser', 'some/random/url/just/for/testingpurposes');
+    public function testsetManuscriptSignatureException() {
+        $this->t->setManuscriptSignature('test/url', 'exception');
     }
 
-}
+    public function testsetManuscriptSignature() {
+        $result = $this->t->setManuscriptSignature('test/url', 'public');
+        $this->assertEquals($result, true);
+    }
 
-//a concrete instance of the ManuscriptDeskBaseWrapper used for testing purposes
-class ConcreteManuscriptDeskBaseWrapper extends ManuscriptDeskBaseWrapper {
-    
 }

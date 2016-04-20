@@ -46,7 +46,7 @@ class SpecialAllCollations extends SummaryPageBase {
             return;
         }
         
-        return $this->wrapper = isset($object) ? $object : new AllCollationsWrapper();
+        return $this->wrapper = isset($object) ? $object : new AllCollationsWrapper(new AlphabetNumbersWrapper());
     }
 
     public function setRequestProcessor($object = null) {

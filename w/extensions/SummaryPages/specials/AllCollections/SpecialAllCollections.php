@@ -46,7 +46,7 @@ class SpecialAllCollections extends SummaryPageBase {
             return;
         }
         
-        return $this->wrapper = isset($object) ? $object : new AllCollectionsWrapper();
+        return $this->wrapper = isset($object) ? $object : new AllCollectionsWrapper(new AlphabetNumbersWrapper());
     }
     
     public function setRequestProcessor($object = null){

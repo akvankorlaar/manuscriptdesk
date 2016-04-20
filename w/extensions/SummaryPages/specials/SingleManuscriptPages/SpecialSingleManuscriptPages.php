@@ -47,7 +47,7 @@ class SpecialSingleManuscriptPages extends SummaryPageBase {
             return;
         }
         
-        return $this->wrapper = isset($object) ? $object : new SingleManuscriptPagesWrapper();
+        return $this->wrapper = isset($object) ? $object : new SingleManuscriptPagesWrapper(new AlphabetNumbersWrapper());
     }
 
     public function setRequestProcessor($object = null) {

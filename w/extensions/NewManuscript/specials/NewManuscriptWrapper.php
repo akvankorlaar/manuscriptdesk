@@ -24,6 +24,15 @@
  */
 class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
 
+    private $alphabetnumbers_wrapper;
+    private $signature_wrapper;
+
+    public function __construct($user_name = null, AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper) {
+        parent::__construct($user_name);
+        $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+        $this->signature_wrapper = $signature_wrapper;
+    }
+
     public function getNumberOfUploadsForCurrentUser() {
 
         $dbr = wfGetDB(DB_SLAVE);
@@ -287,6 +296,14 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         return array($previous_page_url, $next_page_url);
+    }
+
+    public function getAlphabetNumbersWrapper() {
+        return $this->alphabetnumbers_wrapper;
+    }
+
+    public function getSignatureWrapper() {
+        return $this->signature_wrapper;
     }
 
 }

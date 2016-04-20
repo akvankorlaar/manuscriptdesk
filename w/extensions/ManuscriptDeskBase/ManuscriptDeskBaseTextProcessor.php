@@ -23,11 +23,18 @@
  * @copyright 2015 Arent van Korlaar
  */
 class ManuscriptDeskBaseTextProcessor {
-    
+
+    /**
+     * This class gets and filters wiki page texts for collections and single pages
+     */
     public function __construct() {
         
     }
 
+    /**
+     * @param array $single_collection_data 
+     * @return string $all_texts_for_one_collection 
+     */
     public function getAllTextsForOneCollection(array $single_collection_data) {
         $all_texts_for_one_collection = "";
         foreach ($single_collection_data as $index => $single_manuscript_url) {
@@ -37,35 +44,49 @@ class ManuscriptDeskBaseTextProcessor {
             }
         }
 
-        $this->checkIfTextIsNotOnlyWhitespace($all_texts_for_one_collection);
         return $all_texts_for_one_collection;
     }
-    
-    public function getSinglePageText($single_page_manuscript_url){
+
+    /**
+     * @param string $single_manuscript_url 
+     * @return string $filtered_raw_text 
+     */
+    public function getFilteredSinglePageText($single_manuscript_url) {
+        $page_text = $this->getSinglePageText($single_manuscript_url);
+        $filtered_raw_text = $this->filterText($page_text);
+        $filtered_raw_text = $this->replaceLastCharachterOfPage($filtered_raw_text);
+        $this->checkIfTextIsNotOnlyWhitespace($page_text);
+        return $filtered_raw_text;
+    }
+
+    /**
+     * @param string $single_page_manuscript_url
+     * @return string $page_text 
+     */
+    public function getSinglePageText($single_page_manuscript_url) {
         $title_object = $this->getTitleObjectExistingPage($single_page_manuscript_url);
         $wikipage = Wikipage::factory($title_object);
         return $wikipage->getText();
     }
 
-    public function getFilteredSinglePageText($single_manuscript_url) {
-        $page_text = $this->getSinglePageText($single_manuscript_url);
-        $filtered_raw_text = $this->filterText($page_text);
-        $this->checkIfTextIsNotOnlyWhitespace($page_text);
-        return $filtered_raw_text;
-    }
-
+    /**
+     * @param string $text 
+     * @throws \Exception
+     */
     private function checkIfTextIsNotOnlyWhitespace($text) {
         if (ctype_space($text) || $text === '') {
-            throw new Exception('error-notextonwikipage');
+            throw new \Exception('error-notextonwikipage');
         }
     }
 
     /**
-     * This function filters out tags, and text in between certain tags. It also trims the text, and adds a single space to the last charachter if needed 
+     * Filter out tags, and text in between certain tags
+     * @param string $raw_text 
+     * @return string $raw_text 
      */
     private function filterText($raw_text) {
 
-        //filter out the following tags, and all text in between the tags
+        //filter out the following wiki tags, and all text in between the tags
         //pagemetatable tag
         $raw_text = preg_replace('/<pagemetatable>[^<]+<\/pagemetatable>/i', '', $raw_text);
 
@@ -80,6 +101,14 @@ class ManuscriptDeskBaseTextProcessor {
 
         $raw_text = trim($raw_text);
 
+        return $raw_text;
+    }
+
+    /**
+     * @param string $raw_text
+     * @return string $raw_text
+     */
+    private function replaceLastCharachterOfPage($raw_text) {
         //check if it is possible to get the last charachter of the page
         if (substr($raw_text, -1) !== false) {
             $last_charachter = substr($raw_text, -1);
@@ -94,6 +123,11 @@ class ManuscriptDeskBaseTextProcessor {
         return $raw_text;
     }
 
+    /**
+     * @param string $single_manuscript_url
+     * @return Title $title
+     * @throws \Exception
+     */
     private function getTitleObjectExistingPage($single_manuscript_url) {
         $title = Title::newFromText($single_manuscript_url);
 

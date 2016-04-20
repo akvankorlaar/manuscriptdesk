@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
+ * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class ManuscriptDeskBaseWrapperTest extends MediaWikiTestCase {
+class ManuscriptDeskDeleteWrapperTest extends MediaWikiTestCase {
 
     private $t;
     private $database_test_instance_creator;
@@ -31,7 +31,7 @@ class ManuscriptDeskBaseWrapperTest extends MediaWikiTestCase {
         parent::setUp();
         $this->database_test_instance_creator = new DatabaseTestInserter();
         $this->database_test_instance_creator->createManuscriptsTest();
-        $this->t = new ConcreteManuscriptDeskBaseWrapper('testuser');
+        $this->t = new ManuscriptDeskDeleteWrapper(null, new AlphabetNumbersWrapper());
     }
 
     protected function tearDown() {
@@ -41,27 +41,17 @@ class ManuscriptDeskBaseWrapperTest extends MediaWikiTestCase {
         parent::tearDown();
     }
 
-    public function testcurrentUserCreatedThePage() {
-        $result = $this->t->currentUserCreatedThePage('testuser', 'test/url');
-        $this->assertEquals($result, true);
-    }
-
-    public function testCurrentUserCreatedThePageFalse() {
-        $result = $this->t->currentUserCreatedThePage('otheruser', 'test/url');
-        $this->assertEquals($result, false);
+    public function testgetManuscriptsLowercaseTitle() {
+        $result = $this->t->getManuscriptsLowercaseTitle('test/url');
+        $this->assertEquals($result, 'test');
     }
 
     /**
      * @expectedException Exception
      * @expectedExceptionMessage error-database
      */
-    public function testCurrentUserCreatedThePageException() {
-        $this->t->currentUserCreatedThePage('otheruser', 'some/random/url/just/for/testingpurposes');
+    public function testgetManuscriptsLowercaseTitleException() {
+        $this->t->getManuscriptsLowercaseTitle('some/random/url/just/for/testing/purposes');
     }
 
-}
-
-//a concrete instance of the ManuscriptDeskBaseWrapper used for testing purposes
-class ConcreteManuscriptDeskBaseWrapper extends ManuscriptDeskBaseWrapper {
-    
 }

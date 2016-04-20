@@ -22,34 +22,21 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class HelperScriptsDeleteWrapper extends ManuscriptDeskBaseWrapper {
+class HelperScriptsDeleteWrapper {
 
-    public function deleteManuscriptDeskData() {
-        $res = $this->getManuscriptsData();
-        $this->deleteManuscriptPages($res);
-        $this->deleteAnalysisData();
-        return;
+    private $delete_wrapper;
+
+    public function __construct(ManuscriptDeskDeleteWrapper $delete_wrapper) {
+        $this->delete_wrapper = $delete_wrapper;
     }
 
-    private function getManuscriptsData() {
-        $dbr = wfGetDB(DB_SLAVE);
-
-        $res = $dbr->select(
-            'manuscripts', //from
-            array(
-          'manuscripts_title',
-          'manuscripts_user',
-          'manuscripts_collection',
-          'manuscripts_url',
-          'manuscripts_lowercase_title', //values
-            ), array(
-            )
-            , __METHOD__, array(
-          'ORDER BY' => 'manuscripts_lowercase_title',
-            )
-        );
-
-        return $res;
+    public function deleteManuscriptDeskData() {
+        $res_manuscripts = $this->getAllManuscriptsData();
+        $this->deleteManuscriptPages($res_manuscripts);
+        $res_collations = $this->getAllCollationsUrls();
+        $this->deleteAllPagesFromDatabaseResult($res_collations, 'collations_url', NS_COLLATIONS);
+        $res_stylometricanalysis = $this->getAllStylometricAnalysisUrls();
+        return $this->deleteAllPagesFromDatabaseResult($res_stylometricanalysis, 'stylometricanalysis_new_page_url', NS_STYLOMETRICANALYSIS);
     }
 
     private function deleteManuscriptPages($res) {
@@ -65,24 +52,38 @@ class HelperScriptsDeleteWrapper extends ManuscriptDeskBaseWrapper {
                 $paths->setExportPaths();
                 $paths->setPartialUrl();
 
-                $delete_wrapper = new ManuscriptDeskDeleteWrapper();
-                $deleter = new ManuscriptDeskDeleter($delete_wrapper, $paths, $collection_title, $manuscripts_url);
-                $deleter->execute();
+                $deleter = new ManuscriptDeskDeleter($this->delete_wrapper, $paths, $collection_title, $manuscripts_url);
+                $deleter->deleteManuscriptPage();
             }
         }
 
         return;
     }
 
-    private function deleteAnalysisData() {
-        $res_collations = $this->getAllCollationsUrls();
-        $this->deleteAllPagesFromDatabaseResult($res_collations, 'collations_url', NS_COLLATIONS);
-        $res_stylometricanalysis = $this->getAllStylometricAnalysisUrls();
-        $this->deleteAllPagesFromDatabaseResult($res_stylometricanalysis, 'stylometricanalysis_new_page_url', NS_STYLOMETRICANALYSIS);
+    private function deleteAllPagesFromDatabaseResult($res, $result_name, $namespace) {
+
+        $delete_wrapper = $this->delete_wrapper;
+
+        if ($res->numRows() > 0) {
+            while ($s = $res->fetchObject()) {
+                $partial_url = $s->$result_name;
+
+                if ($namespace === NS_COLLATIONS) {
+                    $delete_wrapper->deleteFromCollations($partial_url);
+                }
+                elseif ($namespace === NS_STYLOMETRICANALYSIS) {
+                    $delete_wrapper->deleteFromStylometricAnalysis($partial_url);
+                }
+
+                $page_id = $delete_wrapper->getPageId($partial_url, $namespace);
+                $delete_wrapper->deletePageFromId($page_id);
+            }
+        }
+
         return;
     }
-    
-     private function getAllCollationsUrls() {
+
+    private function getAllCollationsUrls() {
         $dbr = wfGetDB(DB_SLAVE);
 
         $res = $dbr->select(
@@ -116,26 +117,25 @@ class HelperScriptsDeleteWrapper extends ManuscriptDeskBaseWrapper {
         return $res;
     }
 
-    private function deleteAllPagesFromDatabaseResult($res, $result_name, $namespace) {
+    private function getAllManuscriptsData() {
+        $dbr = wfGetDB(DB_SLAVE);
 
-        if ($res->numRows() > 0) {
-            while ($s = $res->fetchObject()) {
-                $page_title_with_namespace = $s->$result_name;
-                
-                $delete_wrapper = new ManuscriptDeskDeleteWrapper();
-                
-                if($namespace === NS_COLLATIONS){
-                    $delete_wrapper->deleteFromCollations($page_title_with_namespace);
-                }elseif($namespace === NS_STYLOMETRICANALYSIS){
-                    $delete_wrapper->deleteFromStylometricAnalysis($page_title_with_namespace);
-                }
-                
-                $page_id = $delete_wrapper->getPageId($page_title_with_namespace, $namespace);
-                $delete_wrapper->deletePageFromId($page_id);             
-            }
-        }
+        $res = $dbr->select(
+            'manuscripts', //from
+            array(
+          'manuscripts_title',
+          'manuscripts_user',
+          'manuscripts_collection',
+          'manuscripts_url',
+          'manuscripts_lowercase_title', //values
+            ), array(
+            )
+            , __METHOD__, array(
+          'ORDER BY' => 'manuscripts_lowercase_title',
+            )
+        );
 
-        return;
+        return $res;
     }
 
 }

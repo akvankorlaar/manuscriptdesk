@@ -29,31 +29,52 @@ class ManuscriptDeskDeleter {
     private $collection_title;
     private $manuscripts_url;
 
-    public function __construct(ManuscriptDeskDeleteWrapper $wrapper, NewManuscriptPaths $paths, $collection_title, $manuscripts_url = null) {
+    public function __construct(ManuscriptDeskDeleteWrapper $wrapper, NewManuscriptPaths $paths = null, $collection_title = null, $manuscripts_url = null) {
         $this->wrapper = $wrapper;
         $this->paths = $paths;
         $this->collection_title = $collection_title;
         $this->manuscripts_url = $manuscripts_url;
     }
 
-    public function execute() {
-        $this->subtractAlphabetNumbersTable();
-        $this->deleteDatabaseEntries();
-        $this->deleteFiles();
+    public function deleteManuscriptPage() {
+        $this->subtractAlphabetNumbersTableManuscriptPages();
+        $this->deleteDatabaseEntiesManuscripts();
+        $this->deleteFilesManuscripts();
         $this->deleteWikiPageIfNeeded();
         return;
     }
 
-    private function subtractAlphabetNumbersTable() {
+    /**
+     * Delete data for collations. The page itself does not need to be deleted since this function will only be executed when MediaWiki's own deleter will run and will 
+     * take care of this. See onArticleDelete
+     */
+    public function deleteCollationData($partial_url) {
+        $manuscripts_lowercase_title = $wrapper->getManuscriptsLowercaseTitle($partial_url);
+        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($manuscripts_lowercase_title, 'AllCollations', 'subtract');
+        $wrapper->deleteFromCollations($partial_url);
+    }
+
+    /**
+     * Delete data for stylometricanalyses. The page itself does not need to be deleted since this function will only be executed when MediaWiki's own deleter will run and will 
+     * take care of this. See onArticleDelete
+     */
+    public function deleteStylometricAnalysisData($partial_url) {
+        $wrapper = $this->wrapper;
+        $manuscripts_lowercase_title = $wrapper->getManuscriptsLowercaseTitle($partial_url);
+        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($manuscripts_lowercase_title, 'AllStylometricAnalyses', 'subtract');
+        $wrapper->deleteFromStylometricAnalysis($partial_url);
+    }
+
+    private function subtractAlphabetNumbersTableManuscriptPages() {
         $partial_url = $this->paths->getPartialUrl();
         $collection_title = $this->collection_title;
         $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($partial_url);
-        $alphabetnumbes_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($collection_title);
-        $this->wrapper->modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbes_context, 'subtract');
+        $alphabetnumbes_context = $this->wrapper->getAlphabetNumbersWrapper()->determineAlphabetNumbersContextFromCollectionTitle($collection_title);
+        $this->wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbes_context, 'subtract');
         return;
     }
 
-    private function deleteDatabaseEntries() {
+    private function deleteDatabaseEntiesManuscripts() {
         $partial_url = $this->paths->getPartialUrl();
         $collection_title = $this->collection_title;
         $status = $this->wrapper->deleteFromManuscripts($partial_url);
@@ -65,7 +86,7 @@ class ManuscriptDeskDeleter {
         return;
     }
 
-    private function deleteFiles() {
+    private function deleteFilesManuscripts() {
         $paths = $this->paths;
         if ($paths->initialUploadFullPathIsConstructableFromScan()) {
             $this->deleteInitialUploadFullPath();
@@ -91,7 +112,7 @@ class ManuscriptDeskDeleter {
      */
     private function deleteSlicerExportFiles() {
         $this->deleteSliceDirectory();
-        $this->deleteFullExportPathFiles();
+        $this->deleteFullExportPathFilesManuscripts();
         return;
     }
 
@@ -107,7 +128,7 @@ class ManuscriptDeskDeleter {
         return;
     }
 
-    private function deleteFullExportPathFiles() {
+    private function deleteFullExportPathFilesManuscripts() {
         $paths = $this->paths;
         $full_export_path = $paths->getFullExportPath();
         $tile_group_url = $full_export_path . '/' . 'TileGroup0';
@@ -142,9 +163,9 @@ class ManuscriptDeskDeleter {
     private function deleteWikiPageIfNeeded() {
 
         if (isset($this->manuscripts_url)) {
-            $page_id = $this->wrapper->getPageId($this->manuscripts_url); 
+            $page_id = $this->wrapper->getPageId($this->manuscripts_url);
             $this->wrapper->deletePageFromId($page_id);
-            }
+        }
 
         return;
     }

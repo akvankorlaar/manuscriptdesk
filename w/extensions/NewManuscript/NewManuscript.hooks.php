@@ -44,11 +44,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $manuscripts_title;
     private $collection_title;
     private $partial_url;
-    private $wrapper;
-
-    public function __construct(NewManuscriptWrapper $wrapper) {
-        $this->wrapper = $wrapper;
-    }
+    private $paths; 
 
     /**
      * This function loads the zoomviewer if the editor is in edit mode. 
@@ -122,8 +118,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function redirectToOriginalImage(OutputPage $out) {
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
-
+        $paths = $this->paths; 
+        
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return true;
         }
@@ -145,7 +141,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $this->partial_url = $partial_url;
         $this->creator_user_name = $this->wrapper->getUserNameFromUrl($partial_url);
         $this->manuscripts_title = $this->wrapper->getManuscriptsTitleFromUrl($partial_url);
-        $this->signature = $this->wrapper->getManuscriptSignature($partial_url);
+        $this->signature = $this->wrapper->getSignatureWrapper()->getManuscriptSignature($partial_url);
+        $this->paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
 
         $collection_title = $this->wrapper->getCollectionTitleFromUrl($partial_url);
         if ($this->collectionTitleIsValid($collection_title)) {
@@ -269,7 +266,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     private function getHTMLLinkToOriginalManuscriptImage() {
 
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        $paths = $this->paths; 
 
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
@@ -341,7 +338,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      * Constructs the full path of the image to be passed to the iframe
      */
     private function constructImageFilePath() {
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        $paths = $this->paths; 
         return $paths->getWebLinkExportPath();
     }
 
@@ -407,11 +404,12 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function deleteFilesAndDatabaseEntries() {
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        $paths = $this->paths; 
         $paths->setExportPaths();
         $paths->setPartialUrl();
-        $deleter = new ManuscriptDeskDeleter(new ManuscriptDeskDeleteWrapper(), $paths, $this->collection_title);
-        $deleter->execute();
+        $delete_wrapper = new ManuscriptDeskDeleteWrapper($this->creator_user_name, new AlphabetNumbersWrapper()); 
+        $deleter = new ManuscriptDeskDeleter($delete_wrapper, $paths, $this->collection_title);
+        $deleter->deleteManuscriptPage();
         return;
     }
 
@@ -450,7 +448,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
     private function validNewManuscriptWasCreated(WikiPage $wikiPage) {
         $this->setPageData($wikiPage->getTitle()->getPrefixedUrl());
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        $paths = $this->paths; 
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return false;
         }
@@ -522,7 +520,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function getCollectionMetadata($collection_title) {
-        $database_wrapper = new AllCollectionsWrapper();
+        $database_wrapper = new AllCollectionsWrapper(new AlphabetNumbersWrapper());
         return $database_wrapper->getSingleCollectionMetadata($collection_title);
     }
 

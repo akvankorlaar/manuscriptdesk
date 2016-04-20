@@ -25,8 +25,13 @@
  */
 class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
 
-    public function __construct($user_name = '') {
-        $this->user_name = $user_name;
+    private $alphabetnumbers_wrapper;
+    private $signature_wrapper;
+
+    public function __construct($user_name = null, AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper) {
+        parent::__construct($user_name);
+        $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+        $this->signature_wrapper = $signature_wrapper;
     }
 
     /**
@@ -303,9 +308,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
 
         $dbr = wfGetDB(DB_SLAVE);
         $data = array();
-        $user_name = $this->user_name;
 
-        //Database query
         $res = $dbr->select(
             'stylometricanalysis', //from
             array(
@@ -320,7 +323,6 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'stylometricanalysis_new_page_url',
           'stylometricanalysis_date',
             ), array(
-          'stylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
           'stylometricanalysis_new_page_url = ' . $dbr->addQuotes($url_with_namespace),
             ), __METHOD__
         );
@@ -342,6 +344,14 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         $data['date'] = $s->stylometricanalysis_date;
 
         return $data;
+    }
+
+    public function getAlphabetNumbersWrapper() {
+        return $this->alphabetnumbers_wrapper;
+    }
+
+    public function getSignatureWrapper() {
+        return $this->signature_wrapper;
     }
 
 }

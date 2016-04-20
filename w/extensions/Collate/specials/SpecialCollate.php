@@ -96,7 +96,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $wrapper = $this->wrapper;
         list($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) = $wrapper->getSavedCollateAnalysisData($time_identifier);
         $wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output);
-        $wrapper->modifyAlphabetNumbersSingleValue($main_title_lowercase, 'AllCollations', 'add');
+        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($main_title_lowercase, 'AllCollations', 'add');
         $local_url = $this->createNewWikiPage($new_url);
         return $this->getOutput()->redirect($local_url);
     }
@@ -195,7 +195,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
             return;
         }
         
-        return $this->wrapper = isset($object) ? $object : new CollateWrapper($this->user_name);
+        return $this->wrapper = isset($object) ? $object : new CollateWrapper($this->user_name, new AlphabetNumbersWrapper(), new SignatureWrapper());
     }
 
     public function setRequestProcessor($object = null) {

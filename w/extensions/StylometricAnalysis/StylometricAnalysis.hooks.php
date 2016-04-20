@@ -32,10 +32,18 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
                 return true;
             }
 
-            $page_title_with_namespace = $title->getPrefixedUrl();
+            $wrapper = $this->wrapper;
 
-            $database_wrapper = new StylometricAnalysisWrapper($user->getName());
-            $data = $database_wrapper->getStylometricanalysisData($page_title_with_namespace);
+            $partial_url = $title->getPrefixedUrl();
+
+            $this->signature = $wrapper->getSignatureWrapper()->getStylometricAnalysisSignature($partial_url);
+
+            if (!$this->userIsAllowedToViewThePage($user)) {
+                return true;
+            }
+
+            $this->user_has_view_permission = true;
+            $data = $wrapper->getStylometricanalysisData($partial_url);
 
             $viewer = new StylometricAnalysisViewer($output);
             $viewer->showStylometricAnalysisNamespacePage($data);
@@ -81,20 +89,21 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
      */
     public function onArticleDelete(WikiPage &$wikiPage, User &$user, &$reason, &$error) {
 
-        $title = $wikiPage->getTitle();
-
-        if (!$this->isStylometricAnalysisNamespace($title)) {
-            return true;
-        }
-
-        if (!$this->currentUserCreatedThePage($title, $user) && !$this->currentUserIsASysop($user)) {
-            $error = '<br>' . $this->getMessage('stylometricanalysishooks-nodeletepermission') . '.';
-            return false;
-        }
-
         try {
-            $database_wrapper = new ManuscriptDeskDeleteWrapper($user->getName());
-            $database_wrapper->deleteStylometricAnalysisDatabaseEntry($title_object->getPrefixedURL());
+            $title = $wikiPage->getTitle();
+
+            if (!$this->isStylometricAnalysisNamespace($title)) {
+                return true;
+            }
+
+            if (!$this->userIsAllowedToDeleteThePage($user, $title)) {
+                $error = '<br>' . $this->getMessage('collatehooks-nodeletepermission') . '.';
+                return false;
+            }
+
+            $wrapper = new ManuscriptDeskDeleteWrapper($user->getName(), new AlphabetNumbersWrapper());
+            $deleter = new ManuscriptDeskDeleter($wrapper);
+            $deleter->deleteStylometricAnalysisData($partial_url);           
         } catch (Exception $e) {
             return true;
         }
@@ -165,6 +174,19 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         }
         elseif ($this->isStylometricAnalysisNamespace($out)) {
             $out->addModuleStyles('ext.stylometricanalysiscss');
+        }
+
+        return true;
+    }
+
+    public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parser_output) {
+
+        if (!$this->isStylometricAnalysisNamespace($out)) {
+            return true;
+        }
+
+        if (!$this->user_has_view_permission) {
+            $parser_output->setText($this->getMessage('error-viewpermission'));
         }
 
         return true;

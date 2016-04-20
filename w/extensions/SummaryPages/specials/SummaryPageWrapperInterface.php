@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the collate extension
+ * This file is part of the newManuscript extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,28 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class HelperScriptsHooks extends ManuscriptDeskBaseHooks {
-    
-    public function __construct(){
-        
-    }
+interface SummaryPageWrapperInterface {
 
-    /**
-     * This function loads additional modules containing CSS before the page is displayed
-     */
-    public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
-
-        $page_title_with_namespace = $out->getTitle()->getPrefixedURL();
-
-        if ($page_title_with_namespace === 'Special:HelperScripts') {
-
-            $css_modules = array('ext.manuscriptdeskbasecss');
-            $javascript_modules = array( 'ext.javascriptloader');
-            $out->addModuleStyles($css_modules);
-            $out->addModules($javascript_modules);
-        }
-
-        return true;
-    }
-
+    public function getAlphabetNumbersWrapper();
 }

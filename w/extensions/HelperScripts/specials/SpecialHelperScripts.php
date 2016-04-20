@@ -85,15 +85,13 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
     }
 
     private function updateAlphabetNumbersTable() {
-        $wrapper = new UpdateAlphabetNumbersWrapper();
-        $wrapper->updateAlphabetNumbersCollections();
-        $wrapper->updateAlphabetNumbersSingleManuscriptPages();
-        $wrapper->updateAlphabetNumbersCollations();
+        $wrapper = new AlphabetNumbersUpdater(new AlphabetNumbersWrapper());
+        $wrapper->execute();
         return;
     }
 
     private function processDeleteManuscripts() {
-        $wrapper = new HelperScriptsDeleteWrapper();
+        $wrapper = new HelperScriptsDeleteWrapper(new ManuscriptDeskDeleteWrapper($this->user_name, new AlphabetNumbersWrapper()));
         $wrapper->deleteManuscriptDeskData();
         $this->updateAlphabetNumbersTable();
         return $this->viewer->showActionComplete();

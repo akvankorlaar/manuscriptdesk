@@ -59,7 +59,6 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     protected function processRequest() {
-
         if ($this->request_processor->addNewPagePosted()) {
             $collection_title = $this->request_processor->getCollectionTitle();
             return $this->getDefaultPage('', $collection_title);
@@ -134,8 +133,8 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         }
 
         $this->wrapper->storeManuscripts($posted_manuscript_title, $posted_collection_title, $this->user_name, $new_page_url, $date);
-        $alphabetnumbers_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($posted_collection_title);
-        $this->wrapper->modifyAlphabetNumbersSingleValue(strtolower($posted_manuscript_title), $alphabetnumbers_context, 'add');
+        $alphabetnumbers_context = $this->wrapper->getAlphabetNumbersWrapper()->determineAlphabetNumbersContextFromCollectionTitle($posted_collection_title);
+        $this->wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue(strtolower($posted_manuscript_title), $alphabetnumbers_context, 'add');
         return;
     }
 
@@ -161,7 +160,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
     private function deleteAllData() {
         $deleter = new ManuscriptDeskDeleter(new ManuscriptDeskDeleteWrapper(), $this->paths, $this->posted_collection_title);
-        return $deleter->execute();
+        return $deleter->deleteManuscriptPage();
     }
 
     public function setPaths($object = null) {
@@ -215,7 +214,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
             return;
         }
 
-        return $this->wrapper = isset($object) ? $object : new NewManuscriptWrapper($this->user_name);
+        return $this->wrapper = isset($object) ? $object : new NewManuscriptWrapper($this->user_name, new AlphabetNumbersWrapper(), new SignatureWrapper());
     }
 
     /**

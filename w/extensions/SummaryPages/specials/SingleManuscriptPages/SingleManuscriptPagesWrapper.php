@@ -22,7 +22,17 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
+class SingleManuscriptPagesWrapper implements SummaryPageWrapperInterface {
+
+    private $alphabetnumbers_wrapper;
+    private $signature_wrapper;
+    private $user_name;
+
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper = null, $user_name = null) {
+        $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+        $this->signature_wrapper = $signature_wrapper;
+        $this->user_name = $user_name;
+    }
 
     public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
 
@@ -53,7 +63,7 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_user',
           'manuscripts_url',
           'manuscripts_date',
-          'manuscripts_signature',    
+          'manuscripts_signature',
           'manuscripts_lowercase_title',
             ), $conditions
             , __METHOD__, array(
@@ -87,6 +97,14 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         return array($page_data, $next_offset);
+    }
+
+    public function getAlphabetNumbersWrapper() {
+        return $this->alphabetnumbers_wrapper;
+    }
+
+    public function getSignatureWrapper() {
+        return $this->signature_wrapper;
     }
 
 }

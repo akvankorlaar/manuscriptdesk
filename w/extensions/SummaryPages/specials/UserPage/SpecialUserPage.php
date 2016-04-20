@@ -139,7 +139,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     private function handleSignatureChangeManuscript() {
         list($partial_url, $signature, $button_name, $offset) = $this->request_processor->getManuscriptSignatureChangeData();
         $this->setWrapperAndViewer($button_name);
-        $this->wrapper->setManuscriptSignature($partial_url, $signature);
+        $this->wrapper->getSignatureWrapper()->setManuscriptSignature($partial_url, $signature);
         list($page_data, $next_offset) = $this->wrapper->getData($offset);
         return $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
     }
@@ -147,7 +147,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     private function handleSignatureChangeCollectionPage(){
         list($partial_url, $signature, $collection_title) = $this->request_processor->getCollectionPageSignatureChangeData();
         $this->setWrapperAndViewer('view_collections_posted');
-        $this->wrapper->setManuscriptSignature($partial_url, $signature);
+        $this->wrapper->getSignatureWrapper()->setManuscriptSignature($partial_url, $signature);
         $single_collection_data = $this->wrapper->getSingleCollectionData($collection_title);
         return $this->viewer->showSingleCollectionData($collection_title, $single_collection_data);
     }
@@ -246,7 +246,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     private function deleteOldWikiPage($manuscript_url_old_title) {
-        $delete_wrapper = new ManuscriptDeskDeleteWrapper();
+        $delete_wrapper = new ManuscriptDeskDeleteWrapper(null, new AlphabetNumbersWrapper());
         $page_id = $delete_wrapper->getPageId($manuscript_url_old_title);
         return $delete_wrapper->deletePageFromId($page_id);
     }
@@ -293,18 +293,18 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         if (isset($this->wrapper) || isset($this->viewer)) {
             return;
         }
-
+        
         switch ($button_name) {
             case 'view_manuscripts_posted':
-                $this->wrapper = new SingleManuscriptPagesWrapper($this->user_name);
+                $this->wrapper = new SingleManuscriptPagesWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
                 $this->viewer = new UserPageManuscriptsViewer($this->getOutput(), $this->user_name);
                 break;
             case 'view_collations_posted':
-                $this->wrapper = new AllCollationsWrapper($this->user_name);
+                $this->wrapper = new AllCollationsWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
                 $this->viewer = new UserPageCollationsViewer($this->getOutput(), $this->user_name);
                 break;
             case 'view_collections_posted':
-                $this->wrapper = new AllCollectionsWrapper($this->user_name);
+                $this->wrapper = new AllCollectionsWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
                 $this->viewer = new UserPageCollectionsViewer($this->getOutput(), $this->user_name);
                 break;
         }

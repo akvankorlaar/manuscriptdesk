@@ -83,8 +83,11 @@ $wgResourceModules['ext.newmanuscriptbuttoncontroller'] = array(
   'remoteExtPath' => 'NewManuscript',
 );
 
+//initialise wrappers for database calls
+$newmanuscript_wrapper = new NewManuscriptWrapper(null, new AlphabetNumbersWrapper(), new SignatureWrapper());
+
 //Instantiate the NewManuscriptHooks class and register the hooks
-$newmanuscript_hooks = new NewManuscriptHooks(new NewManuscriptWrapper());
+$newmanuscript_hooks = new NewManuscriptHooks($newmanuscript_wrapper);
 
 $wgHooks['EditPage::showEditForm:fields'][] = array($newmanuscript_hooks, 'onEditPageShowEditFormInitial');
 $wgHooks['MediaWikiPerformAction'][] = array($newmanuscript_hooks, 'onMediaWikiPerformAction');

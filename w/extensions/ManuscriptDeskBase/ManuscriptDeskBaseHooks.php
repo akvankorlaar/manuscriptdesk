@@ -24,11 +24,12 @@
  */
 abstract class ManuscriptDeskBaseHooks {
 
+    protected $wrapper;
     protected $signature;
-    protected $user_has_view_permission = false; 
+    protected $user_has_view_permission = false;
 
-    public function __construct() {
-        
+    public function __construct(ManuscriptDeskBaseWrapper $wrapper) {
+        $this->wrapper = $wrapper;
     }
 
     protected function userIsAllowedToViewThePage(User $user) {
@@ -112,6 +113,22 @@ abstract class ManuscriptDeskBaseHooks {
         $request_processor = new ManuscriptDeskBaseRequestProcessor($request);
 
         if (!$request_processor->checkEditToken($user) || !$request_processor->savePagePosted()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function userIsAllowedToDeleteThePage(User $user, Title $title) {
+        
+        if(!isset($this->wrapper)){
+            throw new \Exception('error-request');
+        }
+        
+        $wrapper = $this->wrapper;
+        $partial_url = $title->getPrefixedURL();
+
+        if (!$wrapper->currentUserCreatedThePage($partial_url) || !$this->currentUserIsASysop($user)) {
             return false;
         }
 

@@ -24,6 +24,15 @@
  */
 class CollateWrapper extends ManuscriptDeskBaseWrapper {
 
+    private $alphabetnumbers_wrapper;
+    private $signature_wrapper;
+
+    public function __construct($user_name = null, AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper) {
+        parent::__construct($user_name);
+        $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+        $this->signature_wrapper = $signature_wrapper;
+    }
+
     public function getCollectionData() {
 
         global $wgCollationOptions;
@@ -314,51 +323,12 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         );
     }
 
-    public function getCollationsSignature($partial_url) {
-        $dbr = wfGetDB(DB_SLAVE);
-
-        $res = $dbr->select(
-            'collations', //from
-            array(
-          'collations_signature', //values
-          'collations_url',
-            ), array(
-          'collations_url = ' . $dbr->addQuotes($partial_url),
-            )
-        );
-
-        if ($res->numRows() !== 1) {
-            throw new \Exception('error-database');
-        }
-
-        $s = $res->fetchObject();
-
-        $signature = $s->collations_signature;
-
-        return $signature;
+    public function getAlphabetNumbersWrapper() {
+        return $this->alphabetnumbers_wrapper;
     }
 
-    public function setCollationsSignature($partial_url, $signature) {
-
-        if ($signature !== 'private' && $signature !== 'public') {
-            throw new \Exception('error-database');
-        }
-
-        $dbw = wfGetDB(DB_MASTER);
-
-        $dbw->update('collations', //select table
-            array(//insert values
-          'collations_signature' => $signature,
-            ), array(//conditions
-          'collations_url = ' . $dbw->addQuotes($partial_url),
-            ), __METHOD__
-        );
-
-        if (!$dbw->affectedRows()) {
-            throw new Exception('error-database');
-        }
-
-        return true;
+    public function getSignatureWrapper() {
+        return $this->signature_wrapper;
     }
 
 }

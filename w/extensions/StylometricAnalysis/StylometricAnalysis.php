@@ -74,13 +74,18 @@ $wgResourceModules['ext.stylometricanalysisbuttoncontroller'] = array(
   ),
 );
 
+//initialise wrappers for database calls
+$stylometricanalysis_wrapper = new StylometricAnalysisWrapper(null, new AlphabetNumbersWrapper(), new SignatureWrapper());
+
 //Instantiate the stylometricAnalysisHooks class and register the hooks
-$stylometric_analysis_hooks = new StylometricAnalysisHooks();
+$stylometric_analysis_hooks = new StylometricAnalysisHooks($stylometricanalysis_wrapper);
 
 $wgHooks['MediaWikiPerformAction'][] = array($stylometric_analysis_hooks, 'onMediaWikiPerformAction');
 $wgHooks['AbortMove'][] = array($stylometric_analysis_hooks, 'onAbortMove');
 $wgHooks['ArticleDelete'][] = array($stylometric_analysis_hooks, 'onArticleDelete');
-$wgHooks['PageContentSave'][] = array($stylometric_analysis_hooks,'onPageContentSave');
+$wgHooks['PageContentSave'][] = array($stylometric_analysis_hooks, 'onPageContentSave');
 $wgHooks['BeforePageDisplay'][] = array($stylometric_analysis_hooks, 'onBeforePageDisplay');
 $wgHooks['ResourceLoaderGetConfigVars'][] = array($stylometric_analysis_hooks, 'onResourceLoaderGetConfigVars');
 $wgHooks['UnitTestsList'][] = array($stylometric_analysis_hooks, 'onUnitTestsList');
+$wgHooks['OutputPageParserOutput'][] = array($stylometric_analysis_hooks, 'onOutputPageParserOutput');
+

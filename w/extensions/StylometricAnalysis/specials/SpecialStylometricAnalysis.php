@@ -389,7 +389,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return;
         }
         
-        return $this->wrapper = isset($object) ? $object : new StylometricAnalysisWrapper($this->user_name);
+        return $this->wrapper = isset($object) ? $object : new StylometricAnalysisWrapper($this->user_name, new AlphabetNumbersWrapper(), new SignatureWrapper());
     }
 
     public function setRequestProcessor($object = null) {

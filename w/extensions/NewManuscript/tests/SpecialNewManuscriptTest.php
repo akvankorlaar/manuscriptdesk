@@ -24,7 +24,7 @@
  * 
  * Notice: THese tests assume that a user with name 'Root' exists! 
  */
-class UploadNewManuscriptTest extends MediaWikiTestCase {
+class SpecialNewManuscriptTest extends MediaWikiTestCase {
 
     private $t;
     private $context;
@@ -104,7 +104,7 @@ class UploadNewManuscriptTest extends MediaWikiTestCase {
 
     public function testDefaultpageUserTooManyUploadsException() {
         $mock_wrapper = $this->getMockBuilder('NewManuscriptWrapper')
-            ->setConstructorArgs(array('Root'))
+            ->setConstructorArgs(array('Root', new AlphabetNumbersWrapper(), new SignatureWrapper()))
             ->setMethods(array('getNumberOfUploadsForCurrentUser'))
             ->getMock();
 
@@ -123,7 +123,7 @@ class UploadNewManuscriptTest extends MediaWikiTestCase {
 
         $request = $this->t->getRequest();
         $validator = new ManuscriptDeskBaseValidator();
-        
+
         $mock_request_processor = $this->getMockBuilder('NewManuscriptRequestProcessor')
             ->setConstructorArgs(array($request, $validator))
             ->setMethods(array('requestWasPosted', 'addNewPagePosted', 'loadUploadFormData'))
@@ -151,7 +151,7 @@ class UploadNewManuscriptTest extends MediaWikiTestCase {
             ->will($this->returnValue(array('test/path', '.testextension')));
 
         $stub_paths = $this->getMockBuilder('NewManuscriptPaths')
-            ->setConstructorArgs(array('Root','test','.textextnsion'))
+            ->setConstructorArgs(array('Root', 'test', '.textextnsion'))
             ->getMock();
 
         $stub_paths->expects($this->once())
@@ -161,14 +161,21 @@ class UploadNewManuscriptTest extends MediaWikiTestCase {
         $stub_slicer_executer = $this->getMockBuilder('SlicerExecuter')
             ->setConstructorArgs(array($stub_paths))
             ->getMock();
-        
-         $stub_slicer_executer->expects($this->once())
+
+        $stub_slicer_executer->expects($this->once())
             ->method('execute');
-         
+
         $stub_wrapper = $this->getMockBuilder('NewManuscriptWrapper')
-            ->setConstructorArgs(array('Root'))
+            ->setConstructorArgs(array('Root', new AlphabetNumbersWrapper(), new SignatureWrapper()))
             ->getMock();
-         
+
+        $stub_alphabetnumbers_wrapper = $this->getMockBuilder('AlphabetNumbersWrapper')
+            ->getMock();
+
+        $stub_wrapper->expects($this->any())
+            ->method('getAlphabetNumbersWrapper')
+            ->will($this->returnValue($stub_alphabetnumbers_wrapper));
+
         $this->t->setRequestProcessor($mock_request_processor);
         $this->t->setImageValidator($mock_image_validator);
         $this->t->setPaths($stub_paths);

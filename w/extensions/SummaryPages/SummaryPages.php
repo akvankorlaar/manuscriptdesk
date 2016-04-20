@@ -82,6 +82,8 @@ $wgAutoloadClasses['SummaryPageBase'] = $dir . '/specials/SummaryPageBase.php';
 $wgAutoloadClasses['SummaryPageRequestProcessor'] = $dir . '/specials/SummaryPageRequestProcessor.php';
 $wgAutoloadClasses['SummaryPageViewerInterface'] = $dir . '/specials/SummaryPageViewerInterface.php';
 
+$wgAutoloadClasses['SummaryPageWrapperInterface'] = $dir . '/specials/SummaryPageWrapperInterface.php';
+
 $wgSpecialPages['AllCollations'] = 'SpecialAllCollations';
 $wgSpecialPages['AllCollections'] = 'SpecialAllCollections';
 $wgSpecialPages['RecentManuscriptPages'] = 'SpecialRecentManuscriptPages';
@@ -101,7 +103,6 @@ $wgResourceModules['ext.javascriptloaderdots'] = array(
   'localBasePath' => __DIR__,
 );
 
-//Instantiate the collateHooks class and register the hooks
 $summary_pages_hooks = new SummaryPagesHooks();
 
 $wgHooks['BeforePageDisplay'][] = array($summary_pages_hooks, 'onBeforePageDisplay');
