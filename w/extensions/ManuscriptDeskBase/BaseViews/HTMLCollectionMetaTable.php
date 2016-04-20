@@ -47,7 +47,7 @@ trait HTMLCollectionMetaTable {
 
         //get the messages
         $metadata_title = $out->msg('metadata-title');
-        $metadata_name = $out->msg('metadata-name');
+        $metadata_author = $out->msg('metadata-author');
         $metadata_year = $out->msg('metadata-year');
         $metadata_pages = $out->msg('metadata-pages');
         $metadata_category = $out->msg('metadata-category');
@@ -70,7 +70,7 @@ trait HTMLCollectionMetaTable {
       </tr>
        <tr>
           <th>
-          $metadata_name:
+          $metadata_author:
           </th>
           <td>
           $metaauthor

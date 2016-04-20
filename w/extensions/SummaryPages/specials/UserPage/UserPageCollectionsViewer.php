@@ -293,8 +293,8 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
           'maxlength' => $max_length,
         );
 
-        $descriptor['metadata_name'] = array(
-          'label-message' => 'metadata-name',
+        $descriptor['metadata_author'] = array(
+          'label-message' => 'metadata-author',
           'class' => 'HTMLTextField',
           'default' => $metaauthor,
           'maxlength' => $max_length,
