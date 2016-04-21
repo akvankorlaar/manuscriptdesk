@@ -210,14 +210,6 @@ function onSkinBuildSidebar(Skin $skin, &$bar) {
     unset($bar['navigation'][2]);
     unset($bar['navigation'][3]);
     unset($bar['navigation'][4]);
-    unset($bar['navigation'][5]);
-    unset($bar['navigation'][6]);
-    unset($bar['navigation'][7]);
-    unset($bar['navigation'][8]);
-    unset($bar['navigation'][9]);
-    unset($bar['navigation'][10]);
-    unset($bar['navigation'][11]);
-    unset($bar['navigation'][12]);
 
     return true;
 }
@@ -300,8 +292,8 @@ $wgNewManuscriptOptions = array(
 
 $wgStylometricAnalysisOptions = array(
   'wgmin_stylometricanalysis_collections' => 2, //minimum number of collections to be able to do stylometric analysis
-  'wgmax_stylometricanalysis_collections' => 10, //maximum number of collections to be able to do stylometric analysis
-  'minimum_pages_per_collection' => 3, //minimum pages within a collection to be able to do stylometric analysis
+  'wgmax_stylometricanalysis_collections' => 5, //maximum number of collections to be able to do stylometric analysis
+  'minimum_pages_per_collection' => 10, //minimum pages within a collection to be able to do stylometric analysis
   'python_path' => 'python', //works if you can use 'python path/to/python/script.py' in terminal
   'initial_analysis_dir' => 'initialStylometricAnalysis',
   'min_mfi' => 20, //minimum number of most frequent items

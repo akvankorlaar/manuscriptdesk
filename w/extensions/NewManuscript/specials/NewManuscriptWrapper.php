@@ -24,7 +24,20 @@
  */
 class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
 
+    private $alphabetnumbers_wrapper;
+    private $signature_wrapper;
+
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper, $user_name = null) {
+        $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+        $this->signature_wrapper = $signature_wrapper;
+        $this->user_name = $user_name;
+    }
+
     public function getNumberOfUploadsForCurrentUser() {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         $dbr = wfGetDB(DB_SLAVE);
         $number_of_uploads = 0;
@@ -77,6 +90,11 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     public function checkWhetherCurrentUserIsTheOwnerOfTheCollection($posted_collection_title) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         $dbr = wfGetDB(DB_SLAVE);
         $res = $dbr->select(
             'collections', //from
@@ -108,6 +126,10 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
      * This functions checks if the collection already reached the maximum allowed manuscript pages, or if the current user is the creator of the collection
      */
     public function checkCollectionDoesNotExceedMaximumPages($posted_collection_title) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         global $wgNewManuscriptOptions;
         $maximum_pages_per_collection = $wgNewManuscriptOptions['maximum_pages_per_collection'];
@@ -158,8 +180,8 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         if (!$dbw->affectedRows()) {
             throw new Exception('error-database-manuscripts');
         }
-        
-        return; 
+
+        return;
     }
 
     /**
@@ -178,11 +200,10 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
           'collections_user' => $user_name,
           'collections_date' => $date,
             ), __METHOD__, 'IGNORE'); //ensures that duplicate $collection_name is ignored
-
         //if collection does not exist yet $dbw->affectedRows() will return false
-        return; 
+        return;
     }
-   
+
     public function getManuscriptsTitleFromUrl($partial_url) {
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -217,12 +238,12 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         if ($res->numRows() !== 1) {
             throw new \Exception('error-database');
         }
-        
+
         $s = $res->fetchObject();
         return $s->manuscripts_user;
     }
 
-    public function getCollectionTitleFromUrl($url_without_namespace) {
+    public function getCollectionTitleFromUrl($url_with_namespace) {
         $dbr = wfGetDB(DB_SLAVE);
 
         $res = $dbr->select(
@@ -230,14 +251,14 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
             array(
           'manuscripts_collection', //values
             ), array(
-          'manuscripts_url = ' . $dbr->addQuotes($url_without_namespace), //conditions
+          'manuscripts_url = ' . $dbr->addQuotes($url_with_namespace), //conditions
             )
         );
 
         if ($res->numRows() !== 1) {
             throw new \Exception('error-database');
         }
-        
+
         $s = $res->fetchObject();
         return $s->manuscripts_collection;
     }
@@ -288,6 +309,14 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         return array($previous_page_url, $next_page_url);
+    }
+
+    public function getAlphabetNumbersWrapper() {
+        return $this->alphabetnumbers_wrapper;
+    }
+
+    public function getSignatureWrapper() {
+        return $this->signature_wrapper;
     }
 
 }

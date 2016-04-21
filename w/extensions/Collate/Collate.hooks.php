@@ -35,9 +35,16 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
                 return true;
             }
 
-            $database_wrapper = new CollateWrapper();
-            $page_title_with_namespace = $title->getPrefixedUrl();
-            $data = $database_wrapper->getCollationsData($page_title_with_namespace);
+            $wrapper = $this->wrapper; 
+            $partial_url = $title->getPrefixedUrl();
+            $this->signature = $wrapper->getSignatureWrapper()->getCollationsSignature($partial_url);
+
+            if (!$this->userIsAllowedToViewThePage($user)) {
+                return true;
+            }
+
+            $this->user_has_view_permission = true;
+            $data = $wrapper->getCollationsData($partial_url);
 
             $viewer = new CollateViewer($output);
             $viewer->showCollateNamespacePage($data);
@@ -99,26 +106,23 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
      * This function runs every time mediawiki gets a delete request. This function prevents
      * users from deleting collations they have not uploaded
      */
-    public function onArticleDelete(WikiPage &$article, User &$user, &$reason, &$error) {
+    public function onArticleDelete(WikiPage &$wikipage, User &$user, &$reason, &$error) {
 
         try {
-            $title = $article->getTitle();
+            $title = $wikipage->getTitle();
 
             if (!$this->isCollationsNamespace($title)) {
                 return true;
             }
 
-            $database_wrapper = new ManuscriptDeskDeleteWrapper($user->getName());
-            $page_title_with_namespace = $title_object->getPrefixedURL();
-
-            if (!$database_wrapper->currentUserCreatedThePage($page_title_with_namespace) || !$this->currentUserIsASysop($user)) {
+            if (!$this->userIsAllowedToDeleteThePage($user, $title)) {
                 $error = '<br>' . $this->getMessage('collatehooks-nodeletepermission') . '.';
                 return false;
             }
-
-            $manuscripts_lowercase_title = $database_wrapper->getManuscriptsLowercaseTitle($page_title_with_namespace);
-            $database_wrapper->modifyAlphabetNumbersSingleValue($manuscripts_lowercase_title, 'AllCollations', 'subtract');
-            $database_wrapper->deleteFromCollations($title->getPrefixedURL());
+            
+            $wrapper = new ManuscriptDeskDeleteWrapper($user->getName(), new AlphabetNumbersWrapper());
+            $deleter = new ManuscriptDeskDeleter($wrapper);
+            $deleter->deleteCollationData($partial_url); 
             return true;
         } catch (Exception $e) {
             return true;
@@ -138,6 +142,19 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
             $javascript_modules = array('ext.collatebuttoncontroller', 'ext.javascriptloader');
             $out->addModuleStyles($css_modules);
             $out->addModules($javascript_modules);
+        }
+
+        return true;
+    }
+
+    public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parseroutput) {
+
+        if (!$this->isCollationsNamespace($out)) {
+            return true;
+        }
+
+        if (!$this->user_has_view_permission) {
+            $parseroutput->setText($this->getMessage('error-viewpermission'));
         }
 
         return true;

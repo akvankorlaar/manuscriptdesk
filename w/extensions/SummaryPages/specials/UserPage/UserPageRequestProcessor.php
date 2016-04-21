@@ -111,6 +111,90 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         return false;
     }
 
+    public function changeSignatureManuscriptPosted() {
+        $request = $this->request;
+        if ($request->getText('change_signature_manuscript_posted') !== '') {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getManuscriptSignatureChangeData() {
+        $request = $this->request;
+        $validator = $this->validator;
+        $signature = $validator->validateString($request->getText('change_signature_manuscript_posted'));
+
+        if ($signature !== 'public' && $signature !== 'private') {
+            throw new \Exception('error-request');
+        }
+
+        $partial_url = $validator->validateStringUrl($request->getText('partial_url'));
+
+        $button_name = $request->getText('button_name');
+
+        if ($button_name !== 'view_manuscripts_posted') {
+            throw new \Exception('error-request');
+        }
+
+        $offset = (int) $validator->validateStringNumber($request->getText('offset'));
+
+        return array($partial_url, $signature, $button_name, $offset);
+    }
+
+    public function changeSignatureCollectionPagePosted() {
+        $request = $this->request;
+        if ($request->getText('change_signature_collection_page_posted') !== '') {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function changeSignatureCollationPosted() {
+        $request = $this->request;
+        if ($request->getText('change_signature_collation_posted') !== '') {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getCollectionPageSignatureChangeData() {
+        $request = $this->request;
+        $validator = $this->validator;
+        $signature = $validator->validateString($request->getText('change_signature_collection_page_posted'));
+
+        if ($signature !== 'public' && $signature !== 'private') {
+            throw new \Exception('error-request');
+        }
+
+        $partial_url = $validator->validateStringUrl($request->getText('partial_url'));
+        $collection_title = $this->getCollectionTitle();
+        return array($partial_url, $signature, $collection_title);
+    }
+
+    public function getCollationSignatureChangeData() {
+        $request = $this->request;
+        $validator = $this->validator;
+        $signature = $validator->validateString($request->getText('change_signature_collation_posted'));
+
+        if ($signature !== 'public' && $signature !== 'private') {
+            throw new \Exception('error-request');
+        }
+
+        $partial_url = $validator->validateStringUrl($request->getText('partial_url'));
+
+        $button_name = $request->getText('button_name');
+
+        if ($button_name !== 'view_collations_posted') {
+            throw new \Exception('error-request');
+        }
+
+        $offset = (int) $validator->validateStringNumber($request->getText('offset'));
+        return array($partial_url, $signature, $button_name, $offset);
+    }
+
     public function getEditSinglePageCounter() {
 
         $request = $this->request;
@@ -133,10 +217,10 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         $old_title = $validator->validateString($request->getText('old_title_posted' . $counter));
         $url_old_title = $validator->validateStringUrl($request->getText('url_old_title_posted' . $counter));
 
-        if(empty($old_title) || empty($url_old_title)){
+        if (empty($old_title) || empty($url_old_title)) {
             throw new \Exception('error-request');
         }
-        
+
         return array($old_title, $url_old_title);
     }
 

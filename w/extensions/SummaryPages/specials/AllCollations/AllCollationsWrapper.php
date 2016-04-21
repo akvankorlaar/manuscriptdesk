@@ -22,7 +22,17 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class AllCollationsWrapper extends ManuscriptDeskBaseWrapper {
+class AllCollationsWrapper implements SummaryPageWrapperInterface {
+
+    private $alphabetnumbers_wrapper;
+    private $signature_wrapper;
+    private $user_name;
+
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper = null, $user_name = null) {
+        $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+        $this->signature_wrapper = $signature_wrapper;
+        $this->user_name = $user_name;
+    }
 
     public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
 
@@ -50,6 +60,7 @@ class AllCollationsWrapper extends ManuscriptDeskBaseWrapper {
           'collations_url',
           'collations_date',
           'collations_main_title',
+          'collations_signature',    
           'collations_main_title_lowercase'
             ), $conditions
             , __METHOD__, array(
@@ -71,6 +82,7 @@ class AllCollationsWrapper extends ManuscriptDeskBaseWrapper {
                       'collations_url' => $s->collations_url,
                       'collations_date' => $s->collations_date,
                       'collations_main_title' => $s->collations_main_title,
+                      'collations_signature' => $s->collations_signature,
                     );
 
                     //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page
@@ -83,6 +95,14 @@ class AllCollationsWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         return array($title_array, $next_offset);
+    }
+
+    public function getAlphabetNumbersWrapper() {
+        return $this->alphabetnumbers_wrapper;
+    }
+
+    public function getSignatureWrapper() {
+        return $this->signature_wrapper;
     }
 
 }

@@ -26,6 +26,7 @@
 class NewManuscriptImageValidator {
 
     private $request;
+    private $upload_base;
 
     public function __construct(WebRequest $request) {
         $this->request = $request;
@@ -34,7 +35,8 @@ class NewManuscriptImageValidator {
     public function getAndCheckUploadedImageData() {
         $this->checkWhetherFileIsImage();
         $upload_base = $this->getUploadBaseObject();
-        $extension = $this->getExtension($upload_base);
+        $file_name = $this->getFileName($upload_base);
+        $extension = $this->getExtension($file_name);
         $temp_path = $this->getTempPath($upload_base);
         $mime_type = $this->getGuessedMimeType($temp_path);
 
@@ -47,7 +49,7 @@ class NewManuscriptImageValidator {
 
     private function checkWhetherFileIsImage() {
 
-        if (getimagesize($_FILES["wpUploadFile"]["tmp_name"]) === false) {
+        if (!isset($_FILES["wpUploadFile"]["tmp_name"]) || getimagesize($_FILES["wpUploadFile"]["tmp_name"]) === false) {
             throw new \Exception('newmanuscript-error-noimage');
         }
 
@@ -57,7 +59,8 @@ class NewManuscriptImageValidator {
     private function getUploadBaseObject() {
         global $wgNewManuscriptOptions;
         $max_upload_size = $wgNewManuscriptOptions['max_upload_size'];
-        $upload_base = UploadBase::createFromRequest($this->request);
+        $this->setUploadBase();
+        $upload_base = $this->upload_base;
 
         if (!isset($upload_base)) {
             throw new \Exception('error-request');
@@ -70,10 +73,19 @@ class NewManuscriptImageValidator {
         return $upload_base;
     }
 
-    private function getExtension(UploadBase $upload_base) {
+    private function getFileName(UploadBase $upload_base) {
+        $title = $upload_base->getTitle();
+
+        if (!isset($title)) {
+            throw new \Exception('error-request');
+        }
+
+        return $title->getText();
+    }
+
+    private function getExtension($file_name) {
         global $wgNewManuscriptOptions;
         $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
-        $file_name = $this->getFileName($upload_base);
 
         if (pathinfo($file_name, PATHINFO_EXTENSION === null)) {
             throw new \Exception('newmanuscript-error-noextension');
@@ -92,20 +104,10 @@ class NewManuscriptImageValidator {
         return $extension;
     }
 
-    private function getFileName(UploadBase $upload_base) {
-        $title = $upload_base->getTitle();
-
-        if (!isset($title)) {
-            throw new \Exception('error-request');
-        }
-
-        return $title->getText();
-    }
-
     private function getTempPath(UploadBase $upload_base) {
         $temp_path = $upload_base->getTempPath();
 
-        if ($temp_path === '') {
+        if ($temp_path === '' || $temp_path === null) {
             throw new \Exception('newmanuscript-error-nofile');
         }
 
@@ -126,6 +128,15 @@ class NewManuscriptImageValidator {
         }
 
         throw new \Exception('newmanuscript-error-fileformat');
+    }
+
+    public function setUploadBase($object = null) {
+
+        if (isset($this->upload_base)) {
+            return;
+        }
+
+        return $this->upload_base = isset($object) ? $object : UploadBase::createFromRequest($this->request);
     }
 
 }

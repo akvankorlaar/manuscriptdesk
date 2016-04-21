@@ -24,7 +24,20 @@
  */
 class CollateWrapper extends ManuscriptDeskBaseWrapper {
 
+    private $alphabetnumbers_wrapper;
+    private $signature_wrapper;
+
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper, $user_name = null) {
+        $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+        $this->signature_wrapper = $signature_wrapper;
+        $this->user_name = $user_name;
+    }
+
     public function getCollectionData() {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         global $wgCollationOptions;
 
@@ -83,6 +96,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      */
     public function getManuscriptsData() {
 
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         global $wgCollationOptions;
 
         $dbr = wfGetDB(DB_SLAVE);
@@ -129,6 +146,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      */
     public function getSavedCollateAnalysisData($time_identifier) {
 
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
 
@@ -168,6 +189,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      */
     public function storeTempcollate(array $titles_array, $main_title = '', $new_url = '', $time, $collatex_output) {
 
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         $titles_array = json_encode($titles_array);
         $main_title_lowercase = strtolower($main_title);
 
@@ -196,6 +221,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      * and $time of the stored values is larger than $this->hours_before_delete, the values will be deleted 
      */
     public function clearOldCollatexOutput($time) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         global $wgCollationOptions;
 
@@ -235,6 +264,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      */
     private function deleteTempcollate($time) {
 
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         $dbw = wfGetDB(DB_MASTER);
         $user_name = $this->user_name;
 
@@ -257,6 +290,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      */
     public function storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) {
 
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         $user_name = $this->user_name;
         $date = date("d-m-Y H:i:s");
         $main_title_lowercase = strtolower($main_title);
@@ -272,12 +309,12 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
           'collations_titles_array' => $page_titles,
           'collations_collatex' => $collatex_output
             ), __METHOD__, 'IGNORE');
-        
+
         if (!$dbw->affectedRows()) {
             throw new \Exception('collate-error-database');
         }
-        
-        return true; 
+
+        return true;
     }
 
     /**
@@ -312,6 +349,14 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
           'titles_array' => (array) json_decode($s->collations_titles_array),
           'collatex_output' => $s->collations_collatex,
         );
+    }
+
+    public function getAlphabetNumbersWrapper() {
+        return $this->alphabetnumbers_wrapper;
+    }
+
+    public function getSignatureWrapper() {
+        return $this->signature_wrapper;
     }
 
 }

@@ -126,5 +126,35 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
 
         return $out->addHTML($html);
     }
+    
+//        private function getHTMLFormToChangeSignature(User $user) {
+//        global $wgArticleUrl;
+//        $partial_url = $this->partial_url;
+//        $signature = $this->signature;
+//
+//        if ($signature === 'private') {
+//            $message = 'Make images public';
+//            $change_input = 'public';
+//        }
+//        else {
+//            $message = 'Make images private';
+//            $change_input = 'private';
+//        }
+//
+//        $edit_token = $user->getEditToken();
+//
+//        $html = '';
+//
+//        $html .= "<td>";
+//        $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . $partial_url . '" method="post">';
+//        $html .= "<input class='button-transparent' type='submit' name='editlink' value='$message'>";
+//        $html .= "<input type='hidden' name='link_back_to_manuscript_page' value='$partial_url'>";
+//        $html .= "<input type='hidden' name='change_signature_posted' value = '$change_input'>";
+//        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+//        $html .= "</form>";
+//        $html .= "</td>";
+//
+//        return $html;
+//    }
 
 }

@@ -25,8 +25,11 @@
 class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
     private $paths;
+    private $image_validator;
+    private $slicer_executer;
     private $posted_collection_title;
     private $posted_manuscript_title;
+    private $extension;
 
     public function __construct() {
         parent::__construct('NewManuscript');
@@ -36,6 +39,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         $this->checkWhetherUserHasUploadedTooManyManuscripts();
         $collections_current_user = $this->wrapper->getCollectionsCurrentUser();
         $this->viewer->showDefaultpage($error_message, $collections_current_user, $collection_title);
+        return;
     }
 
     /**
@@ -55,7 +59,6 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     protected function processRequest() {
-
         if ($this->request_processor->addNewPagePosted()) {
             $collection_title = $this->request_processor->getCollectionTitle();
             return $this->getDefaultPage('', $collection_title);
@@ -66,7 +69,6 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     private function processUploadedNewManuscript() {
-
         list($posted_manuscript_title, $posted_collection_title) = $this->request_processor->loadUploadFormData();
         $this->posted_manuscript_title = $posted_manuscript_title;
         $this->posted_collection_title = $posted_collection_title;
@@ -75,16 +77,23 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
             $this->checkForCollectionErrors();
         }
 
-        $image_validator = new NewManuscriptImageValidator($this->getRequest());
+        $this->setImageValidator();
+
+        $image_validator = $this->image_validator;
         list($temp_path, $extension) = $image_validator->getAndCheckUploadedImageData();
-        $this->setPaths($extension);
+        $this->extension = $extension;
+
+        $this->setPaths();
+        $this->setPathsData();
         $this->paths->moveUploadToInitialUploadDir($temp_path);
+
         $this->prepareAndExecuteSlicer();
+
         $new_page_url = $this->paths->getPartialUrl();
         $this->updateDatabase($new_page_url);
         $local_url = $this->createNewWikiPage($new_page_url, 'This page has not been transcribed yet.');
         $this->getOutput()->redirect($local_url);
-        return true;
+        return;
     }
 
     private function checkForCollectionErrors() {
@@ -94,9 +103,8 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         return;
     }
 
-    private function setPaths($extension) {
-        $posted_manuscript_title = $this->posted_manuscript_title;
-        $this->paths = $paths = new NewManuscriptPaths($this->user_name, $posted_manuscript_title, $extension);
+    private function setPathsData() {
+        $paths = $this->paths;
         $paths->setInitialUploadFullPath();
         $paths->setExportPaths();
 
@@ -110,7 +118,8 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     private function prepareAndExecuteSlicer() {
-        $slicer_executer = new SlicerExecuter($this->paths);
+        $this->setSlicerExecuter();
+        $slicer_executer = $this->slicer_executer;
         return $slicer_executer->execute();
     }
 
@@ -124,17 +133,18 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         }
 
         $this->wrapper->storeManuscripts($posted_manuscript_title, $posted_collection_title, $this->user_name, $new_page_url, $date);
-        $alphabetnumbers_context = $this->wrapper->determineAlphabetNumbersContextFromCollectionTitle($posted_collection_title);
-        $this->wrapper->modifyAlphabetNumbersSingleValue(strtolower($posted_manuscript_title), $alphabetnumbers_context, 'add');
+        $alphabetnumbers_context = $this->wrapper->getAlphabetNumbersWrapper()->determineAlphabetNumbersContextFromCollectionTitle($posted_collection_title);
+        $this->wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue(strtolower($posted_manuscript_title), $alphabetnumbers_context, 'add');
         return;
     }
 
     protected function handleExceptions(Exception $exception_error) {
-
         global $wgWebsiteRoot;
-        $viewer = $this->setViewer();
+        $this->setViewer();
+        $viewer = $this->viewer;
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
+        $this->error_identifier = $error_identifier;
 
         if ($error_identifier === 'error-nopermission' || $error_identifier === 'newmanuscript-maxreached') {
             return $viewer->showSimpleErrorMessage($error_message);
@@ -150,34 +160,61 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
     private function deleteAllData() {
         $deleter = new ManuscriptDeskDeleter(new ManuscriptDeskDeleteWrapper(), $this->paths, $this->posted_collection_title);
-        return $deleter->excute();
+        return $deleter->deleteManuscriptPage();
     }
 
-    protected function setRequestProcessor() {
-        
-        if(isset($this->request_processor)){
+    public function setPaths($object = null) {
+
+        if (isset($this->paths)) {
             return;
         }
-        
-        return $this->request_processor = new NewManuscriptRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator);
+
+        return $this->paths = isset($object) ? $object : new NewManuscriptPaths($this->user_name, $this->posted_manuscript_title, $this->extension);
     }
 
-    protected function setViewer() {
-        
-        if(isset($this->viewer)){
+    public function setImageValidator($object = null) {
+
+        if (isset($this->image_validator)) {
             return;
         }
-        
-        return $this->viewer = new NewManuscriptViewer($this->getOutput());
+
+        $this->image_validator = isset($object) ? $object : new NewManuscriptImageValidator($this->getRequest());
     }
 
-    protected function setWrapper() {
-        
-        if(isset($this->wrapper)){
+    public function setSlicerExecuter($object = null) {
+
+        if (isset($this->slicer_executer)) {
             return;
         }
-        
-        return $this->wrapper = new NewManuscriptWrapper($this->user_name);
+
+        return $this->slicer_executer = isset($object) ? $object : new SlicerExecuter($this->paths);
+    }
+
+    public function setRequestProcessor($object = null) {
+
+        if (isset($this->request_processor)) {
+            return;
+        }
+
+        return $this->request_processor = isset($object) ? $object : new NewManuscriptRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator);
+    }
+
+    public function setViewer($object = null) {
+
+        if (isset($this->viewer)) {
+            return;
+        }
+
+        return $this->viewer = isset($object) ? $object : new NewManuscriptViewer($this->getOutput());
+    }
+
+    public function setWrapper($object = null) {
+
+        if (isset($this->wrapper)) {
+            return;
+        }
+
+        return $this->wrapper = isset($object) ? $object : new NewManuscriptWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
     }
 
     /**

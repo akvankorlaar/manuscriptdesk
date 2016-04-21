@@ -28,6 +28,10 @@
  * 2015/2016: Modifications @ Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com>
  */
 class JBTEIToolbarHooks extends ManuscriptDeskBaseHooks {
+    
+    public function __construct(){
+        //override parent constructor because no database calls have to be made
+    }
 
     /**
      * Adds the modules to the edit form

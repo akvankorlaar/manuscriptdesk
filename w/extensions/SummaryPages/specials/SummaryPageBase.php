@@ -22,20 +22,19 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
 
     private $lowercase_alphabet;
-    private $uppercase_alphabet;  
-    
+    private $uppercase_alphabet;
+
     public function __construct($page_name) {
         parent::__construct($page_name);
     }
-    
-    protected function setVariables() {      
+
+    protected function setVariables() {
         parent::setVariables();
         global $wgNewManuscriptOptions;
-        
+
         //there is both a lowercase alphabet, and a uppercase alphabet, because the lowercase alphabet is used for the database query, and the uppercase alphabet
         //for the button values
         $numbers = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
@@ -46,54 +45,49 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
     protected function processRequest() {
 
         $request_processor = $this->request_processor;
-        
+
         if (!$request_processor->singleCollectionPosted()) {
             $this->processLetterOrButtonRequest();
-            return true; 
-        }else{
-           $this->processSingleCollectionDataRequest();
-           return true;
+            return true;
+        }
+        else {
+            $this->processSingleCollectionDataRequest();
+            return true;
         }
     }
 
     private function processLetterOrButtonRequest() {
         list($button_name, $offset) = $this->request_processor->getLetterOrButtonRequestValues($this->lowercase_alphabet);
         list($page_titles, $next_offset) = $this->getLetterOrButtonDatabaseData($button_name, $offset);
-        
-        if(empty($page_titles)){
+
+        if (empty($page_titles)) {
             return $this->getEmptyPageTitlesError($button_name);
         }
-        
+
         return $this->getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset);
     }
-    
-    private function getLetterOrButtonDatabaseData($button_name, $offset){
+
+    private function getLetterOrButtonDatabaseData($button_name, $offset) {
         $next_letter_alphabet = $this->getNextNumberOrLetterOfTheAlphabet($button_name);
         return $this->wrapper->getData($offset, $button_name, $next_letter_alphabet);
     }
-    
-    private function getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset){
-        
-        $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
-              
+
+    private function getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset) {
+
+        $alphabet_numbers = $this->wrapper->getAlphabetNumbersWrapper()->getAlphabetNumbersData($this->getSpecialPageName());
+
         $this->viewer->showSingleLetterOrNumberPage(
-                $alphabet_numbers,
-                $this->uppercase_alphabet,
-                $this->lowercase_alphabet,              
-                $button_name, 
-                $page_titles, 
-                $offset, 
-                $next_offset
-            ); 
-            
-        return true; 
+            $alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet, $button_name, $page_titles, $offset, $next_offset
+        );
+
+        return true;
     }
-    
-    private function getEmptyPageTitlesError($button_name){
-        $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
-        $this->viewer->showEmptyPageTitlesError($alphabet_numbers, $this->uppercase_alphabet,$this->lowercase_alphabet, $button_name);
+
+    private function getEmptyPageTitlesError($button_name) {
+        $alphabet_numbers = $this->wrapper->getAlphabetNumbersWrapper()->getAlphabetNumbersData($this->getSpecialPageName());
+        $this->viewer->showEmptyPageTitlesError($alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet, $button_name);
     }
-       
+
     private function getNextNumberOrLetterOfTheAlphabet($button_name = '') {
 
         $lowercase_alphabet = $this->lowercase_alphabet;
@@ -110,28 +104,33 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
 
         if ($next_letter === null) {
             return '99999999999999999999999999999999999999999999999999';
-        }else{           
+        }
+        else {
             return 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz';
         }
     }
-    
+
     private function processSingleCollectionDataRequest() {
-        $selected_collection = $this->request_processor->getCollectionTitle();      
+        
+        if(!$this instanceof SpecialAllCollections){
+            throw new \Exception('error-request');
+        }
+        
+        $selected_collection = $this->request_processor->getCollectionTitle();
         $single_collection_data = $this->wrapper->getSingleCollectionData($selected_collection);
-        $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
+        $alphabet_numbers = $this->wrapper->getAlphabetNumbersWrapper()->getAlphabetNumbersData($this->getSpecialPageName());
         return $this->viewer->showSingleCollectionData($alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet, $selected_collection, $single_collection_data, $alphabet_numbers);
     }
 
     protected function getDefaultPage($error_message = '') {
-        $alphabet_numbers = $this->wrapper->getAlphabetNumbersData($this->getSpecialPageName());
+        $alphabet_numbers = $this->wrapper->getAlphabetNumbersWrapper()->getAlphabetNumbersData($this->getSpecialPageName());
         $this->viewer->showDefaultPage($error_message, $alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet);
     }
-    
+
     /**
      * Get the name of the special page
      * 
      * @return name of Special Page
      */
     abstract protected function getSpecialPageName();
-
 }

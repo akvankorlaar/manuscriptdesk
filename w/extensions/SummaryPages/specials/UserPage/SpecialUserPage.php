@@ -26,9 +26,9 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
     private $form_type = 'default';
     private $manuscript_old_title;
-    private $manuscript_new_title; 
+    private $manuscript_new_title;
     private $manuscript_url_old_title;
-    private $new_page_partial_url; 
+    private $new_page_partial_url;
 
     public function __construct() {
         parent::__construct('UserPage');
@@ -72,6 +72,21 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             return true;
         }
 
+        if ($request_processor->changeSignatureManuscriptPosted()) {
+            $this->handleSignatureChangeManuscript();
+            return true;
+        }
+
+        if ($request_processor->changeSignatureCollectionPagePosted()) {
+            $this->handleSignatureChangeCollectionPage();
+            return true;
+        }
+
+        if ($request_processor->changeSignatureCollationPosted()) {
+            $this->handleSignatureChangeCollation();
+            return true;
+        }
+
         throw new \Exception('error-request');
     }
 
@@ -84,14 +99,14 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     private function processDefaultPage() {
         list($button_name, $offset) = $this->request_processor->getDefaultPageData();
         $this->setWrapperAndViewer($button_name);
-        list($page_titles, $next_offset) = $this->wrapper->getData($offset);
+        list($page_data, $next_offset) = $this->wrapper->getData($offset);
 
-        if (empty($page_titles)) {
+        if (empty($page_data)) {
             $this->viewer->showEmptyPageTitlesError($button_name);
             return true;
         }
 
-        $this->viewer->showPage($button_name, $page_titles, $offset, $next_offset);
+        $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
         return true;
     }
 
@@ -126,13 +141,37 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return $this->viewer->showSingleCollectionData($collection_title, $single_collection_data);
     }
 
+    private function handleSignatureChangeManuscript() {
+        list($partial_url, $signature, $button_name, $offset) = $this->request_processor->getManuscriptSignatureChangeData();
+        $this->setWrapperAndViewer($button_name);
+        $this->wrapper->getSignatureWrapper()->setManuscriptSignature($partial_url, $signature);
+        list($page_data, $next_offset) = $this->wrapper->getData($offset);
+        return $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
+    }
+
+    private function handleSignatureChangeCollectionPage() {
+        list($partial_url, $signature, $collection_title) = $this->request_processor->getCollectionPageSignatureChangeData();
+        $this->setWrapperAndViewer('view_collections_posted');
+        $this->wrapper->getSignatureWrapper()->setManuscriptSignature($partial_url, $signature);
+        $single_collection_data = $this->wrapper->getSingleCollectionData($collection_title);
+        return $this->viewer->showSingleCollectionData($collection_title, $single_collection_data);
+    }
+
+    private function handleSignatureChangeCollation() {
+        list($partial_url, $signature, $button_name, $offset) = $this->request_processor->getCollationSignatureChangeData();
+        $this->setWrapperAndViewer($button_name);
+        $this->wrapper->getSignatureWrapper()->setCollationsSignature($partial_url, $signature);
+        list($page_data, $next_offset) = $this->wrapper->getData($offset);
+        return $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
+    }
+
     private function getEditSinglePageCollectionForm($error_message = '') {
         $this->setWrapperAndViewer('view_collections_posted');
         $collection_title = $this->request_processor->getCollectionTitle();
         $counter = $this->request_processor->getEditSinglePageCounter();
         list($manuscript_old_title, $manuscript_url_old_title) = $this->request_processor->getEditSinglePageCollectionData($counter);
         $this->viewer->showEditPageSingleCollectionForm($error_message, $collection_title, $manuscript_old_title, $manuscript_url_old_title);
-        return; 
+        return;
     }
 
     /**
@@ -144,14 +183,14 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
         list($manuscript_old_title, $manuscript_url_old_title) = $this->request_processor->getEditSinglePageCollectionData();
         $manuscript_new_title = $this->request_processor->getManuscriptNewTitleData();
-        
+
         //if the new title and the old title are equal, do nothing and return 
         if ($manuscript_new_title === $manuscript_old_title) {
             return $this->getSingleCollectionPage();
         }
-        
+
         $this->manuscript_old_title = $manuscript_old_title;
-        $this->manuscript_new_title = $manuscript_new_title; 
+        $this->manuscript_new_title = $manuscript_new_title;
         $this->manuscript_url_old_title = $manuscript_url_old_title;
         $new_page_partial_url = $this->new_page_partial_url = $this->createNewPagePartialUrl($manuscript_new_title);
         $this->renameFilePaths($manuscript_old_title, $manuscript_new_title);
@@ -170,7 +209,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
     private function updateDatabase($manuscript_new_title, $manuscript_url_old_title, $new_page_partial_url) {
         $status = $this->wrapper->updateManuscriptsTable($manuscript_new_title, $new_page_partial_url, $manuscript_url_old_title);
-        return; 
+        return;
     }
 
     private function renameFilePaths($manuscript_old_title, $manuscript_new_title) {
@@ -214,13 +253,13 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
     private function createNewWikiPageWithOldPageText($manuscript_url_old_title, $new_page_url) {
         $text_processor = new ManuscriptDeskBaseTextProcessor();
-        $old_page_text = $text_processor->getSinglePageText($manuscript_url_old_title);
+        $old_page_text = $text_processor->getUnfilteredSinglePageText($manuscript_url_old_title);
         $this->createNewWikiPage($new_page_url, $old_page_text);
         return true;
     }
 
     private function deleteOldWikiPage($manuscript_url_old_title) {
-        $delete_wrapper = new ManuscriptDeskDeleteWrapper();
+        $delete_wrapper = new ManuscriptDeskDeleteWrapper(null, new AlphabetNumbersWrapper());
         $page_id = $delete_wrapper->getPageId($manuscript_url_old_title);
         return $delete_wrapper->deletePageFromId($page_id);
     }
@@ -238,25 +277,26 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
                 return $this->getEditMetadataForm($error_message);
                 break;
             case 'edit_single_page':
-                if($error_identifier === 'error-database-update'){
-                    $this->renameFilePaths($this->manuscript_new_title, $this->manuscript_old_title);                
-                }elseif($error_identifier === 'error-newpage' || $error_identifier === 'error-titledoesnotexist'){
-                      $this->renameFilePaths($this->manuscript_new_title, $this->manuscript_old_title);                
-                      $this->updateDatabase($this->manuscript_old_title, $this->new_page_partial_url, $this->manuscript_url_old_title);
+                if ($error_identifier === 'error-database-update') {
+                    $this->renameFilePaths($this->manuscript_new_title, $this->manuscript_old_title);
                 }
-                
+                elseif ($error_identifier === 'error-newpage' || $error_identifier === 'error-titledoesnotexist') {
+                    $this->renameFilePaths($this->manuscript_new_title, $this->manuscript_old_title);
+                    $this->updateDatabase($this->manuscript_old_title, $this->new_page_partial_url, $this->manuscript_url_old_title);
+                }
+
                 return $this->getEditSinglePageCollectionForm($error_message);
         }
 
         return true;
     }
 
-    protected function setViewer() {
+    public function setViewer($object = null) {
         //empty because viewer has to be determined at runtime
         return;
     }
 
-    protected function setWrapper() {
+    public function setWrapper($object = null) {
         //empty because wrapper has to be determined at runtime   
         return;
     }
@@ -269,15 +309,15 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
         switch ($button_name) {
             case 'view_manuscripts_posted':
-                $this->wrapper = new SingleManuscriptPagesWrapper($this->user_name);
+                $this->wrapper = new SingleManuscriptPagesWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
                 $this->viewer = new UserPageManuscriptsViewer($this->getOutput(), $this->user_name);
                 break;
             case 'view_collations_posted':
-                $this->wrapper = new AllCollationsWrapper($this->user_name);
+                $this->wrapper = new AllCollationsWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
                 $this->viewer = new UserPageCollationsViewer($this->getOutput(), $this->user_name);
                 break;
             case 'view_collections_posted':
-                $this->wrapper = new AllCollectionsWrapper($this->user_name);
+                $this->wrapper = new AllCollectionsWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
                 $this->viewer = new UserPageCollectionsViewer($this->getOutput(), $this->user_name);
                 break;
         }
@@ -289,13 +329,13 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return;
     }
 
-    protected function setRequestProcessor() {
+    public function setRequestProcessor($object = null) {
 
         if (isset($this->request_processor)) {
             return;
         }
 
-        return $this->request_processor = new UserPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = isset($object) ? $object : new UserPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     /**

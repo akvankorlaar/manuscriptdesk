@@ -44,11 +44,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $manuscripts_title;
     private $collection_title;
     private $partial_url;
-    private $wrapper;
-
-    public function __construct(NewManuscriptWrapper $wrapper) {
-        $this->wrapper = $wrapper;
-    }
+    private $paths; 
 
     /**
      * This function loads the zoomviewer if the editor is in edit mode. 
@@ -99,7 +95,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         try {
 
-            if (!$this->manuscriptisInViewMode($out) || !$this->currentUserIsAManuscriptEditor($user) || !$this->currentPageIsAValidManuscriptPage($out)) {
+            if (!$this->manuscriptisInViewMode($out) || !$this->currentPageIsAValidManuscriptPage($out)) {
                 return true;
             }
 
@@ -110,16 +106,11 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 return $this->redirectToOriginalImage($out);
             }
 
-            $html = '';
-
-            if (isset($this->collection_title)) {
-                $html .= $this->getHTMLCollectionHeader();
+            if ($this->userIsAllowedToViewThePage($user)) {
+                $this->addHTMLToViewPage($user, $out);
+                $this->user_has_view_permission = true;
             }
 
-            $html .= $this->getHTMLManuscriptViewLinks($user);
-            $html .= $this->getHTMLIframeForZoomviewer($out->getRequest());
-            $out->addHTML($html);
-            $out->addModuleStyles('ext.zoomviewercss');
             return true;
         } catch (Exception $e) {
             return true;
@@ -127,8 +118,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function redirectToOriginalImage(OutputPage $out) {
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
-
+        $paths = $this->paths; 
+        
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return true;
         }
@@ -150,6 +141,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $this->partial_url = $partial_url;
         $this->creator_user_name = $this->wrapper->getUserNameFromUrl($partial_url);
         $this->manuscripts_title = $this->wrapper->getManuscriptsTitleFromUrl($partial_url);
+        $this->signature = $this->wrapper->getSignatureWrapper()->getManuscriptSignature($partial_url);
+        $this->paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
 
         $collection_title = $this->wrapper->getCollectionTitleFromUrl($partial_url);
         if ($this->collectionTitleIsValid($collection_title)) {
@@ -165,6 +158,21 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         }
 
         return true;
+    }
+
+    private function addHTMLToViewPage(User $user, OutputPage $out) {
+
+        $html = '';
+
+        if (isset($this->collection_title)) {
+            $html .= $this->getHTMLCollectionHeader();
+        }
+
+        $html .= $this->getHTMLManuscriptViewLinks($user);
+        $html .= $this->getHTMLIframeForZoomviewer($out->getRequest());
+        $out->addHTML($html);
+        $out->addModuleStyles('ext.zoomviewercss');
+        return;
     }
 
     private function getHTMLManuscriptViewLinks(User $user) {
@@ -195,14 +203,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $current_user_name = $user->getName();
         //only allow the owner of the collection to edit collection data
         if ($this->creator_user_name !== $current_user_name) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function currentUserIsAManuscriptEditor(User $user) {
-        if (!in_array('ManuscriptEditors', $user->getGroups())) {
             return false;
         }
 
@@ -266,7 +266,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     private function getHTMLLinkToOriginalManuscriptImage() {
 
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        $paths = $this->paths; 
 
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
@@ -338,7 +338,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      * Constructs the full path of the image to be passed to the iframe
      */
     private function constructImageFilePath() {
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        $paths = $this->paths; 
         return $paths->getWebLinkExportPath();
     }
 
@@ -404,11 +404,12 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function deleteFilesAndDatabaseEntries() {
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        $paths = $this->paths; 
         $paths->setExportPaths();
         $paths->setPartialUrl();
-        $deleter = new ManuscriptDeskDeleter(new ManuscriptDeskDeleteWrapper(), $paths, $this->collection_title);
-        $deleter->execute();
+        $delete_wrapper = new ManuscriptDeskDeleteWrapper($this->creator_user_name, new AlphabetNumbersWrapper()); 
+        $deleter = new ManuscriptDeskDeleter($delete_wrapper, $paths, $this->collection_title);
+        $deleter->deleteManuscriptPage();
         return;
     }
 
@@ -447,7 +448,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
     private function validNewManuscriptWasCreated(WikiPage $wikiPage) {
         $this->setPageData($wikiPage->getTitle()->getPrefixedUrl());
-        $paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        $paths = $this->paths; 
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return false;
         }
@@ -486,7 +487,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
             $partial_url = $out->getTitle()->mPrefixedText;
 
-            if ($this->isInManuscriptsNamespace($out) && $this->manuscriptIsInViewMode($out)) {
+            if ($this->isInManuscriptsNamespace($out) && $this->manuscriptIsInViewMode($out) && $this->user_has_view_permission) {
                 //doing this here ensures the table will be displayed at the bottom of the 
                 $this->addMetatableToManuscriptsPage($out);
                 $out->addModuleStyles('ext.manuscriptpagecss');
@@ -519,15 +520,33 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function getCollectionMetadata($collection_title) {
-        $database_wrapper = new AllCollectionsWrapper();
+        $database_wrapper = new AllCollectionsWrapper(new AlphabetNumbersWrapper());
         return $database_wrapper->getSingleCollectionMetadata($collection_title);
+    }
+
+    public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parser_output) {
+
+        if (!$this->isInManuscriptsNamespace($out)) {
+            return true;
+        }
+
+        if (!$this->user_has_view_permission) {
+            $parser_output->setText($this->getMessage('error-viewpermission'));
+        }
+        else {
+            $this->visualiseStrayTagsAndRemoveNotSupportedTags($parser_output);
+        }
+
+        return true;
     }
 
     /**
      * This function visualizes <add> and <del> tags that are nested in themselves correctly. It also removes tags that are not available in the editor for visualization.
      * These tags will still be visible in the editor. 
      */
-    public function onParserAfterTidy(Parser &$parser, &$text) {
+    private function visualiseStrayTagsAndRemoveNotSupportedTags(ParserOutput $parser_output) {
+
+        $text = $parser_output->getText();
 
         //look for stray </add> tags, and replace them with a tei-add span element  
         $text = preg_replace('/<\/span><\/span>(.*?)&lt;\/add&gt;/', '</span></span><span class="tei-add">$1</span>', $text);
@@ -540,14 +559,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         //look for any other escaped tags, and remove them
         $text = preg_replace('/&lt;(.*?)&gt;/s', '', $text);
 
-        return true;
-    }
+        $parser_output->setText($text);
 
-    /**
-     * Includes the unit tests for stylometricanalysis into the unit test list
-     */
-    public function onUnitTestsList(&$files) {
-        $files = array_merge($files, glob(__DIR__ . '/tests/*Test.php'));
         return true;
     }
 

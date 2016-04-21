@@ -96,7 +96,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         $wrapper = $this->wrapper;
         list($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) = $wrapper->getSavedCollateAnalysisData($time_identifier);
         $wrapper->storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output);
-        $wrapper->modifyAlphabetNumbersSingleValue($main_title_lowercase, 'AllCollations', 'add');
+        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($main_title_lowercase, 'AllCollations', 'add');
         $local_url = $this->createNewWikiPage($new_url);
         return $this->getOutput()->redirect($local_url);
     }
@@ -180,30 +180,31 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         return 'Collations:' . $user_name . "/" . $imploded_page_titles . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
 
-    protected function setViewer() {
+    public function setViewer($object = null) {
         
         if(isset($this->viewer)){
             return;
         }
-        return $this->viewer = new CollateViewer($this->getOutput());
+        
+        return $this->viewer = isset($object) ? $object : new CollateViewer($this->getOutput());
     }
 
-    protected function setWrapper() {
+    public function setWrapper($object = null) {
         
         if(isset($this->wrapper)){
             return;
         }
         
-        return $this->wrapper = new CollateWrapper($this->user_name);
+        return $this->wrapper = isset($object) ? $object : new CollateWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
     }
 
-    protected function setRequestProcessor() {
+    public function setRequestProcessor($object = null) {
         
         if(isset($this->request_processor)){
             return;
         }
         
-        return $this->request_processor = new CollateRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = isset($object) ? $object : new CollateRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     protected function getCollatexConverter() {

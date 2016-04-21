@@ -22,8 +22,6 @@
  * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  * 
- * php -d xdebug.profiler_enable=On phpunit.php C:\xampp\htdocs\mediawikinew\w\extensions\NewManuscript\tests
- * set XDEBUG_CONFIG="idekey=netbeans-xdebug" 
  */
 
 class NewManuscriptHooksTest extends MediaWikiTestCase {
@@ -31,89 +29,72 @@ class NewManuscriptHooksTest extends MediaWikiTestCase {
     private $t;
     private $context; 
 
-    protected function setUp() {        
-        $stub = $this->getMockBuilder('NewManuscriptWrapper')
-                     ->getMock();
-        
-        $this->t = new NewManuscriptHooks($stub);
-        $this->context = new RequestContext;
-        parent::setUp();
-        return;
-    }
-
-    protected function tearDown() {
-        unset($this->t);
-        unset($this->context);
-        parent::tearDown();
-        return;
-    }
-    
-//    public function testonPageContentSave(WikiPage $wikipage, User $user){
-//        $this->setTitle('test', NS_MANUSCRIPTS);
-//        $wikipage = new WikiPage($this->context->getTitle());
+//    protected function setUp() {        
+//        $stub = $this->getMockBuilder('NewManuscriptWrapper')
+//                     ->setConstructorArgs(array(null, new AlphabetNumbersWrapper(), new SignatureWrapper()))
+//                     ->getMock();
+//        
+//        $this->t = new NewManuscriptHooks($stub);
+//        $this->context = new RequestContext;
+//        parent::setUp();
+//        return;
 //    }
-
-    public function testonBeforePageDisplayManuscriptPage() {
-        $this->setTitle('test', NS_MANUSCRIPTS);
-        $this->setRequest(array(array('action' => 'view')));       
-        $skin = new SkinCbpTranscriptionEnhanced();
-        $out = $this->context->getOutput();      
-        
-        $this->t->onBeforePageDisplay($out, $skin); 
-        $modules = $out->mModuleStyles;  
-        $result = strpos('ext.manuscriptpagecss', $modules[0]); 
-        $this->assertEquals(is_int($result), true);                     
-        return; 
-    }
-    
-    public function testonBeforePageDisplayNewManuscript(){
-        $this->setTitle('NewManuscript', NS_SPECIAL, 'Special:NewManuscript');       
-        $skin = new SkinCbpTranscriptionEnhanced();
-        $out = $this->context->getOutput();
-        
-        $this->t->onBeforePageDisplay($out, $skin);       
-        $modules = $out->mModuleStyles; 
-        $result = strpos('ext.newmanuscriptcss', $modules[0]); 
-        $this->assertEquals(is_int($result), true);                     
-        return; 
-    }
-
-    public function testonParserAfterTidy() {
-        $sample_text1 = '</span></span> &lt;/add&gt;';
-        $result_text1 = '</span></span><span class="tei-add"> </span>';
-
-        $sample_text2 = '</span></span> &lt;/del&gt;';
-        $result_text2 = '</span></span><span class="tei-del"> </span>';
-
-        $sample_text3 = '</span></span> &lt;/hi&gt;';
-        $result_text3 = '</span></span><span class="tei-hi superscript"> </span>';
-
-        $parser = $this->getMockBuilder('Parser')
-            ->getMock();
-
-        $this->t->onParserAfterTidy($parser, $sample_text1);
-        $this->assertEquals($sample_text1, $result_text1);
-
-        $this->t->onParserAfterTidy($parser, $sample_text2);
-        $this->assertEquals($sample_text2, $result_text2);
-
-        $this->t->onParserAfterTidy($parser, $sample_text3);
-        $this->assertEquals($sample_text3, $result_text3);
-        return;
-    }
-    
-    private function setRequest(array $data) {
-        $faux_request = new FauxRequest($data, true);
-        $this->context->setRequest($faux_request);
-        return; 
-    }
-    
-    private function setTitle($page_title, $namespace = null, $mPrefixedText = null){
-        $faux_title = Title::newFromText($page_title, $namespace);
-        $faux_title->getPrefixedUrl();
-        $faux_title->mPrefixedText = $mPrefixedText;     
-        $this->context->setTitle($faux_title);
-        return;
-    }
+//
+//    protected function tearDown() {
+//        unset($this->t);
+//        unset($this->context);
+//        parent::tearDown();
+//        return;
+//    }
+//    
+//    public function testonBeforePageDisplay(){
+//        $this->setTitle('NewManuscript', NS_SPECIAL, 'Special:NewManuscript');       
+//        $skin = new SkinCbpTranscriptionEnhanced();
+//        $out = $this->context->getOutput();
+//        
+//        $this->t->onBeforePageDisplay($out, $skin);       
+//        $modules = $out->mModuleStyles; 
+//        $result = strpos('ext.manuscriptdeskbasecss', $modules[0]); 
+//        $this->assertEquals(is_int($result), true);                     
+//        return; 
+//    }
+//
+//    public function testonParserAfterTidy() {
+//        $sample_text1 = '</span></span> &lt;/add&gt;';
+//        $result_text1 = '</span></span><span class="tei-add"> </span>';
+//
+//        $sample_text2 = '</span></span> &lt;/del&gt;';
+//        $result_text2 = '</span></span><span class="tei-del"> </span>';
+//
+//        $sample_text3 = '</span></span> &lt;/hi&gt;';
+//        $result_text3 = '</span></span><span class="tei-hi superscript"> </span>';
+//
+//        $parser = $this->getMockBuilder('Parser')
+//            ->getMock();
+//
+//        $this->t->onParserAfterTidy($parser, $sample_text1);
+//        $this->assertEquals($sample_text1, $result_text1);
+//
+//        $this->t->onParserAfterTidy($parser, $sample_text2);
+//        $this->assertEquals($sample_text2, $result_text2);
+//
+//        $this->t->onParserAfterTidy($parser, $sample_text3);
+//        $this->assertEquals($sample_text3, $result_text3);
+//        return;
+//    }
+//    
+//    private function setRequest(array $data) {
+//        $faux_request = new FauxRequest($data, true);
+//        $this->context->setRequest($faux_request);
+//        return; 
+//    }
+//    
+//    private function setTitle($page_title, $namespace = null, $mPrefixedText = null){
+//        $faux_title = Title::newFromText($page_title, $namespace);
+//        $faux_title->getPrefixedUrl();
+//        $faux_title->mPrefixedText = $mPrefixedText;     
+//        $this->context->setTitle($faux_title);
+//        return;
+//    }
 
 }

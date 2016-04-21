@@ -61,6 +61,12 @@ $wgAutoloadClasses['HTMLUploadError'] = $dir . 'BaseViews' . '/' . 'HTMLUploadEr
 $wgAutoloadClasses['HTMLJavascriptLoader'] = $dir . 'BaseViews' . '/' . 'HTMLJavascriptLoader.php';
 $wgAutoloadClasses['HTMLCollectionMetaTable'] = $dir . 'BaseViews' . '/' . 'HTMLCollectionMetaTable.php';
 
+$wgAutoloadClasses['AlphabetNumbersWrapper'] = $dir . 'BaseWrappers' . '/' . 'AlphabetNumbersWrapper.php';
+$wgAutoloadClasses['SignatureWrapper'] = $dir . 'BaseWrappers' . '/' . 'SignatureWrapper.php';
+$wgAutoloadClasses['ManuscriptDeskDeleteWrapper'] = $dir . 'BaseWrappers' . '/' . 'ManuscriptDeskDeleteWrapper.php';
+
+$wgAutoloadClasses['ManuscriptDeskDeleter'] = $dir . 'ManuscriptDeskDeleter.php';
+
 $wgResourceModules['ext.javascriptloader'] = array(
   'scripts' => array(
     'js/ext.javascriptloader.js',
@@ -76,3 +82,4 @@ $wgResourceModules['ext.manuscriptdeskbasecss'] = array(
   'localBasePath' => __DIR__,
   'remoteExtPath' => 'ManuscriptDeskBase',
 );
+

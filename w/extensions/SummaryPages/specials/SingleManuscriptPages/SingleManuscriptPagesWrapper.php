@@ -22,7 +22,17 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
+class SingleManuscriptPagesWrapper implements SummaryPageWrapperInterface {
+
+    private $alphabetnumbers_wrapper;
+    private $signature_wrapper;
+    private $user_name;
+
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper = null, $user_name = null) {
+        $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+        $this->signature_wrapper = $signature_wrapper;
+        $this->user_name = $user_name;
+    }
 
     public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
 
@@ -30,7 +40,7 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
         $max_on_page = $wgNewManuscriptOptions['max_on_page'];
 
         $dbr = wfGetDB(DB_SLAVE);
-        $title_array = array();
+        $page_data = array();
         $next_offset = null;
 
         if (isset($this->user_name)) {
@@ -53,6 +63,7 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_user',
           'manuscripts_url',
           'manuscripts_date',
+          'manuscripts_signature',
           'manuscripts_lowercase_title',
             ), $conditions
             , __METHOD__, array(
@@ -67,13 +78,14 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
             while ($s = $res->fetchObject()) {
 
                 //add titles to the title array as long as it is not bigger than max_on_page
-                if (count($title_array) < $max_on_page) {
+                if (count($page_data) < $max_on_page) {
 
-                    $title_array[] = array(
+                    $page_data[] = array(
                       'manuscripts_title' => $s->manuscripts_title,
                       'manuscripts_user' => $s->manuscripts_user,
                       'manuscripts_url' => $s->manuscripts_url,
                       'manuscripts_date' => $s->manuscripts_date,
+                      'manuscripts_signature' => $s->manuscripts_signature,
                     );
                 }
                 else {
@@ -84,7 +96,15 @@ class SingleManuscriptPagesWrapper extends ManuscriptDeskBaseWrapper {
             }
         }
 
-        return array($title_array, $next_offset);
+        return array($page_data, $next_offset);
+    }
+
+    public function getAlphabetNumbersWrapper() {
+        return $this->alphabetnumbers_wrapper;
+    }
+
+    public function getSignatureWrapper() {
+        return $this->signature_wrapper;
     }
 
 }

@@ -43,7 +43,9 @@ $messages['en'] = array(
   'validation-notescharachters' => 'Your notes can only contain alphanumeric, whitespace and' . ',.;!?' . 'charachters',
   'validation-metadatacharachters' => 'Your metadata fields can only contain alphanumeric charachters and whitespace',
   'error-edittoken' => 'The edit token is not ok',
-  'error-nopermission' => 'You do not have permission to access the functionality of this page',
+  'error-nopermission' => 'You do not have permission to access the functionality of this page because you are not a member of the ManuscriptEditors group.',
+  'error-viewpermission' => 'You do not have permission to view the content of this page, because the owner of this page has made the content available only to the '
+  . 'ManuscriptEditors group.',
   'error-newpage' => 'The new Wiki Page could not be created (perhaps because this page already exists)',
   'error-request' => 'Something went wrong when processing your request',
   'manuscriptdesk-newpage' => 'You can add custom information to this page. The saved analysis will be preserved.',

@@ -24,8 +24,32 @@
  */
 abstract class ManuscriptDeskBaseHooks {
 
-    public function __construct() {
-        
+    protected $wrapper;
+    protected $signature;
+    protected $user_has_view_permission = false;
+
+    public function __construct(ManuscriptDeskBaseWrapper $wrapper) {
+        $this->wrapper = $wrapper;
+    }
+
+    protected function userIsAllowedToViewThePage(User $user) {
+        if ($this->signature === 'public') {
+            return true;
+        }
+        elseif ($this->signature === 'private' && $this->currentUserIsAManuscriptEditor($user)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    private function currentUserIsAManuscriptEditor(User $user) {
+        if (!in_array('ManuscriptEditors', $user->getGroups())) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function isInManuscriptsNamespace($object) {
@@ -95,11 +119,35 @@ abstract class ManuscriptDeskBaseHooks {
         return true;
     }
 
+    protected function userIsAllowedToDeleteThePage(User $user, Title $title) {
+        
+        if(!isset($this->wrapper)){
+            throw new \Exception('error-request');
+        }
+        
+        $wrapper = $this->wrapper;
+        $partial_url = $title->getPrefixedURL();
+
+        if (!$wrapper->currentUserCreatedThePage($partial_url) || !$this->currentUserIsASysop($user)) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * This function retrieves the message from the i18n file for String $identifier
      */
     protected function getMessage($identifier) {
         return wfMessage($identifier)->text();
+    }
+
+    /**
+     * Includes the unit tests for stylometricanalysis into the unit test list
+     */
+    public function onUnitTestsList(&$files) {
+        $files = array_merge($files, glob(__DIR__ . '/tests/*Test.php'));
+        return true;
     }
 
 }

@@ -22,7 +22,17 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
+class AllCollectionsWrapper implements SummaryPageWrapperInterface {
+
+    private $alphabetnumbers_wrapper;
+    private $signature_wrapper;
+    private $user_name;
+
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper = null, $user_name = null) {
+        $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+        $this->signature_wrapper = $signature_wrapper;
+        $this->user_name = $user_name;
+    }
 
     public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
 
@@ -159,6 +169,7 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_title', //values
           'manuscripts_url',
           'manuscripts_date',
+          'manuscripts_signature',
           'manuscripts_lowercase_title',
             ), array(
           'manuscripts_collection = ' . $dbr->addQuotes($collection_title),
@@ -175,6 +186,7 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
                   'manuscripts_title' => $s->manuscripts_title,
                   'manuscripts_url' => $s->manuscripts_url,
                   'manuscripts_date' => $s->manuscripts_date,
+                  'manuscripts_signature' => $s->manuscripts_signature,
                 );
             }
         }
@@ -252,8 +264,16 @@ class AllCollectionsWrapper extends ManuscriptDeskBaseWrapper {
             $dbw->rollback(__METHOD__);
             throw new \Exception('error-database-update');
         }
-        
-        return; 
+
+        return;
     }
 
+    public function getAlphabetNumbersWrapper() {
+        return $this->alphabetnumbers_wrapper;
+    }
+    
+    public function getSignatureWrapper(){
+        return $this->signature_wrapper; 
+    }
+    
 }

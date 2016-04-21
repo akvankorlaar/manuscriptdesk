@@ -85,41 +85,39 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
     }
 
     private function updateAlphabetNumbersTable() {
-        $wrapper = new UpdateAlphabetNumbersWrapper();
-        $wrapper->updateAlphabetNumbersCollections();
-        $wrapper->updateAlphabetNumbersSingleManuscriptPages();
-        $wrapper->updateAlphabetNumbersCollations();
+        $wrapper = new AlphabetNumbersUpdater(new AlphabetNumbersWrapper());
+        $wrapper->execute();
         return;
     }
 
     private function processDeleteManuscripts() {
-        $wrapper = new HelperScriptsDeleteWrapper();
+        $wrapper = new HelperScriptsDeleteWrapper(new ManuscriptDeskDeleteWrapper($this->user_name, new AlphabetNumbersWrapper()));
         $wrapper->deleteManuscriptDeskData();
         $this->updateAlphabetNumbersTable();
         return $this->viewer->showActionComplete();
     }
 
-    protected function setViewer() {
+    public function setViewer($object = null) {
 
         if (isset($this->viewer)) {
             return;
         }
 
-        return $this->viewer = new HelperScriptsViewer($this->getOutput());
+        return $this->viewer = isset($object) ? $object : new HelperScriptsViewer($this->getOutput());
     }
 
-    protected function setWrapper() {
+    public function setWrapper($object = null) {
         //has to be determined at runtime
-        return null;
+        return;
     }
 
-    protected function setRequestProcessor() {
+    public function setRequestProcessor($object = null) {
 
         if (isset($this->request_processor)) {
             return;
         }
 
-        return $this->request_processor = new HelperScriptsRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = isset($object) ? $object : new HelperScriptsRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     /**

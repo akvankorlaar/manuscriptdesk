@@ -32,30 +32,30 @@ class SpecialAllCollations extends SummaryPageBase {
         parent::__construct($this->page_name);
     }
 
-    protected function setViewer() {
+    public function setViewer($object = null) {
         
         if(isset($this->viewer)){
             return;
         }
-        return $this->viewer = new AllCollationsViewer($this->getOutput(), $this->page_name);
+        return $this->viewer = isset($object) ? $object : new AllCollationsViewer($this->getOutput(), $this->page_name);
     }
 
-    protected function setWrapper() {
+    public function setWrapper($object = null) {
         
         if(isset($this->wrapper)){
             return;
         }
         
-        return $this->wrapper = new AllCollationsWrapper();
+        return $this->wrapper = isset($object) ? $object : new AllCollationsWrapper(new AlphabetNumbersWrapper());
     }
 
-    protected function setRequestProcessor() {
+    public function setRequestProcessor($object = null) {
         
         if(isset($this->request_processor)){
             return;
         }
         
-        return $this->request_processor = new SummaryPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = isset($object) ? $object: new SummaryPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
     }
 
     protected function getSpecialPageName() {

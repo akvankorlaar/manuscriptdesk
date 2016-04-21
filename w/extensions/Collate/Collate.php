@@ -25,6 +25,9 @@
 /**
  * Usage: Add the following line in LocalSettings.php:
  * require_once( "$IP/extensions/Collate/Collate.php" );
+ * 
+ * This module collates texts in the Manuscript Desk. You need to have a working version of CollateX installed, and it needs to be running. To configure the Manuscript Desk
+ * for CollateX see the ExampleConf.php page ($wgCollationOptions)
  */
 // Check environment
 if (!defined('MEDIAWIKI')) {
@@ -80,8 +83,11 @@ $wgResourceModules['ext.collatebuttoncontroller'] = array(
   ),
 );
 
+//initialise wrappers for database calls
+$collate_wrapper = new CollateWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper());
+
 //Instantiate the CollateHooks class and register the hooks
-$collate_hooks = new CollateHooks();
+$collate_hooks = new CollateHooks($collate_wrapper);
 
 $wgHooks['MediaWikiPerformAction'][] = array($collate_hooks, 'onMediaWikiPerformAction');
 $wgHooks['AbortMove'][] = array($collate_hooks, 'onAbortMove');
@@ -89,3 +95,4 @@ $wgHooks['ArticleDelete'][] = array($collate_hooks, 'onArticleDelete');
 $wgHooks['PageContentSave'][] = array($collate_hooks, 'onPageContentSave');
 $wgHooks['BeforePageDisplay'][] = array($collate_hooks, 'onBeforePageDisplay');
 $wgHooks['ResourceLoaderGetConfigVars'][] = array($collate_hooks, 'onResourceLoaderGetConfigVars');
+$wgHooks['OutputPageParserOutput'][] = array($collate_hooks, 'onOutputPageParserOutput');
