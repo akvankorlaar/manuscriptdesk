@@ -214,7 +214,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
             return;
         }
 
-        return $this->wrapper = isset($object) ? $object : new NewManuscriptWrapper($this->user_name, new AlphabetNumbersWrapper(), new SignatureWrapper());
+        return $this->wrapper = isset($object) ? $object : new NewManuscriptWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
     }
 
     /**

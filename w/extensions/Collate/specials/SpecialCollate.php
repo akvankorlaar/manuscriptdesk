@@ -195,7 +195,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
             return;
         }
         
-        return $this->wrapper = isset($object) ? $object : new CollateWrapper($this->user_name, new AlphabetNumbersWrapper(), new SignatureWrapper());
+        return $this->wrapper = isset($object) ? $object : new CollateWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
     }
 
     public function setRequestProcessor($object = null) {

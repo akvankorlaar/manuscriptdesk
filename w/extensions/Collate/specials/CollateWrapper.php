@@ -27,13 +27,17 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
     private $alphabetnumbers_wrapper;
     private $signature_wrapper;
 
-    public function __construct($user_name = null, AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper) {
-        parent::__construct($user_name);
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper, $user_name = null) {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
         $this->signature_wrapper = $signature_wrapper;
+        $this->user_name = $user_name;
     }
 
     public function getCollectionData() {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         global $wgCollationOptions;
 
@@ -92,6 +96,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      */
     public function getManuscriptsData() {
 
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         global $wgCollationOptions;
 
         $dbr = wfGetDB(DB_SLAVE);
@@ -138,6 +146,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      */
     public function getSavedCollateAnalysisData($time_identifier) {
 
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
 
@@ -177,6 +189,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      */
     public function storeTempcollate(array $titles_array, $main_title = '', $new_url = '', $time, $collatex_output) {
 
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         $titles_array = json_encode($titles_array);
         $main_title_lowercase = strtolower($main_title);
 
@@ -205,6 +221,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      * and $time of the stored values is larger than $this->hours_before_delete, the values will be deleted 
      */
     public function clearOldCollatexOutput($time) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         global $wgCollationOptions;
 
@@ -244,6 +264,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      */
     private function deleteTempcollate($time) {
 
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         $dbw = wfGetDB(DB_MASTER);
         $user_name = $this->user_name;
 
@@ -265,6 +289,10 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
      * This function stores the collation data in 'collations' when the user chooses to save the current table
      */
     public function storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         $user_name = $this->user_name;
         $date = date("d-m-Y H:i:s");

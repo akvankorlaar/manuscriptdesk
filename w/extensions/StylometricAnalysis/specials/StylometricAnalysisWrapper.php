@@ -28,10 +28,10 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
     private $alphabetnumbers_wrapper;
     private $signature_wrapper;
 
-    public function __construct($user_name = null, AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper) {
-        parent::__construct($user_name);
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper, $user_name = null) {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
         $this->signature_wrapper = $signature_wrapper;
+        $this->user_name = $user_name;
     }
 
     /**
@@ -40,6 +40,10 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
     public function getManuscriptsCollectionData() {
 
         global $wgStylometricAnalysisOptions;
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         $minimum_pages_per_collection = $wgStylometricAnalysisOptions['minimum_pages_per_collection'];
         $minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
@@ -100,6 +104,10 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
      * This function checks if values should be removed from the 'tempstylometricanalysis' table
      */
     public function clearOldPystylOutput($time = 0) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         global $wgStylometricAnalysisOptions;
 
@@ -164,6 +172,10 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
 
     private function deleteOldEntriesFromTempstylometricanalysisTable($old_time) {
 
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         $dbw = wfGetDB(DB_MASTER);
         $user_name = $this->user_name;
 
@@ -182,6 +194,10 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     public function storeTempStylometricAnalysis(array $collection_name_data, $time = 0, $new_page_url = '', $date = 0, $full_linkpath1 = '', $full_linkpath2 = '', $full_outputpath1 = '', $full_outputpath2 = '', array $pystyl_config) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         $dbw = wfGetDB(DB_MASTER);
 
@@ -213,6 +229,10 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     public function transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time = 0) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -279,6 +299,10 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     public function getNewPagePartialUrl($time = 0) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;

@@ -52,7 +52,7 @@ class ManuscriptDeskBaseTextProcessor {
      * @return string $filtered_raw_text 
      */
     public function getFilteredSinglePageText($single_manuscript_url) {
-        $page_text = $this->getSinglePageText($single_manuscript_url);
+        $page_text = $this->getUnfilteredSinglePageText($single_manuscript_url);
         $filtered_raw_text = $this->filterText($page_text);
         $filtered_raw_text = $this->replaceLastCharachterOfPage($filtered_raw_text);
         $this->checkIfTextIsNotOnlyWhitespace($page_text);
@@ -63,7 +63,7 @@ class ManuscriptDeskBaseTextProcessor {
      * @param string $single_page_manuscript_url
      * @return string $page_text 
      */
-    public function getSinglePageText($single_page_manuscript_url) {
+    public function getUnfilteredSinglePageText($single_page_manuscript_url) {
         $title_object = $this->getTitleObjectExistingPage($single_page_manuscript_url);
         $wikipage = Wikipage::factory($title_object);
         return $wikipage->getText();

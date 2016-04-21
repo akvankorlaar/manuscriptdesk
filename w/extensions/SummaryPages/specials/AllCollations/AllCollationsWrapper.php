@@ -60,6 +60,7 @@ class AllCollationsWrapper implements SummaryPageWrapperInterface {
           'collations_url',
           'collations_date',
           'collations_main_title',
+          'collations_signature',    
           'collations_main_title_lowercase'
             ), $conditions
             , __METHOD__, array(
@@ -81,6 +82,7 @@ class AllCollationsWrapper implements SummaryPageWrapperInterface {
                       'collations_url' => $s->collations_url,
                       'collations_date' => $s->collations_date,
                       'collations_main_title' => $s->collations_main_title,
+                      'collations_signature' => $s->collations_signature,
                     );
 
                     //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page

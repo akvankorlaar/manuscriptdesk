@@ -27,13 +27,17 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
     private $alphabetnumbers_wrapper;
     private $signature_wrapper;
 
-    public function __construct($user_name = null, AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper) {
-        parent::__construct($user_name);
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper, $user_name = null) {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
         $this->signature_wrapper = $signature_wrapper;
+        $this->user_name = $user_name;
     }
 
     public function getNumberOfUploadsForCurrentUser() {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         $dbr = wfGetDB(DB_SLAVE);
         $number_of_uploads = 0;
@@ -86,6 +90,11 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     public function checkWhetherCurrentUserIsTheOwnerOfTheCollection($posted_collection_title) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
+
         $dbr = wfGetDB(DB_SLAVE);
         $res = $dbr->select(
             'collections', //from
@@ -117,6 +126,10 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
      * This functions checks if the collection already reached the maximum allowed manuscript pages, or if the current user is the creator of the collection
      */
     public function checkCollectionDoesNotExceedMaximumPages($posted_collection_title) {
+
+        if (!isset($this->user_name)) {
+            throw new \Exception('error-request');
+        }
 
         global $wgNewManuscriptOptions;
         $maximum_pages_per_collection = $wgNewManuscriptOptions['maximum_pages_per_collection'];

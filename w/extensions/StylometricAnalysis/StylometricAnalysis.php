@@ -75,7 +75,7 @@ $wgResourceModules['ext.stylometricanalysisbuttoncontroller'] = array(
 );
 
 //initialise wrappers for database calls
-$stylometricanalysis_wrapper = new StylometricAnalysisWrapper(null, new AlphabetNumbersWrapper(), new SignatureWrapper());
+$stylometricanalysis_wrapper = new StylometricAnalysisWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper());
 
 //Instantiate the stylometricAnalysisHooks class and register the hooks
 $stylometric_analysis_hooks = new StylometricAnalysisHooks($stylometricanalysis_wrapper);

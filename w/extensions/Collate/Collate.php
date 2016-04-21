@@ -84,7 +84,7 @@ $wgResourceModules['ext.collatebuttoncontroller'] = array(
 );
 
 //initialise wrappers for database calls
-$collate_wrapper = new CollateWrapper(null, new AlphabetNumbersWrapper(), new SignatureWrapper());
+$collate_wrapper = new CollateWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper());
 
 //Instantiate the CollateHooks class and register the hooks
 $collate_hooks = new CollateHooks($collate_wrapper);

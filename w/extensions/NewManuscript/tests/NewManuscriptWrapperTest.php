@@ -32,7 +32,7 @@ class NewManuscriptWrapperTest extends MediaWikiTestCase {
         parent::setUp();
         $this->test_wrapper = new DatabaseTestInserter();
         $this->test_wrapper->createManuscriptsTest();
-        $this->t = new NewManuscriptWrapper('testuser', new AlphabetNumbersWrapper(), new SignatureWrapper());
+        $this->t = new NewManuscriptWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), 'testuser');
     }
 
     protected function tearDown() {

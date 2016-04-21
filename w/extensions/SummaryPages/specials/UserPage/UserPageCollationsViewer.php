@@ -40,7 +40,6 @@ class UserPageCollationsViewer implements UserPageViewerInterface {
 
         $out = $this->out;
         global $wgArticleUrl;
-        $article_url = $wgArticleUrl;
         $user_name = $this->user_name;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
@@ -59,19 +58,22 @@ class UserPageCollationsViewer implements UserPageViewerInterface {
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-long'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td><b>" . $out->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-three'><b>" . $out->msg('userpage-signature') . "</b></td>";
+        $html .= "<td class='td-three'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
         $html .= "</tr>";
 
         foreach ($page_titles as $single_page_data) {
 
-            $url = isset($single_page_data['collations_url']) ? $single_page_data['collations_url'] : '';
+            $partial_url = isset($single_page_data['collations_url']) ? $single_page_data['collations_url'] : '';
             $date = isset($single_page_data['collations_date']) ? $single_page_data['collations_date'] : '';
             $title = isset($single_page_data['collations_main_title']) ? $single_page_data['collations_main_title'] : '';
+            $signature = isset($single_page_data['collations_signature']) ? $single_page_data['collations_signature'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
+            $html .= "<td class='td-long'><a href='" . $wgArticleUrl . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
+            $html .= "<td>" . $this->getChangeSignatureCollationPageForm($partial_url, $signature, $button_name, $offset) . "</td>";
             $html .= "<td>" . htmlspecialchars($date) . "</td>";
             $html .= "</tr>";
         }
@@ -81,6 +83,31 @@ class UserPageCollationsViewer implements UserPageViewerInterface {
         $html .= "</div>";
 
         return $out->addHTML($html);
+    }
+    
+    private function getChangeSignatureCollationPageForm($partial_url, $signature, $button_name, $offset){
+
+        global $wgArticleUrl;
+        $edit_token = $this->out->getUser()->getEditToken();
+
+        if ($signature === 'private') {
+            $new_signature = 'public';
+        }
+        else {
+            $new_signature = 'private';
+        }
+
+        $html = "";
+        $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
+        $html .= "<input class='button-transparent' type='submit' name='editlink' value='$signature'>";
+        $html .= "<input type='hidden' name='partial_url' value='$partial_url'>";
+        $html .= "<input type='hidden' name='change_signature_collation_posted' value = '$new_signature'>";
+          $html .= "<input type='hidden' name='button_name' value = '$button_name'>";
+        $html .= "<input type='hidden' name='offset' value = '$offset'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
+
+        return $html;
     }
 
     public function showEmptyPageTitlesError($button_name) {

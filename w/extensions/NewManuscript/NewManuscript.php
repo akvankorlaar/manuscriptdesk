@@ -84,7 +84,7 @@ $wgResourceModules['ext.newmanuscriptbuttoncontroller'] = array(
 );
 
 //initialise wrappers for database calls
-$newmanuscript_wrapper = new NewManuscriptWrapper(null, new AlphabetNumbersWrapper(), new SignatureWrapper());
+$newmanuscript_wrapper = new NewManuscriptWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper());
 
 //Instantiate the NewManuscriptHooks class and register the hooks
 $newmanuscript_hooks = new NewManuscriptHooks($newmanuscript_wrapper);
