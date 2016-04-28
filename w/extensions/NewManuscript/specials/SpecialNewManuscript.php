@@ -78,17 +78,17 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         }
 
         $this->setImageValidator();
-
+        
         $image_validator = $this->image_validator;
         list($temp_path, $extension) = $image_validator->getAndCheckUploadedImageData();
         $this->extension = $extension;
 
-        $this->setPaths();
+        $this->setPaths();    
         $this->setPathsData();
         $this->paths->moveUploadToInitialUploadDir($temp_path);
 
         $this->prepareAndExecuteSlicer();
-
+        
         $new_page_url = $this->paths->getPartialUrl();
         $this->updateDatabase($new_page_url);
         $local_url = $this->createNewWikiPage($new_page_url, 'This page has not been transcribed yet.');
@@ -159,53 +159,53 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     private function deleteAllData() {
-        $deleter = new ManuscriptDeskDeleter(new ManuscriptDeskDeleteWrapper(), $this->paths, $this->posted_collection_title);
+        $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter($this->posted_collection_title);
         return $deleter->deleteManuscriptPage();
     }
 
-    public function setPaths($object = null) {
+    public function setPaths() {
 
         if (isset($this->paths)) {
             return;
         }
-
-        return $this->paths = isset($object) ? $object : new NewManuscriptPaths($this->user_name, $this->posted_manuscript_title, $this->extension);
+        
+        return $this->paths = ObjectRegistry::getInstance()->getNewManuscriptPaths($this->user_name, $this->posted_manuscript_title, $this->extension);;
     }
 
-    public function setImageValidator($object = null) {
+    public function setImageValidator() {
 
         if (isset($this->image_validator)) {
             return;
         }
-
-        $this->image_validator = isset($object) ? $object : new NewManuscriptImageValidator($this->getRequest());
+            
+        return $this->image_validator = ObjectRegistry::getInstance()->getImageValidator($this->getRequest());
     }
 
-    public function setSlicerExecuter($object = null) {
+    public function setSlicerExecuter() {
 
         if (isset($this->slicer_executer)) {
             return;
         }
-
-        return $this->slicer_executer = isset($object) ? $object : new SlicerExecuter($this->paths);
+        
+        return $this->slicer_executer = ObjectRegistry::getInstance()->getSlicerExecuter();
     }
 
-    public function setRequestProcessor($object = null) {
+    public function setRequestProcessor() {
 
         if (isset($this->request_processor)) {
             return;
         }
 
-        return $this->request_processor = isset($object) ? $object : new NewManuscriptRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator);
+        return $this->request_processor = ObjectRegistry::getInstance()->getNewManuscriptRequestProcessor($this->getRequest());
     }
 
-    public function setViewer($object = null) {
+    public function setViewer() {
 
         if (isset($this->viewer)) {
             return;
         }
 
-        return $this->viewer = isset($object) ? $object : new NewManuscriptViewer($this->getOutput());
+        return $this->viewer = ObjectRegistry::getInstance()->getNewManuscriptViewer($this->getOutput());
     }
 
     public function setWrapper($object = null) {
@@ -213,8 +213,10 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         if (isset($this->wrapper)) {
             return;
         }
-
-        return $this->wrapper = isset($object) ? $object : new NewManuscriptWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
+        
+        $wrapper = ObjectRegistry::getInstance()->getNewManuscriptWrapper();
+        $wrapper->setUserName($this->user_name);
+        return $this->wrapper = $wrapper;
     }
 
     /**

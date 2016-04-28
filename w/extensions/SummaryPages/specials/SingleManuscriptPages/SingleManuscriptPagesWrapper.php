@@ -26,13 +26,20 @@ class SingleManuscriptPagesWrapper implements SummaryPageWrapperInterface {
 
     private $alphabetnumbers_wrapper;
     private $signature_wrapper;
-    private $user_name;
 
-    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper = null, $user_name = null) {
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper) {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
         $this->signature_wrapper = $signature_wrapper;
-        $this->user_name = $user_name;
     }
+    
+    public function setUserName($user_name){
+    
+        if(isset($this->user_name)){
+            return;
+        }    
+    
+        return $this->user_name = $user_name;
+    }    
 
     public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
 

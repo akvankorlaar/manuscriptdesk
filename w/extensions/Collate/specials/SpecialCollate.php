@@ -180,39 +180,41 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         return 'Collations:' . $user_name . "/" . $imploded_page_titles . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
 
-    public function setViewer($object = null) {
-        
-        if(isset($this->viewer)){
+    public function setViewer() {
+
+        if (isset($this->viewer)) {
             return;
         }
-        
-        return $this->viewer = isset($object) ? $object : new CollateViewer($this->getOutput());
+
+        return $this->viewer = ObjectRegistry::getInstance()->getCollateViewer($this->getOutput());
     }
 
-    public function setWrapper($object = null) {
-        
-        if(isset($this->wrapper)){
+    public function setWrapper() {
+
+        if (isset($this->wrapper)) {
             return;
         }
-        
-        return $this->wrapper = isset($object) ? $object : new CollateWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
+
+        $collate_wrapper = ObjectRegistry::getInstance()->getCollateWrapper();
+        $collate_wrapper->setUserName($this->user_name);
+        return $this->wrapper = $collate_wrapper;
     }
 
-    public function setRequestProcessor($object = null) {
-        
-        if(isset($this->request_processor)){
+    public function setRequestProcessor() {
+
+        if (isset($this->request_processor)) {
             return;
         }
-        
-        return $this->request_processor = isset($object) ? $object : new CollateRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+
+        return $this->request_processor = ObjectRegistry::getInstance()->getCollateRequestProcessor($this->getRequest());
     }
 
     protected function getCollatexConverter() {
-        return new CollatexConverter();
+        return ObjectRegistry::getInstance()->getCollatexConverter();
     }
-    
-    protected function getTextProcessor(){
-        return new ManuscriptDeskBaseTextProcessor();
+
+    protected function getTextProcessor() {
+        return ObjectRegistry::getInstance()->getManuscriptDeskBaseTextProcessor();
     }
 
 }

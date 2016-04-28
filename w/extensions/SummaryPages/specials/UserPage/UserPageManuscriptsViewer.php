@@ -31,10 +31,18 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface {
     private $out;
     private $user_name;
 
-    public function __construct(OutputPage $out, $user_name) {
+    public function __construct(OutputPage $out) {
         $this->out = $out;
-        $this->user_name = $user_name;
     }
+    
+    public function setUserName($user_name){
+    
+        if(isset($this->user_name)){
+            return;
+        }    
+    
+        return $this->user_name = $user_name;
+    }    
 
     public function showPage($button_name, $page_data, $offset, $next_offset) {
 

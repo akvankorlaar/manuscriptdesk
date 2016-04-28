@@ -23,6 +23,8 @@
  * @copyright 2015 Arent van Korlaar
  */
 interface UserPageViewerInterface {
+    
+    public function setUserName($user_name);
 
     public function showPage($button_name, $page_titles, $offset, $next_offset);
 

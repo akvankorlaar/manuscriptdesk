@@ -64,6 +64,7 @@ $wgAutoloadClasses['HTMLCollectionMetaTable'] = $dir . 'BaseViews' . '/' . 'HTML
 $wgAutoloadClasses['AlphabetNumbersWrapper'] = $dir . 'BaseWrappers' . '/' . 'AlphabetNumbersWrapper.php';
 $wgAutoloadClasses['SignatureWrapper'] = $dir . 'BaseWrappers' . '/' . 'SignatureWrapper.php';
 $wgAutoloadClasses['ManuscriptDeskDeleteWrapper'] = $dir . 'BaseWrappers' . '/' . 'ManuscriptDeskDeleteWrapper.php';
+$wgAutoloadClasses['ObjectRegistry'] = $dir . 'ObjectRegistry.php';
 
 $wgAutoloadClasses['ManuscriptDeskDeleter'] = $dir . 'ManuscriptDeskDeleter.php';
 

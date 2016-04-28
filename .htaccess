@@ -19,3 +19,4 @@ RewriteRule ^/*$ /w/index.php [L]
 #RewriteCond %{REQUEST_URI} !^/503.php [NC]
 #RewriteRule .* /503.php [R,L]
 #RewriteCond %{REMOTE_ADDR} !^00\.00\.00\.00 #own IP here
+

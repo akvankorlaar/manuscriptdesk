@@ -30,11 +30,15 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
         HTMLCollectionMetaTable;
 
     private $page_name;
-
-    public function __construct($out, $page_name) {
-        parent::__construct($out);
-        $this->page_name = $page_name;
-    }
+    
+   public function setPageName($page_name){
+    
+        if(isset($this->page_name)){
+            return;
+        }    
+    
+        return $this->page_name = $page_name;
+    }    
 
     /**
      * This function shows the page after a request has been processed

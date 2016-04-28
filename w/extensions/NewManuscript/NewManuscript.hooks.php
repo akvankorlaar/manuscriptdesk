@@ -142,7 +142,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $this->creator_user_name = $this->wrapper->getUserNameFromUrl($partial_url);
         $this->manuscripts_title = $this->wrapper->getManuscriptsTitleFromUrl($partial_url);
         $this->signature = $this->wrapper->getSignatureWrapper()->getManuscriptSignature($partial_url);
-        $this->paths = new NewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
+        $this->paths = ObjectRegistry::getInstance()->getNewManuscriptPaths($this->creator_user_name, $this->manuscripts_title);
 
         $collection_title = $this->wrapper->getCollectionTitleFromUrl($partial_url);
         if ($this->collectionTitleIsValid($collection_title)) {
@@ -407,8 +407,9 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $paths = $this->paths; 
         $paths->setExportPaths();
         $paths->setPartialUrl();
-        $delete_wrapper = new ManuscriptDeskDeleteWrapper($this->creator_user_name, new AlphabetNumbersWrapper()); 
-        $deleter = new ManuscriptDeskDeleter($delete_wrapper, $paths, $this->collection_title);
+        $delete_wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
+        $delete_wrapper->setUserName($this->creator_user_name);
+        $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter($this->collection_title);
         $deleter->deleteManuscriptPage();
         return;
     }
@@ -520,8 +521,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function getCollectionMetadata($collection_title) {
-        $database_wrapper = new AllCollectionsWrapper(new AlphabetNumbersWrapper());
-        return $database_wrapper->getSingleCollectionMetadata($collection_title);
+        $wrapper = ObjectRegistry::getInstance()->getAllCollectionsWrapper();
+        return $wrapper->getSingleCollectionMetadata($collection_title);
     }
 
     public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parser_output) {

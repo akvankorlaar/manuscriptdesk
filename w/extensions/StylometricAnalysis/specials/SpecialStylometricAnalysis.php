@@ -147,12 +147,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $this->getOutput()->redirect($local_url);
     }
 
-    private function createNewPageUrl() {
+    private function createNewPageUrl($main_title) {
         $user_name = $this->user_name;
-        $imploded_collection_name_data = implode('', $this->collection_name_data);
         $year_month_day = date('Ymd');
         $hours_minutes_seconds = date('his');
-        return 'Stylometricanalysis:' . $user_name . "/" . $imploded_collection_name_data . "/" . $year_month_day . "/" . $hours_minutes_seconds;
+        return 'Stylometricanalysis:' . $user_name . "/" . $main_title . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
 
     private function constructCollectionNameData() {
@@ -168,7 +167,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $texts = array();
         $a = 1;
         foreach ($this->collection_data as $single_collection_data) {
-            $text_processor = new ManuscriptDeskBaseTextProcessor();
+            $text_processor = ObjectRegistry::getInstance()->getManuscriptDeskBaseTextProcessor();
             $all_texts_for_one_collection = $text_processor->getAllTextsForOneCollection($single_collection_data);
             $this->checkForStylometricAnalysisCollectionErrors($all_texts_for_one_collection);
             $collection_name = isset($single_collection_data['collection_name']) ? $single_collection_data['collection_name'] : 'collection' . $a;
@@ -333,11 +332,12 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function updateDatabase($time = 0, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2) {
-        $new_page_url = $this->createNewPageUrl();
+        $main_title = implode('', $this->collection_name_data);
+        $new_page_url = $this->createNewPageUrl($main_title);
         $date = date("d-m-Y H:i:s");
         $wrapper = $this->wrapper;
         $wrapper->clearOldPystylOutput($time);
-        $wrapper->storeTempStylometricAnalysis($this->collection_name_data, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2, $this->pystyl_config);
+        $wrapper->storeTempStylometricAnalysis($this->collection_name_data, $time, $new_page_url, $date, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2, $this->pystyl_config, $main_title);
         return true;
     }
 
@@ -353,17 +353,16 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     protected function handleExceptions(Exception $exception_error) {
-
         $this->setViewer();
-        $viewer = $this->viewer; 
+        $viewer = $this->viewer;
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
         if ($error_identifier === 'error-nopermission') {
             return $viewer->showSimpleErrorMessage($error_message);
         }
-        
-        if($error_identifier === 'error-fewuploads'){
+
+        if ($error_identifier === 'error-fewuploads') {
             return $viewer->showFewUploadsError($error_identifier);
         }
 
@@ -374,30 +373,32 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $this->getDefaultPage($error_message);
     }
 
-    public function setViewer($object = null) {
-        
-        if(isset($this->viewer)){
+    public function setViewer() {
+
+        if (isset($this->viewer)) {
             return;
         }
-        
-        return $this->viewer = isset($object) ? $object : new StylometricAnalysisViewer($this->getOutput());
+
+        return $this->viewer = ObjectRegistry::getInstance()->getStylometricAnalysisViewer($this->getOutput());
     }
 
-    public function setWrapper($object = null) {
-        
-        if(isset($this->wrapper)){
+    public function setWrapper() {
+
+        if (isset($this->wrapper)) {
             return;
         }
         
-        return $this->wrapper = isset($object) ? $object : new StylometricAnalysisWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
+        $wrapper = ObjectRegistry::getInstance()->getStylometricAnalysisWrapper();
+        $wrapper->setUserName($this->user_name);
+        return $this->wrapper = $wrapper;
     }
 
-    public function setRequestProcessor($object = null) {
-        
-        if(isset($this->request_processor)){
+    public function setRequestProcessor() {
+
+        if (isset($this->request_processor)) {
             return;
         }
-        return $this->request_processor = isset($object) ? $object : new StylometricAnalysisRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = ObjectRegistry::getInstance()->getStylometricAnalysisRequestProcessor($this->getRequest());
     }
 
     /**

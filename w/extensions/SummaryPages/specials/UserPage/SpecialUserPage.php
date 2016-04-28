@@ -267,7 +267,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     protected function handleExceptions(Exception $exception_error) {
 
         $error_identifier = $exception_error->getMessage();
-        $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
+        $error_message = $this->setErrorMessage($exception_error, $error_identifier);
 
         switch ($this->form_type) {
             case 'default':
@@ -291,12 +291,12 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    public function setViewer($object = null) {
+    public function setViewer() {
         //empty because viewer has to be determined at runtime
         return;
     }
 
-    public function setWrapper($object = null) {
+    public function setWrapper() {
         //empty because wrapper has to be determined at runtime   
         return;
     }
@@ -309,16 +309,22 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
         switch ($button_name) {
             case 'view_manuscripts_posted':
-                $this->wrapper = new SingleManuscriptPagesWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
-                $this->viewer = new UserPageManuscriptsViewer($this->getOutput(), $this->user_name);
+                $this->wrapper = ObjectRegistry::getInstance()->getSingleManuscriptPagesWrapper();
+                $this->wrapper->setUserName($this->user_name);
+                $this->viewer = ObjectRegistry::getInstance()->getUserPageManuscriptsViewer($this->getOutput());
+                $this->viewer->setUserName($this->user_name);
                 break;
             case 'view_collations_posted':
-                $this->wrapper = new AllCollationsWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
-                $this->viewer = new UserPageCollationsViewer($this->getOutput(), $this->user_name);
+                $this->wrapper = ObjectRegistry::getInstance()->getAllCollationsWrapper();
+                $this->wrapper->setUserName($this->user_name);
+                $this->viewer = ObjectRegistry::getInstance()->getUserPageCollationsViewer($this->getOutput());
+                $this->viewer->setUserName($this->user_name);
                 break;
             case 'view_collections_posted':
-                $this->wrapper = new AllCollectionsWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
-                $this->viewer = new UserPageCollectionsViewer($this->getOutput(), $this->user_name);
+                $this->wrapper = ObjectRegistry::getInstance()->getAllCollectionsWrapper();
+                $this->wrapper->setUserName($this->user_name);
+                $this->viewer = ObjectRegistry::getInstance()->getUserPageCollectionsViewer($this->getOutput());
+                $this->viewer->setUserName($this->user_name);
                 break;
         }
 
@@ -329,13 +335,13 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return;
     }
 
-    public function setRequestProcessor($object = null) {
+    public function setRequestProcessor() {
 
         if (isset($this->request_processor)) {
             return;
         }
 
-        return $this->request_processor = isset($object) ? $object : new UserPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = ObjectRegistry::getInstance()->getUserPageRequestProcessor($this->getRequest());
     }
 
     /**

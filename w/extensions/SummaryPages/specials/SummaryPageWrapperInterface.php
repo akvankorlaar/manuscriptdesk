@@ -24,5 +24,7 @@
  */
 interface SummaryPageWrapperInterface {
 
+    public function setUserName($user_name);
+
     public function getAlphabetNumbersWrapper();
 }

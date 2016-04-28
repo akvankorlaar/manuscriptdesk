@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements SummaryPageViewerInterface {
+class AllStylometricAnalysisViewer extends ManuscriptDeskBaseViewer implements SummaryPageViewerInterface {
 
     use HTMLLetterBar,
         HTMLJavascriptLoaderDots,
@@ -39,37 +39,38 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
         return $this->page_name = $page_name;
     }    
 
+    /**
+     * This function shows the page after a request has been processed
+     */
     public function showSingleLetterOrNumberPage(
     array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
 
-        global $wgArticleUrl; 
+        global $wgArticleUrl;
         $out = $this->out;
-        $out->setPageTitle($out->msg('singlemanuscriptpages'));
-        
-        
+        $edit_token = $out->getUser()->getEditToken();
         $html = '';
-        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
+        $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
-        
+
         $html .= "<div class='javascripthide'>";
         
-        $edit_token = $out->getUser()->getEditToken();
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $this->page_name, $button_name);
         
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $button_name, $this->page_name); 
+        $out->setPageTitle($out->msg('allstylometricanalysis'));
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
         $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
+        $html .= "<td class='td-trhee'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
         $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
-        foreach ($page_titles as $key => $array) {
+        foreach ($page_titles as $single_page_data) {
 
-            $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
-            $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
-            $user = isset($array['manuscripts_user']) ? $array['manuscripts_user'] : '';
-            $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
+            //$title = isset($single_page_data['stylometricanalysis_main_title']) ? $single_page_data['stylometricanalysis_main_title'] : '';
+            $url = isset($single_page_data['stylometricanalysis_new_page_url']) ? $single_page_data['stylometricanalysis_new_page_url'] : '';
+            $user = isset($single_page_data['stylometricanalysis_user']) ? $single_page_data['stylometricanalysis_user'] : '';
+            $date = isset($single_page_data['stylometricanalysis_date']) ? $single_page_data['stylometricanalysis_date'] : '';
 
             $html .= "<tr>";
             $html .= "<td class='td-three'><a href='" . $wgArticleUrl . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
@@ -91,19 +92,20 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
     public function showDefaultPage($error_message, array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet) {
 
         $out = $this->out;
-        $out->setPageTitle($out->msg('singlemanuscriptpages'));
+        $out->setPageTitle($out->msg('allstylometricanalysis'));
 
         $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
-
+        
         if (!empty($error_message)) {
             $html .= "<br>";
             $html .= "<div class = 'error'>$error_message</div>";
         }
 
-        $html .= "<p>" . $out->msg('singlemanuscriptpages-instruction') . "</p>";
+        $html .= "<p>" . $out->msg('allstylometricanalysis-instruction') . "</p>";
+        
         $html .= "</div>";
 
         return $out->addHTML($html);
@@ -112,18 +114,18 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
     public function showEmptyPageTitlesError(array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name) {
 
         $out = $this->out;
-        $out->setPageTitle($out->msg('singlemanuscriptpages'));
+        $out->setPageTitle($out->msg('allstylometricanalysis'));
 
         $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
-        
+
         if (preg_match('/^[0-9.]*$/', $button_name)) {
-            $html .= "<p>" . $out->msg('singlemanuscriptpages-nomanuscripts-number') . "</p>";
+            $html .= "<p>" . $out->msg('allstylometricanalysis-nostylometricanalysis-number') . "</p>";
         }
         else {
-            $html .= "<p>" . $out->msg('singlemanuscriptpages-nomanuscripts') . "</p>";
+            $html .= "<p>" . $out->msg('allstylometricanalysis-nostylometricanalysis') . "</p>";
         }
         
         $html .= "</div>";
@@ -132,3 +134,4 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
     }
 
 }
+
