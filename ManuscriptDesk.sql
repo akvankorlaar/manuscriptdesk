@@ -137,3 +137,4 @@ CREATE TABLE IF NOT EXISTS `alphabetnumbers` (
 INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('SingleManuscriptPages'); 
 INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('AllCollections'); 
 INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('AllCollations'); 
+INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('AllStylometricAnalysis'); 

@@ -141,8 +141,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function processSavePageRequest() {
-        $time = $this->request_processor->getSavePageData();
-        $new_page_url = $this->transferDatabaseDataAndGetNewPageUrl($time);
+        $time_identifier = $this->request_processor->getSavePageData();
+        $wrapper = $this->wrapper;
+        $wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
+        list($new_page_url, $main_title_lowercase) = $wrapper->getStylometricAnalysisNewPageData($time);
+        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($main_title_lowercase, 'AllStylometricAnalysis', 'add');
         $local_url = $this->createNewWikiPage($new_page_url);
         return $this->getOutput()->redirect($local_url);
     }
@@ -346,12 +349,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $wrapper->getManuscriptsCollectionData();
     }
 
-    private function transferDatabaseDataAndGetNewPageUrl($time = 0) {
-        $wrapper = $this->wrapper;
-        $wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
-        return $wrapper->getPartialUrl($time);
-    }
-
     protected function handleExceptions(Exception $exception_error) {
         $this->setViewer();
         $viewer = $this->viewer;
@@ -387,7 +384,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         if (isset($this->wrapper)) {
             return;
         }
-        
+
         $wrapper = ObjectRegistry::getInstance()->getStylometricAnalysisWrapper();
         $wrapper->setUserName($this->user_name);
         return $this->wrapper = $wrapper;

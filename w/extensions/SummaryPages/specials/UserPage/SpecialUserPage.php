@@ -86,6 +86,11 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             $this->handleSignatureChangeCollation();
             return true;
         }
+        
+        if ($request_processor->changeSignatureStylometricAnalysisPosted()) {
+            $this->handleSignatureChangeStylometricAnalysis();
+            return true;
+        }
 
         throw new \Exception('error-request');
     }
@@ -93,7 +98,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     protected function getDefaultPage($error_message = '') {
         $user_is_a_sysop = $this->currentUserIsASysop();
         $this->viewer = new UserPageDefaultViewer($this->getOutput());
-        $this->viewer->showDefaultPage($error_message, $this->user_name, $user_is_a_sysop);
+        return $this->viewer->showDefaultPage($error_message, $this->user_name, $user_is_a_sysop);
     }
 
     private function processDefaultPage() {
@@ -161,6 +166,14 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         list($partial_url, $signature, $button_name, $offset) = $this->request_processor->getCollationSignatureChangeData();
         $this->setWrapperAndViewer($button_name);
         $this->wrapper->getSignatureWrapper()->setCollationsSignature($partial_url, $signature);
+        list($page_data, $next_offset) = $this->wrapper->getData($offset);
+        return $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
+    }
+    
+    private function handleSignatureChangeStylometricAnalysis(){
+        list($partial_url, $signature, $button_name, $offset) = $this->request_processor->getStylometricAnalysisSignatureChangeData();
+        $this->setWrapperAndViewer($button_name);
+        $this->wrapper->getSignatureWrapper()->setStylometricAnalysisSignature($partial_url, $signature);
         list($page_data, $next_offset) = $this->wrapper->getData($offset);
         return $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
     }
@@ -267,7 +280,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     protected function handleExceptions(Exception $exception_error) {
 
         $error_identifier = $exception_error->getMessage();
-        $error_message = $this->setErrorMessage($exception_error, $error_identifier);
+        $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
         switch ($this->form_type) {
             case 'default':
@@ -324,6 +337,12 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
                 $this->wrapper = ObjectRegistry::getInstance()->getAllCollectionsWrapper();
                 $this->wrapper->setUserName($this->user_name);
                 $this->viewer = ObjectRegistry::getInstance()->getUserPageCollectionsViewer($this->getOutput());
+                $this->viewer->setUserName($this->user_name);
+                break;
+            case 'view_stylometricanalysis_posted':
+                $this->wrapper = ObjectRegistry::getInstance()->getAllStylometricAnalysisWrapper();
+                $this->wrapper->setUserName($this->user_name);
+                $this->viewer = ObjectRegistry::getInstance()->getUserPageStylometricAnalysisViewer($this->getOutput());
                 $this->viewer->setUserName($this->user_name);
                 break;
         }

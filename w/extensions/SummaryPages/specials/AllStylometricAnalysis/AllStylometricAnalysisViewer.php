@@ -67,7 +67,7 @@ class AllStylometricAnalysisViewer extends ManuscriptDeskBaseViewer implements S
 
         foreach ($page_titles as $single_page_data) {
 
-            //$title = isset($single_page_data['stylometricanalysis_main_title']) ? $single_page_data['stylometricanalysis_main_title'] : '';
+            $title = isset($single_page_data['stylometricanalysis_main_title']) ? $single_page_data['stylometricanalysis_main_title'] : '';
             $url = isset($single_page_data['stylometricanalysis_new_page_url']) ? $single_page_data['stylometricanalysis_new_page_url'] : '';
             $user = isset($single_page_data['stylometricanalysis_user']) ? $single_page_data['stylometricanalysis_user'] : '';
             $date = isset($single_page_data['stylometricanalysis_date']) ? $single_page_data['stylometricanalysis_date'] : '';

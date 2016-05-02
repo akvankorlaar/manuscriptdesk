@@ -22,7 +22,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SpecialAllStylometricAnalysis {
+class SpecialAllStylometricAnalysis extends SummaryPageBase {
 
     private $page_name = 'AllStylometricAnalysis';
 
@@ -36,7 +36,7 @@ class SpecialAllStylometricAnalysis {
         if (isset($this->viewer)) {
             return;
         }
-        $viewer = ObjectRegistry::getInstance()->getStylometricAnalysisViewer($this->getOutput());
+        $viewer = ObjectRegistry::getInstance()->getAllStylometricAnalysisViewer($this->getOutput());
         $viewer->setPageName($this->page_name);
         return $this->viewer = $viewer;
     }

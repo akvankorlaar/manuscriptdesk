@@ -29,11 +29,20 @@ class ManuscriptDeskDeleter {
     private $collection_title;
     private $manuscripts_url;
 
-    public function __construct(ManuscriptDeskDeleteWrapper $wrapper, NewManuscriptPaths $paths = null, $collection_title = null, $manuscripts_url = null) {
+    public function __construct(ManuscriptDeskDeleteWrapper $wrapper) {
         $this->wrapper = $wrapper;
-        $this->paths = $paths;
-        $this->collection_title = $collection_title;
-        $this->manuscripts_url = $manuscripts_url;
+    }
+
+    public function setNewManuscriptPaths(NewManuscriptPaths $paths) {
+        return $this->paths = $paths;
+    }
+
+    public function setCollectionTitle($collection_title) {
+        return $this->collection_title = $collection_title;
+    }
+
+    public function setManuscriptsUrl($manuscripts_url) {
+        return $this->manuscripts_url = $manuscripts_url;
     }
 
     public function deleteManuscriptPage() {
@@ -49,6 +58,7 @@ class ManuscriptDeskDeleter {
      * take care of this. See onArticleDelete
      */
     public function deleteCollationData($partial_url) {
+        $wrapper = $this->wrapper;
         $manuscripts_lowercase_title = $wrapper->getManuscriptsLowercaseTitle($partial_url);
         $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($manuscripts_lowercase_title, 'AllCollations', 'subtract');
         $wrapper->deleteFromCollations($partial_url);
@@ -61,7 +71,7 @@ class ManuscriptDeskDeleter {
     public function deleteStylometricAnalysisData($partial_url) {
         $wrapper = $this->wrapper;
         $manuscripts_lowercase_title = $wrapper->getManuscriptsLowercaseTitle($partial_url);
-        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($manuscripts_lowercase_title, 'AllStylometricAnalyses', 'subtract');
+        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($manuscripts_lowercase_title, 'AllStylometricAnalysis', 'subtract');
         $wrapper->deleteFromStylometricAnalysis($partial_url);
     }
 

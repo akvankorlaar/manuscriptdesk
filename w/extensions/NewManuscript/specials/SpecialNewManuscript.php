@@ -159,7 +159,9 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     private function deleteAllData() {
-        $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter($this->posted_collection_title);
+        $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter();
+        $deleter->setNewManuscriptPaths($this->paths);
+        $deleter->setCollectionTitle($this->posted_collection_title);
         return $deleter->deleteManuscriptPage();
     }
 

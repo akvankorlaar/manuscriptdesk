@@ -63,11 +63,16 @@ $wgAutoloadClasses['SpecialSingleManuscriptPages'] = $dir . '/specials/SingleMan
 $wgAutoloadClasses['SingleManuscriptPagesWrapper'] = $dir . '/specials/SingleManuscriptPages/SingleManuscriptPagesWrapper.php';
 $wgAutoloadClasses['SingleManuscriptPagesViewer'] = $dir . '/specials/SingleManuscriptPages/SingleManuscriptPagesViewer.php';
 
+$wgAutoloadClasses['SpecialAllStylometricAnalysis'] = $dir . '/specials/AllStylometricAnalysis/SpecialAllStylometricAnalysis.php';
+$wgAutoloadClasses['AllStylometricAnalysisViewer'] = $dir . '/specials/AllStylometricAnalysis/AllStylometricAnalysisViewer.php';
+$wgAutoloadClasses['AllStylometricAnalysisWrapper'] = $dir . '/specials/AllStylometricAnalysis/AllStylometricAnalysisWrapper.php';
+
 $wgAutoloadClasses['SpecialRecentManuscriptPages'] = $dir . '/specials/RecentManuscriptPages/SpecialRecentManuscriptPages.php';
 
 $wgAutoloadClasses['SpecialUserPage'] = $dir . '/specials/UserPage/SpecialUserPage.php';
 $wgAutoloadClasses['UserPageCollationsViewer'] = $dir . '/specials/UserPage/UserPageCollationsViewer.php';
 $wgAutoloadClasses['UserPageCollectionsViewer'] = $dir . '/specials/UserPage/UserPageCollectionsViewer.php';
+$wgAutoloadClasses['UserPageStylometricAnalysisViewer'] = $dir . '/specials/UserPage/UserPageStylometricAnalysisViewer.php';
 $wgAutoloadClasses['UserPageDefaultViewer'] = $dir . '/specials/UserPage/UserPageDefaultViewer.php';
 $wgAutoloadClasses['UserPageManuscriptsViewer'] = $dir . '/specials/UserPage/UserPageManuscriptsViewer.php';
 $wgAutoloadClasses['UserPageRequestProcessor'] = $dir . '/specials/UserPage/UserPageRequestProcessor.php';
@@ -88,6 +93,7 @@ $wgSpecialPages['AllCollations'] = 'SpecialAllCollations';
 $wgSpecialPages['AllCollections'] = 'SpecialAllCollections';
 $wgSpecialPages['RecentManuscriptPages'] = 'SpecialRecentManuscriptPages';
 $wgSpecialPages['SingleManuscriptPages'] = 'SpecialSingleManuscriptPages';
+$wgSpecialPages['AllStylometricAnalysis'] = 'SpecialAllStylometricAnalysis';
 $wgSpecialPages['UserPage'] = 'SpecialUserPage';
 
 //Extra file loaded later 
@@ -106,4 +112,4 @@ $wgResourceModules['ext.javascriptloaderdots'] = array(
 $summary_pages_hooks = new SummaryPagesHooks();
 
 $wgHooks['BeforePageDisplay'][] = array($summary_pages_hooks, 'onBeforePageDisplay');
-$wgHooks['UnitTestsList'][] = array($summary_pages_hooks, 'onUnitTestsList');
+$wgHooks['UnitTestsList'][] = array($summary_pages_hooks, 'onUnitTestsList');    

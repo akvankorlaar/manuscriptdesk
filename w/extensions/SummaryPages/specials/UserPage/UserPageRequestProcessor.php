@@ -30,13 +30,13 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         $posted_names = $request->getValueNames();
         $offset = 0;
 
-        foreach ($posted_names as $value) {
+        foreach ($posted_names as $name) {
 
-            if ($value === 'view_manuscripts_posted' || $value === 'view_collections_posted' || $value === 'view_collations_posted') {
-                $button_name = $value;
+            if ($name === 'view_manuscripts_posted' || $name === 'view_collections_posted' || $name === 'view_collations_posted' || $name === 'view_stylometricanalysis_posted') {
+                $button_name = $name;
             }
-            elseif ($value === 'offset') {
-                $offset = (int) $validator->validateStringNumber($request->getText($value));
+            elseif ($name === 'offset') {
+                $offset = (int) $validator->validateStringNumber($request->getText($name));
 
                 if ($offset < 0) {
                     throw new \Exception('error-request');
@@ -160,6 +160,15 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         return false;
     }
 
+    public function changeSignatureStylometricAnalysisPosted() {
+        $request = $this->request;
+        if ($request->getText('change_signature_stylometricanalysis_posted') !== '') {
+            return true;
+        }
+
+        return false;
+    }
+
     public function getCollectionPageSignatureChangeData() {
         $request = $this->request;
         $validator = $this->validator;
@@ -188,6 +197,27 @@ class UserPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         $button_name = $request->getText('button_name');
 
         if ($button_name !== 'view_collations_posted') {
+            throw new \Exception('error-request');
+        }
+
+        $offset = (int) $validator->validateStringNumber($request->getText('offset'));
+        return array($partial_url, $signature, $button_name, $offset);
+    }
+
+    public function getStylometricAnalysisSignatureChangeData() {
+        $request = $this->request;
+        $validator = $this->validator;
+        $signature = $validator->validateString($request->getText('change_signature_stylometricanalysis_posted'));
+
+        if ($signature !== 'public' && $signature !== 'private') {
+            throw new \Exception('error-request');
+        }
+
+        $partial_url = $validator->validateStringUrl($request->getText('partial_url'));
+
+        $button_name = $request->getText('button_name');
+
+        if ($button_name !== 'view_stylometricanalysis_posted') {
             throw new \Exception('error-request');
         }
 

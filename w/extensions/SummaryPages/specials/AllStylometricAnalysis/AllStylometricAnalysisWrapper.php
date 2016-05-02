@@ -42,7 +42,7 @@ class AllStylometricAnalysisWrapper implements SummaryPageWrapperInterface {
         return $this->user_name = $user_name;
     }    
 
-    public function getData() {
+    public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
 
         global $wgNewManuscriptOptions;
         $max_on_page = $wgNewManuscriptOptions['max_on_page'];
@@ -87,7 +87,7 @@ class AllStylometricAnalysisWrapper implements SummaryPageWrapperInterface {
 
                     $title_array[] = array(
                       'stylometricanalysis_user' => $s->stylometricanalysis_user,
-                      'stylometricanalysis_url' => $s->stylometricanalysis_url,
+                      'stylometricanalysis_new_page_url' => $s->stylometricanalysis_new_page_url,
                       'stylometricanalysis_date' => $s->stylometricanalysis_date,
                       'stylometricanalysis_main_title' => $s->stylometricanalysis_main_title,
                       'stylometricanalysis_signature' => $s->stylometricanalysis_signature,

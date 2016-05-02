@@ -129,9 +129,9 @@ class SignatureWrapper {
             'stylometricanalysis', //from
             array(
           'stylometricanalysis_signature', //values
-          'stylometricanalysis_url',
+          'stylometricanalysis_new_page_url',
             ), array(
-          'stylometricanalysis_url = ' . $dbr->addQuotes($partial_url),
+          'stylometricanalysis_new_page_url = ' . $dbr->addQuotes($partial_url),
             )
         );
 
@@ -158,7 +158,7 @@ class SignatureWrapper {
             array(//insert values
           'stylometricanalysis_signature' => $signature,
             ), array(//conditions
-          'stylometricanalysis_url = ' . $dbw->addQuotes($partial_url),
+          'stylometricanalysis_new_page_url = ' . $dbw->addQuotes($partial_url),
             ), __METHOD__
         );
 

@@ -75,6 +75,7 @@ class ObjectRegistry {
     private $userpage_collations_viewer = null;
     private $userpage_manuscripts_viewer = null;
     private $userpage_collections_viewer = null;
+    private $userpage_stylometricanalysis_viewer = null;
 
     /**
      * HelperScripts classes
@@ -82,29 +83,6 @@ class ObjectRegistry {
     private $helperscripts_viewer = null;
     private $helperscripts_request_processor = null;
     private $alphabetnumbers_updater = null;
-
-    public function getHelperScriptsViewer(OutputPage $out) {
-        if (is_null($this->helperscripts_viewer)) {
-            $this->helperscripts_viewer = new HelperScriptsViewer($out);
-        }
-        return $this->helperscripts_viewer;
-    }
-
-    public function getHelperScriptsRequestProcessor(WebRequest $request) {
-        if (is_null($this->helperscripts_request_processor)) {
-            $validator = $this->getManuscriptDeskBaseValidator();
-            $this->helperscripts_request_processor = new HelperScriptsRequestProcessor($request, $validator);
-        }
-        return $this->helperscripts_request_processor;
-    }
-
-    public function getAlphabetNumbersUpdater() {
-        if (is_null($this->alphabetnumbers_updater)) {
-            $wrapper = $this->getAlphabetNumbersWrapper();
-            $this->alphabetnumbers_updater = new AlphabetNumbersUpdater($wrapper);
-        }
-        return $this->alphabetnumbers_updater;
-    }
 
     /**
      * Other classes 
@@ -306,14 +284,15 @@ class ObjectRegistry {
     public function getAllStylometricAnalysisWrapper() {
         if (is_null($this->allstylometricanalysis_wrapper)) {
             $alphabetnumbers_wrapper = $this->getAlphabetNumbersWrapper();
-            $this->allstylometricanalysis_wrapper = new AllStylometricAnalysisWrapper($alphabetnumbers_wrapper);
+            $signature_wrapper = $this->getSignatureWrapper();
+            $this->allstylometricanalysis_wrapper = new AllStylometricAnalysisWrapper($alphabetnumbers_wrapper, $signature_wrapper);
         }
         return $this->allstylometricanalysis_wrapper;
     }
 
     public function getAllStylometricAnalysisViewer(OutputPage $out) {
         if (is_null($this->allstylometricanalysis_viewer)) {
-            $this->allstylometricanalysis_viewer = new StylometricAnalysisViewer($out);
+            $this->allstylometricanalysis_viewer = new AllStylometricAnalysisViewer($out);
         }
         return $this->allstylometricanalysis_viewer;
     }
@@ -363,6 +342,13 @@ class ObjectRegistry {
         return $this->userpage_collections_viewer;
     }
 
+    public function getUserPageStylometricAnalysisViewer(OutputPage $out) {
+        if (is_null($this->userpage_stylometricanalysis_viewer)) {
+            $this->userpage_stylometricanalysis_viewer = new UserPageStylometricAnalysisViewer($out);
+        }
+        return $this->userpage_stylometricanalysis_viewer;
+    }
+
     /**
      * Other classes 
      */
@@ -373,11 +359,10 @@ class ObjectRegistry {
         return $this->text_processor;
     }
 
-    public function getManuscriptDeskDeleter($collection_title) {
+    public function getManuscriptDeskDeleter() {
         if (is_null($this->manuscriptdesk_deleter)) {
             $delete_wrapper = $this->getManuscriptDeskDeleteWrapper();
-            $this->ensure(isset($this->newmanuscript_paths), 'error-request');
-            $this->manuscriptdesk_deleter = new ManuscriptDeskDeleter($delete_wrapper, $this->newmanuscript_paths, $collection_title);
+            $this->manuscriptdesk_deleter = new ManuscriptDeskDeleter($delete_wrapper);
         }
 
         return $this->manuscriptdesk_deleter;
@@ -410,6 +395,32 @@ class ObjectRegistry {
             $this->validator = new ManuscriptDeskBaseValidator();
         }
         return $this->validator;
+    }
+
+    /**
+     * HelperScripts 
+     */
+    public function getHelperScriptsViewer(OutputPage $out) {
+        if (is_null($this->helperscripts_viewer)) {
+            $this->helperscripts_viewer = new HelperScriptsViewer($out);
+        }
+        return $this->helperscripts_viewer;
+    }
+
+    public function getHelperScriptsRequestProcessor(WebRequest $request) {
+        if (is_null($this->helperscripts_request_processor)) {
+            $validator = $this->getManuscriptDeskBaseValidator();
+            $this->helperscripts_request_processor = new HelperScriptsRequestProcessor($request, $validator);
+        }
+        return $this->helperscripts_request_processor;
+    }
+
+    public function getAlphabetNumbersUpdater() {
+        if (is_null($this->alphabetnumbers_updater)) {
+            $wrapper = $this->getAlphabetNumbersWrapper();
+            $this->alphabetnumbers_updater = new AlphabetNumbersUpdater($wrapper);
+        }
+        return $this->alphabetnumbers_updater;
     }
 
     /**
@@ -530,6 +541,10 @@ class ObjectRegistry {
     public function setAlphabetNumbersUpdater($object = null) {
         return $this->alphabetnumbers_updater = $object;
     }
+    
+    public function setUserPageStylometricAnalysisViewer($object = null){
+        return $this->userpage_stylometricanalysis_viewer = $object;
+    }    
 
     private function ensure($expression, $message) {
         if (!$expression) {
