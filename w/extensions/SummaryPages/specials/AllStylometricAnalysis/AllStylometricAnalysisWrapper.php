@@ -22,13 +22,13 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class AllCollationsWrapper implements SummaryPageWrapperInterface {
+class AllStylometricAnalysisWrapper implements SummaryPageWrapperInterface {
 
     private $alphabetnumbers_wrapper;
     private $signature_wrapper;
     private $user_name;
 
-    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper) {
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper = null) {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
         $this->signature_wrapper = $signature_wrapper;
     }
@@ -52,27 +52,27 @@ class AllCollationsWrapper implements SummaryPageWrapperInterface {
         $next_offset = null;
 
         if (isset($this->user_name)) {
-            $conditions = array('collations_user = ' . $dbr->addQuotes($this->user_name));
+            $conditions = array('stylometricanalysis_user = ' . $dbr->addQuotes($this->user_name));
         }
         else {
             $conditions = array(
-              'collations_main_title_lowercase >= ' . $dbr->addQuotes($button_name),
-              'collations_main_title_lowercase < ' . $dbr->addQuotes($next_letter_alphabet)
+              'stylometricanalysis_main_title_lowercase >= ' . $dbr->addQuotes($button_name),
+              'stylometricanalysis_main_title_lowercase < ' . $dbr->addQuotes($next_letter_alphabet)
             );
         }
 
         $res = $dbr->select(
-            'collations', //from
+            'stylometricanalysis', //from
             array(
-          'collations_user', //values
-          'collations_url',
-          'collations_date',
-          'collations_main_title',
-          'collations_signature',    
-          'collations_main_title_lowercase'
+          'stylometricanalysis_user', //values
+          'stylometricanalysis_new_page_url',
+          'stylometricanalysis_date',
+          'stylometricanalysis_main_title',
+          'stylometricanalysis_signature',
+          'stylometricanalysis_main_title_lowercase'
             ), $conditions
             , __METHOD__, array(
-          'ORDER BY' => 'collations_main_title_lowercase',
+          'ORDER BY' => 'stylometricanalysis_main_title_lowercase',
           'LIMIT' => $max_on_page + 1,
           'OFFSET' => $offset,
             )
@@ -86,11 +86,11 @@ class AllCollationsWrapper implements SummaryPageWrapperInterface {
                 if (count($title_array) < $max_on_page) {
 
                     $title_array[] = array(
-                      'collations_user' => $s->collations_user,
-                      'collations_url' => $s->collations_url,
-                      'collations_date' => $s->collations_date,
-                      'collations_main_title' => $s->collations_main_title,
-                      'collations_signature' => $s->collations_signature,
+                      'stylometricanalysis_user' => $s->stylometricanalysis_user,
+                      'stylometricanalysis_new_page_url' => $s->stylometricanalysis_new_page_url,
+                      'stylometricanalysis_date' => $s->stylometricanalysis_date,
+                      'stylometricanalysis_main_title' => $s->stylometricanalysis_main_title,
+                      'stylometricanalysis_signature' => $s->stylometricanalysis_signature,
                     );
 
                     //if there is still a title to add (max_on_page+1 has been reached), it is possible to go to the next page

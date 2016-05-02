@@ -86,6 +86,11 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             $this->handleSignatureChangeCollation();
             return true;
         }
+        
+        if ($request_processor->changeSignatureStylometricAnalysisPosted()) {
+            $this->handleSignatureChangeStylometricAnalysis();
+            return true;
+        }
 
         throw new \Exception('error-request');
     }
@@ -93,7 +98,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     protected function getDefaultPage($error_message = '') {
         $user_is_a_sysop = $this->currentUserIsASysop();
         $this->viewer = new UserPageDefaultViewer($this->getOutput());
-        $this->viewer->showDefaultPage($error_message, $this->user_name, $user_is_a_sysop);
+        return $this->viewer->showDefaultPage($error_message, $this->user_name, $user_is_a_sysop);
     }
 
     private function processDefaultPage() {
@@ -161,6 +166,14 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         list($partial_url, $signature, $button_name, $offset) = $this->request_processor->getCollationSignatureChangeData();
         $this->setWrapperAndViewer($button_name);
         $this->wrapper->getSignatureWrapper()->setCollationsSignature($partial_url, $signature);
+        list($page_data, $next_offset) = $this->wrapper->getData($offset);
+        return $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
+    }
+    
+    private function handleSignatureChangeStylometricAnalysis(){
+        list($partial_url, $signature, $button_name, $offset) = $this->request_processor->getStylometricAnalysisSignatureChangeData();
+        $this->setWrapperAndViewer($button_name);
+        $this->wrapper->getSignatureWrapper()->setStylometricAnalysisSignature($partial_url, $signature);
         list($page_data, $next_offset) = $this->wrapper->getData($offset);
         return $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
     }
@@ -291,12 +304,12 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
-    public function setViewer($object = null) {
+    public function setViewer() {
         //empty because viewer has to be determined at runtime
         return;
     }
 
-    public function setWrapper($object = null) {
+    public function setWrapper() {
         //empty because wrapper has to be determined at runtime   
         return;
     }
@@ -309,16 +322,28 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
         switch ($button_name) {
             case 'view_manuscripts_posted':
-                $this->wrapper = new SingleManuscriptPagesWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
-                $this->viewer = new UserPageManuscriptsViewer($this->getOutput(), $this->user_name);
+                $this->wrapper = ObjectRegistry::getInstance()->getSingleManuscriptPagesWrapper();
+                $this->wrapper->setUserName($this->user_name);
+                $this->viewer = ObjectRegistry::getInstance()->getUserPageManuscriptsViewer($this->getOutput());
+                $this->viewer->setUserName($this->user_name);
                 break;
             case 'view_collations_posted':
-                $this->wrapper = new AllCollationsWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
-                $this->viewer = new UserPageCollationsViewer($this->getOutput(), $this->user_name);
+                $this->wrapper = ObjectRegistry::getInstance()->getAllCollationsWrapper();
+                $this->wrapper->setUserName($this->user_name);
+                $this->viewer = ObjectRegistry::getInstance()->getUserPageCollationsViewer($this->getOutput());
+                $this->viewer->setUserName($this->user_name);
                 break;
             case 'view_collections_posted':
-                $this->wrapper = new AllCollectionsWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper(), $this->user_name);
-                $this->viewer = new UserPageCollectionsViewer($this->getOutput(), $this->user_name);
+                $this->wrapper = ObjectRegistry::getInstance()->getAllCollectionsWrapper();
+                $this->wrapper->setUserName($this->user_name);
+                $this->viewer = ObjectRegistry::getInstance()->getUserPageCollectionsViewer($this->getOutput());
+                $this->viewer->setUserName($this->user_name);
+                break;
+            case 'view_stylometricanalysis_posted':
+                $this->wrapper = ObjectRegistry::getInstance()->getAllStylometricAnalysisWrapper();
+                $this->wrapper->setUserName($this->user_name);
+                $this->viewer = ObjectRegistry::getInstance()->getUserPageStylometricAnalysisViewer($this->getOutput());
+                $this->viewer->setUserName($this->user_name);
                 break;
         }
 
@@ -329,13 +354,13 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         return;
     }
 
-    public function setRequestProcessor($object = null) {
+    public function setRequestProcessor() {
 
         if (isset($this->request_processor)) {
             return;
         }
 
-        return $this->request_processor = isset($object) ? $object : new UserPageRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = ObjectRegistry::getInstance()->getUserPageRequestProcessor($this->getRequest());
     }
 
     /**

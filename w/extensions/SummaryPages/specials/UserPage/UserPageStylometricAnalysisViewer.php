@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
+ * This file is part of the userpage extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,9 @@
  * @subpackage Extensions
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
+ * 
  */
-class UserPageManuscriptsViewer implements UserPageViewerInterface {
+class UserPageStylometricAnalysisViewer implements UserPageViewerInterface {
 
     use HTMLUserPageMenuBar,
         HTMLJavascriptLoaderDots,
@@ -34,82 +35,82 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface {
     public function __construct(OutputPage $out) {
         $this->out = $out;
     }
-    
-    public function setUserName($user_name){
-    
-        if(isset($this->user_name)){
+
+    public function setUserName($user_name) {
+
+        if (isset($this->user_name)) {
             return;
-        }    
-    
+        }
+
         return $this->user_name = $user_name;
-    }    
+    }
 
-    public function showPage($button_name, $page_data, $offset, $next_offset) {
+    public function showPage($button_name, $page_titles, $offset, $next_offset) {
 
-        global $wgArticleUrl;
-        $article_url = $wgArticleUrl;
         $out = $this->out;
+        global $wgArticleUrl;
         $user_name = $this->user_name;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button-active', 'button', 'button'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button', 'button', 'button-active'));
         $html .= $this->getHTMLJavascriptLoaderDots();
+
         $html .= "<div class='javascripthide'>";
+
         $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $button_name, 'UserPage');
 
         $created_message = $out->msg('userpage-created');
         $html .= "<br>";
 
-        $html .= "<p>" . $out->msg('userpage-manuscriptinstr') . "</p>";
-
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-three'><b>" . $out->msg('userpage-tabletitle') . "</b></td>";
-        $html .= "<td><b>" . $out->msg('userpage-creationdate') . "</b></td>";
-        $html .= "<td><b>" . $out->msg('userpage-signature') . "</b></td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-three'><b>" . $out->msg('userpage-signature') . "</b></td>";
+        $html .= "<td class='td-three'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
         $html .= "</tr>";
 
-        foreach ($page_data as $single_page_data) {
+        foreach ($page_titles as $single_page_data) {
 
-            $title = isset($single_page_data['manuscripts_title']) ? $single_page_data['manuscripts_title'] : '';
-            $partial_url = isset($single_page_data['manuscripts_url']) ? $single_page_data['manuscripts_url'] : '';
-            $date = $single_page_data['manuscripts_date'] !== '' ? $single_page_data['manuscripts_date'] : 'unknown';
-            $signature = isset($single_page_data['manuscripts_signature']) ? $single_page_data['manuscripts_signature'] : '';
+            $partial_url = isset($single_page_data['stylometricanalysis_new_page_url']) ? $single_page_data['stylometricanalysis_new_page_url'] : '';
+            $date = isset($single_page_data['stylometricanalysis_date']) ? $single_page_data['stylometricanalysis_date'] : '';
+            $title = isset($single_page_data['stylometricanalysis_main_title']) ? $single_page_data['stylometricanalysis_main_title'] : '';
+            $signature = isset($single_page_data['stylometricanalysis_signature']) ? $single_page_data['stylometricanalysis_signature'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($title) . "'>" .
+            $html .= "<td class='td-long'><a href='" . $wgArticleUrl . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
+            $html .= "<td>" . $this->getChangeSignatureStylometricAnalysisPageForm($partial_url, $signature, $button_name, $offset) . "</td>";
             $html .= "<td>" . htmlspecialchars($date) . "</td>";
-            $html .= "<td>" . $this->getChangeSignatureForm($partial_url, $signature, $button_name, $offset) . "</td>";
             $html .= "</tr>";
         }
 
         $html .= "</table>";
+        $html .= "<input type='hidden' name='view_stylometricanalysis_posted' value='view_stylometricanalysis_posted'>";
         $html .= "</div>";
 
         return $out->addHTML($html);
     }
 
-    private function getChangeSignatureForm($partial_url, $signature, $button_name, $offset) {
+    private function getChangeSignatureStylometricAnalysisPageForm($partial_url, $signature, $button_name, $offset) {
 
-        if($signature === 'private'){
+        global $wgArticleUrl;
+        $edit_token = $this->out->getUser()->getEditToken();
+
+        if ($signature === 'private') {
             $new_signature = 'public';
-        }else{
+        }
+        else {
             $new_signature = 'private';
         }
-        
-        global $wgArticleUrl;
-
-        $edit_token = $this->out->getUser()->getEditToken();
 
         $html = "";
         $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
         $html .= "<input class='button-transparent' type='submit' name='editlink' value='$signature'>";
         $html .= "<input type='hidden' name='partial_url' value='$partial_url'>";
-        $html .= "<input type='hidden' name='change_signature_manuscript_posted' value = '$new_signature'>";
+        $html .= "<input type='hidden' name='change_signature_stylometricanalysis_posted' value = '$new_signature'>";
         $html .= "<input type='hidden' name='button_name' value = '$button_name'>";
         $html .= "<input type='hidden' name='offset' value = '$offset'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
@@ -119,21 +120,23 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface {
     }
 
     public function showEmptyPageTitlesError($button_name) {
-
         global $wgArticleUrl;
         $out = $this->out;
         $user_name = $this->user_name;
 
         $out->setPageTitle($out->msg('userpage-welcome') . ' ' . $user_name);
-
+        
         $edit_token = $out->getUser()->getEditToken();
 
         $html = "";
-        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button-active', 'button', 'button'));
+        $html .= $this->getHTMLUserPageMenuBar($out, $edit_token, array('button', 'button', 'button','button-active'));
         $html .= $this->getHTMLJavascriptLoaderDots();
+       
         $html .= "<div class='javascripthide'>";
-        $html .= "<p>" . $out->msg('userpage-nomanuscripts') . "</p>";
-        $html .= "<p><a class='userpage-transparent' href='" . $wgArticleUrl . "Special:NewManuscript'>" . $out->msg('userpage-newmanuscriptpage') . "</a></p>";
+        
+        $html .= "<p>" . $out->msg('userpage-nostylometricanalysis') . "</p>";
+        $html .= "<p><a class='userpage-transparent' href='" . $wgArticleUrl . "Special:StylometricAnalysis'>" . $out->msg('userpage-newstylometricanalysis') . "</a></p>";
+        
         $html .= "</div>";
 
         return $out->addHTML($html);

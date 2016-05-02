@@ -22,7 +22,6 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 trait HTMLUserPageMenuBar {
 
     /**
@@ -35,15 +34,18 @@ trait HTMLUserPageMenuBar {
         $manuscripts_message = $out->msg('userpage-mymanuscripts');
         $collations_message = $out->msg('userpage-mycollations');
         $collections_message = $out->msg('userpage-mycollections');
+        $stylometricanalysis_message = $out->msg('userpage-mystylometricanalysis');
 
         $id_manuscripts = isset($button_ids[0]) ? $button_ids[0] : 'button';
         $id_collations = isset($button_ids[1]) ? $button_ids[1] : 'button';
         $id_collections = isset($button_ids[2]) ? $button_ids[2] : 'button';
+        $id_stylometricanalysis = isset($button_ids[3]) ? $button_ids[3] : 'button';
 
         $html = '<form class="summarypage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
         $html .= "<input type='submit' name='view_manuscripts_posted' id='$id_manuscripts' value='$manuscripts_message'>";
         $html .= "<input type='submit' name='view_collations_posted' id='$id_collations' value='$collations_message'>";
         $html .= "<input type='submit' name='view_collections_posted' id='$id_collections' value='$collections_message'>";
+        $html .= "<input type='submit' name='view_stylometricanalysis_posted' id='$id_stylometricanalysis' value='$stylometricanalysis_message'>";
         $html .= "<input type='hidden' name='default_page_posted' value='default_page_posted'>";
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= '</form>';

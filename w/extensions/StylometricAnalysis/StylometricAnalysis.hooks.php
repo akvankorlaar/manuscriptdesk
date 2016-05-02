@@ -101,9 +101,10 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
                 return false;
             }
 
-            $wrapper = new ManuscriptDeskDeleteWrapper($user->getName(), new AlphabetNumbersWrapper());
-            $deleter = new ManuscriptDeskDeleter($wrapper);
-            $deleter->deleteStylometricAnalysisData($partial_url);           
+            $wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
+            $wrapper->setUser($user->getName());
+            $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter();
+            $deleter->deleteStylometricAnalysisData($title->getPrefixedURL());
         } catch (Exception $e) {
             return true;
         }

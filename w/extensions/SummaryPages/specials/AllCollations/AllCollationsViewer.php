@@ -30,9 +30,16 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
 
     private $page_name;
 
-    public function __construct($out, $page_name) {
+    public function __construct(OutputPage $out) {
         parent::__construct($out);
-        $this->page_name = $page_name;
+    }
+
+    public function setPageName($page_name) {
+
+        if (isset($this->page_name)) {
+            return;
+        }
+        return $this->page_name = $page_name;
     }
 
     /**
@@ -49,9 +56,9 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
         $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div class='javascripthide'>";
-        
+
         $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $this->page_name, $button_name);
-        
+
         $out->setPageTitle($out->msg('allcollations'));
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
@@ -94,14 +101,14 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
-        
+
         if (!empty($error_message)) {
             $html .= "<br>";
             $html .= "<div class = 'error'>$error_message</div>";
         }
 
         $html .= "<p>" . $out->msg('allcollations-instruction') . "</p>";
-        
+
         $html .= "</div>";
 
         return $out->addHTML($html);
@@ -123,7 +130,7 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
         else {
             $html .= "<p>" . $out->msg('allcollations-nocollations') . "</p>";
         }
-        
+
         $html .= "</div>";
 
         return $out->addHTML($html);

@@ -31,9 +31,13 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
 
     private $user_name;
 
-    public function __construct(OutputPage $out, $user_name) {
-        parent::__construct($out);
-        $this->user_name = $user_name;
+    public function setUserName($user_name) {
+
+        if (isset($this->user_name)) {
+            return;
+        }
+
+        return $this->user_name = $user_name;
     }
 
     public function showPage($button_name, $page_titles, $offset, $next_offset) {

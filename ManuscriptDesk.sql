@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `collations` (
   `collations_main_title` varbinary(500) NOT NULL,
   `collations_main_title_lowercase` varbinary(500) NOT NULL,
   `collations_titles_array` varbinary(500) NOT NULL,
+  `collations_signature` varbinary(255) NOT NULL DEFAULT 'private',
   `collations_collatex` TEXT NOT NULL,
   PRIMARY KEY (`collations_id`),
   UNIQUE KEY `collations_url` (`collations_url`)
@@ -44,8 +45,8 @@ CREATE TABLE IF NOT EXISTS `manuscripts` (
   `manuscripts_lowercase_title` varbinary(255) NOT NULL,
   `manuscripts_collection` varbinary(255) NOT NULL,
   `manuscripts_lowercase_collection` varbinary(255) NOT NULL,
-  `manuscripts_datesort` varbinary(255) NOT NULL
-  `manuscripts_signature` varbinary(255) NOT NULL DEFAULT 'private'
+  `manuscripts_signature` varbinary(255) NOT NULL DEFAULT 'private',
+  `manuscripts_datesort` varbinary(255) NOT NULL,
   UNIQUE KEY `manuscripts_url` (`manuscripts_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=binary;
 
@@ -71,6 +72,8 @@ CREATE TABLE IF NOT EXISTS `tempstylometricanalysis` (
   `tempstylometricanalysis_json_pystyl_config` TEXT NOT NULL,
   `tempstylometricanalysis_json_collection_name_array` TEXT NOT NULL,
   `tempstylometricanalysis_new_page_url` varbinary(500) NOT NULL,
+  `tempstylometricanalysis_main_title` varbinary(500) NOT NULL,
+  `tempstylometricanalysis_main_title_lowercase` varbinary(500) NOT NULL,
   `tempstylometricanalysis_date` varbinary(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=binary;
 
@@ -84,7 +87,10 @@ CREATE TABLE IF NOT EXISTS `stylometricanalysis` (
   `stylometricanalysis_json_pystyl_config` TEXT NOT NULL,
   `stylometricanalysis_json_collection_name_array` TEXT NOT NULL,
   `stylometricanalysis_new_page_url` varbinary(500) NOT NULL,
-  `stylometricanalysis_date` varbinary(255) NOT NULL
+  `stylometricanalysis_main_title` varbinary(500) NOT NULL,
+  `stylometricanalysis_main_title_lowercase` varbinary(500) NOT NULL,
+  `stylometricanalysis_date` varbinary(255) NOT NULL,
+  `stylometricanalysis_signature` varbinary(255) NOT NULL DEFAULT 'private'
 ) ENGINE=InnoDB DEFAULT CHARSET=binary;
 
 CREATE TABLE IF NOT EXISTS `alphabetnumbers` (
@@ -131,3 +137,4 @@ CREATE TABLE IF NOT EXISTS `alphabetnumbers` (
 INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('SingleManuscriptPages'); 
 INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('AllCollections'); 
 INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('AllCollations'); 
+INSERT into `alphabetnumbers` (alphabetnumbers_context) VALUES ('AllStylometricAnalysis'); 

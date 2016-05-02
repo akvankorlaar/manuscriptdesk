@@ -129,13 +129,13 @@ class NewManuscriptImageValidator {
 
         throw new \Exception('newmanuscript-error-fileformat');
     }
-
+    
     public function setUploadBase($object = null) {
 
         if (isset($this->upload_base)) {
             return;
-        }
-
+    }
+    
         return $this->upload_base = isset($object) ? $object : UploadBase::createFromRequest($this->request);
     }
 

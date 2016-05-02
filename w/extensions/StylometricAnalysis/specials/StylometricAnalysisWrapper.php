@@ -28,10 +28,16 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
     private $alphabetnumbers_wrapper;
     private $signature_wrapper;
 
-    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper, $user_name = null) {
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper, SignatureWrapper $signature_wrapper) {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
         $this->signature_wrapper = $signature_wrapper;
-        $this->user_name = $user_name;
+    }
+    
+    public function setUserName($user_name){
+        if(isset($this->user_name)){
+            return;
+        }
+        return $this->user_name = $user_name; 
     }
 
     /**
@@ -51,7 +57,6 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         $collection_urls = array();
         $user_name = $this->user_name;
 
-        //Database query
         $res = $dbr->select(
             'manuscripts', //from
             array(
@@ -118,7 +123,6 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         $full_outputpath2_array = array();
         $hours_before_delete = $wgStylometricAnalysisOptions['tempstylometricanalysis_hours_before_delete'];
 
-        //Database query
         $res = $dbr->select(
             'tempstylometricanalysis', //from
             array(
@@ -193,11 +197,13 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         return true;
     }
 
-    public function storeTempStylometricAnalysis(array $collection_name_data, $time = 0, $new_page_url = '', $date = 0, $full_linkpath1 = '', $full_linkpath2 = '', $full_outputpath1 = '', $full_outputpath2 = '', array $pystyl_config) {
+    public function storeTempStylometricAnalysis(array $collection_name_data, $time = 0, $new_page_url = '', $date = 0, $full_linkpath1 = '', $full_linkpath2 = '', $full_outputpath1 = '', $full_outputpath2 = '', array $pystyl_config, $main_title) {
 
         if (!isset($this->user_name)) {
             throw new \Exception('error-request');
         }
+        
+        $main_title_lowercase = strtolower($main_title);
 
         $dbw = wfGetDB(DB_MASTER);
 
@@ -217,6 +223,8 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'tempstylometricanalysis_json_pystyl_config' => $json_pystyl_config,
           'tempstylometricanalysis_json_collection_name_data' => $json_collection_name_data,
           'tempstylometricanalysis_new_page_url' => $new_page_url,
+          'tempstylometricanalysis_main_title' => $main_title,
+          'tempstylometricanalysis_main_title_lowercase' => $main_title_lowercase,     
           'tempstylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
         );
@@ -228,7 +236,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         return true;
     }
 
-    public function transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time = 0) {
+    public function transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time) {
 
         if (!isset($this->user_name)) {
             throw new \Exception('error-request');
@@ -238,7 +246,6 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
 
         $user_name = $this->user_name;
 
-        //Database query
         $res = $dbr->select(
             'tempstylometricanalysis', //from
             array(
@@ -251,6 +258,8 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'tempstylometricanalysis_json_pystyl_config',
           'tempstylometricanalysis_json_collection_name_data',
           'tempstylometricanalysis_new_page_url',
+          'tempstylometricanalysis_main_title',
+          'tempstylometricanalysis_main_title_lowercase',    
           'tempstylometricanalysis_date'
             ), array(
           'tempstylometricanalysis_time =' . $dbr->addQuotes($time),
@@ -271,6 +280,8 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         $json_pystyl_config = $s->tempstylometricanalysis_json_pystyl_config;
         $json_collection_name_data = $s->tempstylometricanalysis_json_collection_name_data;
         $new_page_url = $s->tempstylometricanalysis_new_page_url;
+        $main_title = $s->tempstylometricanalysis_main_title;
+        $main_title_lowercase = $s->tempstylometricanalysis_main_title_lowercase;
         $date = $s->tempstylometricanalysis_date;
 
         $dbw = wfGetDB(DB_MASTER);
@@ -287,6 +298,8 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'stylometricanalysis_json_pystyl_config' => $json_pystyl_config,
           'stylometricanalysis_json_collection_name_data' => $json_collection_name_data,
           'stylometricanalysis_new_page_url' => $new_page_url,
+          'stylometricanalysis_main_title' => $main_title,
+          'stylometricanalysis_main_title_lowercase' => $main_title_lowercase,    
           'stylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
         );
@@ -298,7 +311,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         return true;
     }
 
-    public function getNewPagePartialUrl($time = 0) {
+    public function getStylometricAnalysisNewPageData($time) {
 
         if (!isset($this->user_name)) {
             throw new \Exception('error-request');
@@ -307,13 +320,13 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         $dbr = wfGetDB(DB_SLAVE);
         $user_name = $this->user_name;
 
-        //Database query
         $res = $dbr->select(
             'stylometricanalysis', //from
             array(
           'stylometricanalysis_time',
           'stylometricanalysis_user',
           'stylometricanalysis_new_page_url',
+          'stylometricanalysis_main_title_lowercase',    
             ), array(
           'stylometricanalysis_time =' . $dbr->addQuotes($time),
           'stylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
@@ -325,7 +338,9 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         }
 
         $s = $res->fetchObject();
-        return $s->stylometricanalysis_new_page_url;
+        $new_page_url = $s->stylometricanalysis_new_page_url;
+        $main_title_lowercase = $s->stylometricanalysis_main_title_lowercase; 
+        return array($new_page_url, $main_title_lowercase);
     }
 
     public function getStylometricanalysisData($url_with_namespace) {

@@ -55,7 +55,7 @@ $dirbasename = basename($dir2);
 
 //Auto load classes 
 $wgAutoloadClasses['CollateHooks'] = $dir . '/Collate.hooks.php';
-$wgAutoloadClasses['CollatexConverter'] = $dir . '/specials/CollatexConverter.php'; 
+$wgAutoloadClasses['CollatexConverter'] = $dir . '/specials/CollatexConverter.php';
 $wgAutoloadClasses['CollateWrapper'] = $dir . '/specials/CollateWrapper.php';
 $wgAutoloadClasses['CollateViewer'] = $dir . '/specials/CollateViewer.php';
 $wgAutoloadClasses['CollateRequestProcessor'] = $dir . 'specials/CollateRequestProcessor.php';
@@ -83,11 +83,8 @@ $wgResourceModules['ext.collatebuttoncontroller'] = array(
   ),
 );
 
-//initialise wrappers for database calls
-$collate_wrapper = new CollateWrapper(new AlphabetNumbersWrapper(), new SignatureWrapper());
-
 //Instantiate the CollateHooks class and register the hooks
-$collate_hooks = new CollateHooks($collate_wrapper);
+$collate_hooks = ObjectRegistry::getInstance()->getCollateHooks();
 
 $wgHooks['MediaWikiPerformAction'][] = array($collate_hooks, 'onMediaWikiPerformAction');
 $wgHooks['AbortMove'][] = array($collate_hooks, 'onAbortMove');

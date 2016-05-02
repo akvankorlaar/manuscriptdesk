@@ -27,9 +27,16 @@ class ManuscriptDeskDeleteWrapper {
     private $user_name; 
     private $alphabetnumbers_wrapper;
 
-    public function __construct($user_name = null, AlphabetNumbersWrapper $alphabetnumbers_wrapper) {
-        $this->user_name = $user_name; 
+    public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper) {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
+    }
+    
+    public function setUserName() {
+        if(isset($this->user_name)){
+            return;
+        }
+        
+        $this->user_name = $user_name; 
     }
 
     /**

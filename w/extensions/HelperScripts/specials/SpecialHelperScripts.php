@@ -85,39 +85,40 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
     }
 
     private function updateAlphabetNumbersTable() {
-        $wrapper = new AlphabetNumbersUpdater(new AlphabetNumbersWrapper());
+        $wrapper = ObjectRegistry::getInstance()->getAlphabetNumbersUpdater();
         $wrapper->execute();
         return;
     }
 
     private function processDeleteManuscripts() {
-        $wrapper = new HelperScriptsDeleteWrapper(new ManuscriptDeskDeleteWrapper($this->user_name, new AlphabetNumbersWrapper()));
+        $wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
+        $wrapper->setUserName($this->user_name);
         $wrapper->deleteManuscriptDeskData();
         $this->updateAlphabetNumbersTable();
         return $this->viewer->showActionComplete();
     }
 
-    public function setViewer($object = null) {
+    public function setViewer() {
 
         if (isset($this->viewer)) {
             return;
         }
 
-        return $this->viewer = isset($object) ? $object : new HelperScriptsViewer($this->getOutput());
+        return $this->viewer = ObjectRegistry::getInstance()->getHelperScriptsViewer($this->getOutput());
     }
 
-    public function setWrapper($object = null) {
+    public function setWrapper() {
         //has to be determined at runtime
         return;
     }
 
-    public function setRequestProcessor($object = null) {
+    public function setRequestProcessor() {
 
         if (isset($this->request_processor)) {
             return;
         }
 
-        return $this->request_processor = isset($object) ? $object : new HelperScriptsRequestProcessor($this->getRequest(), new ManuscriptDeskBaseValidator());
+        return $this->request_processor = ObjectRegistry::getInstance()->getHelperScriptsRequestProcessor($this->getRequest());
     }
 
     /**

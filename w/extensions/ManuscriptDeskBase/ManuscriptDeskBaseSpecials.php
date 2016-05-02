@@ -28,7 +28,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
     protected $viewer;
     protected $wrapper;
     protected $request_processor;
-    protected $error_identifier; 
+    protected $error_identifier;
 
     public function __construct($page_name) {
         parent::__construct($page_name);
@@ -158,7 +158,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         else {
             $error_message = $this->msg($error_identifier);
         }
-
+        
         return $error_message;
     }
     
@@ -177,7 +177,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
     public function getErrorIdentifier(){
         return $this->error_identifier; 
     }
-
+    
     /**
      * Get the default page for this special page
      */
@@ -188,19 +188,19 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
      * 
      * @return ManuscriptDeskBaseViewer object
      */
-    abstract protected function setViewer($object = null);
+    abstract protected function setViewer();
 
     /**
      * Return wrapper object for the special page
      * 
      * @return ManuscriptDeskBaseWrapper object
      */
-    abstract protected function setWrapper($object = null);
+    abstract protected function setWrapper();
 
     /**
      * Return request processor object for the special page
      * 
      * @return ManuscriptDeskBaseRequestProcessor object
      */
-    abstract protected function setRequestProcessor($object = null);
+    abstract protected function setRequestProcessor();
 }

@@ -120,9 +120,10 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
                 return false;
             }
             
-            $wrapper = new ManuscriptDeskDeleteWrapper($user->getName(), new AlphabetNumbersWrapper());
-            $deleter = new ManuscriptDeskDeleter($wrapper);
-            $deleter->deleteCollationData($partial_url); 
+            $wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
+            $wrapper->setUser($user->getName());
+            $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter();        
+            $deleter->deleteCollationData($title->getPrefixedUrl()); 
             return true;
         } catch (Exception $e) {
             return true;

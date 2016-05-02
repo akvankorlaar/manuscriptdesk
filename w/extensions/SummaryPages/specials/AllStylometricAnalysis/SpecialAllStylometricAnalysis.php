@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
+ * This file is part of the collate extension
  * Copyright (C) 2015 Arent van Korlaar
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,40 +22,40 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class SpecialSingleManuscriptPages extends SummaryPageBase {
+class SpecialAllStylometricAnalysis extends SummaryPageBase {
 
-    private $page_name = 'SingleManuscriptPages';
+    private $page_name = 'AllStylometricAnalysis';
 
     public function __construct() {
+
         parent::__construct($this->page_name);
     }
 
-    public function setViewer($object = null) {
-        
-        if(isset($this->viewer)){
+    public function setViewer() {
+
+        if (isset($this->viewer)) {
             return;
         }
-        
-        $viewer = ObjectRegistry::getInstance()->getSingleManuscriptPagesViewer($this->getOutput());
+        $viewer = ObjectRegistry::getInstance()->getAllStylometricAnalysisViewer($this->getOutput());
         $viewer->setPageName($this->page_name);
         return $this->viewer = $viewer;
     }
 
-    public function setWrapper($object = null) {
-        
-        if(isset($this->wrapper)){
+    public function setWrapper() {
+
+        if (isset($this->wrapper)) {
             return;
         }
-        
-        return $this->wrapper = ObjectRegistry::getInstance()->getSingleManuscriptPagesWrapper();
+
+        return $this->wrapper = ObjectRegistry::getInstance()->getAllStylometricAnalysisWrapper();
     }
 
     public function setRequestProcessor() {
-        
-        if(isset($this->request_processor)){
+
+        if (isset($this->request_processor)) {
             return;
         }
-        
+
         return $this->request_processor = ObjectRegistry::getInstance()->getSummaryPageRequestProcessor($this->getRequest());
     }
 
