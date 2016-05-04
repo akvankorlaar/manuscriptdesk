@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,53 +28,56 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
         HTMLPreviousNextPageLinks;
 
     private $page_name;
-    
-    public function setPageName($page_name){
-    
-        if(isset($this->page_name)){
+
+    public function setPageName($page_name) {
+
+        if (isset($this->page_name)) {
             return;
-        }    
-    
+        }
+
         return $this->page_name = $page_name;
-    }    
+    }
 
     public function showSingleLetterOrNumberPage(
     array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
 
-        global $wgArticleUrl; 
+        global $wgArticleUrl;
         $out = $this->out;
         $out->setPageTitle($out->msg('singlemanuscriptpages'));
-        
-        
+
+
         $html = '';
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
-        
+
         $html .= "<div class='javascripthide'>";
-        
+
         $edit_token = $out->getUser()->getEditToken();
-        
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $button_name, $this->page_name); 
+
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $button_name, $this->page_name);
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
-        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-signature') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
-        foreach ($page_titles as $key => $array) {
+        foreach ($page_titles as $single_page_data) {
 
-            $title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
-            $url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
-            $user = isset($array['manuscripts_user']) ? $array['manuscripts_user'] : '';
-            $date = $array['manuscripts_date'] !== '' ? $array['manuscripts_date'] : 'unknown';
+            $title = isset($single_page_data['manuscripts_title']) ? $single_page_data['manuscripts_title'] : '';
+            $url = isset($single_page_data['manuscripts_url']) ? $single_page_data['manuscripts_url'] : '';
+            $user = isset($single_page_data['manuscripts_user']) ? $single_page_data['manuscripts_user'] : '';
+            $date = $single_page_data['manuscripts_date'] !== '' ? $single_page_data['manuscripts_date'] : 'unknown';
+            $signature = isset($single_page_data['manuscripts_signature']) ? $single_page_data['manuscripts_signature'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-three'><a href='" . $wgArticleUrl . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
+            $html .= "<td class='td-four'><a href='" . $wgArticleUrl . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
-            $html .= "<td class='td-three'>" . htmlspecialchars($user) . "</td>";
-            $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
+            $html .= "<td class='td-four'>" . htmlspecialchars($user) . "</td>";
+            $html .= "<td class='td-four'>" . htmlspecialchars($signature) . "</td>";
+            $html .= "<td class='td-four'>" . htmlspecialchars($date) . "</td>";
             $html .= "</tr>";
         }
 
@@ -118,14 +120,14 @@ class SingleManuscriptPagesViewer extends ManuscriptDeskBaseViewer implements Su
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name, $button_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
-        
+
         if (preg_match('/^[0-9.]*$/', $button_name)) {
             $html .= "<p>" . $out->msg('singlemanuscriptpages-nomanuscripts-number') . "</p>";
         }
         else {
             $html .= "<p>" . $out->msg('singlemanuscriptpages-nomanuscripts') . "</p>";
         }
-        
+
         $html .= "</div>";
 
         return $out->addHTML($html);

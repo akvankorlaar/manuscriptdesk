@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,15 +28,15 @@ class AllStylometricAnalysisViewer extends ManuscriptDeskBaseViewer implements S
         HTMLPreviousNextPageLinks;
 
     private $page_name;
-    
-    public function setPageName($page_name){
-    
-        if(isset($this->page_name)){
+
+    public function setPageName($page_name) {
+
+        if (isset($this->page_name)) {
             return;
-        }    
-    
+        }
+
         return $this->page_name = $page_name;
-    }    
+    }
 
     /**
      * This function shows the page after a request has been processed
@@ -53,16 +52,17 @@ class AllStylometricAnalysisViewer extends ManuscriptDeskBaseViewer implements S
         $html .= $this->getHTMLJavascriptLoaderDots();
 
         $html .= "<div class='javascripthide'>";
-        
+
         $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $this->page_name, $button_name);
-        
+
         $out->setPageTitle($out->msg('allstylometricanalysis'));
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td class='td-trhee'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
-        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-signature') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
         foreach ($page_titles as $single_page_data) {
@@ -71,12 +71,14 @@ class AllStylometricAnalysisViewer extends ManuscriptDeskBaseViewer implements S
             $url = isset($single_page_data['stylometricanalysis_new_page_url']) ? $single_page_data['stylometricanalysis_new_page_url'] : '';
             $user = isset($single_page_data['stylometricanalysis_user']) ? $single_page_data['stylometricanalysis_user'] : '';
             $date = isset($single_page_data['stylometricanalysis_date']) ? $single_page_data['stylometricanalysis_date'] : '';
+            $signature = isset($single_page_data['stylometricanalysis_signature']) ? $single_page_data['stylometricanalysis_signature'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-three'><a href='" . $wgArticleUrl . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
+            $html .= "<td class='td-four'><a href='" . $wgArticleUrl . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
-            $html .= "<td class='td-three'>" . htmlspecialchars($user) . "</td>";
-            $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
+            $html .= "<td class='td-four'>" . htmlspecialchars($user) . "</td>";
+            $html .= "<td class='td-four'>" . htmlspecialchars($signature) . "</td>";
+            $html .= "<td class='td-four'>" . htmlspecialchars($date) . "</td>";
             $html .= "</tr>";
         }
 
@@ -98,14 +100,14 @@ class AllStylometricAnalysisViewer extends ManuscriptDeskBaseViewer implements S
         $html .= $this->getHTMLLetterBar($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $this->page_name);
         $html .= $this->getHTMLJavascriptLoaderDots();
         $html .= "<div class='javascripthide'>";
-        
+
         if (!empty($error_message)) {
             $html .= "<br>";
             $html .= "<div class = 'error'>$error_message</div>";
         }
 
         $html .= "<p>" . $out->msg('allstylometricanalysis-instruction') . "</p>";
-        
+
         $html .= "</div>";
 
         return $out->addHTML($html);
@@ -127,11 +129,10 @@ class AllStylometricAnalysisViewer extends ManuscriptDeskBaseViewer implements S
         else {
             $html .= "<p>" . $out->msg('allstylometricanalysis-nostylometricanalysis') . "</p>";
         }
-        
+
         $html .= "</div>";
 
         return $out->addHTML($html);
     }
 
 }
-

@@ -80,10 +80,10 @@ class UserPageStylometricAnalysisViewer implements UserPageViewerInterface {
             $signature = isset($single_page_data['stylometricanalysis_signature']) ? $single_page_data['stylometricanalysis_signature'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-long'><a href='" . $wgArticleUrl . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($title) . "'>" .
+            $html .= "<td class='td-three'><a href='" . $wgArticleUrl . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
-            $html .= "<td>" . $this->getChangeSignatureStylometricAnalysisPageForm($partial_url, $signature, $button_name, $offset) . "</td>";
-            $html .= "<td>" . htmlspecialchars($date) . "</td>";
+            $html .= "<td class='td-three'>" . $this->getChangeSignatureStylometricAnalysisPageForm($partial_url, $signature, $button_name, $offset) . "</td>";
+            $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
             $html .= "</tr>";
         }
 
