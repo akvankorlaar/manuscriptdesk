@@ -1,12 +1,12 @@
 <?php
 
 /**
- * This file is part of the NewManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License Version 2, as
- * published by the Free Software Foundation.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,29 +14,28 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * @package MediaWiki
  * @subpackage Extensions
- * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
+ * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
 class ManuscriptDeskDeleteWrapper {
 
-    private $user_name; 
+    private $user_name;
     private $alphabetnumbers_wrapper;
 
     public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper) {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
     }
-    
+
     public function setUserName() {
-        if(isset($this->user_name)){
+        if (isset($this->user_name)) {
             return;
         }
-        
-        $this->user_name = $user_name; 
+
+        $this->user_name = $user_name;
     }
 
     /**
@@ -116,7 +115,7 @@ class ManuscriptDeskDeleteWrapper {
           'page_namespace = ' . $dbr->addQuotes($namespace),
           'page_title = ' . $dbr->addQuotes($page_title),
             ), __METHOD__, array(
-          'ORDER BY' => 'page_id',
+          'ORDER BY' => array('LENGTH(page_id)', 'page_id'),
             )
         );
 

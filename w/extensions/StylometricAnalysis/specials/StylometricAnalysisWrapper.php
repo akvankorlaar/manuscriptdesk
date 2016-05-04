@@ -65,7 +65,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
           'manuscripts_collection != ' . $dbr->addQuotes("none"),
             ), __METHOD__, array(
-          'ORDER BY' => 'manuscripts_lowercase_collection',
+          'ORDER BY' => array('LENGTH(manuscripts_lowercase_collection)','manuscripts_lowercase_collection'),
             )
         );
 
@@ -131,7 +131,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
             ), array(
           'tempstylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
             ), __METHOD__, array(
-          'ORDER BY' => 'tempstylometricanalysis_time',
+          'ORDER BY' => array('LENGTH(tempstylometricanalysis_time)','tempstylometricanalysis_time'),
             )
         );
 

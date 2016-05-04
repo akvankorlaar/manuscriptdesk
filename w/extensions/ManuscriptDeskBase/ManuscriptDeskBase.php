@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
@@ -49,7 +50,6 @@ $dir = __DIR__ . '/';
 $wgAutoloadClasses['ManuscriptDeskBaseHooks'] = $dir . 'ManuscriptDeskBaseHooks.php';
 $wgAutoloadClasses['ManuscriptDeskBaseSpecials'] = $dir . 'ManuscriptDeskBaseSpecials.php';
 $wgAutoloadClasses['ManuscriptDeskBaseValidator'] = $dir . 'ManuscriptDeskBaseValidator.php';
-$wgAutoloadClasses['ManuscriptDeskBaseWrapper'] = $dir . 'ManuscriptDeskBaseWrapper.php';
 $wgAutoloadClasses['ManuscriptDeskBaseRequestProcessor'] = $dir . 'ManuscriptDeskBaseRequestProcessor.php';
 $wgAutoloadClasses['ManuscriptDeskBaseTextProcessor'] = $dir . 'ManuscriptDeskBaseTextProcessor.php';
 $wgAutoloadClasses['PageMetaTable'] = $dir . 'PageMetaTable.php';
@@ -63,6 +63,8 @@ $wgAutoloadClasses['HTMLCollectionMetaTable'] = $dir . 'BaseViews' . '/' . 'HTML
 $wgAutoloadClasses['AlphabetNumbersWrapper'] = $dir . 'BaseWrappers' . '/' . 'AlphabetNumbersWrapper.php';
 $wgAutoloadClasses['SignatureWrapper'] = $dir . 'BaseWrappers' . '/' . 'SignatureWrapper.php';
 $wgAutoloadClasses['ManuscriptDeskDeleteWrapper'] = $dir . 'BaseWrappers' . '/' . 'ManuscriptDeskDeleteWrapper.php';
+$wgAutoloadClasses['ManuscriptDeskBaseWrapper'] = $dir . 'BaseWrappers' . '/' . 'ManuscriptDeskBaseWrapper.php';
+
 $wgAutoloadClasses['ObjectRegistry'] = $dir . 'ObjectRegistry.php';
 
 $wgAutoloadClasses['ManuscriptDeskDeleter'] = $dir . 'ManuscriptDeskDeleter.php';

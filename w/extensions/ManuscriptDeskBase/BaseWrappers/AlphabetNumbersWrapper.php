@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of the ManuscriptDesk (github.com/akvankorlaar/manuscriptdesk)
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -348,7 +348,7 @@ class AlphabetNumbersWrapper {
           'manuscripts_collection != ' . $dbr->addQuotes('none')
             )
             , __METHOD__, array(
-          'ORDER BY' => 'manuscripts_lowercase_collection',
+          'ORDER BY' => array('LENGTH(manuscripts_lowercase_collection)','manuscripts_lowercase_collection'),
             )
         );
 
@@ -367,7 +367,7 @@ class AlphabetNumbersWrapper {
           'manuscripts_collection = ' . $dbr->addQuotes('none')
             )
             , __METHOD__, array(
-          'ORDER BY' => 'manuscripts_lowercase_title',
+          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)','manuscripts_lowercase_title'),
             )
         );
 
@@ -385,7 +385,7 @@ class AlphabetNumbersWrapper {
             ), array(
             )
             , __METHOD__, array(
-          'ORDER BY' => 'collations_main_title_lowercase',
+          'ORDER BY' => array('LENGTH(collations_main_title_lowercase)','collations_main_title_lowercase'),
             )
         );
 
@@ -402,7 +402,7 @@ class AlphabetNumbersWrapper {
             ), array(
             )
             , __METHOD__, array(
-          'ORDER BY' => 'stylometricanalysis_main_title_lowercase',
+          'ORDER BY' => array('LENGTH(stylometricanalysis_main_title_lowercase)','stylometricanalysis_main_title_lowercase'),
             )
         );
 

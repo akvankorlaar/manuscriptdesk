@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,15 +31,15 @@ class AllCollectionsWrapper implements SummaryPageWrapperInterface {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
         $this->signature_wrapper = $signature_wrapper;
     }
-    
-    public function setUserName($user_name){
-    
-        if(isset($this->user_name)){
+
+    public function setUserName($user_name) {
+
+        if (isset($this->user_name)) {
             return;
-        }    
-    
+        }
+
         return $this->user_name = $user_name;
-    }    
+    }
 
     public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
 
@@ -74,7 +73,7 @@ class AllCollectionsWrapper implements SummaryPageWrapperInterface {
           'collections_user',
           'collections_date',
             ), $conditions, __METHOD__, array(
-          'ORDER BY' => 'collections_title_lowercase',
+          'ORDER BY' => array('LENGTH(collections_title_lowercase)','collections_title_lowercase'),
           'LIMIT' => $max_on_page + 1,
           'OFFSET' => $offset,
             )
@@ -137,7 +136,7 @@ class AllCollectionsWrapper implements SummaryPageWrapperInterface {
             ), array(
           'collections_title = ' . $dbr->addQuotes($collection_title),
             ), __METHOD__, array(
-          'ORDER BY' => 'collections_title',
+          'ORDER BY' => array('LENGTH(collections_title)','collections_title'),
             )
         );
 
@@ -182,7 +181,8 @@ class AllCollectionsWrapper implements SummaryPageWrapperInterface {
             ), array(
           'manuscripts_collection = ' . $dbr->addQuotes($collection_title),
             ), __METHOD__, array(
-          'ORDER BY' => 'manuscripts_lowercase_title',
+          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)',
+            'manuscripts_lowercase_title'),
             )
         );
 
@@ -279,9 +279,9 @@ class AllCollectionsWrapper implements SummaryPageWrapperInterface {
     public function getAlphabetNumbersWrapper() {
         return $this->alphabetnumbers_wrapper;
     }
-    
-    public function getSignatureWrapper(){
-        return $this->signature_wrapper; 
+
+    public function getSignatureWrapper() {
+        return $this->signature_wrapper;
     }
-    
+
 }
