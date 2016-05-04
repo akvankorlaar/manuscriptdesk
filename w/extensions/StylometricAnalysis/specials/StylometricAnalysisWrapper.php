@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the collate extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +20,6 @@
  * @subpackage Extensions
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
- * 
  */
 class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
 
@@ -32,12 +30,12 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
         $this->signature_wrapper = $signature_wrapper;
     }
-    
-    public function setUserName($user_name){
-        if(isset($this->user_name)){
+
+    public function setUserName($user_name) {
+        if (isset($this->user_name)) {
             return;
         }
-        return $this->user_name = $user_name; 
+        return $this->user_name = $user_name;
     }
 
     /**
@@ -202,7 +200,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
         if (!isset($this->user_name)) {
             throw new \Exception('error-request');
         }
-        
+
         $main_title_lowercase = strtolower($main_title);
 
         $dbw = wfGetDB(DB_MASTER);
@@ -224,7 +222,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'tempstylometricanalysis_json_collection_name_data' => $json_collection_name_data,
           'tempstylometricanalysis_new_page_url' => $new_page_url,
           'tempstylometricanalysis_main_title' => $main_title,
-          'tempstylometricanalysis_main_title_lowercase' => $main_title_lowercase,     
+          'tempstylometricanalysis_main_title_lowercase' => $main_title_lowercase,
           'tempstylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
         );
@@ -259,7 +257,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'tempstylometricanalysis_json_collection_name_data',
           'tempstylometricanalysis_new_page_url',
           'tempstylometricanalysis_main_title',
-          'tempstylometricanalysis_main_title_lowercase',    
+          'tempstylometricanalysis_main_title_lowercase',
           'tempstylometricanalysis_date'
             ), array(
           'tempstylometricanalysis_time =' . $dbr->addQuotes($time),
@@ -299,7 +297,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'stylometricanalysis_json_collection_name_data' => $json_collection_name_data,
           'stylometricanalysis_new_page_url' => $new_page_url,
           'stylometricanalysis_main_title' => $main_title,
-          'stylometricanalysis_main_title_lowercase' => $main_title_lowercase,    
+          'stylometricanalysis_main_title_lowercase' => $main_title_lowercase,
           'stylometricanalysis_date' => $date,
             ), __METHOD__, 'IGNORE'
         );
@@ -326,7 +324,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'stylometricanalysis_time',
           'stylometricanalysis_user',
           'stylometricanalysis_new_page_url',
-          'stylometricanalysis_main_title_lowercase',    
+          'stylometricanalysis_main_title_lowercase',
             ), array(
           'stylometricanalysis_time =' . $dbr->addQuotes($time),
           'stylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
@@ -339,7 +337,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
 
         $s = $res->fetchObject();
         $new_page_url = $s->stylometricanalysis_new_page_url;
-        $main_title_lowercase = $s->stylometricanalysis_main_title_lowercase; 
+        $main_title_lowercase = $s->stylometricanalysis_main_title_lowercase;
         return array($new_page_url, $main_title_lowercase);
     }
 

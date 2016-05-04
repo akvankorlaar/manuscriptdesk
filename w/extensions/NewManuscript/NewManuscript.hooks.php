@@ -1,8 +1,30 @@
 <?php
 
 /**
- * This file is part of the NewManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the ManuscriptDesk (github.com/akvankorlaar/manuscriptdesk)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * @package MediaWiki
+ * @subpackage Extensions
+ * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
+ * @copyright 2015 Arent van Korlaar
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice: 
+ * 
+ * Copyright (C) 2013 Richard Davis
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License Version 2, as
@@ -16,18 +38,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- * 
+ *
  * @package MediaWiki
  * @subpackage Extensions
- * @author Arent van Korlaar <akvankorlaar'at' gmail 'dot' com> 
- * @copyright 2015 Arent van Korlaar
- * 
- * 
- * Todo: Who owns this file, who has copyright for it? Some of the functions are from Richard Davis ... 
- * This file incorporates work covered by the following copyright and
- * permission notice: 
- * 
- * Todo: Some of the variables that refer to the same things have different names. Fix this. 
+ * @author Richard Davis <r.davis@ulcc.ac.uk>
+ * @author Ben Parish <b.parish@ulcc.ac.uk>
+ * @copyright 2013 Richard Davis
  */
 class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
@@ -44,7 +60,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $manuscripts_title;
     private $collection_title;
     private $partial_url;
-    private $paths; 
+    private $paths;
 
     /**
      * This function loads the zoomviewer if the editor is in edit mode. 
@@ -118,8 +134,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function redirectToOriginalImage(OutputPage $out) {
-        $paths = $this->paths; 
-        
+        $paths = $this->paths;
+
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return true;
         }
@@ -266,7 +282,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      */
     private function getHTMLLinkToOriginalManuscriptImage() {
 
-        $paths = $this->paths; 
+        $paths = $this->paths;
 
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
@@ -338,7 +354,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      * Constructs the full path of the image to be passed to the iframe
      */
     private function constructImageFilePath() {
-        $paths = $this->paths; 
+        $paths = $this->paths;
         return $paths->getWebLinkExportPath();
     }
 
@@ -357,9 +373,9 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      * This function renders the pagemetatable, when the tags are encountered in the wikitext
      */
     public static function renderPageMetaTable($input, $args, Parser $parser) {
-        $page_meta_table = new PageMetaTableFromTags();
-        $page_meta_table->extractOptions($input);
-        return $page_meta_table->renderTable($input);
+        $page_metatable = ObjectRegistry::getInstance()->getPageMetaTable();
+        $page_metatable->setInputValuesFromTagContent($input);
+        return $page_metatable->renderTable($input);
     }
 
     /**
@@ -404,7 +420,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function deleteFilesAndDatabaseEntries() {
-        $paths = $this->paths; 
+        $paths = $this->paths;
         $paths->setExportPaths();
         $paths->setPartialUrl();
         $delete_wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
@@ -451,7 +467,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
     private function validNewManuscriptWasCreated(WikiPage $wikiPage) {
         $this->setPageData($wikiPage->getTitle()->getPrefixedUrl());
-        $paths = $this->paths; 
+        $paths = $this->paths;
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return false;
         }

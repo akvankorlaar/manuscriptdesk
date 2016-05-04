@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the ManuscriptDesk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +40,7 @@ trait HTMLUserPageMenuBar {
         $id_collections = isset($button_ids[2]) ? $button_ids[2] : 'button';
         $id_stylometricanalysis = isset($button_ids[3]) ? $button_ids[3] : 'button';
 
-        $html = '<form class="summarypage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
+        $html = '<form class="summarypage-form-default" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
         $html .= "<input type='submit' name='view_manuscripts_posted' id='$id_manuscripts' value='$manuscripts_message'>";
         $html .= "<input type='submit' name='view_collations_posted' id='$id_collations' value='$collations_message'>";
         $html .= "<input type='submit' name='view_collections_posted' id='$id_collections' value='$collections_message'>";

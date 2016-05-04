@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the collate extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,8 +142,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private function processSavePageRequest() {
         $time_identifier = $this->request_processor->getSavePageData();
         $wrapper = $this->wrapper;
-        $wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time);
-        list($new_page_url, $main_title_lowercase) = $wrapper->getStylometricAnalysisNewPageData($time);
+        $wrapper->transferDataFromTempStylometricAnalysisToStylometricAnalysisTable($time_identifier);
+        list($new_page_url, $main_title_lowercase) = $wrapper->getStylometricAnalysisNewPageData($time_identifier);
         $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($main_title_lowercase, 'AllStylometricAnalysis', 'add');
         $local_url = $this->createNewWikiPage($new_page_url);
         return $this->getOutput()->redirect($local_url);

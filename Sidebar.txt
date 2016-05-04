@@ -1,12 +1,13 @@
 * navigation
 ** Main Page|Main Page
 ** Special:newManuscript|New Manuscript Page
-** Special:BeginCollate|Collate Manuscript Pages
+** Special:Collate|Collate Manuscript Pages
 ** Special:StylometricAnalysis|Stylometric Analysis
 ** Special:userPage|My User Page
 ** Special:recentManuscriptPages|Recent Manuscript Pages
-** Special:allManuscriptPages|All Manuscript Pages
+** Special:singleManuscriptPages|Single Manuscript Pages
 ** special:allCollations|All Collations
+** special:allStylometricAnalysis|All Stylometricanalyses
 ** Special:allCollections|All Collections
 ** recentchanges-url|recentchanges
 ** randompage-url|randompage

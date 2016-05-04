@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the collate extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +20,8 @@
  * @subpackage Extensions
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
- * 
  */
+ 
 class ObjectRegistry {
 
     /**
@@ -90,6 +89,7 @@ class ObjectRegistry {
     private $signature_wrapper = null;
     private $alphabetnumbers_wrapper = null;
     private $text_processor = null;
+    private $page_metatable = null; 
     private $validator = null;
     private $manuscriptdesk_deleter = null;
 
@@ -375,6 +375,13 @@ class ObjectRegistry {
         }
         return $this->manuscriptdesk_delete_wrapper;
     }
+    
+    public function getPageMetaTable(){
+        if(is_null($this->page_metatable)) {
+            $this->page_metatable = new PageMetaTable();
+        }
+        return $this->page_metatable;
+    }    
 
     private function getAlphabetNumbersWrapper() {
         if (is_null($this->alphabetnumbers_wrapper)) {

@@ -1,6 +1,5 @@
 /**
- * This file is part of the collate extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,10 +98,29 @@
 #visualization-wrap2{
   display: inline-block;
   float: right; 
-  position: relative;
   right: 100px; 
 }
 
 #analysisconfiguration{
   display: block;
+}
+
+.stylometricanalysis-image{
+  width: 200px;
+  height: 200px;
+}
+
+@media screen and (min-width: 1050px) {
+  .stylometricanalysis-image{
+    width: 400px;
+    height: 400px;
+  }
+}
+
+@media screen and (min-width: 1560px) {
+  .stylometricanalysis-image{
+    width: 650px;
+    height: 650px;
+  }
+
 }

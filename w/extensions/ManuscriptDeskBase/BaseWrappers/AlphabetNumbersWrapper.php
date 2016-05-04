@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the collate extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the ManuscriptDesk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +22,8 @@
  * @copyright 2015 Arent van Korlaar
  */
 class AlphabetNumbersWrapper {
-    
-    public function __construct(){
+
+    public function __construct() {
         
     }
 
@@ -337,7 +336,7 @@ class AlphabetNumbersWrapper {
     /**
      * Get the first letter of all of the collections, and check how many there are for a-z and 0-9 
      */
-    public function getAllCollectionsAlphabetNumbersData() {
+    public function getAllManuscriptCollectionPages() {
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -356,7 +355,7 @@ class AlphabetNumbersWrapper {
         return $res;
     }
 
-    public function getSingleManuscriptsAlphabetNumbersData() {
+    public function getAllSingleManuscriptPages() {
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -375,7 +374,7 @@ class AlphabetNumbersWrapper {
         return $res;
     }
 
-    public function getAllCollationsAlphabetNumbersData() {
+    public function getAllCollationsPages() {
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -387,6 +386,23 @@ class AlphabetNumbersWrapper {
             )
             , __METHOD__, array(
           'ORDER BY' => 'collations_main_title_lowercase',
+            )
+        );
+
+        return $res;
+    }
+
+    public function getAllStylometricAnalysisPages() {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'stylometricanalysis', //from
+            array(
+          'stylometricanalysis_main_title_lowercase', //values
+            ), array(
+            )
+            , __METHOD__, array(
+          'ORDER BY' => 'stylometricanalysis_main_title_lowercase',
             )
         );
 

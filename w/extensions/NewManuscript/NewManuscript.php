@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the NewManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +52,6 @@ $wgAutoloadClasses['NewManuscriptRequestProcessor'] = $dir . 'specials/NewManusc
 $wgAutoloadClasses['NewManuscriptUploadForm'] = $dir . 'specials/NewManuscriptUploadForm.php';
 $wgAutoloadClasses['NewManuscriptViewer'] = $dir . 'specials/NewManuscriptViewer.php';
 $wgAutoloadClasses['NewManuscriptWrapper'] = $dir . 'specials/NewManuscriptWrapper.php';
-$wgAutoloadClasses['PageMetTableFromTags'] = $dir . 'specials/PageMetaTableFromTags.php';
 $wgAutoloadClasses['SlicerExecuter'] = $dir . 'specials/SlicerExecuter.php';
 $wgAutoloadClasses['SpecialNewManuscript'] = $dir . 'specials/SpecialNewManuscript.php';
 

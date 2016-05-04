@@ -1,6 +1,5 @@
 /**
- * This file is part of the newManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the ManuscriptDesk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,19 +20,42 @@
  * @copyright 2015 Arent van Korlaar
  */
 
-/*button styles */
 #button {
-  width: 30em;  
+  width: 15em;  
   height: 1.5em;
   cursor: pointer;
   background-color: #F2FCFF;
 }
 
 #button-active {
-  width: 30em;  
+  width: 15em;  
   height: 1.5em;
   cursor: pointer;
   background-color: white; 
+}
+
+@media screen and (min-width: 1300px) {
+  #button {
+    width: 20em;  
+
+  }
+
+  #button-active {
+    width: 20em;  
+
+  }
+}
+
+@media screen and (min-width: 1835px) {
+  #button {
+    width: 30em;  
+
+  }
+
+  #button-active {
+    width: 30em;  
+
+  }
 }
 
 .letter-button {
@@ -103,7 +125,7 @@
   color: #2E5663; 
   cursor: pointer;
 }
-  
+
 .userpage-collectionlist:hover {
   text-decoration: underline; 
 }
@@ -158,4 +180,5 @@ h2 {
 .summarypage-form-default{
   display: block;
   height: 50px; 
+  width: 1836px; 
 }
