@@ -286,7 +286,7 @@ $wgNewManuscriptOptions = array(
   'max_on_page' => 10, //maximum entries shown on a page part of the 'summaryPages' extension, except for Special:RecentManuscriptPages
   'max_recent' => 30, //maximum entries shown on Special:RecentManuscriptPages
   'manuscripts_namespace' => 'Manuscripts:', //url namespace for manuscripts
-  'max_charachters_manuscript' => 5000, //a limitation of 5000 charachters has been set for manuscript pages, so that when performing text algorithms on the manuscript pages, the server does not receive too much input
+  'max_charachters_manuscript' => 7500, //a limitation of 5000 charachters has been set for manuscript pages, so that when performing text algorithms on the manuscript pages, the server does not receive too much input
   'url_count_size' => 2, //length of a manuscript pages url once transformed into an array by removing the slashes
 );
 
