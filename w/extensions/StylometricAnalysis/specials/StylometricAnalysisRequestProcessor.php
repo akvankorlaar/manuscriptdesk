@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the collate extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +21,7 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProcessor{
+class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
     public function getDefaultPageData() {
         global $wgStylometricAnalysisOptions;
@@ -57,7 +56,7 @@ class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProce
     }
 
     private function checkDefaultPageData(array $collection_data, $minimum_collections, $maximum_collections) {
-        
+
         if (empty($collection_data)) {
             throw new Exception('stylometricanalysis-error-request');
         }
@@ -150,9 +149,9 @@ class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProce
         $request = $this->request;
         $validator = $this->validator;
         $time = $validator->validateStringNumber(json_decode($request->getText('time')));
-        return $time; 
+        return $time;
     }
-    
+
     /**
      * Check if form 2 was posted
      */

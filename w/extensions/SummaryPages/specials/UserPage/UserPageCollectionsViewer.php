@@ -172,7 +172,7 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
             $html .= "<td class='td-four'><a href='" . $wgArticleUrl . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($partial_url) . "'>"
                 . htmlspecialchars($manuscripts_title) . "</a></td>";
             $html .= "<td class='td-four'>" . htmlspecialchars($manuscripts_date) . "</td>";
-            $html .= "<td>" . $this->getChangeSignatureCollectionPageForm($partial_url, $signature, $collection_title) . "</td>";
+            $html .= "<td class='td-four'>" . $this->getChangeSignatureCollectionPageForm($partial_url, $signature, $collection_title) . "</td>";
             $html .= "<td class='td-four'>" . $this->getEditSinglePageCollectionForm($counter, $collection_title, $manuscripts_title, $partial_url) . "</td>";
             $html .= "</tr>";
 

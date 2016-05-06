@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the collate extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +22,8 @@
  * @copyright 2015 Arent van Korlaar
  */
 class AlphabetNumbersWrapper {
-    
-    public function __construct(){
+
+    public function __construct() {
         
     }
 
@@ -337,7 +336,7 @@ class AlphabetNumbersWrapper {
     /**
      * Get the first letter of all of the collections, and check how many there are for a-z and 0-9 
      */
-    public function getAllCollectionsAlphabetNumbersData() {
+    public function getAllManuscriptCollectionPages() {
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -349,14 +348,14 @@ class AlphabetNumbersWrapper {
           'manuscripts_collection != ' . $dbr->addQuotes('none')
             )
             , __METHOD__, array(
-          'ORDER BY' => 'manuscripts_lowercase_collection',
+          'ORDER BY' => array('LENGTH(manuscripts_lowercase_collection)','manuscripts_lowercase_collection'),
             )
         );
 
         return $res;
     }
 
-    public function getSingleManuscriptsAlphabetNumbersData() {
+    public function getAllSingleManuscriptPages() {
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -368,14 +367,14 @@ class AlphabetNumbersWrapper {
           'manuscripts_collection = ' . $dbr->addQuotes('none')
             )
             , __METHOD__, array(
-          'ORDER BY' => 'manuscripts_lowercase_title',
+          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)','manuscripts_lowercase_title'),
             )
         );
 
         return $res;
     }
 
-    public function getAllCollationsAlphabetNumbersData() {
+    public function getAllCollationsPages() {
 
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -386,7 +385,24 @@ class AlphabetNumbersWrapper {
             ), array(
             )
             , __METHOD__, array(
-          'ORDER BY' => 'collations_main_title_lowercase',
+          'ORDER BY' => array('LENGTH(collations_main_title_lowercase)','collations_main_title_lowercase'),
+            )
+        );
+
+        return $res;
+    }
+
+    public function getAllStylometricAnalysisPages() {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'stylometricanalysis', //from
+            array(
+          'stylometricanalysis_main_title_lowercase', //values
+            ), array(
+            )
+            , __METHOD__, array(
+          'ORDER BY' => array('LENGTH(stylometricanalysis_main_title_lowercase)','stylometricanalysis_main_title_lowercase'),
             )
         );
 

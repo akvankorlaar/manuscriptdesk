@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,14 +30,14 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
         $this->signature_wrapper = $signature_wrapper;
     }
-    
-    public function setUserName($user_name){
-        
-        if(isset($this->user_name)){
+
+    public function setUserName($user_name) {
+
+        if (isset($this->user_name)) {
             return;
         }
-        
-        return $this->user_name = $user_name; 
+
+        return $this->user_name = $user_name;
     }
 
     public function getCollectionData() {
@@ -64,7 +63,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
           'manuscripts_collection != ' . $dbr->addQuotes("none"),
             ), __METHOD__, array(
-          'ORDER BY' => 'manuscripts_lowercase_collection',
+          'ORDER BY' => array('LENGTH(manuscripts_lowercase_collection)', 'manuscripts_lowercase_collection'),
             )
         );
 
@@ -125,7 +124,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
             ), array(
           'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions: the user should be the current user
             ), __METHOD__, array(
-          'ORDER BY' => 'manuscripts_lowercase_title',
+          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)', 'manuscripts_lowercase_title'),
             )
         );
 
@@ -249,7 +248,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
             ), array(
           'tempcollate_user = ' . $dbr->addQuotes($user_name), //conditions
             ), __METHOD__, array(
-          'ORDER BY' => 'tempcollate_time',
+          'ORDER BY' => array('LENGTH(tempcollate_time)', 'tempcollate_time'),
             )
         );
 

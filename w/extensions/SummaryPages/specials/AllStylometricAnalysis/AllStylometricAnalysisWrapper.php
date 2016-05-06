@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,15 +31,15 @@ class AllStylometricAnalysisWrapper implements SummaryPageWrapperInterface {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
         $this->signature_wrapper = $signature_wrapper;
     }
-    
-    public function setUserName($user_name){
-    
-        if(isset($this->user_name)){
+
+    public function setUserName($user_name) {
+
+        if (isset($this->user_name)) {
             return;
-        }    
-    
+        }
+
         return $this->user_name = $user_name;
-    }    
+    }
 
     public function getData($offset, $button_name = '', $next_letter_alphabet = '') {
 
@@ -72,7 +71,7 @@ class AllStylometricAnalysisWrapper implements SummaryPageWrapperInterface {
           'stylometricanalysis_main_title_lowercase'
             ), $conditions
             , __METHOD__, array(
-          'ORDER BY' => 'stylometricanalysis_main_title_lowercase',
+          'ORDER BY' => array('LENGTH(stylometricanalysis_main_title_lowercase)', 'stylometricanalysis_main_title_lowercase'),
           'LIMIT' => $max_on_page + 1,
           'OFFSET' => $offset,
             )

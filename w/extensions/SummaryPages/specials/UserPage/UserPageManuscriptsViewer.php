@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,15 +33,15 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface {
     public function __construct(OutputPage $out) {
         $this->out = $out;
     }
-    
-    public function setUserName($user_name){
-    
-        if(isset($this->user_name)){
+
+    public function setUserName($user_name) {
+
+        if (isset($this->user_name)) {
             return;
-        }    
-    
+        }
+
         return $this->user_name = $user_name;
-    }    
+    }
 
     public function showPage($button_name, $page_data, $offset, $next_offset) {
 
@@ -68,8 +67,8 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface {
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
         $html .= "<td class='td-three'><b>" . $out->msg('userpage-tabletitle') . "</b></td>";
-        $html .= "<td><b>" . $out->msg('userpage-creationdate') . "</b></td>";
-        $html .= "<td><b>" . $out->msg('userpage-signature') . "</b></td>";
+        $html .= "<td class='td-three'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td class='td-three'><b>" . $out->msg('userpage-signature') . "</b></td>";
         $html .= "</tr>";
 
         foreach ($page_data as $single_page_data) {
@@ -82,8 +81,8 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface {
             $html .= "<tr>";
             $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
-            $html .= "<td>" . htmlspecialchars($date) . "</td>";
-            $html .= "<td>" . $this->getChangeSignatureForm($partial_url, $signature, $button_name, $offset) . "</td>";
+            $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
+            $html .= "<td class='td-three'>" . $this->getChangeSignatureForm($partial_url, $signature, $button_name, $offset) . "</td>";
             $html .= "</tr>";
         }
 
@@ -95,12 +94,13 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface {
 
     private function getChangeSignatureForm($partial_url, $signature, $button_name, $offset) {
 
-        if($signature === 'private'){
+        if ($signature === 'private') {
             $new_signature = 'public';
-        }else{
+        }
+        else {
             $new_signature = 'private';
         }
-        
+
         global $wgArticleUrl;
 
         $edit_token = $this->out->getUser()->getEditToken();

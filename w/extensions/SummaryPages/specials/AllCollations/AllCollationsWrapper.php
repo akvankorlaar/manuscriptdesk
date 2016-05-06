@@ -72,7 +72,7 @@ class AllCollationsWrapper implements SummaryPageWrapperInterface {
           'collations_main_title_lowercase'
             ), $conditions
             , __METHOD__, array(
-          'ORDER BY' => 'collations_main_title_lowercase',
+          'ORDER BY' => array('LENGTH(collations_main_title_lowercase)','collations_main_title_lowercase'),
           'LIMIT' => $max_on_page + 1,
           'OFFSET' => $offset,
             )

@@ -54,3 +54,20 @@
   cursor: pointer;
   background-color: #F2FCFF;
 }
+
+table#page-metatable { 
+  width:100%; 
+  font-size: 100%;
+}
+
+table#page-metatable th { 
+  vertical-align: top;
+  text-align: right;
+  background-color: #f7f7f7; 
+  width: 25%;
+}
+
+table#page-metatable td { 
+  vertical-align: top; 
+  width: 25%;
+}

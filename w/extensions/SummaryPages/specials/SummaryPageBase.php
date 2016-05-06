@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +41,27 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         $this->uppercase_alphabet = array_merge(range('A', 'Z'), $numbers);
     }
 
+    /**
+     * Main entry point for Special Pages in the Manuscript Desk. Override to also allow access to users without an account
+     */
+    public function execute($subpage_arguments) {
+
+        try {
+            $this->setVariables();
+
+            if ($this->request_processor->requestWasPosted()) {
+                $this->processRequest();
+                return true;
+            }
+
+            $this->getDefaultPage();
+            return true;
+        } catch (Exception $e) {
+            $this->handleExceptions($e);
+            return false;
+        }
+    }
+
     protected function processRequest() {
 
         $request_processor = $this->request_processor;
@@ -58,13 +78,13 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
 
     private function processLetterOrButtonRequest() {
         list($button_name, $offset) = $this->request_processor->getLetterOrButtonRequestValues($this->lowercase_alphabet);
-        list($page_titles, $next_offset) = $this->getLetterOrButtonDatabaseData($button_name, $offset);
+        list($page_data, $next_offset) = $this->getLetterOrButtonDatabaseData($button_name, $offset);
 
-        if (empty($page_titles)) {
+        if (empty($page_data)) {
             return $this->getEmptyPageTitlesError($button_name);
         }
 
-        return $this->getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset);
+        return $this->getSingleLetterOrNumberPage($button_name, $page_data, $offset, $next_offset);
     }
 
     private function getLetterOrButtonDatabaseData($button_name, $offset) {
@@ -72,12 +92,12 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         return $this->wrapper->getData($offset, $button_name, $next_letter_alphabet);
     }
 
-    private function getSingleLetterOrNumberPage($button_name, $page_titles, $offset, $next_offset) {
+    private function getSingleLetterOrNumberPage($button_name, $page_data, $offset, $next_offset) {
 
         $alphabet_numbers = $this->wrapper->getAlphabetNumbersWrapper()->getAlphabetNumbersData($this->getSpecialPageName());
 
         $this->viewer->showSingleLetterOrNumberPage(
-            $alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet, $button_name, $page_titles, $offset, $next_offset
+            $alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet, $button_name, $page_data, $offset, $next_offset
         );
 
         return true;
@@ -111,11 +131,11 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
     }
 
     private function processSingleCollectionDataRequest() {
-        
-        if(!$this instanceof SpecialAllCollections){
+
+        if (!$this instanceof SpecialAllCollections) {
             throw new \Exception('error-request');
         }
-        
+
         $selected_collection = $this->request_processor->getCollectionTitle();
         $single_collection_data = $this->wrapper->getSingleCollectionData($selected_collection);
         $alphabet_numbers = $this->wrapper->getAlphabetNumbersWrapper()->getAlphabetNumbersData($this->getSpecialPageName());

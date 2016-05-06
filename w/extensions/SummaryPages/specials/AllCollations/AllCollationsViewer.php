@@ -63,9 +63,10 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td class='td-trhee'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
-        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-signature') . "</b>" . "</td>";
+        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
         foreach ($page_titles as $single_page_data) {
@@ -74,12 +75,14 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
             $url = isset($single_page_data['collations_url']) ? $single_page_data['collations_url'] : '';
             $user = isset($single_page_data['collations_user']) ? $single_page_data['collations_user'] : '';
             $date = isset($single_page_data['collations_date']) ? $single_page_data['collations_date'] : '';
+            $signature = isset($single_page_data['collations_signature']) ? $single_page_data['collations_signature'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-three'><a href='" . $wgArticleUrl . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
+            $html .= "<td class='td-four'><a href='" . $wgArticleUrl . htmlspecialchars($url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
-            $html .= "<td class='td-three'>" . htmlspecialchars($user) . "</td>";
-            $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
+            $html .= "<td class='td-four'>" . htmlspecialchars($user) . "</td>";
+            $html .= "<td>" . htmlspecialchars($signature) . "</td>";
+            $html .= "<td class='td-four'>" . htmlspecialchars($date) . "</td>";
             $html .= "</tr>";
         }
 

@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the newManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,22 +29,22 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
         HTMLCollectionMetaTable;
 
     private $page_name;
-    
-   public function setPageName($page_name){
-    
-        if(isset($this->page_name)){
+
+    public function setPageName($page_name) {
+
+        if (isset($this->page_name)) {
             return;
-        }    
-    
+        }
+
         return $this->page_name = $page_name;
-    }    
+    }
 
     /**
      * This function shows the page after a request has been processed
      */
     public function showSingleLetterOrNumberPage(
     array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
-        
+
         global $wgArticleUrl;
 
         $out = $this->out;
@@ -64,7 +63,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
         $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-collection') . "</b>" . "</td>";
-        $html .= "<td class='td-trhee'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-user') . "</b>" . "</td>";
         $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
@@ -82,7 +81,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
             $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
             $html .= "</tr>";
         }
-        
+
         $html .= "<input type='hidden' name='single_collection_posted' value='single_collection_posted'>";
         $html .= "</table>";
         $html .= "</form>";
@@ -128,20 +127,23 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-long'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-three'><b>" . $out->msg('userpage-signature') . "</b></td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
-        foreach ($pages_within_collection as $array) {
+        foreach ($pages_within_collection as $single_page_data) {
 
-            $manuscripts_url = isset($array['manuscripts_url']) ? $array['manuscripts_url'] : '';
-            $manuscripts_title = isset($array['manuscripts_title']) ? $array['manuscripts_title'] : '';
-            $manuscripts_date = isset($array['manuscripts_date']) ? $array['manuscripts_date'] : '';
+            $manuscripts_url = isset($single_page_data['manuscripts_url']) ? $single_page_data['manuscripts_url'] : '';
+            $manuscripts_title = isset($single_page_data['manuscripts_title']) ? $single_page_data['manuscripts_title'] : '';
+            $manuscripts_date = isset($single_page_data['manuscripts_date']) ? $single_page_data['manuscripts_date'] : '';
+            $signature = isset($single_page_data['manuscripts_signature']) ? $single_page_data['manuscripts_signature'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-long'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" .
+            $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($manuscripts_url) . "' title='" . htmlspecialchars($manuscripts_url) . "'>" .
                 htmlspecialchars($manuscripts_title) . "</a></td>";
-            $html .= "<td>" . htmlspecialchars($manuscripts_date) . "</td>";
+            $html .= "<td class='td-three'>" . htmlspecialchars($signature) . "</td>";
+            $html .= "<td class='td-three'>" . htmlspecialchars($manuscripts_date) . "</td>";
             $html .= "</tr>";
         }
 

@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the Collate extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the ManuscriptDesk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +28,8 @@ class AlphabetNumbersUpdater {
     public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper) {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
     }
-    
-    public function execute(){
+
+    public function execute() {
         $this->updateAlphabetNumbersCollections();
         $this->updateAlphabetNumbersSingleManuscriptPages();
         $this->updateAlphabetNumbersCollations();
@@ -39,28 +38,30 @@ class AlphabetNumbersUpdater {
 
     public function updateAlphabetNumbersCollections() {
         $alphabetnmbers_wrapper = $this->alphabetnumbers_wrapper;
-        $res = $alphabetnmbers_wrapper->getAllCollectionsAlphabetNumbersData();
+        $res = $alphabetnmbers_wrapper->getAllManuscriptCollectionPages();
         $filled_alphabetnumbers_array = $this->loopThroughResultsAndFillAlphabetNumbersTable($res, 'manuscripts_lowercase_collection');
         return $alphabetnmbers_wrapper->storeAlphabetNumbers('AllCollections', $filled_alphabetnumbers_array);
     }
 
     public function updateAlphabetNumbersSingleManuscriptPages() {
         $alphabetnumbers_wrapper = $this->alphabetnumbers_wrapper;
-        $res = $alphabetnumbers_wrapper->getSingleManuscriptsAlphabetNumbersData();
+        $res = $alphabetnumbers_wrapper->getAllSingleManuscriptPages();
         $filled_alphabetnumbers_array = $this->loopThroughResultsAndFillAlphabetNumbersTable($res, 'manuscripts_lowercase_title');
         return $alphabetnumbers_wrapper->storeAlphabetNumbers('SingleManuscriptPages', $filled_alphabetnumbers_array);
     }
 
     public function updateAlphabetNumbersCollations() {
         $alphabetnumbers_wrapper = $this->alphabetnumbers_wrapper;
-        $res = $alphabetnumbers_wrapper->getAllCollationsAlphabetNumbersData();
+        $res = $alphabetnumbers_wrapper->getAllCollationsPages();
         $filled_alphabetnumbers_array = $this->loopThroughResultsAndFillAlphabetNumbersTable($res, 'collations_main_title_lowercase');
         return $alphabetnumbers_wrapper->storeAlphabetNumbers('AllCollations', $filled_alphabetnumbers_array);
     }
 
     public function updateAlphabetNumbersStylometricAnalysis() {
-        
-        return; 
+        $alphabetnumbers_wrapper = $this->alphabetnumbers_wrapper;
+        $res = $alphabetnumbers_wrapper->getAllStylometricAnalysisPages();
+        $filled_alphabetnumbers_array = $this->loopThroughResultsAndFillAlphabetNumbersTable($res, 'stylometricanalysis_main_title_lowercase');
+        return $alphabetnumbers_wrapper->storeAlphabetNumbers('AllStylometricAnalysis', $filled_alphabetnumbers_array);
     }
 
     private function loopThroughResultsAndFillAlphabetNumbersTable($res, $result_name) {

@@ -93,7 +93,7 @@ class HelperScriptsDeleteWrapper {
             ), array(
             )
             , __METHOD__, array(
-          'ORDER BY' => 'collations_url',
+          'ORDER BY' => array('LENGTH(collations_url','collations_url'),
             )
         );
 
@@ -110,7 +110,7 @@ class HelperScriptsDeleteWrapper {
             ), array(
             )
             , __METHOD__, array(
-          'ORDER BY' => 'stylometricanalysis_new_page_url',
+          'ORDER BY' => array('LENGTH(stylometricanalysis_new_page_url)','stylometricanalysis_new_page_url'),
             )
         );
 
@@ -131,7 +131,7 @@ class HelperScriptsDeleteWrapper {
             ), array(
             )
             , __METHOD__, array(
-          'ORDER BY' => 'manuscripts_lowercase_title',
+          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)', 'manuscripts_lowercase_title'),
             )
         );
 
