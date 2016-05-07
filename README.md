@@ -50,10 +50,10 @@ you can install the extensions by:
 - Moving the .htaccess file to your website root (NOT the .htaccess files in the initialUpload and zoomImages folders - these should stay in the initialUpload and zoomImages folders).
 - Importing ManuscriptDesk.sql into your local MediaWiki's database (there should already be many tables in this database 
   after MediaWiki's default installation. These should remain there).
-- Going to localsettings.php located in the root of your MediaWiki installation (for example w/localsettings.php), and by appending all code in exampleConf.php (except for the PHP tag) to this file.
-- Configuring the variables '$wgWebsiteRoot' and '$wgPrimaryDisk' in localsettings.php.
-- Configuring '$wgNewManuscriptOptions['perl_path']'and $wgStylometricAnalysisOptions['python_path'] in localsettings.php if needed. 
-- Installing CollateX. This can be done by downloading and installing the latest version from:http://collatex.net/. CollateX can be configured by modifying $wgCollationOptions['collatex_url'] in localsettings.php.
+- Going to LocalSettings.php located in the root of your MediaWiki installation (for example w/LocalSettings.php), and by appending all code in ExampleConf.php (except for the PHP tag) to this file.
+- Configuring the variables '$wgWebsiteRoot' and '$wgPrimaryDisk' in LocalSettings.php.
+- Configuring '$wgNewManuscriptOptions['perl_path']'and $wgStylometricAnalysisOptions['python_path'] in LocalSettings.php if needed. 
+- Installing CollateX. This can be done by downloading and installing the latest version from:http://collatex.net/. CollateX can be configured by modifying $wgCollationOptions['collatex_url'] in LocalSettings.php.
 - Logging in as Administrator, and copying the contents of Sidebar.txt to Mediawiki:Sidebar (For example localhost/md/Mediawiki:Sidebar).
 
 Once everything is installed, you should log in as administrator, go to Special:UserRights (for example: localhost/md/Special:UserRights), enter your own username, and add yourself to the 'ManuscriptEditors' group. 
