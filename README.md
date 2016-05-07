@@ -52,7 +52,7 @@ you can install the extensions by:
   after MediaWiki's default installation. These should remain there).
 - Going to localsettings.php located in the root of your MediaWiki installation (for example w/localsettings.php), and by appending all code in exampleConf.php (except for the PHP tag) to this file.
 - Configuring the variables '$wgWebsiteRoot' and '$wgPrimaryDisk' in localsettings.php.
-- Configuring '$wgNewManuscriptOptions['perl_path']' in localsettings.php if needed. 
+- Configuring '$wgNewManuscriptOptions['perl_path']'and $wgStylometricAnalysisOptions['python_path'] in localsettings.php if needed. 
 - Installing CollateX. This can be done by downloading and installing the latest version from:http://collatex.net/. CollateX can be configured by modifying $wgCollationOptions['collatex_url'] in localsettings.php.
 - Logging in as Administrator, and copying the contents of Sidebar.txt to Mediawiki:Sidebar (For example localhost/md/Mediawiki:Sidebar).
 

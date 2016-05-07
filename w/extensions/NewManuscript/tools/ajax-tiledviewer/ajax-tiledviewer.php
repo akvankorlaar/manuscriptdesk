@@ -32,7 +32,7 @@ if( isset( $_GET[ 'lang' ] ) === TRUE ){
 
 define( 'MEDIAWIKI', '' );
 
-require '../../newManuscript.i18n.php';
+require '../../NewManuscript.i18n.php';
 
 $useFlashMsg  = $messages[ $lang ][ 'to-use-flash' ];
 $clickHereMsg = $messages[ $lang ][ 'click-here' ];

@@ -29,7 +29,11 @@
 ##############################################################
 #####Misc Settings#####
 //path to the extensions folder
-$wgExtensionAssetsPath = $IP . '/extensions/';
+
+
+//website root. This is used to locate the zoomImages and initialUpload directories. The full path to the website root must be specified here. 
+$wgWebsiteRoot = '/path/to/website/root';
+$wgExtensionAssetsPath = $wgWebsiteRoot. $wgScriptPath . '/extensions/';
 
 //these files are autoloaded to enable the extensions
 require_once( $wgExtensionAssetsPath . 'ManuscriptDeskBase/ManuscriptDeskBase.php' );
@@ -257,9 +261,7 @@ $wgHiddenPrefs[] = 'cols';
 $wgHiddenPrefs[] = 'usebetatoolbar';
 
 #####Personal Settings#####
-//website root. This is used to locate the zoomImages and initialUpload directories. The full path to the website root must be specified here. 
-$wgWebsiteRoot = 'path/to/website/root';
-
+#
 //Primary disk. Primary location of the website and the images  
 $wgPrimaryDisk = 'main disk here';
 

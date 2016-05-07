@@ -501,7 +501,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      * This function adds additional modules containing CSS before the page is displayed
      */
     public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
-
+                
         try {
 
             $partial_url = $out->getTitle()->mPrefixedText;

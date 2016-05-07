@@ -30,7 +30,7 @@ $lang = 'en';
 
 define( 'MEDIAWIKI', '' );
 
-require '../../newManuscript.i18n.php';
+require '../../NewManuscript.i18n.php';
 
 $useJSMsg     = $messages[ $lang ][ 'to-use-javascript' ];
 $clickHereMsg = $messages[ $lang ][ 'click-here' ];
