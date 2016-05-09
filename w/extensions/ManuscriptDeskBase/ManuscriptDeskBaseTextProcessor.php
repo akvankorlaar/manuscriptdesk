@@ -88,16 +88,22 @@ class ManuscriptDeskBaseTextProcessor {
 
         //filter out the following wiki tags, and all text in between the tags
         //pagemetatable tag
-        $raw_text = preg_replace('/<pagemetatable>[^<]+<\/pagemetatable>/i', '', $raw_text);
+        $raw_text = preg_replace('/<pagemetatable[^<]+<\/pagemetatable>/i', '', $raw_text);
 
         //del tag
-        $raw_text = preg_replace('/<del>[^<]+<\/del>/i', '', $raw_text);
+        $raw_text = preg_replace('/<del[^<]+<\/del>/i', '', $raw_text);
 
         //note tag
-        $raw_text = preg_replace('/<note>[^<]+<\/note>/i', '', $raw_text);
+        $raw_text = preg_replace('/<note[^<]+<\/note>/i', '', $raw_text);
+        
+        //metamark
+        $raw_text = preg_replace('/<metamark[^<]+<\/metamark>/i', '', $raw_text);
 
         //filter out any other tags, but keep all text in between the tags
         $raw_text = strip_tags($raw_text);
+        
+        //change any occurrence of 2 or more spaces to a single space
+        $raw_text = preg_replace('/ {2,}/', ' ', $raw_text);
 
         $raw_text = trim($raw_text);
 

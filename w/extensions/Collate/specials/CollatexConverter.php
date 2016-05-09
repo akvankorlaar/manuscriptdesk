@@ -55,7 +55,7 @@ class CollatexConverter {
 
         $collatex_url = $wgCollationOptions['collatex_url'];
         $collatex_headers = $wgCollationOptions['collatex_headers'];
-
+        
         $curl = curl_init($collatex_url);
         curl_setopt($curl, CURLOPT_URL, $collatex_url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $collatex_headers);
