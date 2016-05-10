@@ -27,7 +27,13 @@ class CollatexConverter {
     public function __construct() {
         
     }
-
+   
+    /**
+     * Convert the text into a format acceptible by collatex, set up a cURL handle, run it, check the result, and return the result. 
+     * 
+     * @param array $texts
+     * @return string output of collatex
+     */
     public function execute(array $texts) {
         $json_encoded_text = $this->convertToFormatAcceptableByCollatex($texts);
         $curl = $this->constructCurlCollatexCaller($json_encoded_text);
@@ -36,8 +42,13 @@ class CollatexConverter {
         return $result;
     }
 
+    /**
+     * Convert the raw text format. Collatex only accepts the text if it is equal to this format
+     * 
+     * @param array $text_array
+     * @return string json encoded text
+     */
     private function convertToFormatAcceptableByCollatex(array $text_array) {
-
         $content = array();
         $alphabet = range('A', 'Z');
         $length_text_array = count($text_array);
@@ -50,20 +61,22 @@ class CollatexConverter {
         return json_encode($content);
     }
 
+    /**
+     * Set up a cURL handle. Provide headers, URL and content to be posted, and return handle
+     */
     private function constructCurlCollatexCaller($json_encoded_text) {
         global $wgCollationOptions;
 
         $collatex_url = $wgCollationOptions['collatex_url'];
         $collatex_headers = $wgCollationOptions['collatex_headers'];
-        
-        $curl = curl_init($collatex_url);
+
+        $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $collatex_url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $collatex_headers);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $json_encoded_text);
-        
-        return $curl; 
+        return $curl;
     }
 
     private function executeCurlCollatexCaller($curl) {
