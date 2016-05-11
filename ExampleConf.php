@@ -36,6 +36,7 @@ $wgWebsiteRoot = '/path/to/website/root';
 $wgExtensionAssetsPath = $wgWebsiteRoot. $wgScriptPath . '/extensions/';
 
 //these files are autoloaded to enable the extensions
+require_once( $wgExtensionAssetsPath . 'WikiEditor/WikiEditor.php');
 require_once( $wgExtensionAssetsPath . 'ManuscriptDeskBase/ManuscriptDeskBase.php' );
 require_once( $wgExtensionAssetsPath . 'JBTEIToolbar/JBTEIToolbar.php' );
 require_once( $wgExtensionAssetsPath . 'TEITags/TEITags.php' );

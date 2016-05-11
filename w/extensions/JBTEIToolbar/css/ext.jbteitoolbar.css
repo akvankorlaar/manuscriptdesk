@@ -47,7 +47,7 @@
   float: left;
 }
 
-// * Extend width to accomodate maximise/minimise buttons
+/* Extend width to accomodate maximise/minimise buttons */
 
 .toolbar,
 #toolbar {

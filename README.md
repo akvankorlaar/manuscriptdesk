@@ -32,10 +32,7 @@ The MediaWiki files should be extracted to a subdirectory of your website root (
 
 **Important:**
 
-During the on-screen instructions you have to:
-
-- Enable the WikiEditor extension.
-- Enable file uploads.
+During the on-screen instructions you have to Enable file uploads
 
 For the other settings the default options can be used.
 
@@ -70,7 +67,6 @@ The extensions are largely built according to the recommended structure for Medi
 The MediaWiki website is also the main source for information on, for example, [hooks](https://www.mediawiki.org/wiki/Manual:Hooks), 
 [database access](https://www.mediawiki.org/wiki/Manual:Database_access), [user rights](https://www.mediawiki.org/wiki/Manual:User_rights), and
 specific classes such as the [User class](https://www.mediawiki.org/wiki/Manual:User.php).
-
 
 ##License##
 
