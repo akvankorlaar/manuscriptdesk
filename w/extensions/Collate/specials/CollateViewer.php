@@ -210,6 +210,8 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
 
     private function getHTMLforCollatexTable(array $page_titles, $collatex_output) {
 
+        global $wgScriptPath;
+
         $collatex_output = preg_replace('/[<>]/', '', $collatex_output);
 
         $html = '';
@@ -217,10 +219,10 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         $html .= "
        <script> var at = $collatex_output;</script>
        <script type='text/javascript' src='https://yui-s.yahooapis.com/3.18.1/build/yui/yui-min.js'></script>
-       <script src='/w/extensions/Collate/specials/javascriptcss/jquery.min.js'></script>
-       <script type='text/javascript' src='/w/extensions/Collate/specials/javascriptcss/collatex.js'></script>
-       <script type='text/javascript' src='/w/extensions/Collate/specials/javascriptcss/collatexTwo.js'></script>
-       <link rel='stylesheet' type='text/css' href='/w/extensions/Collate/specials/javascriptcss/collatex.css'>";
+       <script src='" . $wgScriptPath . "/extensions/Collate/specials/javascriptcss/jquery.min.js'></script>
+       <script type='text/javascript' src='" . $wgScriptPath . "/extensions/Collate/specials/javascriptcss/collatex.js'></script>
+       <script type='text/javascript' src='" . $wgScriptPath . "/extensions/Collate/specials/javascriptcss/collatexTwo.js'></script>
+       <link rel='stylesheet' type='text/css' href='" . $wgScriptPath . "/extensions/Collate/specials/javascriptcss/collatex.css'>";
 
         $html .="
       <table class='alignment'>";
