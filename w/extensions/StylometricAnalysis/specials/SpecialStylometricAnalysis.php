@@ -31,6 +31,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private $collection_data;
     private $collection_name_data;
     private $pystyl_config;
+    private $pystyl_path; 
 
     //PyStyl $config_array information: 
     //removenonalpha : wheter or not to keep alphabetical symbols
@@ -63,8 +64,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $web_root = $wgWebsiteRoot;
 
         $initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
-        $this->base_outputpath = $web_root . '/' . $initial_analysis_dir . '/' . $this->user_name;
+        $this->base_outputpath = $web_root . $initial_analysis_dir . '/' . $this->user_name;
         $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name;
+        $this->pystyl_path = $wgStylometricAnalysisOptions['pystyl_path'];
 
         return true;
     }
@@ -165,7 +167,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function getPageTextsForCollections() {
-
         $texts = array();
         $a = 1;
         foreach ($this->collection_data as $single_collection_data) {
@@ -188,7 +189,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function checkForStylometricAnalysisCollectionErrors($all_texts_for_one_collection = '') {
-
         $collection_n_words = str_word_count($all_texts_for_one_collection);
         $pystyl_config = $this->pystyl_config;
 
@@ -213,7 +213,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     private function constructPystylOutputFileNames() {
-
         $imploded_collection_name_data = implode('', $this->collection_name_data);
         $year_month_day = date('Ymd');
         $hours_minutes_seconds = date('his');
@@ -243,15 +242,16 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
     private function constructShellCommandToCallPystyl() {
         $python_path = $this->python_path;
-        $dir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'PyStyl' . DIRECTORY_SEPARATOR . 'pystyl' . DIRECTORY_SEPARATOR . 'ManuscriptDeskAnalysis.py';
+        $pystyl_path = $this->pystyl_path; 
+        $pystyl_analysis_file = $pystyl_path . 'ManuscriptDeskAnalysis.py';
         //test.py      
-        return $python_path . ' ' . $dir;
+        return $python_path . ' -W ignore ' . $pystyl_analysis_file;
     }
 
     /**
      * This function constructs the config array that will be sent to Pystyl
      */
-    private function setAdditionalPystylConfigValues(array $texts, $full_outputpath1 = '', $full_outputpath2 = '') {
+    private function setAdditionalPystylConfigValues(array $texts, $full_outputpath1, $full_outputpath2) {
         $this->pystyl_config['texts'] = $texts;
         $this->pystyl_config['full_outputpath1'] = $full_outputpath1;
         $this->pystyl_config['full_outputpath2'] = $full_outputpath2;
@@ -275,6 +275,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         if (is_file($full_textfilepath)) {
             throw new \Exception('stylometricanalysis-error-internal');
             //bad error, should be reported.. 
+        }
+
+        if (!is_dir($this->base_outputpath)) {
+            mkdir($this->base_outputpath, 0755,true);
         }
 
         $textfile = fopen($full_textfilepath, 'w');
@@ -305,12 +309,16 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * This function calls Pystyl through the command line
      */
     private function callPystyl($command, $full_textfilepath) {
-        $full_textfilepath = "'$full_textfilepath'";
-        return system(escapeshellcmd($command . ' ' . $full_textfilepath));
+        $full_textfilepath = "\"'$full_textfilepath'\"";
+        $full_textfileeath = str_replace('\\','',$full_textfilepath);
+        $full_command = $command . ' ' .  $full_textfilepath;
+        return system($full_command);
     }
 
     private function checkPystylOutput($pystyl_output, $full_outputpath1, $full_outputpath2) {
-
+        
+        throw new \Exception($pystyl_output);
+        
         //something went wrong when importing data into PyStyl
         if (strpos($pystyl_output, 'stylometricanalysis-error-import') !== false) {
             throw new \Exception('stylometricanalysis-error-import');
