@@ -302,6 +302,7 @@ $wgStylometricAnalysisOptions = array(
   'min_mfi' => 20, //minimum number of most frequent items
   'min_words_collection' => 100, //minimum words in a collection
   'tempstylometricanalysis_hours_before_delete' => 2, //hours before entries are deleted from the 'tempstylometricanalysis' table 
+  'pystyl_path' => 'path/to/pystyl/',
 );
 
 $wgAllowedDeleterIp = '000.000.000.00'; //ip-address that is allowed to delete in Special:HelperScripts

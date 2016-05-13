@@ -92,3 +92,6 @@ w/skins/*
 !w/extensions/StylometricAnalysis/*/*/*/*/*/*/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*/*/*/*/*/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*/*/*/*/*/*/*/*/*
+
+#other things that should be ignored...
+*.pyc
