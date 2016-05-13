@@ -312,13 +312,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $full_textfilepath = "\"'$full_textfilepath'\"";
         $full_textfileeath = str_replace('\\','',$full_textfilepath);
         $full_command = $command . ' ' .  $full_textfilepath;
-        return system($full_command);
+        return shell_exec($full_command);
     }
 
     private function checkPystylOutput($pystyl_output, $full_outputpath1, $full_outputpath2) {
-        
-        throw new \Exception($pystyl_output);
-        
+                
         //something went wrong when importing data into PyStyl
         if (strpos($pystyl_output, 'stylometricanalysis-error-import') !== false) {
             throw new \Exception('stylometricanalysis-error-import');
