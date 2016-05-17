@@ -22,6 +22,10 @@
  * @copyright 2015 Arent van Korlaar
  */
 abstract class ManuscriptDeskBaseHooks {
+    
+    /**
+     * Classes that extend this class are intended to be called only when MediaWiki calls certain hooks. See https://www.mediawiki.org/wiki/Manual:Hooks 
+     */
 
     protected $wrapper;
     protected $signature;
@@ -142,7 +146,7 @@ abstract class ManuscriptDeskBaseHooks {
     }
 
     /**
-     * Includes the unit tests for stylometricanalysis into the unit test list
+     * Includes the unit tests into the unit test list
      */
     public function onUnitTestsList(&$files) {
         $files = array_merge($files, glob(__DIR__ . '/tests/*Test.php'));

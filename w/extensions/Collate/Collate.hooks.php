@@ -130,7 +130,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function loads additional modules containing CSS before the page is displayedi
+     * This function loads additional modules containing CSS before the page is displayed
      */
     public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
 
@@ -146,7 +146,10 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
 
         return true;
     }
-
+    
+    /**
+     * Checks whether the current user is allowed to view the current collation page  
+     */
     public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parseroutput) {
 
         if (!$this->isCollationsNamespace($out)) {

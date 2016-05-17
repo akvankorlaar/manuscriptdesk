@@ -22,6 +22,11 @@
  * @copyright 2015 Arent van Korlaar
  */
 abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
+    
+    /**
+     * Classes that extend this class are intended as Manuscript Desk Special Pages. See https://www.mediawiki.org/wiki/Manual:Special_pages for
+     * information on Special Pages. This class is responsible for tasks common to all Special Pages in the Manuscript Desk.  
+     */
 
     protected $user_name;
     protected $viewer;

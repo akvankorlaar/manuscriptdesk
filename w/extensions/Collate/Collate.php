@@ -25,8 +25,8 @@
  * Usage: Add the following line in LocalSettings.php:
  * require_once( "$IP/extensions/Collate/Collate.php" );
  * 
- * This module collates texts in the Manuscript Desk. You need to have a working version of CollateX installed, and it needs to be running. To configure the Manuscript Desk
- * for CollateX see the ExampleConf.php page ($wgCollationOptions)
+ * This module collates texts in the Manuscript Desk. You need to have a working version of CollateX installed, and it needs to be running as a service in Localhost
+ * To configure the Manuscript Desk for CollateX see the ExampleConf.php page ($wgCollationOptions)
  */
 // Check environment
 if (!defined('MEDIAWIKI')) {

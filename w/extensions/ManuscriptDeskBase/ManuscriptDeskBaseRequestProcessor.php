@@ -22,6 +22,10 @@
  * @copyright 2015 Arent van Korlaar
  */
 class ManuscriptDeskBaseRequestProcessor {
+    
+    /**
+     * Classes that extend this class are intended primarily to grab and check user form data 
+     */
 
     protected $request;
     protected $validator;
