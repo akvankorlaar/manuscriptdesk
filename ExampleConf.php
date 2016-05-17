@@ -24,16 +24,12 @@
  * needed, for example, to load the additional extensions, configure the namespaces, configure the user permissions and settings, and set the global configuration settings
  * for some of the extensions
  */
-##############################################################
-#CUSTOM CONFIGURATION SETTINGS
-##############################################################
+
 #####Misc Settings#####
 //path to the extensions folder
-
-
 //website root. This is used to locate the zoomImages and initialUpload directories. The full path to the website root must be specified here. 
 $wgWebsiteRoot = '/path/to/website/root';
-$wgExtensionAssetsPath = $wgWebsiteRoot. $wgScriptPath . '/extensions/';
+$wgExtensionAssetsPath = $wgWebsiteRoot . $wgScriptPath . '/extensions/';
 
 //these files are autoloaded to enable the extensions
 require_once( $wgExtensionAssetsPath . 'WikiEditor/WikiEditor.php');
@@ -305,8 +301,11 @@ $wgStylometricAnalysisOptions = array(
   'pystyl_path' => 'path/to/pystyl/',
 );
 
-$wgAllowedDeleterIp = '000.000.000.00'; //ip-address that is allowed to delete in Special:HelperScripts
-$wgDeleterPassPhrase = ''; //password or phrase for deletion in Special:HelperScripts
+$wgHelperScriptsOptions = array(
+  'deleter_ip' => '000.000.000.00', //ip-address that is allowed to delete in Special:HelperScripts
+  'deleter_passphrase' => '', //password or phrase for deletion in Special:HelperScripts
+  'delete_available' => 'off', //switch to 'on' if you want to be able to use the delete function in Special:HelperScripts
+);
 
 //sends complete stack trace to output in case of an uncaught exceptions. This should never be set to true on a production server
 $wgShowExceptionDetails = true;

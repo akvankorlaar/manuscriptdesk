@@ -81,6 +81,7 @@ class ObjectRegistry {
      */
     private $helperscripts_viewer = null;
     private $helperscripts_request_processor = null;
+    private $helperscripts_hooks = null;
     private $alphabetnumbers_updater = null;
 
     /**
@@ -403,6 +404,13 @@ class ObjectRegistry {
         }
         return $this->validator;
     }
+    
+    public function getHelperScriptsHooks() {
+        if (is_null($this->helperscripts_hooks)) {
+            $this->helperscripts_hooks = new HelperScriptsHooks();
+        }
+        return $this->helperscripts_hooks;
+    } 
 
     /**
      * HelperScripts 
@@ -551,7 +559,11 @@ class ObjectRegistry {
     
     public function setUserPageStylometricAnalysisViewer($object = null){
         return $this->userpage_stylometricanalysis_viewer = $object;
-    }    
+    }
+
+    public function setHelperScriptsHooks($object = null) {
+        return $this->helperscripts_hooks = $object;
+    } 
 
     private function ensure($expression, $message) {
         if (!$expression) {

@@ -272,8 +272,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private function insertPystylConfigIntoTextfile($full_textfilepath) {
 
         if (is_file($full_textfilepath)) {
-            throw new \Exception('stylometricanalysis-error-internal');
-            //bad error, should be reported.. 
+            unlink($full_textfilepath);
         }
 
         if (!is_dir($this->base_outputpath)) {

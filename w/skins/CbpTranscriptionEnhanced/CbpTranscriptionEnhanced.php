@@ -267,9 +267,8 @@ class CbpTranscriptionEnhancedTemplate extends QuickTemplate {
 				echo htmlspecialchars($item['href']) ?>"<?php echo $skin->tooltip('pt-'.$key) ?><?php
 				if(!empty($item['class'])) { ?> class="<?php
 				echo htmlspecialchars($item['class']) ?>"<?php } ?>><?php
-
-$sctitle = preg_replace('/\b(\w)/e', 'strtoupper("$1")', htmlspecialchars($item['text']));
-echo $sctitle;
+//$sctitle = preg_replace('/\b(\w)/e', 'strtoupper("$1")', htmlspecialchars($item['text'])); 
+echo htmlspecialchars($item['text']);
 ?></a></li>
 <?php			} ?>
 			</ul>

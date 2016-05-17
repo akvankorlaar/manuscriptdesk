@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the collate extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +59,7 @@ $wgExtensionMessagesFiles['HelperScripts'] = $dir . 'HelperScripts.i18n.php';
 $wgSpecialPages['HelperScripts'] = 'SpecialHelperScripts';
 
 //Instantiate the NewManuscriptHooks class and register the hooks
-$helperscripts_hooks = new HelperScriptsHooks();
+$helperscripts_hooks = ObjectRegistry::getInstance()->getHelperScriptsHooks();
 
 $wgHooks['BeforePageDisplay'][] = array($helperscripts_hooks, 'onBeforePageDisplay');
 $wgHooks['UnitTestsList'][] = array($helperscripts_hooks, 'onUnitTestsList');

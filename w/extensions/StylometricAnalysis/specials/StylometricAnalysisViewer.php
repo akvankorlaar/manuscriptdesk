@@ -49,7 +49,7 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         $html .= "<table id='stylometricanalysis-infobox'>";
         $html .= "<tr><th>$about_message</th></tr>";
         $html .= "<tr><td>$version_message</td></tr>";
-        $html .= "<tr><td>$software_message <a href= '' target='_blank'>Pystyl</a>.</td></tr>";
+        $html .= "<tr><td>$software_message <a href= 'https://github.com/mikekestemont/pystyl' target='_blank'>PyStyl</a>.</td></tr>";
         $html .= "<tr><td id='stylometricanalysis-infobox-lasttd'><small>$lastedit_message</small></td></tr>";
         $html .= "</table>";
 
@@ -288,13 +288,13 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
           'label' => 'Visualization1',
           'class' => 'HTMLSelectField',
           'options' => array(
-            'Hierarchical Clustering Dendrogram' => 'dendrogram',
+            //'Hierarchical Clustering Dendrogram' => 'dendrogram',
             'PCA Scatterplot' => 'pcascatterplot',
             'TNSE Scatterplot' => 'tnsescatterplot',
             'Distance Matrix Clustering' => 'distancematrix',
             'Variability Based Neighbour Clustering' => 'neighbourclustering',
           ),
-          'default' => 'dendrogram',
+          'default' => 'pcascatterplot',
           'section' => 'stylometricanalysis-section-visualization',
         );
 
@@ -302,13 +302,13 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
           'label' => 'Visualization2',
           'class' => 'HTMLSelectField',
           'options' => array(
-            'Hierarchical Clustering Dendrogram' => 'dendrogram',
+            //'Hierarchical Clustering Dendrogram' => 'dendrogram',
             'PCA Scatterplot' => 'pcascatterplot',
             'TNSE Scatterplot' => 'tnsescatterplot',
             'Distance Matrix Clustering' => 'distancematrix',
             'Variability Based Neighbour Clustering' => 'neighbourclustering',
           ),
-          'default' => 'dendrogram',
+          'default' => 'pcascatterplot',
           'section' => 'stylometricanalysis-section-visualization',
         );
 
