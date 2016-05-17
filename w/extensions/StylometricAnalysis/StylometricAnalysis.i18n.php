@@ -66,6 +66,9 @@ $messages['en'] = array(
   'stylometricanalysis-error-ngramsize' => 'One of your collections is too small to support the entered ngram size',
   'stylometricanalysis-error-internal' => 'There was an internal error. Please contact the administrator',
   'stylometricanalysis-error-database' => 'A database error occurred. Please contact the administrator',
+  'stylometricanalysis-error-stepsizesegmentsize' => 'The step size should not be higher than the segment size',
+  'stylometricanalysis-error-mfi' => 'The MFI is lower than the minimum MFI',
+  'stylometricanalysis-error-minmax' => 'The minimum size is higher than the maximum size',
   //form field names for Form2
   '-stylometricanalysis-section-import' => 'Import Settings',
   '-stylometricanalysis-section-preprocess' => 'Preprocess Settings',

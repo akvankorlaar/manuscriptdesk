@@ -21,106 +21,113 @@
  */
 
 .stylometricanalysis-table td {
-  width: 20%;
+    width: 20%;
 }
 
 .stylometricanalysis-table {
-  width: 100%;
+    width: 100%;
 }
 
 .stylometricanalysis-span {
-  font-size: 85%;
+    font-size: 85%;
 }
 
 #stylometricanalysis-submitbutton {
-  width: 30em; 
-  height: 1.5em; 
-  cursor: default; 
-  position: relative; 
-  background-color: #F2FCFF;
+    width: 30em; 
+    height: 1.5em; 
+    cursor: default; 
+    position: relative; 
+    background-color: #F2FCFF;
 }
 
 #stylometricanalysis-submitbutton-two {
-  width: 30em; 
-  height: 1.5em; 
-  cursor: pointer; 
-  position: relative; 
-  background-color: #F2FCFF;
+    width: 30em; 
+    height: 1.5em; 
+    cursor: pointer; 
+    position: relative; 
+    background-color: #F2FCFF;
 }
 
 #stylometricanalysis-infobox {
-  padding: 0.3em;
-  float: right; 
-  width: 500px;
-  margin-bottom: 8px; 
-  margin-left: 15px; 
-  border: 1px solid #aa8899; 
-  background: #fff; 
-  text-align: center;
-  font-size: 95%; 
-  line-height: 1.5em; 
+    padding: 0.3em;
+    float: right; 
+    width: 500px;
+    margin-bottom: 8px; 
+    margin-left: 15px; 
+    border: 1px solid #aa8899; 
+    background: #fff; 
+    text-align: center;
+    font-size: 95%; 
+    line-height: 1.5em; 
 }
 
 #stylometricanalysis-infobox th {
-  background: #F2FCFF; 
-  color: #black;
-  padding: 0.3em; 
-  font-size: 1.1em;  
+    background: #F2FCFF; 
+    color: #black;
+    padding: 0.3em; 
+    font-size: 1.1em;  
 }
 
 #stylometricanalysis-infobox-lasttd {
-  background: #F2FCFF; 
-  padding: 0.3em; 
-  color: black;
+    background: #F2FCFF; 
+    padding: 0.3em; 
+    color: black;
 }
 
 .stylometricanalysis-transparent {
-  background-color: #F2FCFF;
+    background-color: #F2FCFF;
 }
 
 .link-transparent {
-  background: #F2FCFF;
-  font-weight: bold;
-  color: black;
+    background: #F2FCFF;
+    font-weight: bold;
+    color: black;
 }
 
 .mw-htmlform-submit {
-  width: 30em;  
-  height: 1.5em;
-  cursor: pointer;
-  background-color: #F2FCFF;
+    width: 30em;  
+    height: 1.5em;
+    cursor: pointer;
+    background-color: #F2FCFF;
 }
 
 #visualization-wrap1{
-  display: inline-block; 
+    display: inline-block; 
 }
 
 #visualization-wrap2{
-  display: inline-block;
-  float: right; 
-  right: 100px; 
+    display: inline-block;
+    float: right; 
+    right: 100px; 
 }
 
 #analysisconfiguration{
-  display: block;
+    display: block;
 }
 
 .stylometricanalysis-image{
-  width: 200px;
-  height: 200px;
+    display: none; 
+}
+
+@media screen and (min-width: 800px){
+    .stylometricanalysis-image{
+        width: 200px;
+        height: 200px;
+        display: inline;
+    }
 }
 
 @media screen and (min-width: 1050px) {
-  .stylometricanalysis-image{
-    width: 400px;
-    height: 400px;
-  }
+    .stylometricanalysis-image{
+        width: 400px;
+        height: 400px;
+    }
 }
 
 @media screen and (min-width: 1560px) {
-  .stylometricanalysis-image{
-    width: 650px;
-    height: 650px;
-  }
+    .stylometricanalysis-image{
+        width: 650px;
+        height: 650px;
+    }
 
 }

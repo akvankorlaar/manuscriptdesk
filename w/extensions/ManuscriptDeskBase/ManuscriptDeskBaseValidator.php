@@ -91,6 +91,36 @@ class ManuscriptDeskBaseValidator {
     }
 
     /**
+     * This function validates strings inside an array or an object with underscore (for StylometricAnalysis form)
+     */
+    public function validateStringUnderscore($input) {
+
+        if (is_array($input) || is_object($input)) {
+
+            foreach ($input as $index => $value) {
+                $status = $this->validateString($value);
+            }
+
+            return $input;
+        }
+
+        if (empty($input)) {
+            throw new \Exception('validation-empty');
+        }
+
+        //check if all charachters are alphanumeric or underscore
+        if (!preg_match('/^[a-zA-Z0-9_]*$/', $input)) {
+            throw new \Exception('validation-notalphanumeric');
+        }
+
+        if (strlen($input) > ($this->max_length)) {
+            throw new \Exception('validation-morethanfiftycharachters');
+        }
+
+        return $input;
+    }
+
+    /**
      * This function checks if basic form conditions are met for numbers. Field specific validation is done later 
      */
     public function validateStringNumber($input) {

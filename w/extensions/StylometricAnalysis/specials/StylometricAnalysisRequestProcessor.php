@@ -116,8 +116,8 @@ class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProce
         $config_array['removepronouns'] = $request->getText('wpremovepronouns');
         $config_array['removepronouns'] = empty($config_array['removepronouns']) ? 0 : 1;
 
-        $config_array['vectorspace'] = $validator->validateString($request->getText('wpvectorspace'));
-        $config_array['featuretype'] = $validator->validateString($request->getText('wpfeaturetype'));
+        $config_array['vectorspace'] = $validator->validateStringUnderscore($request->getText('wpvectorspace'));
+        $config_array['featuretype'] = $validator->validateStringUnderscore($request->getText('wpfeaturetype'));
 
         $config_array['ngramsize'] = (int) $validator->validateStringNumber($request->getText('wpngramsize'));
         $config_array['mfi'] = (int) $validator->validateStringNumber($request->getText('wpmfi'));
