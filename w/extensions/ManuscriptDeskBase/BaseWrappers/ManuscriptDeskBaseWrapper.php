@@ -22,6 +22,11 @@
  * @copyright 2015 Arent van Korlaar
  */
 abstract class ManuscriptDeskBaseWrapper {
+    
+    /**
+     * Classses that extend this class are intended to be called only when data needs to be retrieved from the database. See https://www.mediawiki.org/wiki/Manual:Database_access
+     * for information on MediaWiki database access 
+     */
 
     protected $user_name;
 

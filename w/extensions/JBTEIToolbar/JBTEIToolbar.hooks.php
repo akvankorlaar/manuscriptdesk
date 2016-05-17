@@ -1,9 +1,6 @@
 <?php
 
-/**
- * This file incorporates work covered by the following copyright and
- * permission notice: 
- * 
+/** 
  * Copyright (C) 2013 Richard Davis
  *
  * This program is free software; you can redistribute it and/or modify
