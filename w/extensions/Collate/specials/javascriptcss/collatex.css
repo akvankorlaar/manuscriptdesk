@@ -1,11 +1,11 @@
  
 pre {
-  border: none !important;
-  padding: 0px !important;
-  background-color: transparent !important; 
-  height: 0px !important; 
+    border: none !important;
+    padding: 0px !important;
+    background-color: transparent !important; 
+    height: 0px !important; 
 }
-        
+
 table.alignment {
     border-collapse: separate;
     border-spacing: 0.25em;
@@ -52,9 +52,6 @@ table.alignment td.variant {
 }
 
 #result {
-width:1000px;
-text-align:center;
+    width:1000px;
+    text-align:center;
 }
-
-
-

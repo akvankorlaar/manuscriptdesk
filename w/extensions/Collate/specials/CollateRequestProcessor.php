@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the Collate extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
