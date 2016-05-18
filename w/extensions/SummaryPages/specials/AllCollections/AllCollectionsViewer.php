@@ -57,7 +57,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
         $html .= "<div class='javascripthide'>";
         $edit_token = $out->getUser()->getEditToken();
 
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $this->page_name, $button_name);
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $button_name, $this->page_name);
 
         $html .= "<form id='allcollections-post' action='" . $wgArticleUrl . "Special:AllCollections' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";

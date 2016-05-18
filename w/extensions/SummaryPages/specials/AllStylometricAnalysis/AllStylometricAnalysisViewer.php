@@ -53,7 +53,7 @@ class AllStylometricAnalysisViewer extends ManuscriptDeskBaseViewer implements S
 
         $html .= "<div class='javascripthide'>";
 
-        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $this->page_name, $button_name);
+        $html .= $this->getHTMLPreviousNextPageLinks($out, $edit_token, $offset, $next_offset, $button_name, $this->page_name);
 
         $out->setPageTitle($out->msg('allstylometricanalysis'));
 

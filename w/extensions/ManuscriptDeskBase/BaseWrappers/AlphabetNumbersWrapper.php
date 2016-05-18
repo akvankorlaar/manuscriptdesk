@@ -71,7 +71,7 @@ class AlphabetNumbersWrapper {
     }
 
     public function getFirstCharachterOfTitle($main_title_lowercase = '') {
-        $first_char = substr($main_title_lowercase, 0, 1);
+        $first_char = strtolower(substr($main_title_lowercase, 0, 1));
 
         if (preg_match('/[0-9]/', $first_char)) {
 
