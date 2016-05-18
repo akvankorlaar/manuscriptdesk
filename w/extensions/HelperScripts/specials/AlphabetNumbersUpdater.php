@@ -78,7 +78,7 @@ class AlphabetNumbersUpdater {
             while ($s = $res->fetchObject()) {
 
                 //only add the first occurrence of the name in case of collections
-                if ($s->$result_name === $last_full_result_name && $result_name === 'manuscripts_lowercase_collection') {
+                if (strtolower($s->$result_name) === strtolower($last_full_result_name) && $result_name === 'manuscripts_lowercase_collection') {
                     continue;
                 }
 

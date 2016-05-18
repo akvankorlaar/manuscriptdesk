@@ -96,7 +96,7 @@ class AllCollectionsViewer extends ManuscriptDeskBaseViewer implements SummaryPa
     /**
      * This function shows single collection data
      */
-    public function showSingleCollectionData($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $selected_collection, $single_collection_data, $alphabet_numbers = array()) {
+    public function showSingleCollectionData($alphabet_numbers, $uppercase_alphabet, $lowercase_alphabet, $selected_collection, $single_collection_data) {
 
         global $wgArticleUrl;
 
