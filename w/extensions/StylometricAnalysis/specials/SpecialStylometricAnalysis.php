@@ -114,6 +114,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $this->viewer->showForm2($this->collection_data, $this->collection_name_data, $this->getContext());
     }
 
+    /**
+     * Prepare and handle the actual Pystyl analysis 
+     */
     private function processForm2() {
         $request_processor = $this->request_processor;
         $this->form_type = 'Form2';
@@ -132,7 +135,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->insertPystylConfigIntoTextfile($full_textfilepath);
         $command = $this->constructShellCommandToCallPystyl();
         $pystyl_output = $this->callPystyl($command, $full_textfilepath);
-        $this->deleteTextfile($full_textfilepath);
+        $this->deleteTemporaryTextfile($full_textfilepath);
         $this->checkPystylOutput($pystyl_output, $full_outputpath1, $full_outputpath2);
 
         $time = idate('U'); //time format integer (Unix Timestamp). This timestamp is used to see how old values are
@@ -141,6 +144,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $this->viewer->showResult($this->pystyl_config, $this->collection_name_data, $full_linkpath1, $full_linkpath2, $time);
     }
 
+    /**
+     * Process the request when the user wants to save the current analysis 
+     */
     private function processSavePageRequest() {
         $time_identifier = $this->request_processor->getSavePageData();
         $wrapper = $this->wrapper;
@@ -188,7 +194,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $texts;
     }
 
-    private function checkForStylometricAnalysisCollectionErrors($all_texts_for_one_collection = '') {
+    /**
+     * Check if a collection is ok for analysis
+     */
+    private function checkForStylometricAnalysisCollectionErrors($all_texts_for_one_collection) {
         $collection_n_words = str_word_count($all_texts_for_one_collection);
         $pystyl_config = $this->pystyl_config;
 
@@ -212,6 +221,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
+    /**
+     * Construct the output file names of the images 
+     */
     private function constructPystylOutputFileNames() {
         $imploded_collection_name_data = implode('', $this->collection_name_data);
         $year_month_day = date('Ymd');
@@ -223,6 +235,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return array($file_name1, $file_name2);
     }
 
+    /**
+     * Construct the output paths of the images 
+     */
     private function constructFullOutputPathOfPystylOutputImages($file_name1, $file_name2) {
         $full_outputpath1 = $this->base_outputpath . '/' . $file_name1;
         $full_outputpath2 = $this->base_outputpath . '/' . $file_name2;
@@ -234,12 +249,18 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return array($full_outputpath1, $full_outputpath2);
     }
 
+    /**
+     * Construct the link path for the outputimages, which will be placed in the HTML 
+     */
     private function constructFullLinkPathOfPystylOutputImages($file_name1, $file_name2) {
         $full_linkpath1 = '/' . $this->base_linkpath . '/' . $file_name1;
         $full_linkpath2 = '/' . $this->base_linkpath . '/' . $file_name2;
         return array($full_linkpath1, $full_linkpath2);
     }
 
+    /**
+     * Construct the command to call PyStyl 
+     */
     private function constructShellCommandToCallPystyl() {
         $python_path = $this->python_path;
         $pystyl_path = $this->pystyl_path; 
@@ -289,8 +310,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         return true;
     }
-
-    private function deleteTextfile($full_textfilepath) {
+    
+    /**
+     * Delete the temporary textfile with Pystyl configuration information 
+     */
+    private function deleteTemporaryTextfile($full_textfilepath) {
 
         if (!is_file($full_textfilepath)) {
             return true;
@@ -337,6 +361,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
+    /**
+     * Update the database after the analysis 
+     */
     private function updateDatabase($time = 0, $full_linkpath1, $full_linkpath2, $full_outputpath1, $full_outputpath2) {
         $main_title = implode('', $this->collection_name_data);
         $new_page_url = $this->createNewPageUrl($main_title);
@@ -352,6 +379,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $wrapper->getManuscriptsCollectionData();
     }
 
+    /**
+     * Handle exceptions, and either redirect to the default page, or to form 2 
+     */
     protected function handleExceptions(Exception $exception_error) {
         $this->setViewer();
         $viewer = $this->viewer;

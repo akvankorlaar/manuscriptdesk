@@ -85,4 +85,3 @@ $wgHooks['BeforePageDisplay'][] = array($stylometricanalysis_hooks, 'onBeforePag
 $wgHooks['ResourceLoaderGetConfigVars'][] = array($stylometricanalysis_hooks, 'onResourceLoaderGetConfigVars');
 $wgHooks['UnitTestsList'][] = array($stylometricanalysis_hooks, 'onUnitTestsList');
 $wgHooks['OutputPageParserOutput'][] = array($stylometricanalysis_hooks, 'onOutputPageParserOutput');
-
