@@ -43,7 +43,7 @@ Once MediaWiki has successfully installed (you should see the default website wh
 you can install the extensions by: 
 
 - Moving the content in w/extensions into your local MediaWiki's extensions folder (for example w/extensions).
-- Moving the content in w/skins into your local MediaWiki's skins folder (for example w/skins).
+- Moving the content in w/skins into your local MediaWiki's skins folder (for example w/skins). Overwrite existing files. 
 - Moving the initialUpload and zoomImages folders to your website root.
 - Moving the .htaccess file to your website root (NOT the .htaccess files in the initialUpload and zoomImages folders - these should stay in the initialUpload and zoomImages folders).
 - Importing ManuscriptDesk.sql into your local MediaWiki's database (there should already be many tables in this database 

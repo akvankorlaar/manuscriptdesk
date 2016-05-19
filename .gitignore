@@ -40,6 +40,7 @@ w/skins/*
 !w/extensions/HelperScripts
 !w/extensions/WikiEditor
 !w/skins/CbpTranscriptionEnhanced
+!w/skins/common
 
 !w/extensions/ManuscriptDeskBase/*
 !w/extensions/Collate/*
@@ -51,6 +52,7 @@ w/skins/*
 !w/extensions/HelperScripts/*
 !w/extensions/WikiEditor/*
 !w/skins/CbpTranscriptionEnhanced/*
+!w/skins/common/*
 
 !w/extensions/ManuscriptDeskBase/*/*
 !w/extensions/Collate/*/*
@@ -62,6 +64,7 @@ w/skins/*
 !w/extensions/HelperScripts/*/*
 !w/extensions/WikiEditor/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*
+!w/skins/common/*/*
 
 !w/extensions/ManuscriptDeskBase/*/*/*
 !w/extensions/Collate/*/*/*
@@ -73,6 +76,7 @@ w/skins/*
 !w/extensions/HelperScripts/*/*/*
 !w/extensions/WikiEditor/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*
+!w/skins/common/*/*/*
 
 !w/extensions/ManuscriptDeskBase/*/*/*/*
 !w/extensions/Collate/*/*/*/*
@@ -84,6 +88,7 @@ w/skins/*
 !w/extensions/HelperScripts/*/*/*/*
 !w/extensions/WikiEditor/*/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*/*
+!w/skins/common/*/*/*/*
 
 !w/extensions/StylometricAnalysis/*/*/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*/*/*/*
