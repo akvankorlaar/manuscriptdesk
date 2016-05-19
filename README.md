@@ -10,7 +10,7 @@ Within the Manuscript Desk, images of manuscript pages can be uploaded, and tran
 ##Requirements##
 
 The extensions have been tested using Mediawiki 1.23.2 and 1.23.13. Later versions will probably also work, but compatibility with these has yet to be tested. Running these extensions
-on older versions of MediaWiki is not recommended. MediaWiki 1.23 can be downloaded [here](https://github.com/wikimedia/mediawiki/tree/REL1_23) 
+on older versions of MediaWiki is not recommended. 
 
 Additionally, your server needs to have: 
 
@@ -33,9 +33,7 @@ The MediaWiki files should be extracted to a subdirectory of your website root (
 
 **Important:**
 
-During the on-screen instructions you have to Enable file uploads
-
-For the other settings the default options can be used.
+During the on-screen instructions you have to Enable file uploads. For the other settings the default options can be used.
 
 ###Installing the extensions###
 
@@ -53,7 +51,7 @@ you can install the extensions by:
 - Configuring '$wgNewManuscriptOptions['perl_path']'and $wgStylometricAnalysisOptions['python_path'] in LocalSettings.php if needed. 
 - Installing Collatex-tools. This can be done by downloading and installing the latest version from:http://collatex.net/. CollateX needs to be run as a web service in localhost.
   The CollateX URL and Headers can be configured by modifying $wgCollationOptions['collatex_url'] in LocalSettings.php.
-- Logging in as Administrator, and copying the contents of Sidebar.txt to Mediawiki:Sidebar (For example localhost/md/Mediawiki:Sidebar).
+- Navigating with your browser to the installation, logging in as Administrator, and copying the contents of Sidebar.txt to Mediawiki:Sidebar (For example localhost/md/Mediawiki:Sidebar).
 
 Once everything is installed, you should log in as administrator, go to Special:UserRights (for example: localhost/md/Special:UserRights), enter your own username, and add yourself to the 'ManuscriptEditors' group. 
 With the default installation, every registered user needs to be added manually to this group to be able to access the functionality of the Manuscript Desk. 
