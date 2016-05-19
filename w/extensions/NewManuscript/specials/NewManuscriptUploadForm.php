@@ -1,8 +1,7 @@
 <?php
 
 /**
- * This file is part of the NewManuscript extension
- * Copyright (C) 2015 Arent van Korlaar
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +21,9 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  * 
- *  Some of the functions have been obtained from includes/specials/SpecialUpload.php, and altered for the purpose of this extension
+ * Some of the functions have been obtained from includes/specials/SpecialUpload.php, and altered for the purpose of this extension
  */
+
 class NewManuscriptUploadForm extends HTMLForm {
 
     private $collections_message;

@@ -1,9 +1,10 @@
 /**
- * Copyright (C) 2013 Richard Davis
+ * This file is part of the Manuscript Desk (github.com/akvankorlaar/manuscriptdesk)
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License Version 2, as
- * published by the Free Software Foundation.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,17 +12,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  * @package MediaWiki
  * @subpackage Extensions
- * @author Richard Davis <r.davis@ulcc.ac.uk>
- * @author Ben Parish <b.parish@ulcc.ac.uk>
- * @copyright 2013 Richard Davis
- 
- * Re-organises the editor to the correct layout after it has loaded
- * so that it can accomadate the Zoom Viewer frame 
+ * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
+ * @copyright 2015 Arent van Korlaar
  */
 
 #zoomviewerframe {
