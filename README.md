@@ -9,8 +9,8 @@ Within the Manuscript Desk, images of manuscript pages can be uploaded, and tran
 
 ##Requirements##
 
-The extensions have been tested using Mediawiki 1.23.2 and 1.23.10. Later versions will probably also work, but compatibility with these has yet to be tested. Running these extensions
-on older versions of MediaWiki is not recommended. 
+The extensions have been tested using Mediawiki 1.23.2 and 1.23.13. Later versions will probably also work, but compatibility with these has yet to be tested. Running these extensions
+on older versions of MediaWiki is not recommended. MediaWiki 1.23 can be downloaded [here](https://github.com/wikimedia/mediawiki/tree/REL1_23) 
 
 Additionally, your server needs to have: 
 
