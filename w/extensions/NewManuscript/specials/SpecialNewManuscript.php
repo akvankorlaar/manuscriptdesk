@@ -210,7 +210,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         return $this->viewer = ObjectRegistry::getInstance()->getNewManuscriptViewer($this->getOutput());
     }
 
-    public function setWrapper($object = null) {
+    public function setWrapper() {
 
         if (isset($this->wrapper)) {
             return;

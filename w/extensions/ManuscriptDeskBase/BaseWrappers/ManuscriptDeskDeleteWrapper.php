@@ -115,7 +115,7 @@ class ManuscriptDeskDeleteWrapper {
           'page_namespace = ' . $dbr->addQuotes($namespace),
           'page_title = ' . $dbr->addQuotes($page_title),
             ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(page_id)', 'page_id'),
+          'ORDER BY' => array('CAST(page_id AS UNSIGNED)', 'page_id'),
             )
         );
 

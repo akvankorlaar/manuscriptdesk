@@ -76,7 +76,7 @@ class AlphabetNumbersUpdater {
         if ($res->numRows() > 0) {
             //while there are still titles in this query
             while ($s = $res->fetchObject()) {
-
+                
                 //only add the first occurrence of the name in case of collections
                 if (strtolower($s->$result_name) === strtolower($last_full_result_name) && $result_name === 'manuscripts_lowercase_collection') {
                     continue;

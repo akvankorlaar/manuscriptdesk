@@ -73,7 +73,7 @@ class SingleManuscriptPagesWrapper implements SummaryPageWrapperInterface {
           'manuscripts_lowercase_title',
             ), $conditions
             , __METHOD__, array(
-          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)', 'manuscripts_lowercase_title'),
+          'ORDER BY' => array('CAST(manuscripts_lowercase_title AS UNSIGNED)', 'manuscripts_lowercase_title'),
           'LIMIT' => $max_on_page + 1,
           'OFFSET' => $offset,
             )

@@ -73,7 +73,7 @@ class AllCollectionsWrapper implements SummaryPageWrapperInterface {
           'collections_user',
           'collections_date',
             ), $conditions, __METHOD__, array(
-          'ORDER BY' => array('LENGTH(collections_title_lowercase)','collections_title_lowercase'),
+          'ORDER BY' => array('CAST(collections_title_lowercase AS UNSIGNED)','collections_title_lowercase'),
           'LIMIT' => $max_on_page + 1,
           'OFFSET' => $offset,
             )
@@ -135,8 +135,6 @@ class AllCollectionsWrapper implements SummaryPageWrapperInterface {
           'collections_metanotes',
             ), array(
           'collections_title = ' . $dbr->addQuotes($collection_title),
-            ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(collections_title)','collections_title'),
             )
         );
 
@@ -181,7 +179,7 @@ class AllCollectionsWrapper implements SummaryPageWrapperInterface {
             ), array(
           'manuscripts_collection = ' . $dbr->addQuotes($collection_title),
             ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)',
+          'ORDER BY' => array('CAST(manuscripts_lowercase_title AS UNSIGNED)',
             'manuscripts_lowercase_title'),
             )
         );

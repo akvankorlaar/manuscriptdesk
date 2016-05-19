@@ -65,7 +65,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
           'manuscripts_collection != ' . $dbr->addQuotes("none"),
             ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(manuscripts_lowercase_collection)','manuscripts_lowercase_collection'),
+          'ORDER BY' => array('CAST(manuscripts_lowercase_collection AS UNSIGNED)','manuscripts_lowercase_collection'),
             )
         );
 
@@ -131,7 +131,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
             ), array(
           'tempstylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
             ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(tempstylometricanalysis_time)','tempstylometricanalysis_time'),
+          'ORDER BY' => array('CAST(tempstylometricanalysis_time AS UNSIGNED)','tempstylometricanalysis_time'),
             )
         );
 
@@ -328,7 +328,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
             ), array(
           'stylometricanalysis_time =' . $dbr->addQuotes($time),
           'stylometricanalysis_user = ' . $dbr->addQuotes($user_name), //conditions
-            ), __METHOD__
+            )
         );
 
         if ($res->numRows() !== 1) {
@@ -361,7 +361,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
           'stylometricanalysis_date',
             ), array(
           'stylometricanalysis_new_page_url = ' . $dbr->addQuotes($url_with_namespace),
-            ), __METHOD__
+            )
         );
 
         if ($res->numRows() !== 1) {

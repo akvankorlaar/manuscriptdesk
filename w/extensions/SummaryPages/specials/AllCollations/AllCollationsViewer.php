@@ -45,7 +45,7 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
      * This function shows the page after a request has been processed
      */
     public function showSingleLetterOrNumberPage(
-    array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name, array $page_titles, $offset, $next_offset) {
+    array $alphabet_numbers, array $uppercase_alphabet, array $lowercase_alphabet, $button_name, array $page_data, $offset, $next_offset) {
 
         global $wgArticleUrl;
         $out = $this->out;
@@ -68,7 +68,7 @@ class AllCollationsViewer extends ManuscriptDeskBaseViewer implements SummaryPag
         $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-creationdate') . "</b>" . "</td>";
         $html .= "</tr>";
 
-        foreach ($page_titles as $single_page_data) {
+        foreach ($page_data as $single_page_data) {
 
             $title = isset($single_page_data['collations_main_title']) ? $single_page_data['collations_main_title'] : '';
             $url = isset($single_page_data['collations_url']) ? $single_page_data['collations_url'] : '';

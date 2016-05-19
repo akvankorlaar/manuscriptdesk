@@ -85,7 +85,7 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
             ), array(
           'collections_user = ' . $dbr->addQuotes($user_name), //conditions
             ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(collections_title_lowercase)','collections_title_lowercase'),
+          'ORDER BY' => array('CAST(collections_title_lowercase AS UNSIGNED)','collections_title_lowercase'),
             )
         );
 
@@ -110,8 +110,6 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
           'collections_user',
             ), array(
           'collections_title = ' . $dbr->addQuotes($posted_collection_title),
-            ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(collections_title)','collections_title'),
             )
         );
 
@@ -149,8 +147,6 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
             ), array(
           'manuscripts_user = ' . $dbr->addQuotes($this->user_name), //conditions
           'manuscripts_collection = ' . $dbr->addQuotes($posted_collection_title),
-            ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)','manuscripts_lowercase_title'),
             )
         );
 
@@ -284,7 +280,7 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
             ), array(
           'manuscripts_collection = ' . $dbr->addQuotes($collection_title), //conditions
             ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)','manuscripts_lowercase_title'),
+          'ORDER BY' => array('CAST(manuscripts_lowercase_title AS UNSIGNED)','manuscripts_lowercase_title'),
             )
         );
 

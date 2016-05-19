@@ -345,10 +345,11 @@ class AlphabetNumbersWrapper {
             array(
           'manuscripts_lowercase_collection', //values
             ), array(
-          'manuscripts_collection != ' . $dbr->addQuotes('none')
+          'manuscripts_collection != ' . $dbr->addQuotes('none'),
+          'manuscripts_collection != ' . $dbr->addQuotes('')
             )
             , __METHOD__, array(
-          'ORDER BY' => array('LENGTH(manuscripts_lowercase_collection)','manuscripts_lowercase_collection'),
+          'ORDER BY' => array('manuscripts_lowercase_collection'),
             )
         );
 
@@ -367,7 +368,7 @@ class AlphabetNumbersWrapper {
           'manuscripts_collection = ' . $dbr->addQuotes('none')
             )
             , __METHOD__, array(
-          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)','manuscripts_lowercase_title'),
+          'ORDER BY' => array('manuscripts_lowercase_title'),
             )
         );
 
@@ -385,7 +386,7 @@ class AlphabetNumbersWrapper {
             ), array(
             )
             , __METHOD__, array(
-          'ORDER BY' => array('LENGTH(collations_main_title_lowercase)','collations_main_title_lowercase'),
+          'ORDER BY' => array('collations_main_title_lowercase'),
             )
         );
 
@@ -402,7 +403,7 @@ class AlphabetNumbersWrapper {
             ), array(
             )
             , __METHOD__, array(
-          'ORDER BY' => array('LENGTH(stylometricanalysis_main_title_lowercase)','stylometricanalysis_main_title_lowercase'),
+          'ORDER BY' => array('stylometricanalysis_main_title_lowercase'),
             )
         );
 

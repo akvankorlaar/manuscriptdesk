@@ -71,7 +71,7 @@ class AllStylometricAnalysisWrapper implements SummaryPageWrapperInterface {
           'stylometricanalysis_main_title_lowercase'
             ), $conditions
             , __METHOD__, array(
-          'ORDER BY' => array('LENGTH(stylometricanalysis_main_title_lowercase)', 'stylometricanalysis_main_title_lowercase'),
+          'ORDER BY' => array('CAST(stylometricanalysis_main_title_lowercase AS UNSIGNED)', 'stylometricanalysis_main_title_lowercase'),
           'LIMIT' => $max_on_page + 1,
           'OFFSET' => $offset,
             )

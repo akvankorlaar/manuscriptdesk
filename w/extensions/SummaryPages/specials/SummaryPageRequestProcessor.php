@@ -38,7 +38,7 @@ class SummaryPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
             elseif ($value === 'offset') {
                 $offset = (int) $validator->validateStringNumber($request->getText($value));
 
-                if (!$offset >= 0) {
+                if ($offset < 0) {
                     throw new \Exception('error-request');
                 }
             }

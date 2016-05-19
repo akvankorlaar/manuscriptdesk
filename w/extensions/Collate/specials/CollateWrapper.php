@@ -63,7 +63,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
           'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions
           'manuscripts_collection != ' . $dbr->addQuotes("none"),
             ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(manuscripts_lowercase_collection)', 'manuscripts_lowercase_collection'),
+          'ORDER BY' => array('CAST(manuscripts_lowercase_collection AS UNSIGNED)', 'manuscripts_lowercase_collection'),
             )
         );
 
@@ -124,7 +124,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
             ), array(
           'manuscripts_user = ' . $dbr->addQuotes($user_name), //conditions: the user should be the current user
             ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(manuscripts_lowercase_title)', 'manuscripts_lowercase_title'),
+          'ORDER BY' => array('CAST(manuscripts_lowercase_title AS UNSIGNED)', 'manuscripts_lowercase_title'),
             )
         );
 
@@ -248,7 +248,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
             ), array(
           'tempcollate_user = ' . $dbr->addQuotes($user_name), //conditions
             ), __METHOD__, array(
-          'ORDER BY' => array('LENGTH(tempcollate_time)', 'tempcollate_time'),
+          'ORDER BY' => array('CAST(tempcollate_time AS UNSIGNED)', 'tempcollate_time'),
             )
         );
 
