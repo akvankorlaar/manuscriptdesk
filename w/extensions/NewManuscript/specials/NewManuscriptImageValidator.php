@@ -30,6 +30,9 @@ class NewManuscriptImageValidator {
         $this->request = $request;
     }
 
+    /**
+     * Perform validation for the uploaded image  
+     */
     public function getAndCheckUploadedImageData() {
         $this->checkWhetherFileIsImage();
         $upload_base = $this->getUploadBaseObject();
@@ -54,6 +57,9 @@ class NewManuscriptImageValidator {
         return;
     }
 
+    /**
+     * Get the MediaWiki UploadBase object and check the file size of the upload
+     */
     private function getUploadBaseObject() {
         global $wgNewManuscriptOptions;
         $max_upload_size = $wgNewManuscriptOptions['max_upload_size'];
@@ -71,6 +77,9 @@ class NewManuscriptImageValidator {
         return $upload_base;
     }
 
+    /**
+     * Get the file name of the uploaded image 
+     */
     private function getFileName(UploadBase $upload_base) {
         $title = $upload_base->getTitle();
 
@@ -81,6 +90,9 @@ class NewManuscriptImageValidator {
         return $title->getText();
     }
 
+    /**
+     * Get the extension of the uploaded image 
+     */
     private function getExtension($file_name) {
         global $wgNewManuscriptOptions;
         $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];
@@ -112,6 +124,9 @@ class NewManuscriptImageValidator {
         return $temp_path;
     }
 
+    /**
+     * Guess the MIME type for the uploaded image and throw an exception if the MIME type is not allowed 
+     */
     private function getGuessedMimeType($temp_path) {
         global $wgNewManuscriptOptions;
         $allowed_file_extensions = $wgNewManuscriptOptions['allowed_file_extensions'];

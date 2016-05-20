@@ -23,6 +23,9 @@
  */
 class NewManuscriptRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
+    /**
+     * Load form data after a user has uploaded a new manuscript 
+     */
     public function loadUploadFormData() {
         $request = $this->request;
         if (!$request->getCheck('wpUpload')) {
@@ -50,6 +53,9 @@ class NewManuscriptRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         return $validator->validateString($request->getText('wpcollection_field'));
     }
     
+    /**
+     * Check whether the user has selected to add a new page to an existing collection in the user page 
+     */
     public function addNewPagePosted(){
         $request = $this->request;
         if($request->getText('add_new_page_posted') !== ''){

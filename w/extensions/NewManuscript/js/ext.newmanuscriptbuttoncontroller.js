@@ -22,69 +22,63 @@
 
 (function (mw, $) {
 
-  /**
-   * This function checks if there is an input in #enter_title, and in #wpUploadFile. It also disables/enables the submit button
-   */
-  function checkInput() {
+    /**
+     * Check whether user has filled in the form and disable the submit button if a field is empty
+     */
+    function checkInput() {
 
-    var text_input1 = $('#enter_title').val();
-    var file_input = $('#wpUploadFile').val();
+        var text_input1 = $('#enter_title').val();
+        var file_input = $('#wpUploadFile').val();
 
-    if (text_input1 != '' && file_input != '') {
-      $(".mw-htmlform-submit").removeAttr("disabled");
-      $(".mw-htmlform-submit").css("color", "black");
-      $(".mw-htmlform-submit").css("cursor", "pointer");
+        if (text_input1 != '' && file_input != '') {
+            $(".mw-htmlform-submit").removeAttr("disabled");
+            $(".mw-htmlform-submit").css("color", "black");
+            $(".mw-htmlform-submit").css("cursor", "pointer");
 
-    } else {
-      $(".mw-htmlform-submit").attr("disabled", "disabled");
-      $(".mw-htmlform-submit").css("color", "grey");
-      $(".mw-htmlform-submit").css("cursor", "default");
-    }
-  }
-
-  /**
-   * This function prevents users from putting non-alphanumeric charachters into the textfield
-   * 
-   * First this was used: if (event.keyCode == 8 || event.keyCode == 37 || event.keyCode == 39 || regeX.test(key))
-   * 
-   * keyCode 8, 37 and 39 are supposed to correspond to backspace, left arrow and right arrow respectively. However, these commands were
-   * possible anyway, while signs like '%' were being let through. The current code needs to be tested on other computers to see if you can still do
-   * a backspace, left arrow, right arrow. 
-   */
-  function filterCharachters(event) {
-
-    var regeX = /[a-zA-Z0-9\b]/g;
-    var key = String.fromCharCode(event.which);
-
-    if (regeX.test(key)) {
-      return true;
+        } else {
+            $(".mw-htmlform-submit").attr("disabled", "disabled");
+            $(".mw-htmlform-submit").css("color", "grey");
+            $(".mw-htmlform-submit").css("cursor", "default");
+        }
     }
 
-    return false;
-  }
-  
-  /**
-   * This function disables the paste function 
-   */
-  function preventPaste(event) {
-    event.preventDefault();
-  }
-  
+    /**
+     * Prevent users from putting non-alphanumeric charachters into the textfields
+     */
+    function filterCharachters(event) {
 
-  $(document).ready(function () {
-    $(".mw-htmlform-submit").attr("disabled", "disabled");
-  });
+        var regeX = /[a-zA-Z0-9\b]/g;
+        var key = String.fromCharCode(event.which);
 
-  $('#enter_title').keyup(checkInput);
-  $('#wpUploadFile').change(checkInput);
+        if (regeX.test(key)) {
+            return true;
+        }
 
-  //call the function filterCharachters
-  $("#enter_title").keypress(filterCharachters);
-  $('#mw-input-wpcollection_field').keypress(filterCharachters);
+        return false;
+    }
 
-  //call the function preventPaste
-  $('#enter_title').on('paste', preventPaste);
-  $('#mw-input-wpcollection_field').on('paste', preventPaste);
+    /**
+     * Disable the ability to paste text into the textfields
+     */
+    function preventPaste(event) {
+        event.preventDefault();
+    }
+
+
+    $(document).ready(function () {
+        $(".mw-htmlform-submit").attr("disabled", "disabled");
+    });
+
+    $('#enter_title').keyup(checkInput);
+    $('#wpUploadFile').change(checkInput);
+
+    //call the function filterCharachters
+    $("#enter_title").keypress(filterCharachters);
+    $('#mw-input-wpcollection_field').keypress(filterCharachters);
+
+    //call the function preventPaste
+    $('#enter_title').on('paste', preventPaste);
+    $('#mw-input-wpcollection_field').on('paste', preventPaste);
 
 }(mediaWiki, jQuery));
 

@@ -34,6 +34,9 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         parent::__construct('NewManuscript');
     }
 
+    /**
+     * Get the default page (the upload form) 
+     */
     protected function getDefaultPage($error_message = '', $collection_title = '') {
         $this->checkWhetherUserHasUploadedTooManyManuscripts();
         $collections_current_user = $this->wrapper->getCollectionsCurrentUser();
@@ -42,7 +45,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * This function checks whether the user has reached the maximum of allowed uploads
+     * Check whether the user has reached the maximum of allowed uploads
      */
     private function checkWhetherUserHasUploadedTooManyManuscripts() {
         global $wgNewManuscriptOptions;
@@ -57,8 +60,12 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         }
     }
 
+    /**
+     * Process all possible requests 
+     */
     protected function processRequest() {
         if ($this->request_processor->addNewPagePosted()) {
+            //current user wants to add a manuscript to an existing collection and was redirected here from user page
             $collection_title = $this->request_processor->getCollectionTitle();
             return $this->getDefaultPage('', $collection_title);
         }
@@ -67,6 +74,9 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         }
     }
 
+    /**
+     * Process the upload after the user has submitted it 
+     */
     private function processUploadedNewManuscript() {
         list($posted_manuscript_title, $posted_collection_title) = $this->request_processor->loadUploadFormData();
         $this->posted_manuscript_title = $posted_manuscript_title;
@@ -95,6 +105,9 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         return;
     }
 
+    /**
+     * Check for errors if the user has specified a collection 
+     */
     private function checkForCollectionErrors() {
         $posted_collection_title = $this->posted_collection_title;
         $this->wrapper->checkWhetherCurrentUserIsTheOwnerOfTheCollection($posted_collection_title);
@@ -102,6 +115,9 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         return;
     }
 
+    /**
+     * Set paths data used for placing uploads, and placing sliced images 
+     */
     private function setPathsData() {
         $paths = $this->paths;
         $paths->setInitialUploadFullPath();
@@ -116,12 +132,18 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         return;
     }
 
+    /**
+     * Execute the slicer 
+     */
     private function prepareAndExecuteSlicer() {
         $this->setSlicerExecuter();
         $slicer_executer = $this->slicer_executer;
         return $slicer_executer->execute();
     }
 
+    /**
+     * Update the database after the upload has completed
+     */
     private function updateDatabase($new_page_url) {
         $posted_collection_title = $this->posted_collection_title;
         $posted_manuscript_title = $this->posted_manuscript_title;
@@ -137,6 +159,9 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         return;
     }
 
+    /**
+     * Handle exceptions and redirect  
+     */
     protected function handleExceptions(Exception $exception_error) {
         global $wgWebsiteRoot;
         $this->setViewer();
@@ -157,6 +182,9 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
         return $this->getDefaultPage($error_message);
     }
 
+    /**
+     * Delete all uploaded data if user hits a bad exception (error in slicer, error creating new page, error inserting into database) 
+     */
     private function deleteAllData() {
         $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter();
         $deleter->setNewManuscriptPaths($this->paths);

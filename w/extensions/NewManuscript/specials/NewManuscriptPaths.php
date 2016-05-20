@@ -39,6 +39,9 @@ class NewManuscriptPaths {
         $this->extension = $extension;
     }
 
+    /**
+     * Set the path for the initial upload location of the manuscript images 
+     */
     public function setInitialUploadFullPath() {
         $extension = $this->extension;
         $posted_manuscript_title = $this->posted_manuscript_title;
@@ -55,6 +58,9 @@ class NewManuscriptPaths {
         return $this->initial_upload_full_path = $initial_upload_full_path;
     }
 
+    /**
+     * Scan the path for images to see whether an image that is allowed exists in the specified location
+     */
     public function initialUploadFullPathIsConstructableFromScan() {
         $initial_upload_base_path = $this->getInitialUploadBasePath();
         if (!is_dir($initial_upload_base_path)) {
@@ -73,11 +79,17 @@ class NewManuscriptPaths {
         return true;
     }
 
+    /**
+     * Scan the path and return a file in the expected location 
+     */
     private function getImageFileNameFromScan($path) {
         $file_scan = scandir($path);
         return isset($file_scan[2]) ? $file_scan[2] : "";
     }
 
+    /**
+     * Get the base path for the initial upload 
+     */
     public function getInitialUploadBasePath() {
         global $wgWebsiteRoot, $wgNewManuscriptOptions;
         $posted_manuscript_title = $this->posted_manuscript_title;
@@ -86,6 +98,9 @@ class NewManuscriptPaths {
         return $initial_upload_base_path;
     }
 
+    /**
+     * Set the base of the export path (location where sliced zoom images will be stored) 
+     */
     private function setBaseExportPath() {
         global $wgWebsiteRoot, $wgNewManuscriptOptions;
         $base_export_path = $wgWebsiteRoot . '/' . $wgNewManuscriptOptions['zoomimages_root_dir'];
@@ -111,6 +126,9 @@ class NewManuscriptPaths {
         return $this->full_export_path = $full_export_path;
     }
 
+    /**
+     * Set the export paths (location where the zoom images will be stored) 
+     */
     public function setExportPaths() {
         $this->setBaseExportPath();
         $this->setUserExportPath();
@@ -118,6 +136,9 @@ class NewManuscriptPaths {
         return;
     }
 
+    /**
+     * Move the uploaded image from the temporary location to the initial upload directory 
+     */
     public function moveUploadToInitialUploadDir($temp_path) {
         $initial_upload_dir_path = $this->getInitialUploadFullPath();
         $upload_succesfull = move_uploaded_file($temp_path, $initial_upload_dir_path);
@@ -130,6 +151,9 @@ class NewManuscriptPaths {
         return $this->image_uploaded = true;
     }
 
+    /**
+     * Set the partial URL (namespace:username/title) 
+     */
     public function setPartialUrl() {
         global $wgNewManuscriptOptions;
         $manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
@@ -254,7 +278,7 @@ class NewManuscriptPaths {
     }
 
     /**
-     * This function checks if the file is an image. This has been done earlier and more thouroughly when uploading, but these checks are just to make sure
+     * Check if the file is an image with an allowed extension. This has been done earlier and more thouroughly when uploading, but these checks are just to make sure
      */
     public function isAllowedImage($path) {
 

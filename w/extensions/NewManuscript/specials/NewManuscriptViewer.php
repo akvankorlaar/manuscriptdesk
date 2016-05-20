@@ -25,6 +25,9 @@ class NewManuscriptViewer extends ManuscriptDeskBaseViewer {
     
     use HTMLJavascriptLoader; 
 
+    /**
+     * Construct the default page (the upload form) 
+     */
     public function showDefaultPage($error_message, array $collections_current_user, $collection_title) {
         $out = $this->out; 
         $out->setPageTitle($out->msg('newmanuscript'));
@@ -51,6 +54,9 @@ class NewManuscriptViewer extends ManuscriptDeskBaseViewer {
         return $collections_message;
     }
 
+    /**
+     * Get the upload form. The upload form has been constructed using the MediaWiki form builder. See https://www.mediawiki.org/wiki/HTMLForm/tutorial
+     */
     private function getNewManuscriptForm($error_message, $collections_message, $collection_title) {
         $new_manuscript_form = new NewManuscriptUploadForm(new DerivativeContext($this->out->getContext()), $collections_message, $collection_title);
         $formatted_error_message = $this->formatErrorMessage($error_message);

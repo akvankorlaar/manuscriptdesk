@@ -29,6 +29,9 @@ class SlicerExecuter {
         $this->paths = $paths; 
     }
  
+    /**
+     * Construct the command, execute the slicer, and check the output 
+     */
     public function execute(){
 
         $shell_command = $this->constructShellCommand();

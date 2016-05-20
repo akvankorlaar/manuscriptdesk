@@ -39,6 +39,9 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         return $this->user_name = $user_name; 
     }
 
+    /**
+     * Get the number of uploads for the current user 
+     */
     public function getNumberOfUploadsForCurrentUser() {
 
         if (!isset($this->user_name)) {
@@ -67,7 +70,7 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     /**
-     * This function retrieves the collections of the current user
+     * Retrieve the collections of the current user
      */
     public function getCollectionsCurrentUser() {
 
@@ -127,7 +130,7 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     /**
-     * This functions checks if the collection already reached the maximum allowed manuscript pages, or if the current user is the creator of the collection
+     * Check if the collection already reached the maximum allowed manuscript pages
      */
     public function checkCollectionDoesNotExceedMaximumPages($posted_collection_title) {
 
@@ -157,7 +160,7 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     /**
-     * This function insert data into the manuscripts table
+     * Insert data into the manuscripts table
      */
     public function storeManuscripts($posted_manuscript_title, $posted_collection_title, $user_name, $new_page_url, $date) {
 
@@ -187,7 +190,7 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     /**
-     * This function insert data into the collections table
+     * Insert data into the collections table
      */
     public function storeCollections($posted_collection_title, $user_name, $date) {
 
@@ -206,6 +209,9 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         return;
     }
 
+    /**
+     * Get the title of a manuscript from a partial url (namespace:user/manuscriptname) 
+     */
     public function getManuscriptsTitleFromUrl($partial_url) {
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -225,6 +231,9 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         return $res->fetchObject()->manuscripts_title;
     }
 
+    /**
+     * Get the user name from a partial url (namespace:user/manuscriptname) 
+     */
     public function getUserNameFromUrl($partial_url) {
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -245,6 +254,9 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         return $s->manuscripts_user;
     }
 
+    /**
+     * Get the collection title from a partial url (namespace:user/manuscriptname) 
+     */
     public function getCollectionTitleFromUrl($url_with_namespace) {
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -265,6 +277,9 @@ class NewManuscriptWrapper extends ManuscriptDeskBaseWrapper {
         return $s->manuscripts_collection;
     }
 
+    /**
+     * Get url of the previous and next page for a manuscript in a collection. Ordering: bar foo foo1 foo2 foo12 1 2 12 20 
+     */
     public function getPreviousAndNextPageUrl($collection_title, $partial_url) {
         $dbr = wfGetDB(DB_SLAVE);
         $no_previous_page = false;

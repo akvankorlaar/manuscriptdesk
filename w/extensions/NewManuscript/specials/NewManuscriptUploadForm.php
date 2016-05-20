@@ -37,7 +37,7 @@ class NewManuscriptUploadForm extends HTMLForm {
     }
 
     /**
-     * This function adds the title information, the title field, the uploadfile button and the extension information
+     * Add the title information, the title field, the uploadfile button and the extension information for the upload form
      */
     private function getSourceSection() {
 
