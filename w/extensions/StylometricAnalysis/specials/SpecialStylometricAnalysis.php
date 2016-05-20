@@ -55,6 +55,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         parent::__construct('StylometricAnalysis');
     }
 
+    /**
+     * Set variables that are used throughout the special page 
+     */
     protected function setVariables() {
         global $wgStylometricAnalysisOptions, $wgWebsiteRoot;
         parent::setVariables();
@@ -107,6 +110,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $this->viewer->showDefaultPage($error_message, $user_collection_data);
     }
 
+    /**
+     * Process a user submission of the default page 
+     */
     private function processDefaultPage() {
         $this->form_type = 'Form1';
         $this->collection_data = $this->request_processor->getDefaultPageData();
@@ -115,7 +121,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * Prepare and handle the actual Pystyl analysis 
+     * Prepare and handle the actual Pystyl analysis after the user has submitted the second form
      */
     private function processForm2() {
         $request_processor = $this->request_processor;
@@ -157,6 +163,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $this->getOutput()->redirect($local_url);
     }
 
+    /**
+     * Create a URL that can be used to save the current analysis 
+     */
     private function createNewPageUrl($main_title) {
         $user_name = $this->user_name;
         $year_month_day = date('Ymd');
@@ -164,6 +173,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return 'Stylometricanalysis:' . $user_name . "/" . $main_title . "/" . $year_month_day . "/" . $hours_minutes_seconds;
     }
 
+    /**
+     * Fill an array with the collection names of the current analysis 
+     */
     private function constructCollectionNameData() {
         $collection_name_data = array();
         foreach ($this->collection_data as $index => $single_collection_data) {
@@ -172,6 +184,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $collection_name_data;
     }
 
+    /**
+     * Get the page texts for the selected collections 
+     */
     private function getPageTextsForCollections() {
         $texts = array();
         $a = 1;
@@ -269,7 +284,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * This function constructs the config array that will be sent to Pystyl
+     * Construct the config array that will be sent to Pystyl
      */
     private function setAdditionalPystylConfigValues(array $texts, $full_outputpath1, $full_outputpath2) {
         $this->pystyl_config['texts'] = $texts;
@@ -280,7 +295,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * This function constructs a temporary textfile in which the data for the analysis will be placed later on. Initially, this was done through the command line,
+     * Construct a temporary textfile in which the data for the analysis will be placed later on. Initially, this was done through the command line,
      * but due to some instabilities, this approach is chosen. 
      */
     private function constructFullTextfilePath() {
@@ -288,7 +303,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * This function insert data into the textfile which will be used to call Pystyl
+     * Insert data into the temporary textfile with config data used by PyStyl
      */
     private function insertPystylConfigIntoTextfile($full_textfilepath) {
 
@@ -312,7 +327,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
     
     /**
-     * Delete the temporary textfile with Pystyl configuration information 
+     * Delete the temporary textfile with PyStyl configuration information 
      */
     private function deleteTemporaryTextfile($full_textfilepath) {
 
@@ -328,7 +343,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * This function calls Pystyl through the command line
+     * This function calls PyStyl through the command line. Format: python path' -W ignore /path/to/analysis/file.py "'/path/to/textfile.txt"' 
      */
     private function callPystyl($command, $full_textfilepath) {
         $full_textfilepath = "\"'$full_textfilepath'\"";
@@ -337,6 +352,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return shell_exec($full_command);
     }
 
+    /**
+     * Check the output of PyStyl and throw an exception if needed 
+     */
     private function checkPystylOutput($pystyl_output, $full_outputpath1, $full_outputpath2) {
                 
         //something went wrong when importing data into PyStyl
@@ -374,6 +392,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
+    /**
+     * Get collection data for the current user 
+     */
     private function getUserCollectionData() {
         $wrapper = $this->wrapper;
         return $wrapper->getManuscriptsCollectionData();

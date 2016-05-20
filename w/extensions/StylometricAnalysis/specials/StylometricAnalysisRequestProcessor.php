@@ -23,6 +23,9 @@
  */
 class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
+    /**
+     * Get the data of the default page after the user has submitted it 
+     */
     public function getDefaultPageData() {
         global $wgStylometricAnalysisOptions;
         $minimum_collections = $wgStylometricAnalysisOptions['wgmin_stylometricanalysis_collections'];
@@ -33,7 +36,7 @@ class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProce
     }
 
     /**
-     * This function loads the variables in Form 1
+     * Load submission data of the default page
      */
     private function loadDefaultPageData() {
 
@@ -55,6 +58,9 @@ class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProce
         return $collection_data;
     }
 
+    /**
+     * Check for errors in the default page data 
+     */
     private function checkDefaultPageData(array $collection_data, $minimum_collections, $maximum_collections) {
 
         if (empty($collection_data)) {
@@ -72,6 +78,9 @@ class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProce
         return true;
     }
 
+    /**
+     * Get collection of form 2 after the user has submitted it 
+     */
     public function getForm2CollectionData() {
         $validator = $this->validator;
         $request = $this->request;
@@ -85,6 +94,9 @@ class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProce
         return $collection_data;
     }
 
+    /**
+     * Get PyStyl configuration data of form  after the user has submitted it 
+     */
     public function getForm2PystylConfigurationData() {
         global $wgStylometricAnalysisOptions;
         $min_mfi = $wgStylometricAnalysisOptions['min_mfi'];
@@ -94,7 +106,7 @@ class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProce
     }
 
     /**
-     * This function loads the config array of Form 2 (data that will be sent to PyStyl)
+     * Loads the config array of Form 2 (data that will be sent to PyStyl)
      */
     private function loadForm2PystylConfigurationData() {
         $validator = $this->validator;
@@ -130,6 +142,9 @@ class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProce
         return $config_array;
     }
 
+    /**
+     * Check the configuration data of form 2 and throw an exception if needed 
+     */
     private function checkForm2PystylConfigurationData($pystyl_config, $min_mfi) {
 
         if ($pystyl_config['minimumsize'] >= $pystyl_config['maximumsize']) {
@@ -145,6 +160,9 @@ class StylometricAnalysisRequestProcessor extends ManuscriptDeskBaseRequestProce
         }
     }
 
+    /**
+     * Get data if the user decided to save the current analysis 
+     */
     public function getSavePageData() {
         $request = $this->request;
         $validator = $this->validator;

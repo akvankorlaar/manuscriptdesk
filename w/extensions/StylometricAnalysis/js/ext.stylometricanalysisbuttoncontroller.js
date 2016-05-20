@@ -23,7 +23,8 @@
 (function (mw, $) {
 
   /**
-   * This function disables or enables the submit button, depending on how many checkboxes are checked
+   * Disable or enable the submit button, depending on how many checkboxes are checked. 
+   * Buttons are not disabled by default because otherwise users with javascrip disabled cannot perform the analysis
    */
   function changeSubmit() {
 

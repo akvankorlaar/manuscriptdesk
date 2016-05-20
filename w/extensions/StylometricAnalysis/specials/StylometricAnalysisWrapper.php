@@ -163,13 +163,7 @@ class StylometricAnalysisWrapper extends ManuscriptDeskBaseWrapper {
             return;
         }
 
-        unlink($full_outputpath);
-
-        if (is_file($full_outputpath)) {
-            throw new \Exception('stylometricanalysis-error-database');
-        }
-
-        return;
+        return unlink($full_outputpath);
     }
 
     private function deleteOldEntriesFromTempstylometricanalysisTable($old_time) {

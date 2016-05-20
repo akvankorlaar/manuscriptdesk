@@ -26,7 +26,7 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
     use HTMLJavascriptLoader;
 
     /**
-     * This function constructs the HTML for the default page
+     * Construct the HTML for the default page
      */
     public function showDefaultPage($error_message = '', array $user_collection_data) {
 
@@ -119,7 +119,7 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
     }
 
     /**
-     * This function constructs and shows the stylometric analysis form
+     * Constructs and show form 2
      */
     public function showForm2(array $collection_data, array $collection_name_data, RequestContext $context, $error_message = '') {
 
@@ -323,7 +323,7 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
     }
 
     /**
-     * This function shows the output page after the stylometric analysis has completed
+     * Show the output page after the stylometric analysis has completed
      */
     public function showResult(array $pystyl_config, array $collection_name_data, $full_linkpath1 = '', $full_linkpath2 = '', $time = null) {
 
@@ -377,6 +377,9 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         return true;
     }
 
+    /**
+     * Show the stylometric analysis namespace page (page created if a user decided to save an analysis) 
+     */
     public function showStylometricAnalysisNamespacePage(array $data) {
 
         $out = $this->out;
@@ -408,6 +411,9 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
         return $out->addHTML($html);
     }
 
+    /**
+     * Get and show the images and the metatable for the stylometric analysis 
+     */
     private function getStylometricAnalysisResultVisualization($full_linkpath1, $visualization1, $full_linkpath2, $visualization2, $pystyl_config) {
         $html = '';
         $html .= "<div id='visualization-wrap' style='display:block;'>";

@@ -23,6 +23,9 @@
  */
 class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
 
+    /**
+     * The MediaWikiPerformAction hook. Check whether the user is allowed to view the page, and load stylometric analysis data to show stylometric analysis namespace page 
+     */
     public function onMediaWikiPerformAction($output, $article, $title, $user, $request, $wiki) {
 
         try {
@@ -53,6 +56,9 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         }
     }
 
+    /**
+     * Check whether data should be loaded for the stylometric analysis namespace page 
+     */
     private function StylometricanalysisDataShouldBeLoaded(Title $title, WebRequest $request, MediaWiki $wiki) {
 
         if ($wiki->getAction($request) !== 'view') {
@@ -69,7 +75,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function prevents users from moving a stylometricanalysis page
+     * Prevent users from moving a stylometricanalysis page
      */
     public function onAbortMove(Title $oldTitle, Title $newTitle, User $user, &$error, $reason) {
 
@@ -83,8 +89,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function runs every time mediawiki gets a delete request. This function prevents
-     * users from deleting stylometricanalysis pages they have not uploaded
+     * MediaWiki ArticleDelete hook. Prevent users from deleting stylometricanalysis pages they have not uploaded (except for sysops)
      */
     public function onArticleDelete(WikiPage &$wikiPage, User &$user, &$reason, &$error) {
 
@@ -112,7 +117,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function prevents users from making any pages on NS_STYLOMETRICANALYSIS, if they are not creating this page
+     * MediaWiki PaveContentSave hook. Prevent users from making any pages on NS_STYLOMETRICANALYSIS, if they are not creating this page
      * through the stylometricanalysis extension. 
      */
     public function onPageContentSave(WikiPage &$wikiPage, User &$user, Content &$content, &$summary, $isMinor, $isWatch, $section, &$flags, &$status) {
@@ -134,6 +139,9 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         }
     }
 
+    /**
+     * Check if the current page is in NS_STYLOMETRICANALYSIS 
+     */
     private function isStylometricAnalysisNamespace($object) {
 
         $namespace = $this->getNamespaceFromObject($object);
@@ -146,7 +154,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function sends configuration variables to javascript. In javascript they are accessed through 'mw.config.get('..') 
+     * MediaWiki ResourceLoaderGetConfigVars hook. Send configuration variables to javascript used for the button controller. In javascript they are accessed through 'mw.config.get('..') 
      */
     public function onResourceLoaderGetConfigVars(&$vars) {
 
@@ -159,7 +167,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function loads additional modules containing CSS before the page is displayed
+     * MediaWiki BeforePageDisplay hook. Loads additional modules containing CSS before the page is displayed
      */
     public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
 
@@ -179,6 +187,9 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
+    /**
+     * MediaWii OutputPageParserOutput hook. If user has no permission to view the page, show an error 
+     */
     public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parser_output) {
 
         if (!$this->isStylometricAnalysisNamespace($out)) {
