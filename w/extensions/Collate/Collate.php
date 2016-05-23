@@ -41,7 +41,7 @@ $wgExtensionCredits['parserhook'][] = array(
   'path' => __FILE__,
   'name' => 'Collate',
   'author' => 'Arent van Korlaar',
-  'version' => '0.0.1',
+  'version' => '1.0',
   'url' => 'https://manuscriptdesk.uantwerpen.be',
   'description' => 'This extension permits users to collate texts for the Manuscript Desk.',
 );

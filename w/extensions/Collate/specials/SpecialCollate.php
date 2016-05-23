@@ -26,8 +26,8 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
     /**
      * This code can run in a few different contexts:
      * 
-     * 1: on normal entry, no request is posted, and the default page, with all the collections and manuscripts of the current user is shown
-     * 2: on submit, a collation table is constructed, old tempcollate collate data is deleted, the current collate data is stored in the tempcollate table, and the table is shown
+     * 1: on normal entry, when no request to this page is POSTed, the default page, with all the collections and manuscripts of the current user is shown
+     * 2: on POST, a collation table is constructed, old tempcollate collate data is deleted, the current collate data is stored in the tempcollate table, and the table is shown
      * 3: when redirecting to start, the default page is shown
      * 4: when saving the table, the data is retrieved from the tempcollate table, saved to the collations table, a new wiki page is created, and the user is redirected to this page 
      * 
@@ -72,6 +72,9 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
+    /**
+     * Process submission of the default page and do the analysis 
+     */
     private function processDefaultPage() {
         list($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles) = $this->request_processor->getDefaultPageData();
         $page_titles = $this->getPageTitlesCorrespondingToPostedUrls($manuscript_urls, $manuscript_titles, $collection_urls_data, $collection_titles);
@@ -87,7 +90,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * This function processes the request when the user wants to save the collation table. Collate data is transferred from the 'tempcollate' table to
+     * Process the request when the user wants to save the collation table. Collate data is transferred from the 'tempcollate' table to
      * the 'collations' table, a new page is made, and the user is redirected to this page
      */
     private function processSavePageRequest() {
@@ -135,7 +138,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * This function intializes the $collate_wrapper, clears the tempcollate table, and inserts new data into the tempcollate table 
+     * Intialize the $collate_wrapper, clear the tempcollate table, and insert new data into the tempcollate table 
      */
     private function updateDatabase($titles_array, $main_title, $new_url, $time, $collatex_output) {
         $wrapper = $this->wrapper;
@@ -170,7 +173,7 @@ class SpecialCollate extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * This function makes a new URL, which will be used when the user saves the current table
+     * Make a new URL, which will be used when the user saves the current table
      */
     private function makeUrlForNewPage($imploded_page_titles = '') {
         $user_name = $this->user_name;

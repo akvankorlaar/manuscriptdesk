@@ -63,7 +63,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private $paths;
 
     /**
-     * This function loads the zoomviewer if the editor is in edit mode. 
+     * Load the zoomviewer if the page is in edit mode. 
      */
     public function onEditPageShowEditFormInitial(EditPage $editPage, OutputPage &$out) {
 
@@ -83,6 +83,9 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         }
     }
 
+    /**
+     * Check if current page is a valid manuscript page 
+     */
     private function currentPageIsAValidManuscriptPage(OutputPage $out) {
         if (!$this->isInManuscriptsNamespace($out) || !$this->manuscriptPageExists($out)) {
             return false;
@@ -104,8 +107,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function loads the zoomviewer if the page on which it lands is a manuscript,
-     * and if the url is valid.     
+     * Load the zoom viewer and other features if the page is in view mode
      */
     public function onMediaWikiPerformAction(OutputPage $out, Article $article, Title $title, User $user, WebRequest $request, MediaWiki $wiki) {
 
@@ -153,6 +155,9 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return true;
     }
 
+    /**
+     * Set data for the current page based on $partial_url (manuscripts:name/manuscripttitle)
+     */
     private function setPageData($partial_url) {
         $this->partial_url = $partial_url;
         $this->creator_user_name = $this->wrapper->getUserNameFromUrl($partial_url);
@@ -191,6 +196,9 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return;
     }
 
+    /**
+     * Table with links to original image, link to edit collection, link to previous page, link to next page 
+     */
     private function getHTMLManuscriptViewLinks(User $user) {
         $html = "";
         $html .= "<table id='link-wrap'>";
@@ -248,7 +256,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function gets the links to the previous and the next page of the collection, if they exist 
+     * Get the links to the previous and the next page of the collection, if they exist 
      */
     private function getHTMLPreviousNextPageLinks() {
 
@@ -278,7 +286,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function returns the link to the original image
+     * Return the link to the original image
      */
     private function getHTMLLinkToOriginalManuscriptImage() {
 
@@ -293,7 +301,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * Generates the HTML for the iframe
+     * Generate the HTML for the iframe
      */
     private function getHTMLIframeForZoomviewer(WebRequest $request) {
         global $wgScriptPath, $wgLang;
@@ -306,7 +314,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * Get the default viewer type. Format of get request: <full_url>?viewertype=zv=
+     * Get the default viewer type. Is also changeable from the url. Format of get request: <full_url>?viewertype=zv=
      */
     private function getViewerType(WebRequest $request) {
 
@@ -359,7 +367,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * The function register, registers the wikitext <pagemetatable> </pagemetatable>
+     * Register the wikitext <pagemetatable> </pagemetatable>
      * with the parser, so that the metatable can be loaded. When these tags are encountered in the wikitext, the function renderPageMetaTable
      * is called. The metatable refers to meta data on a collection level, while the pagemetatable tags enable users to insert page-specific meta data
      */
@@ -370,7 +378,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function renders the pagemetatable, when the tags are encountered in the wikitext
+     * Render the pagemetatable, when the tags are encountered in the wikitext
      */
     public static function renderPageMetaTable($input, $args, Parser $parser) {
         $page_metatable = ObjectRegistry::getInstance()->getPageMetaTable();
@@ -379,7 +387,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function prevents users from moving a manuscript page
+     * Prevent users from moving a manuscript page
      */
     public function onAbortMove(Title $oldTitle, Title $newTitle, User $user, &$error, $reason) {
 
@@ -393,7 +401,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function runs every time mediawiki gets a delete request. This function prevents
+     * MediaWiki ArticleDelete hook. Runs every time mediawiki gets a delete request. Prevents
      * users from deleting manuscripts they have not uploaded
      */
     public function onArticleDelete(WikiPage &$wiki_page, User &$user, &$reason, &$error) {
@@ -433,8 +441,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function prevents users from saving new wiki pages on NS_MANUSCRIPTS when there is no corresponding file in the database,
-     * and it checks if the content is not larger than $max_charachters_manuscript  
+     * MediaWiki PageContentSave hook. Prevents users from saving new wiki pages on NS_MANUSCRIPTS when there is no corresponding file in the database,
+     * and checks if the content is not larger than $max_charachters_manuscript  
      */
     public function onPageContentSave(&$wikiPage, &$user, &$content, &$summary, $isMinor, $isWatch, $section, &$flags, &$status) {
 
@@ -498,10 +506,10 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function adds additional modules containing CSS before the page is displayed
+     * MediaWiki BeforePageDisplay hook. Adds additional modules containing CSS before the page is displayed
      */
     public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
-                
+
         try {
 
             $partial_url = $out->getTitle()->mPrefixedText;
@@ -543,6 +551,9 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         return $wrapper->getSingleCollectionMetadata($collection_title);
     }
 
+    /**
+     * MediaWiki OutputPageParserOutput hook. Show the text if the user has permission, or show an error
+     */
     public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parser_output) {
 
         if (!$this->isInManuscriptsNamespace($out)) {
@@ -560,7 +571,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function visualizes <add> and <del> tags that are nested in themselves correctly. It also removes tags that are not available in the editor for visualization.
+     * Visualize <add> and <del> tags that are nested in themselves correctly. Remove tags that are not available in the editor for visualization.
      * These tags will still be visible in the editor. 
      */
     private function visualiseStrayTagsAndRemoveNotSupportedTags(ParserOutput $parser_output) {

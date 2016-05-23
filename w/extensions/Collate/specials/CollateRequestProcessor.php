@@ -24,6 +24,9 @@
 
 class CollateRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
+    /**
+     * Get and check data submitted from the collate default page 
+     */
     public function getDefaultPageData() {
         $data = $this->loadDefaultPageData();
         $this->checkDefaultPageData($data);
@@ -91,8 +94,13 @@ class CollateRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         if (count($manuscript_urls) + $total_collection_urls > $maximum_manuscripts) {
             throw new \Exception('collate-error-manytexts');
         }
+        
+        return;
     }
 
+    /**
+     * Get data if user decided to save the current collate analysis 
+     */
     public function getSavePageData() {
         $validator = $this->validator;
         $request = $this->request; 

@@ -26,7 +26,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
     use HTMLJavascriptLoader;
 
     /**
-     * This function constructs the HTML for the default page
+     * Construct the HTML for the default page
      */
     public function showDefaultPage($error_message, array $manuscript_data, array $collection_data) {
 
@@ -148,7 +148,7 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
     }
 
     /**
-     * This function constructs the HTML collation table, and buttons
+     * Construct the HTML collation table, and buttons
      */
     public function showCollatexOutput(array $page_titles, $collatex_output, $time) {
 
@@ -188,6 +188,9 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         return $out->addHTML($html);
     }
 
+    /**
+     * Construct HTML for the namespace page. The namespace page is created when a user wants to save an analysis 
+     */
     public function showCollateNamespacePage(array $collate_data) {
 
         $out = $this->out;
@@ -207,6 +210,9 @@ class CollateViewer extends ManuscriptDeskBaseViewer {
         return $out->addHTML($html);
     }
 
+    /**
+     * Get HTML for the collatex table 
+     */
     private function getHTMLforCollatexTable(array $page_titles, $collatex_output) {
 
         global $wgScriptPath;

@@ -40,6 +40,9 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
         return $this->user_name = $user_name;
     }
 
+    /**
+     * Get collection data for the current user 
+     */
     public function getCollectionData() {
 
         if (!isset($this->user_name)) {
@@ -99,7 +102,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     /**
-     * This function fetches the data showing which pages have been created by the current user by retrieving this data from the 'manuscripts' table
+     * Get manuscripts data for the current user
      */
     public function getManuscriptsData() {
 
@@ -149,7 +152,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     /**
-     * This function gets the stored collate values from 'tempcollate'
+     * Get the stored collate values from 'tempcollate'
      */
     public function getSavedCollateAnalysisData($time_identifier) {
 
@@ -224,7 +227,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     /**
-     * This function checks if there are other stored values for this user in 'tempcollate'. If the time difference between $current_time
+     * Check if there are other stored values for this user in 'tempcollate'. If the time difference between $current_time
      * and $time of the stored values is larger than $this->hours_before_delete, the values will be deleted 
      */
     public function clearOldCollatexOutput($time) {
@@ -267,7 +270,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     /**
-     * This function deletes entries from the 'tempcollate' table
+     * Delete entries from the 'tempcollate' table
      */
     private function deleteTempcollate($time) {
 
@@ -293,7 +296,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     /**
-     * This function stores the collation data in 'collations' when the user chooses to save the current table
+     * Store the collation data in 'collations' when the user chooses to save the current analysis
      */
     public function storeCollations($new_url, $main_title, $main_title_lowercase, $page_titles, $collatex_output) {
 
@@ -325,7 +328,7 @@ class CollateWrapper extends ManuscriptDeskBaseWrapper {
     }
 
     /**
-     * This function retrieves data from the 'collations' table
+     * Get data from the 'collations' table
      */
     public function getCollationsData($page_title_with_namespace = '') {
 

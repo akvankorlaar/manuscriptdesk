@@ -24,7 +24,7 @@
 class CollateHooks extends ManuscriptDeskBaseHooks {
 
     /**
-     * This function retrieves the collatex output from the database and renders the table
+     * MediaWikiPerformAction hook. Retrieve the collatex output stored in the database and render the table if the user is in NS_COLLATIONS
      */
     public function onMediaWikiPerformAction(OutputPage $output, Article $article, Title $title, User $user, WebRequest $request, MediaWiki $wiki) {
 
@@ -34,7 +34,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
                 return true;
             }
 
-            $wrapper = $this->wrapper; 
+            $wrapper = $this->wrapper;
             $partial_url = $title->getPrefixedUrl();
             $this->signature = $wrapper->getSignatureWrapper()->getCollationsSignature($partial_url);
 
@@ -65,8 +65,8 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function prevents users from making any pages on NS_COLLATIONS, if they are not creating this page
-     * through the collation extension. 
+     * PageContentSave hook. Prevent users from making any pages on NS_COLLATIONS, if they are not creating this page
+     * through the collation extension
      */
     public function onPageContentSave(&$wikiPage, &$user, &$content, &$summary, $isMinor, $isWatch, $section, &$flags, &$status) {
 
@@ -88,7 +88,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function prevents users from moving a page on NS_COLLATIONS
+     * AbortMove hook. Prevent users from moving a page on NS_COLLATIONS
      */
     public function onAbortMove(Title $oldTitle, Title $newTitle, User $user, &$error, $reason) {
 
@@ -102,8 +102,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function runs every time mediawiki gets a delete request. This function prevents
-     * users from deleting collations they have not uploaded
+     * ArticleDelete hook. Prevent users from deleting collations they have not uploaded
      */
     public function onArticleDelete(WikiPage &$wikipage, User &$user, &$reason, &$error) {
 
@@ -118,11 +117,11 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
                 $error = '<br>' . $this->getMessage('collatehooks-nodeletepermission') . '.';
                 return false;
             }
-            
+
             $wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
             $wrapper->setUser($user->getName());
-            $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter();        
-            $deleter->deleteCollationData($title->getPrefixedUrl()); 
+            $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter();
+            $deleter->deleteCollationData($title->getPrefixedUrl());
             return true;
         } catch (Exception $e) {
             return true;
@@ -130,7 +129,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function loads additional modules containing CSS before the page is displayed
+     * BeforePageDisplay hook. Load additional modules containing CSS before the page is displayed
      */
     public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
 
@@ -146,9 +145,9 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
 
         return true;
     }
-    
+
     /**
-     * Checks whether the current user is allowed to view the current collation page  
+     * OutputPageParserOutput hook. Check whether the current user is allowed to view the current collation page  
      */
     public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parseroutput) {
 
@@ -164,7 +163,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * This function sends configuration variables to javascript. In javascript they are accessed through 'mw.config.get('..') 
+     * ResourceLoaderGetConfigVars hook. Send configuration variables to javascript. In javascript they are accessed through 'mw.config.get('..') 
      */
     public function onResourceLoaderGetConfigVars(&$vars) {
 
