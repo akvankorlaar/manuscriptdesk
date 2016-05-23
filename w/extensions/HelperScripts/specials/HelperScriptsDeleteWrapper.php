@@ -29,6 +29,9 @@ class HelperScriptsDeleteWrapper {
         $this->delete_wrapper = $delete_wrapper;
     }
 
+    /**
+     * Delete all data created by users in the manuscript desk 
+     */
     public function deleteManuscriptDeskData() {
         $res_manuscripts = $this->getAllManuscriptsData();
         $this->deleteManuscriptPages($res_manuscripts);
@@ -92,7 +95,7 @@ class HelperScriptsDeleteWrapper {
             ), array(
             )
             , __METHOD__, array(
-          'ORDER BY' => array('CAST(collations_url AS UNSIGNED)','collations_url'),
+          'ORDER BY' => array('CAST(collations_url AS UNSIGNED)', 'collations_url'),
             )
         );
 
@@ -109,7 +112,7 @@ class HelperScriptsDeleteWrapper {
             ), array(
             )
             , __METHOD__, array(
-          'ORDER BY' => array('CAST(stylometricanalysis_new_page_url AS UNSIGNED)','stylometricanalysis_new_page_url'),
+          'ORDER BY' => array('CAST(stylometricanalysis_new_page_url AS UNSIGNED)', 'stylometricanalysis_new_page_url'),
             )
         );
 

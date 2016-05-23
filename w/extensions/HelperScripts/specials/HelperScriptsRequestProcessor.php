@@ -23,9 +23,11 @@
  */
 class HelperScriptsRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
+    /**
+     * Check whether user has clicked the delete button
+     */
     public function buttonDeleteManuscriptsPosted() {
         $request = $this->request;
-        $validator = $this->validator;
 
         if ($request->getText('delete_manuscripts_posted') !== '') {
             return true;
@@ -34,6 +36,9 @@ class HelperScriptsRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
         false;
     }
 
+    /**
+     * Check whether user submitted the delete form 
+     */
     public function deletePhrasePosted() {
         global $wgHelperScriptsOptions;
 

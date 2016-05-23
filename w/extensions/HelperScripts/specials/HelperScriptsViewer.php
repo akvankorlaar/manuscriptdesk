@@ -25,6 +25,9 @@ class HelperScriptsViewer extends ManuscriptDeskBaseViewer {
 
     use HTMLJavascriptLoader;
 
+    /**
+     * Construct HTML for the default page 
+     */
     public function showDefaultPage($error_message = '') {
 
         global $wgArticleUrl;
@@ -57,6 +60,9 @@ class HelperScriptsViewer extends ManuscriptDeskBaseViewer {
         return $out->addHTML($html);
     }
 
+    /**
+     * Show form if user wants to delete all data 
+     */
     public function showDeletionForm() {
         $out = $this->out;
         $max_length = $this->max_string_formfield_length;
@@ -74,7 +80,7 @@ class HelperScriptsViewer extends ManuscriptDeskBaseViewer {
 
         $html .= "</div>";
         $out->addHTML($html);
-        
+
         $descriptor = array();
 
         $descriptor['phrase'] = array(
@@ -91,6 +97,9 @@ class HelperScriptsViewer extends ManuscriptDeskBaseViewer {
         return $html_form->show();
     }
 
+    /**
+     * Show notification when chosen action is complete
+     */
     public function showActionComplete() {
         $out = $this->out;
         $out->setPageTitle($out->msg('helperscripts'));

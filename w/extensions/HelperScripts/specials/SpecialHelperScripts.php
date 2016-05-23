@@ -27,6 +27,10 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
         parent::__construct('HelperScripts');
     }
 
+    /**
+     * @ovverride ManuscriptDeskBaseSpecials::execute()
+     * Slight variation on execute method in ManuscriptDeskBaseSpecials: only allow sysops to this page 
+     */
     public function execute($subpage_arguments) {
 
         try {
@@ -55,6 +59,9 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
+    /**
+     * Process all requests 
+     */
     protected function processRequest() {
 
         $request_processor = $this->request_processor;
@@ -83,12 +90,18 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
         }
     }
 
+    /**
+     * Update the alphabetnumbers table 
+     */
     private function updateAlphabetNumbersTable() {
         $wrapper = ObjectRegistry::getInstance()->getAlphabetNumbersUpdater();
         $wrapper->execute();
         return;
     }
 
+    /**
+     * Delete all data from the manuscript desk 
+     */
     private function processDeleteManuscripts() {
         $wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
         $wrapper->setUserName($this->user_name);

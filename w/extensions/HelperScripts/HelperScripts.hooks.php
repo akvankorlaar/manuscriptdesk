@@ -22,13 +22,13 @@
  * @copyright 2015 Arent van Korlaar
  */
 class HelperScriptsHooks extends ManuscriptDeskBaseHooks {
-    
-    public function __construct(){
+
+    public function __construct() {
         
     }
 
     /**
-     * This function loads additional modules containing CSS before the page is displayed
+     * BeofrePageDislpay hook. Load additional modules containing CSS before the page is displayed
      */
     public function onBeforePageDisplay(OutputPage &$out, Skin &$ski) {
 
@@ -37,7 +37,7 @@ class HelperScriptsHooks extends ManuscriptDeskBaseHooks {
         if ($page_title_with_namespace === 'Special:HelperScripts') {
 
             $css_modules = array('ext.manuscriptdeskbasecss');
-            $javascript_modules = array( 'ext.javascriptloader');
+            $javascript_modules = array('ext.javascriptloader');
             $out->addModuleStyles($css_modules);
             $out->addModules($javascript_modules);
         }

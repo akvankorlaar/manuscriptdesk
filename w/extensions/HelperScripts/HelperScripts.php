@@ -38,7 +38,7 @@ $wgExtensionCredits['parserhook'][] = array(
   'path' => __FILE__,
   'name' => 'HelperScripts',
   'author' => 'Arent van Korlaar',
-  'version' => '0.0.1',
+  'version' => '1.0',
   'url' => 'https://manuscriptdesk.uantwerpen.be',
   'description' => 'This extension provides helper scripts for the Manuscript Desk',
 );
