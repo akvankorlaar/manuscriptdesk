@@ -24,7 +24,7 @@
 trait HTMLCollectionMetaTable {
 
     /**
-     * This function renders the metadata table 
+     * Remder HTML for the metadata table 
      */
     protected function getHTMLCollectionMetaTable(OutputPage $out, array $meta_data) {
 

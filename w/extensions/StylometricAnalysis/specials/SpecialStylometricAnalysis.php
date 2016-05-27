@@ -31,7 +31,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     private $collection_data;
     private $collection_name_data;
     private $pystyl_config;
-    private $pystyl_path; 
+    private $pystyl_path;
 
     //PyStyl $config_array information: 
     //removenonalpha : wheter or not to keep alphabetical symbols
@@ -278,7 +278,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      */
     private function constructShellCommandToCallPystyl() {
         $python_path = $this->python_path;
-        $pystyl_path = $this->pystyl_path; 
+        $pystyl_path = $this->pystyl_path;
         $pystyl_analysis_file = $pystyl_path . 'manuscriptdeskanalysis.py';
         return $python_path . ' -W ignore ' . $pystyl_analysis_file;
     }
@@ -312,7 +312,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         }
 
         if (!is_dir($this->base_outputpath)) {
-            mkdir($this->base_outputpath, 0755,true);
+            mkdir($this->base_outputpath, 0755, true);
         }
 
         $textfile = fopen($full_textfilepath, 'w');
@@ -325,7 +325,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         return true;
     }
-    
+
     /**
      * Delete the temporary textfile with PyStyl configuration information 
      */
@@ -347,8 +347,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      */
     private function callPystyl($command, $full_textfilepath) {
         $full_textfilepath = "\"'$full_textfilepath'\"";
-        $full_textfileeath = str_replace('\\','',$full_textfilepath);
-        $full_command = $command . ' ' .  $full_textfilepath;
+        $full_textfilepath = str_replace('\\', '', $full_textfilepath);
+        $full_command = $command . ' ' . $full_textfilepath;
         return shell_exec($full_command);
     }
 
@@ -356,7 +356,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * Check the output of PyStyl and throw an exception if needed 
      */
     private function checkPystylOutput($pystyl_output, $full_outputpath1, $full_outputpath2) {
-                
+
         //something went wrong when importing data into PyStyl
         if (strpos($pystyl_output, 'stylometricanalysis-error-import') !== false) {
             throw new \Exception('stylometricanalysis-error-import');
@@ -408,6 +408,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $viewer = $this->viewer;
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
+        $this->printExceptionToLogFile($exception_error);
 
         if ($error_identifier === 'error-nopermission') {
             return $viewer->showSimpleErrorMessage($error_message);
@@ -422,6 +423,17 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         }
 
         return $this->getDefaultPage($error_message);
+    }
+
+    private function printExceptionToLogFile(Exception $exception_error) {
+        global $wgWebsiteRoot;
+        $error_identifier = $exception_error->getMessage();
+        $error_file = $exception_error->getFile();
+        $error_line = $exception_error->getLine();
+        $trace = $this->formatTrace($exception_error->getTrace());
+        $error_message = $this->msg($error_identifier) . ' ' . $error_file . ' ' . $error_line . '<br><br>' . $trace;
+        wfErrorLog($error_message . "\r\n", $wgWebsiteRoot . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
+        return; 
     }
 
     public function setViewer() {

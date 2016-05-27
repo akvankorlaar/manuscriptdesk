@@ -23,6 +23,9 @@
  */
 trait HTMLUploadError {
 
+    /**
+     * Construct HTML in case user has not created enough uploads 
+     */
     protected function getHTMLFewUploadsError($error_message = '') {
 
         global $wgArticleUrl;

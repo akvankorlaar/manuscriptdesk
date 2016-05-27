@@ -166,7 +166,7 @@ abstract class ManuscriptDeskBaseSpecials extends SpecialPage {
         return $error_message;
     }
     
-    private function formatTrace(array $trace){
+    protected function formatTrace(array $trace){
         $trace_text = '';
         foreach($trace as $entry){
             $file = isset($entry['file']) ? $entry['file'] : '';

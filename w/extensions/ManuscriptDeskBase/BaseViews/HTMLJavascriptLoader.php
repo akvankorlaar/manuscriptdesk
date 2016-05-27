@@ -21,10 +21,10 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
+trait HTMLJavascriptLoader {
 
-trait HTMLJavascriptLoader{
-    
     /**
+     * Render HTML for the javascript loader gif
      * Source of the gif: http://preloaders.net/en/circular
      */
     protected function getHTMLJavascriptLoader() {
@@ -34,7 +34,8 @@ trait HTMLJavascriptLoader{
         $html .= "<img class='javascriptgif' src='/w/extensions/ManuscriptDeskBase/assets/362.gif' style='width: 64px; height: 64px;"
             . " position: relative; left: 50%;'>";
         $html .= "</div>";
-        
+
         return $html;
     }
+
 }

@@ -22,6 +22,10 @@
  * @copyright 2015 Arent van Korlaar
  */
 abstract class ManuscriptDeskBaseViewer {
+    
+    /**
+     * Classes that extend this class are intended to be called when HTML is constructed for the output page
+     */
 
     protected $out;
     protected $max_int_formfield_length = 5;
@@ -31,6 +35,9 @@ abstract class ManuscriptDeskBaseViewer {
         $this->out = $out;
     }
 
+    /**
+     * Do htmlspecialchars() on every value in an array or array of arrays 
+     */
     protected function HTMLSpecialCharachtersArray(array &$array) {
         foreach ($array as $index => &$value) {
             if (is_string($value)) {
@@ -45,11 +52,17 @@ abstract class ManuscriptDeskBaseViewer {
         return $array;
     }
 
+    /**
+     * Show simple error message to output 
+     */
     public function showSimpleErrorMessage($error_message = '') {
         $this->out->addHTML($error_message);
         return;
     }
 
+    /**
+     * Show error if user has not uploaded enough manuscripts 
+     */
     public function showFewUploadsError($error_message) {
         $out = $this->out;
         $class = get_class($this);
