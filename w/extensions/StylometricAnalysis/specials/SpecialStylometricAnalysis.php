@@ -56,6 +56,32 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     /**
+     * Main entry point for Special Pages in the Manuscript Desk
+     */
+    public function execute($subpage_arguments) {
+
+        try {
+            $this->setVariables();
+            $this->checkManuscriptDeskPermission();
+
+            if (!$this->currentUserIsASysop()) {
+                return true;
+            }
+
+            if ($this->request_processor->requestWasPosted()) {
+                $this->processRequest();
+                return true;
+            }
+
+            $this->getDefaultPage();
+            return true;
+        } catch (Exception $e) {
+            $this->handleExceptions($e);
+            return false;
+        }
+    }
+
+    /**
      * Set variables that are used throughout the special page 
      */
     protected function setVariables() {
@@ -408,7 +434,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $viewer = $this->viewer;
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
-        $this->printExceptionToLogFile($exception_error);
 
         if ($error_identifier === 'error-nopermission') {
             return $viewer->showSimpleErrorMessage($error_message);
@@ -425,15 +450,12 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         return $this->getDefaultPage($error_message);
     }
 
-    private function printExceptionToLogFile(Exception $exception_error) {
-        global $wgWebsiteRoot;
-        $error_identifier = $exception_error->getMessage();
+    protected function constructErrorMessage(Exception $exception_error, $error_identifier) {
         $error_file = $exception_error->getFile();
         $error_line = $exception_error->getLine();
         $trace = $this->formatTrace($exception_error->getTrace());
         $error_message = $this->msg($error_identifier) . ' ' . $error_file . ' ' . $error_line . '<br><br>' . $trace;
-        wfErrorLog($error_message . "\r\n", $wgWebsiteRoot . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
-        return; 
+        return $error_message;
     }
 
     public function setViewer() {
