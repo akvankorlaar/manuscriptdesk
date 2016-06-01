@@ -93,7 +93,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $web_root = $wgWebsiteRoot;
 
         $initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
-        $this->base_outputpath = $web_root . $initial_analysis_dir . '/' . $this->user_name;
+        $this->base_outputpath = $web_root . '/' . $initial_analysis_dir . '/' . $this->user_name;
         $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name;
         $this->pystyl_path = $wgStylometricAnalysisOptions['pystyl_path'];
 
@@ -335,10 +335,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         if (is_file($full_textfilepath)) {
             unlink($full_textfilepath);
-        }
-
-        if (!is_dir($this->base_outputpath)) {
-            mkdir($this->base_outputpath, 0755, true);
         }
 
         $textfile = fopen($full_textfilepath, 'w');
