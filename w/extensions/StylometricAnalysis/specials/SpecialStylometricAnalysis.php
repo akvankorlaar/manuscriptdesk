@@ -399,7 +399,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         }
 
         if (!is_file($full_outputpath1) || !is_file($full_outputpath2)) {
-            throw new \Exception('stylometricanalysis-error-internal');
+            throw new \Exception($pystyl_output);
         }
 
         return true;
