@@ -336,8 +336,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         if (is_file($full_textfilepath)) {
             unlink($full_textfilepath);
         }
-        
-        if(!is_dir($this->base_outputpath)){
+
+        if (!is_dir($this->base_outputpath)) {
             mkdir($this->base_outputpath, 0755, true);
         }
 
@@ -348,6 +348,14 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         if (!is_file($full_textfilepath)) {
             throw new \Exception('stylometricanalysis-error-internal');
         }
+
+        global $wgWebsiteRoot;
+
+        $testpath = $wgWebsiteRoot . '/' . 'testtextfile.txt';
+
+        $newtextfile = fopen($testpath, 'w');
+        fwrite($newtextfile, json_encode($this->pystyl_config));
+        fclose($newtextfile);
 
         return true;
     }
