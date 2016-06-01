@@ -375,6 +375,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $full_textfilepath = "\"'$full_textfilepath'\"";
         $full_textfilepath = str_replace('\\', '', $full_textfilepath);
         $full_command = $command . ' ' . $full_textfilepath;
+        
+        throw new \Exception($full_command);
         return shell_exec($full_command);
     }
 
