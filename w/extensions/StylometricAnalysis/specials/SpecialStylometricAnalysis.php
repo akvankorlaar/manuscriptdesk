@@ -361,11 +361,11 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return true;
         }
 
-//        unlink($full_textfilepath);
-//
-//        if (is_file($full_textfilepath)) {
-//            throw new \Exception('stylometricanalysis-error-internal');
-//        }
+        unlink($full_textfilepath);
+
+        if (is_file($full_textfilepath)) {
+            throw new \Exception('stylometricanalysis-error-internal');
+        }
     }
 
     /**
