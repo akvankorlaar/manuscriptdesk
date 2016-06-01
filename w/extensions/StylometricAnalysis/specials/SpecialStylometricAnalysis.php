@@ -336,6 +336,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         if (is_file($full_textfilepath)) {
             unlink($full_textfilepath);
         }
+        
+        if(!is_dir($this->base_outputpath)){
+            mkdir($this->base_outputpath, 0755, true);
+        }
 
         $textfile = fopen($full_textfilepath, 'w');
         fwrite($textfile, json_encode($this->pystyl_config));
