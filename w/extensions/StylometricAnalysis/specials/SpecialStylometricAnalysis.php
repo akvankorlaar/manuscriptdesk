@@ -56,32 +56,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
     }
 
     /**
-     * Main entry point for Special Pages in the Manuscript Desk
-     */
-    public function execute($subpage_arguments) {
-
-        try {
-            $this->setVariables();
-            $this->checkManuscriptDeskPermission();
-
-            if (!$this->currentUserIsASysop()) {
-                return true;
-            }
-
-            if ($this->request_processor->requestWasPosted()) {
-                $this->processRequest();
-                return true;
-            }
-
-            $this->getDefaultPage();
-            return true;
-        } catch (Exception $e) {
-            $this->handleExceptions($e);
-            return false;
-        }
-    }
-
-    /**
      * Set variables that are used throughout the special page 
      */
     protected function setVariables() {
@@ -448,14 +422,6 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         }
 
         return $this->getDefaultPage($error_message);
-    }
-
-    protected function constructErrorMessage(Exception $exception_error, $error_identifier) {
-        $error_file = $exception_error->getFile();
-        $error_line = $exception_error->getLine();
-        $trace = $this->formatTrace($exception_error->getTrace());
-        $error_message = $this->msg($error_identifier) . ' ' . $error_file . ' ' . $error_line . '<br><br>' . $trace;
-        return $error_message;
     }
 
     public function setViewer() {
