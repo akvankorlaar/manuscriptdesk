@@ -38,7 +38,7 @@ $wgExtensionCredits['parserhook'][] = array(
   'path' => __FILE__,
   'name' => 'SummaryPages',
   'author' => 'Arent van Korlaar',
-  'version' => '0.0.1',
+  'version' => '1.0.0',
   'url' => 'https://manuscriptdesk.uantwerpen.be',
   'description' => 'Various special pages used to summarize data for the Manuscript Desk.',
 );

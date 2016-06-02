@@ -21,14 +21,16 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-
 class SummaryPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
+    /**
+     * Get request values if user wants to see data for a single letter or number 
+     */
     public function getLetterOrButtonRequestValues($lowercase_alphabet) {
 
         $request = $this->request;
         $validator = $this->validator;
-        $offset = null; 
+        $offset = null;
 
         foreach ($request->getValueNames()as $value) {
 
@@ -50,7 +52,7 @@ class SummaryPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
         return array($button_name, $offset);
     }
-    
+
     public function singleCollectionPosted() {
         if ($this->request->getText('single_collection_posted') !== '') {
             return true;
@@ -58,6 +60,5 @@ class SummaryPageRequestProcessor extends ManuscriptDeskBaseRequestProcessor {
 
         return false;
     }
-
 
 }

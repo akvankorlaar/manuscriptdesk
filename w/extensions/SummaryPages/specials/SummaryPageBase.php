@@ -62,6 +62,9 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         }
     }
 
+    /**
+     * Process all requests 
+     */
     protected function processRequest() {
 
         $request_processor = $this->request_processor;
@@ -76,6 +79,9 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         }
     }
 
+    /**
+     * Process the request when a user wants to view data for a single letter or number 
+     */
     private function processLetterOrButtonRequest() {
         list($button_name, $offset) = $this->request_processor->getLetterOrButtonRequestValues($this->lowercase_alphabet);
         list($page_data, $next_offset) = $this->getLetterOrButtonDatabaseData($button_name, $offset);
@@ -87,11 +93,17 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         return $this->getSingleLetterOrNumberPage($button_name, $page_data, $offset, $next_offset);
     }
 
+    /**
+     * Get database data for a single letter or number page 
+     */
     private function getLetterOrButtonDatabaseData($button_name, $offset) {
         $next_letter_alphabet = $this->getNextNumberOrLetterOfTheAlphabet($button_name);
         return $this->wrapper->getData($offset, $button_name, $next_letter_alphabet);
     }
 
+    /**
+     * Get the page to show data for the single letter or number 
+     */
     private function getSingleLetterOrNumberPage($button_name, $page_data, $offset, $next_offset) {
 
         $alphabet_numbers = $this->wrapper->getAlphabetNumbersWrapper()->getAlphabetNumbersData($this->getSpecialPageName());
@@ -103,6 +115,9 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         return true;
     }
 
+    /**
+     * Show a message if there was no data for the current letter or number 
+     */
     private function getEmptyPageTitlesError($button_name) {
         $alphabet_numbers = $this->wrapper->getAlphabetNumbersWrapper()->getAlphabetNumbersData($this->getSpecialPageName());
         $this->viewer->showEmptyPageTitlesError($alphabet_numbers, $this->uppercase_alphabet, $this->lowercase_alphabet, $button_name);
@@ -130,6 +145,9 @@ abstract class SummaryPageBase extends ManuscriptDeskBaseSpecials {
         }
     }
 
+    /**
+     * Process the request when the user wants to view single collection data 
+     */
     private function processSingleCollectionDataRequest() {
 
         if (!$this instanceof SpecialAllCollections) {

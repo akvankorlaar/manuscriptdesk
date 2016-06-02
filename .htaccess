@@ -3,12 +3,6 @@
 # Enable the rewrite engine 
 RewriteEngine On
 
-#Make sure user is not already on https
-#RewriteCond %{HTTPS} !on
-
-#Automatically redirect to https
-#RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
-
 # Short url for wiki pages
 RewriteRule ^md/(.+)$ /w/index.php?title=$1 [L,QSA]
 
@@ -19,4 +13,3 @@ RewriteRule ^/*$ /w/index.php [L]
 #RewriteCond %{REQUEST_URI} !^/503.php [NC]
 #RewriteRule .* /503.php [R,L]
 #RewriteCond %{REMOTE_ADDR} !^00\.00\.00\.00 #own IP here
-

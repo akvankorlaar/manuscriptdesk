@@ -24,6 +24,9 @@
 
 trait HTMLJavascriptLoaderDots{
 
+    /**
+     * HTML used to visualize javascript loader dots 
+     */
     protected function getHTMLJavascriptLoaderDots() {
 
         $html = '';
