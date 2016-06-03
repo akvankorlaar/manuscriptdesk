@@ -85,7 +85,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
             $this->handleSignatureChangeCollation();
             return true;
         }
-        
+
         if ($request_processor->changeSignatureStylometricAnalysisPosted()) {
             $this->handleSignatureChangeStylometricAnalysis();
             return true;
@@ -96,7 +96,6 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
     protected function getDefaultPage($error_message = '') {
         $user_is_a_sysop = $this->currentUserIsASysop();
-        $this->viewer = new UserPageDefaultViewer($this->getOutput());
         return $this->viewer->showDefaultPage($error_message, $this->user_name, $user_is_a_sysop);
     }
 
@@ -168,8 +167,8 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         list($page_data, $next_offset) = $this->wrapper->getData($offset);
         return $this->viewer->showPage($button_name, $page_data, $offset, $next_offset);
     }
-    
-    private function handleSignatureChangeStylometricAnalysis(){
+
+    private function handleSignatureChangeStylometricAnalysis() {
         list($partial_url, $signature, $button_name, $offset) = $this->request_processor->getStylometricAnalysisSignatureChangeData();
         $this->setWrapperAndViewer($button_name);
         $this->wrapper->getSignatureWrapper()->setStylometricAnalysisSignature($partial_url, $signature);
@@ -281,6 +280,10 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 
+        if ($error_identifier === 'error-nopermission') {
+            return $this->viewer->showSimpleErrorMessage($error_message);
+        }
+
         switch ($this->form_type) {
             case 'default':
                 return $this->getDefaultPage($error_message);
@@ -304,8 +307,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     public function setViewer() {
-        //empty because viewer has to be determined at runtime
-        return;
+        return $this->viewer = ObjectRegistry::getInstance()->getUserPageDefaultViewer($this->getOutput());
     }
 
     public function setWrapper() {
@@ -314,10 +316,6 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     private function setWrapperAndViewer($button_name) {
-
-        if (isset($this->wrapper) || isset($this->viewer)) {
-            return;
-        }
 
         switch ($button_name) {
             case 'view_manuscripts_posted':

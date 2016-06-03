@@ -87,6 +87,8 @@ $newmanuscript_hooks = ObjectRegistry::getInstance()->getNewManuscriptHooks();
 
 $wgHooks['EditPage::showEditForm:fields'][] = array($newmanuscript_hooks, 'onEditPageShowEditFormInitial');
 $wgHooks['MediaWikiPerformAction'][] = array($newmanuscript_hooks, 'onMediaWikiPerformAction');
+$wgHooks['MediaWikiPerformAction'][] = array($newmanuscript_hooks, 'onMediaWikiPerformRenderAction');
+$wgHooks['RawPageViewBeforeOutput'][] = array($newmanuscript_hooks, 'onRawPageViewBeforeOutput');
 $wgHooks['ParserFirstCallInit'][] = array($newmanuscript_hooks, 'register');
 $wgHooks['AbortMove'][] = array($newmanuscript_hooks, 'onAbortMove');
 $wgHooks['ArticleDelete'][] = array($newmanuscript_hooks, 'onArticleDelete');

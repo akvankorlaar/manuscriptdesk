@@ -113,7 +113,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         try {
 
-            if (!$this->manuscriptisInViewMode($out) || !$this->currentPageIsAValidManuscriptPage($out)) {
+            if (!$this->manuscriptIsInViewMode($out) || !$this->currentPageIsAValidManuscriptPage($out)) {
                 return true;
             }
 
@@ -133,6 +133,48 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         } catch (Exception $e) {
             return true;
         }
+    }
+
+    /**
+     * onMediaWikiPerformAction hook. Enables manuscripteditors to get manuscripts data using 'action=render'
+     */
+    public function onMediaWikiPerformRenderAction(OutputPage $out, Article $article, Title $title, User $user, WebRequest $request, MediaWiki $wiki) {
+        if (!$this->manuscriptIsInRenderMode($out) || !$this->currentPageIsAValidManuscriptPage($out)) {
+            return true;
+        }
+
+        $this->setPageData($out->getTitle()->getPrefixedUrl());
+
+        if ($this->userIsAllowedToViewThePage($user)) {
+            $this->user_has_view_permission = true;
+        }
+
+        return;
+    }
+
+    private function manuscriptIsInRenderMode(OutputPage $out) {
+        $context = $out->getContext();
+        if (Action::getActionName($context) !== 'render') {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * MediaWiki onRawPageViewBeforeOutput hook. Prevents users that are not manuscripteditors to get page text using 'action=raw' 
+     */
+    public static function onRawPageViewBeforeOutput(&$rawAction, &$text) {
+        $out = $rawAction->getOutput();
+        $this->setPageData($out->getTitle()->getPrefixedUrl());
+        $user = $out->getUser();
+        if ($this->userIsAllowedToViewThePage($user)) {
+            return true;
+        }
+
+        $text = $this->getMessage('error-viewpermission');
+
+        return false;
     }
 
     private function redirectToOriginalImage(OutputPage $out) {

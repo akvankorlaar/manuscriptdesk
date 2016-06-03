@@ -21,7 +21,6 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
- 
 class ObjectRegistry {
 
     /**
@@ -75,6 +74,7 @@ class ObjectRegistry {
     private $userpage_manuscripts_viewer = null;
     private $userpage_collections_viewer = null;
     private $userpage_stylometricanalysis_viewer = null;
+    private $userpage_default_viewer = null; 
 
     /**
      * HelperScripts classes
@@ -90,7 +90,7 @@ class ObjectRegistry {
     private $signature_wrapper = null;
     private $alphabetnumbers_wrapper = null;
     private $text_processor = null;
-    private $page_metatable = null; 
+    private $page_metatable = null;
     private $validator = null;
     private $manuscriptdesk_deleter = null;
 
@@ -314,6 +314,13 @@ class ObjectRegistry {
         return $this->singlemanuscriptpages_viewer;
     }
 
+    public function getUserPageDefaultViewer(OutputPage $out) {
+        if (is_null($this->userpage_default_viewer)) {
+            $this->userpage_default_viewer = new UserPageDefaultViewer($out);
+        }
+        return $this->userpage_default_viewer;
+    }
+
     public function getUserPageRequestProcessor(WebRequest $request) {
         if (is_null($this->userpage_request_processor)) {
             $validator = $this->getManuscriptDeskBaseValidator();
@@ -376,13 +383,13 @@ class ObjectRegistry {
         }
         return $this->manuscriptdesk_delete_wrapper;
     }
-    
-    public function getPageMetaTable(){
-        if(is_null($this->page_metatable)) {
+
+    public function getPageMetaTable() {
+        if (is_null($this->page_metatable)) {
             $this->page_metatable = new PageMetaTable();
         }
         return $this->page_metatable;
-    }    
+    }
 
     private function getAlphabetNumbersWrapper() {
         if (is_null($this->alphabetnumbers_wrapper)) {
@@ -404,13 +411,13 @@ class ObjectRegistry {
         }
         return $this->validator;
     }
-    
+
     public function getHelperScriptsHooks() {
         if (is_null($this->helperscripts_hooks)) {
             $this->helperscripts_hooks = new HelperScriptsHooks();
         }
         return $this->helperscripts_hooks;
-    } 
+    }
 
     /**
      * HelperScripts 
@@ -556,14 +563,14 @@ class ObjectRegistry {
     public function setAlphabetNumbersUpdater($object = null) {
         return $this->alphabetnumbers_updater = $object;
     }
-    
-    public function setUserPageStylometricAnalysisViewer($object = null){
+
+    public function setUserPageStylometricAnalysisViewer($object = null) {
         return $this->userpage_stylometricanalysis_viewer = $object;
     }
 
     public function setHelperScriptsHooks($object = null) {
         return $this->helperscripts_hooks = $object;
-    } 
+    }
 
     private function ensure($expression, $message) {
         if (!$expression) {
