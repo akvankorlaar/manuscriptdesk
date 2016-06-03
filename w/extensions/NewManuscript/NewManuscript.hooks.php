@@ -98,7 +98,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $request = $out->getRequest();
         $value = $request->getText('action');
 
-//submit action will only be true in case the user tries to save a page with too many charachters (see '$this->max_charachters_manuscript')
+        //submit action will only be true in case the user tries to save a page with too many charachters (see '$this->max_charachters_manuscript')
         if ($value !== 'edit' && $value !== 'submit') {
             return false;
         }
@@ -119,7 +119,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
             $this->setPageData($out->getTitle()->getPrefixedUrl());
 
-//Format of get request: <full_url>?showoriginalimage=true=
+            //Format of get request: <full_url>?showoriginalimage=true=
             if ($request->getText('showoriginalimage') === 'true') {
                 return $this->redirectToOriginalImage($out);
             }
@@ -164,7 +164,14 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     /**
      * MediaWiki onRawPageViewBeforeOutput hook. Prevents users that are not manuscripteditors to get page text using 'action=raw' 
      */
-    public static function onRawPageViewBeforeOutput(&$rawAction, &$text) {
+    public function onRawPageViewBeforeOutput(&$rawAction, &$text) {
+        $out = $rawAction->getOutput();
+        $this->setPageData($out->getTitle()->getPrefixedUrl());
+        $user = $out->getUser();
+        if ($this->userIsAllowedToViewThePage($user)) {
+            return true;
+        }
+
         $text = $this->getMessage('error-viewpermission');
         return true;
     }
@@ -259,7 +266,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
     private function currentUserIsTheOwnerOfThePage(User $user) {
         $current_user_name = $user->getName();
-//only allow the owner of the collection to edit collection data
+        //only allow the owner of the collection to edit collection data
         if ($this->creator_user_name !== $current_user_name) {
             return false;
         }
@@ -406,7 +413,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      * is called. The metatable refers to meta data on a collection level, while the pagemetatable tags enable users to insert page-specific meta data
      */
     public static function register(Parser &$parser) {
-// Register the hook with the parser
+        // Register the hook with the parser
         $parser->setHook('pagemetatable', array('NewManuscriptHooks', 'renderPageMetaTable'));
         return true;
     }
@@ -448,7 +455,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             $this->setPageData($wiki_page->getTitle()->getPrefixedUrl());
 
             if (!$this->currentUserIsTheOwnerOfThePage($user) && !$this->currentUserIsASysop($user)) {
-//deny deletion because the current user did not create this manuscript, and the user is not an administrator
+                //deny deletion because the current user did not create this manuscript, and the user is not an administrator
                 $error = "<br>" . $this->getMessage('newmanuscripthooks-nodeletepermission') . ".";
                 return false;
             }
@@ -549,7 +556,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             $partial_url = $out->getTitle()->mPrefixedText;
 
             if ($this->isInManuscriptsNamespace($out) && $this->manuscriptIsInViewMode($out) && $this->user_has_view_permission) {
-//doing this here ensures the table will be displayed at the bottom of the 
+                //doing this here ensures the table will be displayed at the bottom of the 
                 $this->addMetatableToManuscriptsPage($out);
                 $out->addModuleStyles('ext.manuscriptpagecss');
             }
@@ -612,15 +619,15 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
         $text = $parser_output->getText();
 
-//look for stray </add> tags, and replace them with a tei-add span element  
+        //look for stray </add> tags, and replace them with a tei-add span element  
         $text = preg_replace('/<\/span><\/span>(.*?)&lt;\/add&gt;/', '</span></span><span class="tei-add">$1</span>', $text);
 
-//look for stray </del> tags, and replace them with a tei-del span element  
+        //look for stray </del> tags, and replace them with a tei-del span element  
         $text = preg_replace('/<\/span><\/span>(.*?)&lt;\/del&gt;/', '</span></span><span class="tei-del">$1</span>', $text);
 
         $text = preg_replace('/<\/span><\/span>(.*?)&lt;\/hi&gt;/', '</span></span><span class="tei-hi superscript">$1</span>', $text);
 
-//look for any other escaped tags, and remove them
+        //look for any other escaped tags, and remove them
         $text = preg_replace('/&lt;(.*?)&gt;/s', '', $text);
 
         $parser_output->setText($text);
