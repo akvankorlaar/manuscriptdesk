@@ -165,20 +165,8 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
      * MediaWiki onRawPageViewBeforeOutput hook. Prevents users that are not manuscripteditors to get page text using 'action=raw' 
      */
     public static function onRawPageViewBeforeOutput(&$rawAction, &$text) {
-        try {
-            $out = $rawAction->getOutput();
-            $this->setPageData($out->getTitle()->getPrefixedUrl());
-            $user = $out->getUser();
-            if ($this->userIsAllowedToViewThePage($user)) {
-                return true;
-            }
-
-            $text = $this->getMessage('error-viewpermission');
-            return true;
-        } catch (Exception $e) {
-            $text = $this->getMessage('error-viewpermission');
-            return true;
-        }
+        $text = $this->getMessage('error-viewpermission');
+        return true;
     }
 
     private function redirectToOriginalImage(OutputPage $out) {
