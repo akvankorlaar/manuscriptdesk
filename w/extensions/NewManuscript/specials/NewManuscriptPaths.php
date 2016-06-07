@@ -90,12 +90,11 @@ class NewManuscriptPaths {
     /**
      * Get the base path for the initial upload 
      */
-    public function getInitialUploadBasePath() {
-        global $wgWebsiteRoot, $wgNewManuscriptOptions;
+    public function getInitialUploadBasePath() {        
+        global $wgOriginalImagesPath;
         $posted_manuscript_title = $this->posted_manuscript_title;
         $user_name = $this->user_name;
-        $initial_upload_base_path = $wgWebsiteRoot . '/' . $wgNewManuscriptOptions['original_images_dir'] . '/' . $user_name . '/' . $posted_manuscript_title;
-        return $initial_upload_base_path;
+        return $wgOriginalImagesPath . $user_name . '/' . $posted_manuscript_title;
     }
 
     /**
@@ -246,17 +245,10 @@ class NewManuscriptPaths {
      * Construct the full path of the original image
      */
     public function getWebLinkInitialUploadPath() {
-
-        global $wgNewManuscriptOptions;
-
-        $original_images_dir = $wgNewManuscriptOptions['original_images_dir'];
+        global $wgArticleUrl;
         $creator_user_name = $this->user_name;
         $manuscripts_title = $this->posted_manuscript_title;
-
-        $initial_upload_base_path = $this->getInitialUploadBasePath();
-        $image_file = $this->getImageFileNameFromScan($initial_upload_base_path);
-
-        return '/' . $original_images_dir . '/' . $creator_user_name . '/' . $manuscripts_title . '/' . $image_file;
+        return $wgArticleUrl . 'Special:OriginalImages' . '?image=' . $creator_user_name . '/' . $manuscripts_title;
     }
 
     public function getWebLinkExportPath() {

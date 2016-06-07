@@ -405,7 +405,7 @@ class ObjectRegistry {
         return $this->signature_wrapper;
     }
 
-    private function getManuscriptDeskBaseValidator() {
+    public function getManuscriptDeskBaseValidator() {
         if (is_null($this->validator)) {
             $this->validator = new ManuscriptDeskBaseValidator();
         }

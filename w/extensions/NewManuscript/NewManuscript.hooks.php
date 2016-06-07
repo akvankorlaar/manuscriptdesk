@@ -119,12 +119,13 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
 
             $this->setPageData($out->getTitle()->getPrefixedUrl());
 
-            //Format of get request: <full_url>?showoriginalimage=true=
-            if ($request->getText('showoriginalimage') === 'true') {
-                return $this->redirectToOriginalImage($out);
-            }
-
             if ($this->userIsAllowedToViewThePage($user)) {
+
+                //Format of get request: <full_url>?showoriginalimage=true=
+                if ($request->getText('showoriginalimage') === 'true') {
+                    return $this->redirectToOriginalImage($out);
+                }
+
                 $this->addHTMLToViewPage($user, $out);
                 $this->user_has_view_permission = true;
             }
@@ -244,7 +245,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $html = "";
         $html .= "<table id='link-wrap'>";
         $html .= "<tr>";
-        $html .= $this->getHTMLLinkToOriginalManuscriptImage();
+        $html .= $this->getHTMLLinkToOriginalManuscriptImage($user);
 
         if (isset($this->collection_title)) {
 
@@ -329,16 +330,25 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     /**
      * Return the link to the original image
      */
-    private function getHTMLLinkToOriginalManuscriptImage() {
+    private function getHTMLLinkToOriginalManuscriptImage(User $user) {
 
         $paths = $this->paths;
+        $edit_token = $user->getEditToken();
 
         if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
             return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
         }
 
-        $web_link_initial_upload_path = $paths->getWebLinkInitialUploadPath();
-        return "<td><a class='link-transparent' href='$web_link_initial_upload_path' target='_blank'>" . $this->getMessage('newmanuscripthooks-originalimage') . "</a></td>";
+        $web_link = $paths->getWebLinkInitialUploadPath();
+
+        $html = "";
+        $html .= "<td>";
+        $html .= "<form class='manuscriptpage-form' action='" . $web_link . "' method='post' target='_blank'>";
+        $html .= "<input class='button-transparent' type='submit' name='editlink' value='" . $this->getMessage('newmanuscripthooks-originalimage') . "'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
+        $html .= "</td>";
+        return $html;
     }
 
     /**

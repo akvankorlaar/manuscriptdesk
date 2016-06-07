@@ -236,8 +236,8 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $zoomimages_dirname = $wgNewManuscriptOptions['zoomimages_root_dir'];
         $user_name = $this->user_name;
 
-        $old_zoomimages_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $zoomimages_dirname . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_old_title;
-        $new_zoomimages_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $zoomimages_dirname . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_new_title;
+        $old_zoomimages_path = $wgWebsiteRoot . '/' . $zoomimages_dirname . '/' . $user_name . '/' . $manuscript_old_title;
+        $new_zoomimages_path = $wgWebsiteRoot . '/' . $zoomimages_dirname . '/' . $user_name . '/' . $manuscript_new_title;
 
         if (!is_dir($old_zoomimages_path)) {
             throw new \Exception('error-internal');
@@ -248,12 +248,11 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
     private function createOldAndNewOriginalImagesPaths($manuscript_old_title, $manuscript_new_title) {
 
-        global $wgWebsiteRoot, $wgNewManuscriptOptions;
-        $original_images_dir = $wgNewManuscriptOptions['original_images_dir'];
+        global $wgWebsiteRoot, $wgOriginalImagesPath;
         $user_name = $this->user_name;
 
-        $old_original_images_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $original_images_dir . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_old_title;
-        $new_original_images_path = $wgWebsiteRoot . DIRECTORY_SEPARATOR . $original_images_dir . DIRECTORY_SEPARATOR . $user_name . DIRECTORY_SEPARATOR . $manuscript_new_title;
+        $old_original_images_path = $wgOriginalImagesPath . '/' . $user_name . '/' . $manuscript_old_title;
+        $new_original_images_path = $wgOriginalImagesPath . '/' . $user_name . '/' . $manuscript_new_title;
 
         if (!is_dir($old_original_images_path)) {
             throw new \Exception('error-internal');
