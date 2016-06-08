@@ -94,7 +94,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
         $this->setPaths();    
         $this->setPathsData();
-        $this->paths->moveUploadToInitialUploadDir($temp_path);
+        $this->paths->moveUploadToOriginalImagesDir($temp_path);
 
         $this->prepareAndExecuteSlicer();
         
@@ -120,7 +120,7 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
      */
     private function setPathsData() {
         $paths = $this->paths;
-        $paths->setInitialUploadFullPath();
+        $paths->setOriginalImagesFullPath();
         $paths->setExportPaths();
 
         $full_export_path = $paths->getFullExportPath();

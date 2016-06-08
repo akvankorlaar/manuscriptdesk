@@ -39,7 +39,7 @@ $wgExtensionCredits['parserhook'][] = array(
   'author' => 'Arent van Korlaar',
   'version' => '1.0',
   'url' => 'https://manuscriptdesk.uantwerpen.be',
-  'description' => 'This extension is an API that can access the images uploaded to the Manuscript Desk',
+  'description' => 'This extension provides an API that can access the images uploaded to the Manuscript Desk',
 );
 
 //Shortcut to this extension directory
@@ -48,43 +48,7 @@ $dir = __DIR__ . '/';
 //Auto load classes 
 $wgAutoloadClasses['SpecialOriginalImages'] = $dir . 'specials/SpecialOriginalImages.php';
 $wgAutoloadClasses['SpecialZoomImages'] = $dir . 'specials/SpecialZoomImages.php';
+$wgAutoloadClasses['ManuscriptDeskImageApi'] = $dir . 'specials/ManuscriptDeskImageApi.php';
 
 $wgSpecialPages['OriginalImages'] = 'SpecialOriginalImages';
 $wgSpecialPages['ZoomImages'] = 'SpecialZoomImages';
-
-//$wgExtensionMessagesFiles['ManuscriptDeskImages'] = $dir . 'ManuscriptDeskImages.i18n.php';
-//$wgAutoloadClasses['ManuscriptDeskImagesHooks'] = $dir . 'ManuscriptDeskImages.hooks.php';
-
-//Extra files containing CSS and javascript loaded later 
-//$wgResourceModules['ext.zoomviewercss'] = array(
-//  'localBasePath' => dirname(__FILE__),
-//  'styles' => 'css/ext.zoomviewercss.css',
-//);
-//
-//$wgResourceModules['ext.manuscriptpagecss'] = array(
-//  'localBasePath' => dirname(__FILE__),
-//  'styles' => 'css/ext.manuscriptpagecss.css',
-//);
-//
-//$wgResourceModules['ext.newmanuscriptbuttoncontroller'] = array(
-//  'scripts' => array(
-//    'js/ext.newmanuscriptbuttoncontroller.js',
-//  ),
-//  'localBasePath' => __DIR__,
-//  'remoteExtPath' => 'ManuscriptDeskImages',
-//);
-//
-////Instantiate the ManuscriptDeskImagesHooks class and register the hooks
-//$manuscriptdeskimages_hooks = ObjectRegistry::getInstance()->getManuscriptDeskImagesHooks();
-//
-//$wgHooks['EditPage::showEditForm:fields'][] = array($manuscriptdeskimages_hooks, 'onEditPageShowEditFormInitial');
-//$wgHooks['MediaWikiPerformAction'][] = array($manuscriptdeskimages_hooks, 'onMediaWikiPerformAction');
-//$wgHooks['MediaWikiPerformAction'][] = array($manuscriptdeskimages_hooks, 'onMediaWikiPerformRenderAction');
-//$wgHooks['RawPageViewBeforeOutput'][] = array($manuscriptdeskimages_hooks, 'onRawPageViewBeforeOutput');
-//$wgHooks['ParserFirstCallInit'][] = array($manuscriptdeskimages_hooks, 'register');
-//$wgHooks['AbortMove'][] = array($manuscriptdeskimages_hooks, 'onAbortMove');
-//$wgHooks['ArticleDelete'][] = array($manuscriptdeskimages_hooks, 'onArticleDelete');
-//$wgHooks['PageContentSave'][] = array($manuscriptdeskimages_hooks, 'onPageContentSave');
-//$wgHooks['BeforePageDisplay'][] = array($manuscriptdeskimages_hooks, 'onBeforePageDisplay');
-//$wgHooks['UnitTestsList'][] = array($manuscriptdeskimages_hooks, 'onUnitTestsList');
-//$wgHooks['OutputPageParserOutput'][] = array($manuscriptdeskimages_hooks, 'onOutputPageParserOutput');

@@ -97,7 +97,7 @@ class ManuscriptDeskDeleter {
 
     private function deleteFilesManuscripts() {
         $paths = $this->paths;
-        if ($paths->initialUploadFullPathIsConstructableFromScan()) {
+        if ($paths->originalImagesFullPathIsConstructableFromScan()) {
             $this->deleteInitialUploadFullPath();
         }
 
@@ -106,13 +106,13 @@ class ManuscriptDeskDeleter {
 
     private function deleteInitialUploadFullPath() {
         $paths = $this->paths;
-        $initial_upload_full_path = $paths->getInitialUploadFullPath();
+        $initial_upload_full_path = $paths->getOriginalImagesFullPath();
 
         if (!$paths->isAllowedImage($initial_upload_full_path)) {
             return;
         }
 
-        $initial_upload_base_path = $paths->getInitialUploadBasePath();
+        $initial_upload_base_path = $paths->getOriginalImagesBasePath();
         return $this->recursiveDeleteFromPath($initial_upload_base_path);
     }
 

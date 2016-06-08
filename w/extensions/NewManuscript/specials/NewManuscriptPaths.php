@@ -42,10 +42,10 @@ class NewManuscriptPaths {
     /**
      * Set the path for the initial upload location of the manuscript images 
      */
-    public function setInitialUploadFullPath() {
+    public function setOriginalImagesFullPath() {
         $extension = $this->extension;
         $posted_manuscript_title = $this->posted_manuscript_title;
-        $initial_upload_base_path = $this->getInitialUploadBasePath();
+        $initial_upload_base_path = $this->getOriginalImagesBasePath();
         $this->makeDirectoryIfItDoesNotExist($initial_upload_base_path);
         $initial_upload_full_path = $initial_upload_base_path . '/' . $posted_manuscript_title . '.' . $extension;
 
@@ -61,8 +61,8 @@ class NewManuscriptPaths {
     /**
      * Scan the path for images to see whether an image that is allowed exists in the specified location
      */
-    public function initialUploadFullPathIsConstructableFromScan() {
-        $initial_upload_base_path = $this->getInitialUploadBasePath();
+    public function originalImagesFullPathIsConstructableFromScan() {
+        $initial_upload_base_path = $this->getOriginalImagesBasePath();
         if (!is_dir($initial_upload_base_path)) {
             return false;
         }
@@ -90,7 +90,7 @@ class NewManuscriptPaths {
     /**
      * Get the base path for the initial upload 
      */
-    public function getInitialUploadBasePath() {        
+    public function getOriginalImagesBasePath() {        
         global $wgOriginalImagesPath;
         $posted_manuscript_title = $this->posted_manuscript_title;
         $user_name = $this->user_name;
@@ -101,27 +101,19 @@ class NewManuscriptPaths {
      * Set the base of the export path (location where sliced zoom images will be stored) 
      */
     private function setBaseExportPath() {
-        global $wgWebsiteRoot, $wgNewManuscriptOptions;
-        $base_export_path = $wgWebsiteRoot . '/' . $wgNewManuscriptOptions['zoomimages_root_dir'];
-
-        $this->directoryShouldExist($base_export_path);
-
-        return $this->base_export_path = $base_export_path;
+        global $wgZoomImagesPath; 
+        $this->directoryShouldExist($wgZoomImagesPath);
+        return $this->base_export_path = $wgZoomImagesPath;
     }
 
     private function setUserExportPath() {
-
         $user_export_path = $this->getBaseExportPath() . '/' . $this->user_name;
-
         $this->makeDirectoryIfItDoesNotExist($user_export_path);
-
         return $this->user_export_path = $user_export_path;
     }
 
     private function setFullExportPath() {
-
         $full_export_path = $this->getUserExportPath() . '/' . $this->posted_manuscript_title . '/';
-
         return $this->full_export_path = $full_export_path;
     }
 
@@ -138,8 +130,8 @@ class NewManuscriptPaths {
     /**
      * Move the uploaded image from the temporary location to the initial upload directory 
      */
-    public function moveUploadToInitialUploadDir($temp_path) {
-        $initial_upload_dir_path = $this->getInitialUploadFullPath();
+    public function moveUploadToOriginalImagesDir($temp_path) {
+        $initial_upload_dir_path = $this->getOriginalImagesFullPath();
         $upload_succesfull = move_uploaded_file($temp_path, $initial_upload_dir_path);
 
         if (!$upload_succesfull) {
@@ -179,7 +171,7 @@ class NewManuscriptPaths {
         return mkdir($path, 0755, true);
     }
 
-    public function getInitialUploadFullPath() {
+    public function getOriginalImagesFullPath() {
 
         if (!isset($this->initial_upload_full_path)) {
             throw new \Exception('error-request');
@@ -244,7 +236,7 @@ class NewManuscriptPaths {
     /**
      * Construct the full path of the original image
      */
-    public function getWebLinkInitialUploadPath() {
+    public function getWebLinkOriginalImagesPath() {
         global $wgArticleUrl;
         $creator_user_name = $this->user_name;
         $manuscripts_title = $this->posted_manuscript_title;
@@ -252,9 +244,10 @@ class NewManuscriptPaths {
     }
 
     public function getWebLinkExportPath() {
-        global $wgNewManuscriptOptions;
-
-        return '/' . $wgNewManuscriptOptions['zoomimages_root_dir'] . '/' . $this->user_name . '/' . $this->posted_manuscript_title . '/';
+        global $wgArticleUrl; 
+        $creator_user_name = $this->user_name;
+        $manuscripts_title = $this->posted_manuscript_title; 
+        return $wgArticleUrl . 'Special:ZoomImages' . '?image=' . $creator_user_name . '/' . $manuscripts_title . '/';
     }
 
     public function getPartialUrl() {

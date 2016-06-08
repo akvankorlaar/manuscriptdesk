@@ -52,7 +52,7 @@ class SlicerExecuter {
     private function constructShellCommand() {      
         $perl_path = $this->paths->getPerlPath();
         $slicer_path = $this->paths->getSlicerPath();
-        $initial_upload_full_path = $this->paths->getInitialUploadFullPath();
+        $initial_upload_full_path = $this->paths->getOriginalImagesFullPath();
         $user_export_path = $this->paths->getUserExportPath();
         $extension = $this->paths->getExtension();
         

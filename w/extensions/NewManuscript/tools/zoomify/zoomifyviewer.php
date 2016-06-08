@@ -46,7 +46,7 @@ $requiredGetVars = array(
 
 foreach ($requiredGetVars as $getVar => $varName){
   if(isset($_GET[$getVar]) === true){
-    $$varName = $_GET[ $getVar ];
+    $$varName = urlencode($_GET[ $getVar ]);
     
   }else{
     $errorMsg = sprintf( $errorMsg, $getVar );

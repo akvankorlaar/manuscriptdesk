@@ -180,11 +180,11 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private function redirectToOriginalImage(OutputPage $out) {
         $paths = $this->paths;
 
-        if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
+        if (!$paths->originalImagesFullPathIsConstructableFromScan()) {
             return true;
         }
 
-        $web_link_initial_upload_path = $paths->getWebLinkInitialUploadPath();
+        $web_link_initial_upload_path = $paths->getWebLinkOriginalImagesPath();
         return $out->redirect($web_link_initial_upload_path);
     }
 
@@ -335,11 +335,11 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $paths = $this->paths;
         $edit_token = $user->getEditToken();
 
-        if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
+        if (!$paths->originalImagesFullPathIsConstructableFromScan()) {
             return "<b>" . $this->getMessage('newmanuscripthooks-errorimage') . "</b>";
         }
 
-        $web_link = $paths->getWebLinkInitialUploadPath();
+        $web_link = $paths->getWebLinkOriginalImagesPath();
 
         $html = "";
         $html .= "<td>";
@@ -359,6 +359,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $viewer_type = $this->getViewerType($request);
         $viewer_path = $this->getViewerPath($viewer_type);
         $image_file_path = $this->constructImageFilePath();
+        $image_file_path = str_replace('?', '%3F', $image_file_path);
         $language = $wgLang->getCode();
         $website_name = 'ManuscriptDesk';
         return '<iframe id="zoomviewerframe" src="' . $wgScriptPath . '/extensions/NewManuscript/' . $viewer_path . '?image=' . $image_file_path . '&amp;lang=' . $language . '&amp;sitename=' . urlencode($website_name) . '"></iframe>';
@@ -527,7 +528,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     private function validNewManuscriptWasCreated(WikiPage $wikiPage) {
         $this->setPageData($wikiPage->getTitle()->getPrefixedUrl());
         $paths = $this->paths;
-        if (!$paths->initialUploadFullPathIsConstructableFromScan()) {
+        if (!$paths->originalImagesFullPathIsConstructableFromScan()) {
             return false;
         }
 

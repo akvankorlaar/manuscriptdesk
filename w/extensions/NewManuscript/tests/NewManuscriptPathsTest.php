@@ -48,13 +48,13 @@ class NewManuscriptPathsTest extends MediaWikiTestCase {
     }
 
     public function testsetInitialUploadFullPath() {
-        $this->t->setInitialUploadFullPath();
-        $full_path = $this->t->getInitialUploadFullPath();
+        $this->t->setOriginalImagesFullPath();
+        $full_path = $this->t->getOriginalImagesFullPath();
         $this->assertEquals(is_string($full_path), true);
     }
 
     public function testinitialUploadFullPathIsConstructableFromScan() {
-        $result = $this->t->initialUploadFullPathIsConstructableFromScan();
+        $result = $this->t->originalImagesFullPathIsConstructableFromScan();
         $this->assertEquals($result, false);
     }
 
@@ -81,7 +81,7 @@ class NewManuscriptPathsTest extends MediaWikiTestCase {
     }
 
     public function testgetWebLinkInitialUploadPath() {
-        $path = $this->t->getWebLinkInitialUploadPath();
+        $path = $this->t->getWebLinkOriginalImagesPath();
         $this->assertEquals(is_string($path), true);
     }
 

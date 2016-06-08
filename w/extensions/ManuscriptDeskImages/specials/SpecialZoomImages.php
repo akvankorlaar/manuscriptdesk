@@ -22,14 +22,46 @@
  * @copyright 2015 Arent van Korlaar
  * 
  */
-class SpecialZoomImages extends SpecialPage {
+class SpecialZoomImages extends ManuscriptDeskImageApi {
 
     public function __construct() {
         parent::__construct('ZoomImages');
     }
 
-    public function execute($subpage_arguments) {
-        return true;
+    protected function constructFilePath() {
+        global $wgZoomImagesPath;
+
+        $image_arguments = $this->arguments;
+        $partial_path = $wgZoomImagesPath . $this->arguments;
+
+        return $this->file_path = $partial_path;
+    }
+
+    /**
+     * Show the file to the browser. In case of this class the file can either be an XML file or an image 
+     */
+    protected function showFile() {
+
+        if (!isset($this->file_path)) {
+            throw new \Exception('error-request');
+        }
+
+        $response = $this->getRequest()->response();
+
+        if (!is_dir($this->file_path) && !is_file($this->file_path)) {
+            $response->header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
+        }
+        elseif (pathinfo($this->file_path, PATHINFO_EXTENSION) === 'xml') {
+            $response->header('Content-Type: text/xml');
+            $xml = simplexml_load_file($this->file_path);
+            $this->getOutput()->addHTML($xml->asXML());
+        }
+        else {
+            $response->header('Content-Type: image/png');
+            readfile($this->file_path);
+        }
+
+        return;
     }
 
 }

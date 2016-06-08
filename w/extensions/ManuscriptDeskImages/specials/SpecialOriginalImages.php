@@ -22,63 +22,16 @@
  * @copyright 2015 Arent van Korlaar
  * 
  */
-class SpecialOriginalImages extends SpecialPage {
-
-    /**
-     * arguments sent to this page by HTTP GET (image=/user/manuscript)
-     */
-    private $image_arguments;
-
-    /**
-     * path of the image on disk 
-     */
-    private $image_path;
+class SpecialOriginalImages extends ManuscriptDeskImageApi {
 
     public function __construct() {
         parent::__construct('OriginalImages');
     }
 
-    public function execute($subpage_args) {
-        try {
-            $this->checkUserIsAllowedToViewImage();
-            $this->checkImageArguments();
-            $this->constructImageFilePath();
-            $this->preventMediaWikiFromOutputtingSkin();
-            $this->showImage();
-            return true;
-        } catch (Exception $e) {
-            $message = $this->msg($e->getMessage());
-            return $this->getOutput()->addHTML($message);
-        }
-    }
-
-    private function checkUserIsAllowedToViewImage() {
-        $user = $this->getUser();
-
-        if (!in_array('ManuscriptEditors', $user->getGroups())) {
-            throw new \Exception('error-nopermission');
-        }
-
-        $edit_token = $user->getEditToken();
-        if ($user->matchEditToken($edit_token) === false) {
-            throw new \Exception('error-nopermission');
-        }
-
-        return;
-    }
-
-    private function checkImageArguments() {
-        $request = $this->getRequest();
-        $this->image_arguments = $image_arguments = $request->getText('image');
-        $validator = ObjectRegistry::getInstance()->getManuscriptDeskBaseValidator();
-        $validator->validateStringUrl($image_arguments);
-        return;
-    }
-
-    private function constructImageFilePath() {
+    protected function constructFilePath() {
         global $wgOriginalImagesPath;
-        $image_arguments = $this->image_arguments;
-        $partial_path = $wgOriginalImagesPath . $this->image_arguments;
+        $image_arguments = $this->arguments;
+        $partial_path = $wgOriginalImagesPath . $this->arguments;
 
         if (!is_dir($partial_path)) {
             throw new \Exception('error-request');
@@ -90,23 +43,20 @@ class SpecialOriginalImages extends SpecialPage {
             throw new \Exception('error-request');
         }
 
-        return $this->image_path = $partial_path . DIRECTORY_SEPARATOR . $file_scan[2];
+        return $this->file_path = $partial_path . DIRECTORY_SEPARATOR . $file_scan[2];
     }
 
-    private function preventMediaWikiFromOutputtingSkin() {
-        $out = $this->getOutput();
-        $out->setArticleBodyOnly(true);
-        return;
-    }
-
-    private function showImage() {
-        if (!isset($this->image_path)) {
+    /**
+     * Show the file. In case of this class the file will always be an image 
+     */
+    protected function showFile() {
+        if (!isset($this->file_path)) {
             throw new \Exception('error-request');
         }
 
         $response = $this->getRequest()->response();
         $response->header('Content-Type: image/png');
-        readfile($this->image_path);
+        readfile($this->file_path);
         return;
     }
 
