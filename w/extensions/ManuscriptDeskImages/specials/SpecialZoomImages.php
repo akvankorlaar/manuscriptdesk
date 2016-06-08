@@ -48,12 +48,13 @@ class SpecialZoomImages extends ManuscriptDeskImageApi {
 
         $response = $this->getRequest()->response();
 
-        if (!is_dir($this->file_path) && !is_file($this->file_path)) {
+        if (!is_file($this->file_path) && strpos($this->file_path, '.xml') === false) {
             $response->header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
         }
-        elseif (pathinfo($this->file_path, PATHINFO_EXTENSION) === 'xml') {
+        elseif (strpos($this->file_path, '.xml') !== false) {
+            $file_path = substr($this->file_path, 0, strpos($this->file_path, "?"));
             $response->header('Content-Type: text/xml');
-            $xml = simplexml_load_file($this->file_path);
+            $xml = simplexml_load_file($file_path);
             $this->getOutput()->addHTML($xml->asXML());
         }
         else {

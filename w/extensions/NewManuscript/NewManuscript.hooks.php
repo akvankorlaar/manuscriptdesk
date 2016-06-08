@@ -232,7 +232,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         }
 
         $html .= $this->getHTMLManuscriptViewLinks($user);
-        $html .= $this->getHTMLIframeForZoomviewer($out->getRequest());
+        $html .= $this->getHTMLIframeForZoomviewer($out);
         $out->addHTML($html);
         $out->addModuleStyles('ext.zoomviewercss');
         return;
@@ -354,15 +354,28 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     /**
      * Generate the HTML for the iframe
      */
-    private function getHTMLIframeForZoomviewer(WebRequest $request) {
+    private function getHTMLIframeForZoomviewer(OutputPage $out) {
         global $wgScriptPath, $wgLang;
-        $viewer_type = $this->getViewerType($request);
+        $viewer_type = $this->getViewerType($out->getRequest());
         $viewer_path = $this->getViewerPath($viewer_type);
         $image_file_path = $this->constructImageFilePath();
-        $image_file_path = str_replace('?', '%3F', $image_file_path);
+        //$image_file_path = str_replace('?', '%3F', $image_file_path);
         $language = $wgLang->getCode();
         $website_name = 'ManuscriptDesk';
-        return '<iframe id="zoomviewerframe" src="' . $wgScriptPath . '/extensions/NewManuscript/' . $viewer_path . '?image=' . $image_file_path . '&amp;lang=' . $language . '&amp;sitename=' . urlencode($website_name) . '"></iframe>';
+
+        if ($viewer_type == 'js') {
+            return '<iframe id="zoomviewerframe" src="' . $wgScriptPath . '/extensions/NewManuscript/' . $viewer_path . '?image=' . $image_file_path . '&amp;lang=' . $language . '&amp;sitename=' . urlencode($website_name) . '"></iframe>';
+        }
+        else {
+            $zoomify_path = $wgScriptPath . '/extensions/NewManuscript/tools/zoomify/ZoomifyImageViewerExpress-min.js';
+            //$image_file_path = '/zoomImages/Root/1/';
+            $zoomify_style = $wgScriptPath .'/extensions/NewManuscript/tools/zoomify/zoomviewerstyle.css';
+            $out->addHeadItem('script', '<script type="text/javascript" src="' . $zoomify_path . '"></script>');
+            $out->addHeadItem('script2', '<script type="text/javascript"> Z.showImage("myContainer",' . '"' . $image_file_path . '"' . '); </script>');
+            $out->addStyle($zoomify_style);
+            $out->addHTML('<div id="myContainer"></div>');
+            return;
+        }
     }
 
     /**

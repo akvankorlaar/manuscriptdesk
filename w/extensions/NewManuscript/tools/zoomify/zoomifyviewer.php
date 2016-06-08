@@ -1,30 +1,10 @@
 <?php
 
-/**
- * Copyright (C) 2013 Richard Davis
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License Version 2, as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*
-* @package MediaWiki
-* @subpackage Extensions
-* @author Richard Davis <r.davis@ulcc.ac.uk>
-* @author Ben Parish <b.parish@ulcc.ac.uk>
-* @copyright 2013 Richard Davis
-* 
-* 04 sept 2015: Small layout changes, and some tags removed @Arent van Korlaar 
-*
-*/
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
 $lang = 'en';
 
@@ -46,7 +26,7 @@ $requiredGetVars = array(
 
 foreach ($requiredGetVars as $getVar => $varName){
   if(isset($_GET[$getVar]) === true){
-    $$varName = urlencode($_GET[ $getVar ]);
+    $$varName = $_GET[ $getVar ];
     
   }else{
     $errorMsg = sprintf( $errorMsg, $getVar );
@@ -54,29 +34,17 @@ foreach ($requiredGetVars as $getVar => $varName){
   } 
 }
 
+
+$imageFilePath = str_replace('?','%3F',$imageFilePath);
+
 ?>
+
 <head>
-<title>[ <?php echo $siteName; ?> - <?php echo $viewerTitle; ?> ]</title>
-<link rel=stylesheet href="zoomifyviewer.css" type="text/css" media=screen>
-<body id="main_body">
-<object class="z_embed_style"
-	classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-	codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0"
-	id="ZoomifyViewer">
-	<param name ="flashvars"
-		value="<?php echo $imageFilePath; ?>&zoomifyNavWindow=1"/>
-	<param name="menu"
-		value="false"/>
-	<param name="src"
-		value="ZoomifyViewer.swf"/>
-	<embed flashvars="zoomifyImagePath=<?php echo $imageFilePath; ?>&zoomifyNavWindow=0"
-		src="ZoomifyViewer.swf"
-		menu="false"
-		pluginspage="http://www.adobe.com/go/getflashplayer"
-		type="application/x-shockwave-flash"
-		name="ZoomifyViewer"
-		class="z_embed_style">
-</object>
-<p><?php echo $useJSMsg ?> <a href="../ajax-tiledviewer/ajax-tiledviewer.php?&image=<?php echo $imageFilePath; ?>&lang=<?php echo $lang; ?>&sitename=<?php echo str_replace( ' ', '%20', $siteName ); ?>"><?php echo $clickHereMsg; ?></a> <?php echo $insteadMsg; ?>.</p>
+    <script type="text/javascript" src="ZoomifyImageViewer-min.js"></script> 
+    <style type="text/css"> #myContainer { width: 900px; height: 550px } </style> 
+    <script type="text/javascript"> Z.showImage("myContainer", <?php echo $imageFilePath; ?>); </script>
+</head>
+
+<body>
+    <div id="myContainer"></div>
 </body>
-</html>

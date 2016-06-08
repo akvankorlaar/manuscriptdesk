@@ -48,7 +48,7 @@ class ManuscriptDeskBaseValidator {
         }
 
         //check if all charachters are alphanumeric, or '/' or ':' (in case of url)
-        if (!preg_match('/^[a-zA-Z0-9:.\-\/]*$/', $input)) {
+        if (!preg_match('/^[a-zA-Z0-9:.?\-\/]*$/', $input)) {
             throw new \Exception('validation-notalphanumeric');
         }
 
