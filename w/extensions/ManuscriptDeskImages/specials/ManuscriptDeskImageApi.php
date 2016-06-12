@@ -35,12 +35,12 @@ abstract class ManuscriptDeskImageApi extends SpecialPage {
      * path of the image on disk 
      */
     protected $file_path;
-
+    
     public function __construct($page_name) {
         parent::__construct($page_name);
     }
 
-    public function execute($subpage_args) {
+    public function execute($subpage_args) {        
         try {
             $this->checkUserIsAllowedToViewFile();
             $this->checkPageArguments();

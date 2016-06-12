@@ -34,10 +34,10 @@ define( 'MEDIAWIKI', '' );
 
 require '../../NewManuscript.i18n.php';
 
-$useFlashMsg  = $messages[ $lang ][ 'to-use-flash' ];
+$useFlashMsg  = $messages[ $lang ][ 'to-use-zoomify' ];
 $clickHereMsg = $messages[ $lang ][ 'click-here' ];
 $insteadMsg   = $messages[ $lang ][ 'instead' ];
-$viewerTitle  = $messages[ $lang ][ 'javascript-viewer' ];
+$viewerTitle  = $messages[ $lang ][ 'brainmaps-viewer' ];
 $jsWarningMsg = $messages[ $lang ][ 'javascript-warning' ];
 
 $requiredGetVars = array( 

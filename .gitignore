@@ -102,3 +102,5 @@ w/skins/*
 !w/extensions/StylometricAnalysis/*/*/*/*/*/*/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*/*/*/*/*/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*/*/*/*/*/*/*/*/*
+
+w/extensions/NewManuscript/tools/zoomify/ZoomifyImageViewerExpress-min.js
