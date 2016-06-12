@@ -23,6 +23,10 @@
  * 
  */
 class SpecialOriginalImages extends ManuscriptDeskImageApi {
+    
+    /**
+     * Class used to retrieve when a user wants to see original images
+     */
 
     public function __construct() {
         parent::__construct('OriginalImages');

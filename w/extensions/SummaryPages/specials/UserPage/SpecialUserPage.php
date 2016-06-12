@@ -232,12 +232,11 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     private function createOldAndNewZoomimagesPaths($manuscript_old_title, $manuscript_new_title) {
-        global $wgWebsiteRoot, $wgNewManuscriptOptions;
-        $zoomimages_dirname = $wgNewManuscriptOptions['zoomimages_root_dir'];
+        global $wgWebsiteRoot, $wgNewManuscriptOptions, $wgZoomImagesPath;
         $user_name = $this->user_name;
 
-        $old_zoomimages_path = $wgWebsiteRoot . '/' . $zoomimages_dirname . '/' . $user_name . '/' . $manuscript_old_title;
-        $new_zoomimages_path = $wgWebsiteRoot . '/' . $zoomimages_dirname . '/' . $user_name . '/' . $manuscript_new_title;
+        $old_zoomimages_path = $wgWebsiteRoot . '/' . $wgZoomImagesPath . '/' . $user_name . '/' . $manuscript_old_title;
+        $new_zoomimages_path = $wgWebsiteRoot . '/' . $wgZoomImagesPath . '/' . $user_name . '/' . $manuscript_new_title;
 
         if (!is_dir($old_zoomimages_path)) {
             throw new \Exception('error-internal');

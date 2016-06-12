@@ -23,6 +23,10 @@
  * 
  */
 class SpecialZoomImages extends ManuscriptDeskImageApi {
+    
+    /**
+     * Class used to retrieve images used for the zoomviewer 
+     */
 
     public function __construct() {
         parent::__construct('ZoomImages');

@@ -24,7 +24,9 @@
  * needed, for example, to load the additional extensions, configure the namespaces, configure the user permissions and settings, and set the global configuration settings
  * for some of the extensions
  */
-
+##############################################################
+#CUSTOM CONFIGURATION SETTINGS
+##############################################################
 #####Misc Settings#####
 //path to the extensions folder
 //website root. This is used to locate the zoomImages and initialUpload directories. The full path to the website root must be specified here. 
@@ -41,6 +43,7 @@ require_once( $wgExtensionAssetsPath . 'NewManuscript/NewManuscript.php');
 require_once( $wgExtensionAssetsPath . 'SummaryPages/SummaryPages.php');
 require_once( $wgExtensionAssetsPath . 'StylometricAnalysis/StylometricAnalysis.php');
 require_once( $wgExtensionAssetsPath . 'HelperScripts/HelperScripts.php');
+require_once( $wgExtensionAssetsPath . 'ManuscriptDeskImages/ManuscriptDeskImages.php' );
 
 //$wgArticlePath is the base url that is used to create all internal links 
 $wgArticlePath = "/md/$1";
@@ -129,6 +132,7 @@ $wgGroupPermissions['*']['createpage'] = false;
 $wgGroupPermissions['*']['createtalk'] = false;
 $wgGroupPermissions['*']['editmyusercss'] = false;
 $wgGroupPermissions['*']['editmyuserjs'] = false;
+$wgGroupPermissions['*']['createaccount'] = true;
 
 $wgGroupPermissions['user']['edit'] = false;
 $wgGroupPermissions['user']['createpage'] = false;
@@ -258,9 +262,11 @@ $wgHiddenPrefs[] = 'cols';
 $wgHiddenPrefs[] = 'usebetatoolbar';
 
 #####Personal Settings#####
-#
+
 //Primary disk. Primary location of the website and the images  
-$wgPrimaryDisk = 'main disk here';
+$wgPrimaryDisk = 'main disk here (for example C or /)';
+$wgOriginalImagesPath = '/path/to/original/images/somewhere/outside/of/the/website/root';
+$wgZoomImagesPath = '/path/to/zoomimages/somewhere/outside/of/the/website/root';
 
 //global configuration settings that are used within the 'collate' extension
 $wgCollationOptions = array(
@@ -278,8 +284,6 @@ $wgNewManuscriptOptions = array(
   'max_manuscripts' => 300, //maximum allowed manuscript pages per user
   'maximum_pages_per_collection' => 50, //maximum allowed pages for a collection
   'max_upload_size' => 8388608, //maximum upload size in bytes (8 mb --> 8*1024*1024). Important: this value should be lower than or equal to upload_max_filesize in php.ini
-  'original_images_dir' => 'initialUpload', //directory of the original images
-  'zoomimages_root_dir' => 'zoomImages', //directory of the zoomimages
   'perl_path' => 'perl', //works if you can use 'perl path/to/perl/script.pl'. Alternative: /usr/bin/perl' for unix  
   'slicer_path' => '/w/extensions/NewManuscript/specials/slicer.pl', //path to the slicer
   'max_on_page' => 10, //maximum entries shown on a page part of the 'summaryPages' extension, except for Special:RecentManuscriptPages

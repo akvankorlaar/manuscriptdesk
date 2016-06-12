@@ -25,6 +25,10 @@
 abstract class ManuscriptDeskImageApi extends SpecialPage {
 
     /**
+     * Intention of classes that extend this class is to provide additional security for images uploaded to the Manuscript Desk by making sure that
+     * users are logged inbefore they are allowed to view images. Images are not stored on the website root, and this class constructs
+     * the path to this location when the user is logged in
+     * 
      * arguments sent to this page by HTTP GET 
      * image=/user/manuscript in case of SpecialOriginalImages
      * file=/User/Manuscript/TileGroup/0-0-0.jpg in case of SpecialZoomImages
