@@ -244,8 +244,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $year_month_day = date('Ymd');
         $hours_minutes_seconds = date('his');
 
-        $file_name1 = $imploded_collection_name_data . $year_month_day . $hours_minutes_seconds . '.jpg';
-        $file_name2 = $imploded_collection_name_data . $year_month_day . $hours_minutes_seconds . 2 . '.jpg';
+        $file_name1 = $imploded_collection_name_data . $year_month_day . $hours_minutes_seconds . '.svg';
+        $file_name2 = $imploded_collection_name_data . $year_month_day . $hours_minutes_seconds . 2 . '.svg';
 
         return array($file_name1, $file_name2);
     }

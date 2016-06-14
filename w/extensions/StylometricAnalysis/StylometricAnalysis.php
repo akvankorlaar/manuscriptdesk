@@ -73,6 +73,10 @@ $wgResourceModules['ext.stylometricanalysisbuttoncontroller'] = array(
   ),
 );
 
+$wgResourceModules['ext.stylometricanalysissvg'] = array(
+  'localBasePath' => dirname(__FILE__) . '/js',
+  'scripts' => array('/svg-pan-zoom.min.js', '/ext.stylometricanalysissvg.js'),
+);
 
 //Instantiate the stylometricAnalysisHooks class and register the hooks
 $stylometricanalysis_hooks = ObjectRegistry::getInstance()->getStylometricAnalysisHooks();

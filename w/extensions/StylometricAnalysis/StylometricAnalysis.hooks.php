@@ -176,12 +176,14 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
         if ($page_title_with_namespace === 'Special:StylometricAnalysis') {
 
             $css_modules = array('ext.stylometricanalysiscss', 'ext.manuscriptdeskbasecss');
-            $javascript_modules = array('ext.stylometricanalysisbuttoncontroller', 'ext.javascriptloader');
+            $javascript_modules = array('ext.stylometricanalysisbuttoncontroller', 'ext.javascriptloader', 'ext.stylometricanalysissvg');
+
             $out->addModuleStyles($css_modules);
             $out->addModules($javascript_modules);
         }
         elseif ($this->isStylometricAnalysisNamespace($out)) {
             $out->addModuleStyles(array('ext.stylometricanalysiscss', 'ext.manuscriptdeskbasecss'));
+            $out->addModules(array('ext.stylometricanalysissvg'));
         }
 
         return true;

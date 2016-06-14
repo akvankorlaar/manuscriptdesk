@@ -420,16 +420,16 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
 
         $html .= "<div id='visualization-wrap1'>";
         $html .= "<h2>Visalisation 1: " . ucfirst($visualization1) . "</h2>";
-        $html .= "<img class='stylometricanalysis-image' src='" . $full_linkpath1 . "' alt='Visualization1'>";
+        $html .= "<object class='stylometricanalysis-image' id='stylometricanalysis-svg1' type='image/svg+xml' data='$full_linkpath1'>Your browser does not support SVG files, and so your visualization cannot dislpay</object>";
         $html .= "</div>";
 
         $html .= "<div id='visualization-wrap2'>";
         $html .= "<h2>Visualisation 2: " . ucfirst($visualization2) . "</h2>";
-        $html .= "<img class='stylometricanalysis-image' src='" . $full_linkpath2 . "' alt='Visualization2'>";
+        $html .= "<object class='stylometricanalysis-image' id='stylometricanalysis-svg2' type='image/svg+xml' data='$full_linkpath2'>Your browser does not support SVG files, and so your visualization cannot dislpay</object>";
         $html .= "</div>";
 
         $html .= "</div>";
-
+        
         $html .= "<center><h2>" . $this->out->msg('stylometricanalysis-analysisconfiguration') . "</h2><br></center>";
 
         $page_metatable = ObjectRegistry::getInstance()->getPageMetaTable();
