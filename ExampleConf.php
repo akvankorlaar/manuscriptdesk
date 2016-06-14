@@ -30,7 +30,7 @@
 #####Misc Settings#####
 //path to the extensions folder
 //website root. This is used to locate the zoomImages and initialUpload directories. The full path to the website root must be specified here. 
-$wgWebsiteRoot = '/path/to/website/root';
+$wgWebsiteRoot = '/path/to/website/root/';
 $wgExtensionAssetsPath = $wgWebsiteRoot . $wgScriptPath . '/extensions/';
 
 //these files are autoloaded to enable the extensions
@@ -265,8 +265,8 @@ $wgHiddenPrefs[] = 'usebetatoolbar';
 
 //Primary disk. Primary location of the website and the images  
 $wgPrimaryDisk = 'main disk here (for example C or /)';
-$wgOriginalImagesPath = '/path/to/original/images/somewhere/outside/of/the/website/root';
-$wgZoomImagesPath = '/path/to/zoomimages/somewhere/outside/of/the/website/root';
+$wgOriginalImagesPath = '/path/to/original/images/somewhere/outside/of/the/website/root/';
+$wgZoomImagesPath = '/path/to/zoomimages/somewhere/outside/of/the/website/root/';
 
 //global configuration settings that are used within the 'collate' extension
 $wgCollationOptions = array(
@@ -298,7 +298,7 @@ $wgStylometricAnalysisOptions = array(
   'wgmax_stylometricanalysis_collections' => 5, //maximum number of collections to be able to do stylometric analysis
   'minimum_pages_per_collection' => 10, //minimum pages within a collection to be able to do stylometric analysis
   'python_path' => 'python', //works if you can use 'python path/to/python/script.py' in terminal
-  'initial_analysis_dir' => 'initialStylometricAnalysis',
+  'svg_dir' => 'stylometricanalysissvg',
   'min_mfi' => 20, //minimum number of most frequent items
   'min_words_collection' => 100, //minimum words in a collection
   'tempstylometricanalysis_hours_before_delete' => 2, //hours before entries are deleted from the 'tempstylometricanalysis' table 

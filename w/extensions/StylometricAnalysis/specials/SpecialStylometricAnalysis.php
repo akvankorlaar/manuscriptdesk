@@ -66,9 +66,9 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
         $web_root = $wgWebsiteRoot;
 
-        $initial_analysis_dir = $wgStylometricAnalysisOptions['initial_analysis_dir'];
-        $this->base_outputpath = $web_root . '/' . $initial_analysis_dir . '/' . $this->user_name;
-        $this->base_linkpath = $initial_analysis_dir . '/' . $this->user_name;
+        $svg_dir = $wgStylometricAnalysisOptions['svg_dir'];
+        $this->base_outputpath = $web_root . '/' . $svg_dir . '/' . $this->user_name;
+        $this->base_linkpath = $svg_dir . '/' . $this->user_name;
         $this->pystyl_path = $wgStylometricAnalysisOptions['pystyl_path'];
 
         return true;
@@ -102,7 +102,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return true;
         }
 
-        throw new \Exception('error-request');
+        throw new Exception('error-request');
     }
 
     protected function getDefaultPage($error_message = '') {
@@ -218,19 +218,19 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         if ($collection_n_words < $this->min_words_collection) {
             $this->form_type = 'Form1';
-            throw new \Exception('stylometricanalysis-error-toosmall');
+            throw new Exception('stylometricanalysis-error-toosmall');
         }
 
         if ($collection_n_words < $pystyl_config['minimumsize']) {
-            throw new \Exception('stylometricanalysis-error-minsize');
+            throw new Exception('stylometricanalysis-error-minsize');
         }
 
         if ($collection_n_words < ($pystyl_config['segmentsize'] + $pystyl_config['stepsize'])) {
-            throw new \Exception('stylometricanalysis-error-segmentsize');
+            throw new Exception('stylometricanalysis-error-segmentsize');
         }
 
         if ($collection_n_words < $pystyl_config['ngramsize']) {
-            throw new \Exception('stylometricanalysis-error-ngramsize');
+            throw new Exception('stylometricanalysis-error-ngramsize');
         }
 
         return true;
@@ -258,7 +258,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $full_outputpath2 = $this->base_outputpath . '/' . $file_name2;
 
         if (is_file($full_outputpath1) || is_file($full_outputpath2)) {
-            throw new \Exception('stylometricanalysis-error-internal');
+            throw new Exception('stylometricanalysis-error-internal');
         }
 
         return array($full_outputpath1, $full_outputpath2);
@@ -320,7 +320,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         fclose($textfile);
 
         if (!is_file($full_textfilepath)) {
-            throw new \Exception('stylometricanalysis-error-internal');
+            throw new Exception('stylometricanalysis-error-internal');
         }
 
         return true;
@@ -338,7 +338,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         unlink($full_textfilepath);
 
         if (is_file($full_textfilepath)) {
-            throw new \Exception('stylometricanalysis-error-internal');
+            throw new Exception('stylometricanalysis-error-internal');
         }
     }
 
@@ -359,21 +359,21 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         //something went wrong when importing data into PyStyl
         if (strpos($pystyl_output, 'stylometricanalysis-error-import') !== false) {
-            throw new \Exception('stylometricanalysis-error-import');
+            throw new Exception('stylometricanalysis-error-import');
         }
 
         //the path already exists
         if (strpos($pystyl_output, 'stylometricanalysis-error-path') !== false) {
-            throw new \Exception('stylometricanalysis-error-path');
+            throw new Exception('stylometricanalysis-error-path');
         }
 
         //something went wrong when doing the analysis in PyStyl
         if (strpos($pystyl_output, 'stylometricanalysis-error-analysis') !== false) {
-            throw new \Exception('stylometricanalysis-error-analysis');
+            throw new Exception('stylometricanalysis-error-analysis');
         }
 
         if (!is_file($full_outputpath1) || !is_file($full_outputpath2)) {
-            throw new \Exception('stylometricanalysis-error-internal');
+            throw new Exception('stylometricanalysis-error-internal');
         }
 
         return true;
