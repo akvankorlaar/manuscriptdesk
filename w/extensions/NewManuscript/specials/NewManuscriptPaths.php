@@ -146,8 +146,7 @@ class NewManuscriptPaths {
      * Set the partial URL (namespace:username/title) 
      */
     public function setPartialUrl() {
-        global $wgNewManuscriptOptions;
-        $manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
+        $manuscripts_namespace_url = 'Manuscripts:';
         return $this->partial_url = $manuscripts_namespace_url . $this->user_name . '/' . $this->posted_manuscript_title;
     }
 
@@ -217,8 +216,8 @@ class NewManuscriptPaths {
     }
 
     public function getPerlPath() {
-        global $wgNewManuscriptOptions;
-        return $wgNewManuscriptOptions['perl_path'];
+        global $wgPerlPath;
+        return $wgPerlPath;
     }
 
     public function getSlicerPath() {

@@ -265,8 +265,11 @@ $wgHiddenPrefs[] = 'usebetatoolbar';
 
 //Primary disk. Primary location of the website and the images  
 $wgPrimaryDisk = 'main disk here (for example C or /)';
-$wgOriginalImagesPath = '/path/to/original/images/somewhere/outside/of/the/website/root/';
-$wgZoomImagesPath = '/path/to/zoomimages/somewhere/outside/of/the/website/root/';
+$wgOriginalImagesPath = '/full/path/to/original/images/somewhere/outside/of/the/website/root/';
+$wgZoomImagesPath = '/full/path/to/zoomimages/somewhere/outside/of/the/website/root/';
+$wgPerlPath = 'perl'; //works if you can use 'perl path/to/perl/script.pl'. Alternative: /usr/bin/perl' for unix
+$wgPythonPath = 'python'; //works if you can use 'python path/to/python/script.py' in terminal
+$wgPystylPath = 'path/to/pystyl/'; //full/path/to/pystyl/
 
 //global configuration settings that are used within the 'collate' extension
 $wgCollationOptions = array(
@@ -283,22 +286,18 @@ $wgNewManuscriptOptions = array(
   'allowed_file_extensions' => array('jpg', 'jpeg', 'JPG', 'JPEG'), //allowed file extensions 
   'max_manuscripts' => 300, //maximum allowed manuscript pages per user
   'maximum_pages_per_collection' => 50, //maximum allowed pages for a collection
-  'max_upload_size' => 8388608, //maximum upload size in bytes (8 mb --> 8*1024*1024). Important: this value should be lower than or equal to upload_max_filesize in php.ini
-  'perl_path' => 'perl', //works if you can use 'perl path/to/perl/script.pl'. Alternative: /usr/bin/perl' for unix  
+  'max_upload_size' => 8388608, //maximum upload size in bytes (8 mb --> 8*1024*1024). Important: this value should be lower than or equal to upload_max_filesize in php.ini    
   'slicer_path' => '/w/extensions/NewManuscript/specials/slicer.pl', //path to the slicer
   'max_on_page' => 10, //maximum entries shown on a page part of the 'summaryPages' extension, except for Special:RecentManuscriptPages
   'max_recent' => 30, //maximum entries shown on Special:RecentManuscriptPages
-  'manuscripts_namespace' => 'Manuscripts:', //url namespace for manuscripts
   'max_charachters_manuscript' => 7500, //a limitation of 5000 charachters has been set for manuscript pages, so that when performing text algorithms on the manuscript pages, the server does not receive too much input
-  'url_count_size' => 2, //length of a manuscript pages url once transformed into an array by removing the slashes
 );
 
 $wgStylometricAnalysisOptions = array(
   'wgmin_stylometricanalysis_collections' => 2, //minimum number of collections to be able to do stylometric analysis
   'wgmax_stylometricanalysis_collections' => 5, //maximum number of collections to be able to do stylometric analysis
   'minimum_pages_per_collection' => 10, //minimum pages within a collection to be able to do stylometric analysis
-  'python_path' => 'python', //works if you can use 'python path/to/python/script.py' in terminal
-  'svg_dir' => 'stylometricanalysissvg',
+  'svg_dir' => 'stylometricanalysissvg', //default directory name where the svg files will be stored on the website 
   'min_mfi' => 20, //minimum number of most frequent items
   'min_words_collection' => 100, //minimum words in a collection
   'tempstylometricanalysis_hours_before_delete' => 2, //hours before entries are deleted from the 'tempstylometricanalysis' table 
@@ -313,3 +312,8 @@ $wgHelperScriptsOptions = array(
 
 //sends complete stack trace to output in case of an uncaught exceptions. This should never be set to true on a production server
 $wgShowExceptionDetails = true;
+
+//making sure these paths have a leading slash
+$wgOriginalImagesPath = rtrim($wgOriginalImagesPath, '/') . '/';
+$wgZoomImagesPath = rtrim($wgZoomImagesPath, '/') . '/';
+$wgPystylPath = rtrim($wgZoomImagesPath, '/') . '/';

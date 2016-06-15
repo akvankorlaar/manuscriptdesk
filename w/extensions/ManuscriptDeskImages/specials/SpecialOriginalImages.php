@@ -47,7 +47,7 @@ class SpecialOriginalImages extends ManuscriptDeskImageApi {
             throw new \Exception('error-request');
         }
 
-        return $this->file_path = $partial_path . DIRECTORY_SEPARATOR . $file_scan[2];
+        return $this->file_path = $partial_path . '/' . $file_scan[2];
     }
 
     /**

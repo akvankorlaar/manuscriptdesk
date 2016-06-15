@@ -212,9 +212,8 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     private function createNewPagePartialUrl($manuscript_new_title) {
-        global $wgNewManuscriptOptions;
         $user_name = $this->user_name;
-        $manuscripts_namespace_url = $wgNewManuscriptOptions['manuscripts_namespace'];
+        $manuscripts_namespace_url = 'Manuscripts:';
         return trim($manuscripts_namespace_url . $user_name . '/' . $manuscript_new_title);
     }
 

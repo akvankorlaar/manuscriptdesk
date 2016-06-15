@@ -59,17 +59,17 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * Set variables that are used throughout the special page 
      */
     protected function setVariables() {
-        global $wgStylometricAnalysisOptions, $wgWebsiteRoot;
+        global $wgStylometricAnalysisOptions, $wgWebsiteRoot, $wgPythonPath, $wgPystylPath;
         parent::setVariables();
 
-        $this->python_path = $wgStylometricAnalysisOptions['python_path'];
+        $this->python_path = $wgPythonPath;
         $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
         $web_root = $wgWebsiteRoot;
 
         $svg_dir = $wgStylometricAnalysisOptions['svg_dir'];
         $this->base_outputpath = $web_root . '/' . $svg_dir . '/' . $this->user_name;
         $this->base_linkpath = $svg_dir . '/' . $this->user_name;
-        $this->pystyl_path = $wgStylometricAnalysisOptions['pystyl_path'];
+        $this->pystyl_path = $wgPystylPath;
 
         return true;
     }

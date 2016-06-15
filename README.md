@@ -42,20 +42,18 @@ you can install the extensions by:
 
 - Moving the content in w/extensions into your local MediaWiki's extensions folder (for example w/extensions).
 - Moving the content in w/skins into your local MediaWiki's skins folder (for example w/skins). Overwrite existing files. 
-- Moving the initialUpload and zoomImages folders to your website root.
-- Moving the .htaccess file to your website root (NOT the .htaccess files in the initialUpload and zoomImages folders - these should stay in the initialUpload and zoomImages folders).
+- Moving the .htaccess file to your website root.
 - Importing ManuscriptDesk.sql into your local MediaWiki's database (there should already be many tables in this database 
   after MediaWiki's default installation. These should remain there).
 - Going to LocalSettings.php located in the root of your MediaWiki installation (for example w/LocalSettings.php), and by appending all code in ExampleConf.php (except for the PHP tag) to this file.
-- Configuring the variables '$wgWebsiteRoot' and '$wgPrimaryDisk' in LocalSettings.php.
-- Configuring '$wgNewManuscriptOptions['perl_path']'and $wgStylometricAnalysisOptions['python_path'] in LocalSettings.php if needed. 
+- Configuring the variables '$wgWebsiteRoot', '$wgPrimaryDisk' , '$wgOriginalImagesPath' , '$wgZoomImagesPath', '$wgPerlPath', '$wgPythonPath in LocalSettings.php.
 - Installing Collatex-tools. This can be done by downloading and installing the latest version from:http://collatex.net/. CollateX needs to be run as a web service in localhost.
   The CollateX URL and Headers can be configured by modifying $wgCollationOptions['collatex_url'] in LocalSettings.php.
+- Installing PyStyl. Pystyl can be downloaded from https://github.com/mikekestemont/pystyl and configured using $wgPystylPath in LocalSettings.php
 - Navigating with your browser to the installation, logging in as Administrator, and copying the contents of Sidebar.txt to Mediawiki:Sidebar (For example localhost/md/Mediawiki:Sidebar).
-
-Once everything is installed, you should log in as administrator, go to Special:UserRights (for example: localhost/md/Special:UserRights), enter your own username, and add yourself to the 'ManuscriptEditors' group. 
-With the default installation, every registered user needs to be added manually to this group to be able to access the functionality of the Manuscript Desk. 
-If you want to change this, you can reconfigure the section on User Permissions in localSettings.php. See https://www.mediawiki.org/wiki/Manual:User_rights
+- Going to Special:UserRights (for example: localhost/md/Special:UserRights), enter your administrators username, and add it to the 'ManuscriptEditors' group. 
+  With the default installation, every registered user needs to be added manually to this group to be able to access the functionality of the Manuscript Desk. 
+  If you want to change this, you can reconfigure the section on User Permissions in localSettings.php. See https://www.mediawiki.org/wiki/Manual:User_rights
 
 If you have questions regarding the installation process you can always reach us at uamanuscriptdesk 'at' gmail 'dot' com.
 
