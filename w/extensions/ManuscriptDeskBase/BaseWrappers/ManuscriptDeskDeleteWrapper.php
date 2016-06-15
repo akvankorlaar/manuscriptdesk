@@ -30,7 +30,7 @@ class ManuscriptDeskDeleteWrapper {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
     }
 
-    public function setUserName() {
+    public function setUserName($user_name) {
         if (isset($this->user_name)) {
             return;
         }

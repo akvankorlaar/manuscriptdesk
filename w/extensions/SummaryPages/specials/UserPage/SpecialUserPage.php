@@ -231,11 +231,11 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     private function createOldAndNewZoomimagesPaths($manuscript_old_title, $manuscript_new_title) {
-        global $wgWebsiteRoot, $wgNewManuscriptOptions, $wgZoomImagesPath;
+        global $wgZoomImagesPath;
         $user_name = $this->user_name;
 
-        $old_zoomimages_path = $wgWebsiteRoot . '/' . $wgZoomImagesPath . '/' . $user_name . '/' . $manuscript_old_title;
-        $new_zoomimages_path = $wgWebsiteRoot . '/' . $wgZoomImagesPath . '/' . $user_name . '/' . $manuscript_new_title;
+        $old_zoomimages_path = $wgZoomImagesPath . '/' . $user_name . '/' . $manuscript_old_title;
+        $new_zoomimages_path = $wgZoomImagesPath . '/' . $user_name . '/' . $manuscript_new_title;
 
         if (!is_dir($old_zoomimages_path)) {
             throw new \Exception('error-internal');
@@ -245,8 +245,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     private function createOldAndNewOriginalImagesPaths($manuscript_old_title, $manuscript_new_title) {
-
-        global $wgWebsiteRoot, $wgOriginalImagesPath;
+        global $wgOriginalImagesPath;
         $user_name = $this->user_name;
 
         $old_original_images_path = $wgOriginalImagesPath . '/' . $user_name . '/' . $manuscript_old_title;
@@ -260,20 +259,19 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
     }
 
     private function createNewWikiPageWithOldPageText($manuscript_url_old_title, $new_page_url) {
-        $text_processor = new ManuscriptDeskBaseTextProcessor();
+        $text_processor = ObjectRegistry::getInstance()->getManuscriptDeskBaseTextProcessor();
         $old_page_text = $text_processor->getUnfilteredSinglePageText($manuscript_url_old_title);
         $this->createNewWikiPage($new_page_url, $old_page_text);
         return true;
     }
 
     private function deleteOldWikiPage($manuscript_url_old_title) {
-        $delete_wrapper = new ManuscriptDeskDeleteWrapper(null, new AlphabetNumbersWrapper());
+        $delete_wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
         $page_id = $delete_wrapper->getPageId($manuscript_url_old_title);
         return $delete_wrapper->deletePageFromId($page_id);
     }
 
     protected function handleExceptions(Exception $exception_error) {
-
         $error_identifier = $exception_error->getMessage();
         $error_message = $this->constructErrorMessage($exception_error, $error_identifier);
 

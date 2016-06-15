@@ -93,6 +93,7 @@ class ObjectRegistry {
     private $page_metatable = null;
     private $validator = null;
     private $manuscriptdesk_deleter = null;
+    private $manuscriptdesk_delete_wrapper = null; 
 
     private function __construct() {
         

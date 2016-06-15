@@ -74,7 +74,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             }
 
             $this->setPageData($out->getTitle()->getPrefixedURL());
-            $html = $this->getHTMLIframeForZoomviewer($out->getRequest());
+            $html = $this->getHTMLIframeForZoomviewer($out);
             $out->addHTML($html);
             $out->addModuleStyles('ext.zoomviewercss');
             return true;
