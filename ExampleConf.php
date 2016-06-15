@@ -316,4 +316,4 @@ $wgShowExceptionDetails = true;
 //making sure these paths have a leading slash
 $wgOriginalImagesPath = rtrim($wgOriginalImagesPath, '/') . '/';
 $wgZoomImagesPath = rtrim($wgZoomImagesPath, '/') . '/';
-$wgPystylPath = rtrim($wgZoomImagesPath, '/') . '/';
+$wgPystylPath = rtrim($wgPystylPath, '/') . '/';
