@@ -44,6 +44,10 @@ class HelperScriptsDeleteWrapper {
     private function deleteManuscriptPages($res) {
 
         if ($res->numRows() > 0) {
+
+            /**
+             * Important: can't use objectregistry here in some cases because otherwise objects will have the same variables throughout loop 
+             */
             while ($s = $res->fetchObject()) {
                 $user_name = $s->manuscripts_user;
                 $manuscripts_title = $s->manuscripts_title;
@@ -54,7 +58,10 @@ class HelperScriptsDeleteWrapper {
                 $paths->setExportPaths();
                 $paths->setPartialUrl();
 
-                $deleter = new ManuscriptDeskDeleter($this->delete_wrapper, $paths, $collection_title, $manuscripts_url);
+                $deleter = new ManuscriptDeskDeleter(ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper());
+                $deleter->setNewManuscriptPaths($paths);
+                $deleter->setCollectionTitle($collection_title);
+                $deleter->setManuscriptsUrl($manuscripts_url);
                 $deleter->deleteManuscriptPage();
             }
         }
@@ -68,17 +75,21 @@ class HelperScriptsDeleteWrapper {
 
         if ($res->numRows() > 0) {
             while ($s = $res->fetchObject()) {
-                $partial_url = $s->$result_name;
+                try {
+                    $partial_url = $s->$result_name;
 
-                if ($namespace === NS_COLLATIONS) {
-                    $delete_wrapper->deleteFromCollations($partial_url);
-                }
-                elseif ($namespace === NS_STYLOMETRICANALYSIS) {
-                    $delete_wrapper->deleteFromStylometricAnalysis($partial_url);
-                }
+                    if ($namespace === NS_COLLATIONS) {
+                        $delete_wrapper->deleteFromCollations($partial_url);
+                    }
+                    elseif ($namespace === NS_STYLOMETRICANALYSIS) {
+                        $delete_wrapper->deleteFromStylometricAnalysis($partial_url);
+                    }
 
-                $page_id = $delete_wrapper->getPageId($partial_url, $namespace);
-                $delete_wrapper->deletePageFromId($page_id);
+                    $page_id = $delete_wrapper->getPageId($partial_url, $namespace);
+                    $delete_wrapper->deletePageFromId($page_id);
+                } catch (Exception $e) {
+                    continue;
+                }
             }
         }
 

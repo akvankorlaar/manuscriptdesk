@@ -23,19 +23,10 @@
  */
 class ManuscriptDeskDeleteWrapper {
 
-    private $user_name;
     private $alphabetnumbers_wrapper;
 
     public function __construct(AlphabetNumbersWrapper $alphabetnumbers_wrapper) {
         $this->alphabetnumbers_wrapper = $alphabetnumbers_wrapper;
-    }
-
-    public function setUserName($user_name) {
-        if (isset($this->user_name)) {
-            return;
-        }
-
-        $this->user_name = $user_name;
     }
 
     /**
@@ -185,7 +176,6 @@ class ManuscriptDeskDeleteWrapper {
 
     public function getManuscriptsLowercaseTitle($partial_url) {
         $dbr = wfGetDB(DB_SLAVE);
-        $user_name = $this->user_name;
 
         $res = $dbr->select(
             'manuscripts', //from

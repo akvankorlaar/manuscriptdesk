@@ -107,7 +107,7 @@ class NewManuscriptPaths {
     }
 
     private function setUserExportPath() {
-        $user_export_path = $this->getBaseExportPath() . '/' . $this->user_name;
+        $user_export_path = $this->getBaseExportPath() . $this->user_name;
         $this->makeDirectoryIfItDoesNotExist($user_export_path);
         return $this->user_export_path = $user_export_path;
     }

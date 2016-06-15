@@ -82,6 +82,7 @@ class ObjectRegistry {
     private $helperscripts_viewer = null;
     private $helperscripts_request_processor = null;
     private $helperscripts_hooks = null;
+    private $helperscripts_delete_wrapper = null;
     private $alphabetnumbers_updater = null;
 
     /**
@@ -175,9 +176,9 @@ class ObjectRegistry {
         return $this->image_validator;
     }
 
-    public function getNewManuscriptPaths($user_name, $collection_title, $extension = '') {
+    public function getNewManuscriptPaths($user_name, $manuscripts_title, $extension = '') {
         if (is_null($this->newmanuscript_paths)) {
-            $this->newmanuscript_paths = new NewManuscriptPaths($user_name, $collection_title, $extension);
+            $this->newmanuscript_paths = new NewManuscriptPaths($user_name, $manuscripts_title, $extension);
         }
         return $this->newmanuscript_paths;
     }
@@ -437,6 +438,14 @@ class ObjectRegistry {
         }
         return $this->helperscripts_request_processor;
     }
+    
+    public function getHelperScriptsDeleteWrapper() {
+        if (is_null($this->helperscripts_delete_wrapper)) {
+            $delete_wrapper = $this->getManuscriptDeskDeleteWrapper();
+            $this->helperscripts_delete_wrapper = new HelperScriptsDeleteWrapper($delete_wrapper);
+        }
+        return $this->helperscripts_delete_wrapper;
+    } 
 
     public function getAlphabetNumbersUpdater() {
         if (is_null($this->alphabetnumbers_updater)) {

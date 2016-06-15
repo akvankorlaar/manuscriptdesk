@@ -75,12 +75,15 @@ class ManuscriptDeskDeleter {
     }
 
     private function subtractAlphabetNumbersTableManuscriptPages() {
-        $partial_url = $this->paths->getPartialUrl();
-        $collection_title = $this->collection_title;
-        $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($partial_url);
-        $alphabetnumbes_context = $this->wrapper->getAlphabetNumbersWrapper()->determineAlphabetNumbersContextFromCollectionTitle($collection_title);
-        $this->wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbes_context, 'subtract');
-        return;
+        try {
+            $partial_url = $this->paths->getPartialUrl();
+            $collection_title = $this->collection_title;
+            $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($partial_url);
+            $alphabetnumbes_context = $this->wrapper->getAlphabetNumbersWrapper()->determineAlphabetNumbersContextFromCollectionTitle($collection_title);
+            $this->wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbes_context, 'subtract');
+        } catch (Exception $e) {
+            return;
+        }
     }
 
     private function deleteDatabaseEntiesManuscripts() {
@@ -140,8 +143,8 @@ class ManuscriptDeskDeleter {
     private function deleteFullExportPathFilesManuscripts() {
         $paths = $this->paths;
         $full_export_path = $paths->getFullExportPath();
-        $tile_group_url = $full_export_path . '/' . 'TileGroup0';
-        $image_properties_url = $full_export_path . '/' . 'ImageProperties.xml';
+        $tile_group_url = $full_export_path . 'TileGroup0';
+        $image_properties_url = $full_export_path . 'ImageProperties.xml';
 
         if (!is_dir($tile_group_url) || !is_file($image_properties_url)) {
             return;
@@ -170,10 +173,13 @@ class ManuscriptDeskDeleter {
     }
 
     private function deleteWikiPageIfNeeded() {
-
-        if (isset($this->manuscripts_url)) {
-            $page_id = $this->wrapper->getPageId($this->manuscripts_url);
-            $this->wrapper->deletePageFromId($page_id);
+        try {
+            if (isset($this->manuscripts_url)) {
+                $page_id = $this->wrapper->getPageId($this->manuscripts_url);
+                $this->wrapper->deletePageFromId($page_id);
+            }
+        } catch (Exception $e) {
+            return; 
         }
 
         return;

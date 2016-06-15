@@ -103,8 +103,7 @@ class SpecialHelperScripts extends ManuscriptDeskBaseSpecials {
      * Delete all data from the manuscript desk 
      */
     private function processDeleteManuscripts() {
-        $wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
-        $wrapper->setUserName($this->user_name);
+        $wrapper = ObjectRegistry::getInstance()->getHelperScriptsDeleteWrapper();
         $wrapper->deleteManuscriptDeskData();
         $this->updateAlphabetNumbersTable();
         return $this->viewer->showActionComplete();
