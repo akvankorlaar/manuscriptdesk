@@ -378,7 +378,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
             }
         }
         else {
-            return 'js';
+            return 'zv';
         }
     }
 

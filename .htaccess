@@ -8,3 +8,7 @@ RewriteRule ^md/(.+)$ /w/index.php?title=$1 [L,QSA]
 
 # Redirect / to Main Page. Comment when maintenance
 RewriteRule ^/*$ /w/index.php [L]
+
+RewriteCond %{REQUEST_URI} !503.php
+RewriteCond %{REMOTE_ADDR} !^000\.000\.000\.000$
+RewriteRule (.*) /503.php [R,L]
