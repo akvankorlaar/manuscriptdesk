@@ -122,22 +122,6 @@ abstract class ManuscriptDeskBaseHooks {
         return true;
     }
 
-    protected function userIsAllowedToDeleteThePage(User $user, Title $title) {
-        
-        if(!isset($this->wrapper)){
-            throw new \Exception('error-request');
-        }
-        
-        $wrapper = $this->wrapper;
-        $partial_url = $title->getPrefixedURL();
-
-        if (!$wrapper->currentUserCreatedThePage($partial_url) || !$this->currentUserIsASysop($user)) {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
      * This function retrieves the message from the i18n file for String $identifier
      */

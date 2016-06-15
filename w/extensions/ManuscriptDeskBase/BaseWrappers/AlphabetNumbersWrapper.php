@@ -31,7 +31,6 @@ class AlphabetNumbersWrapper {
      * Subtract entries in the alphabetnumbers table when a page is deleted
      */
     public function modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbers_context, $mode) {
-
         $first_character_of_page = $this->getFirstCharachterOfTitle($main_title_lowercase);
         $number_of_pages_starting_with_this_charachter = $this->getAlphabetNumbersSingleValue($first_character_of_page, $alphabetnumbers_context);
 

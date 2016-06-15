@@ -100,13 +100,11 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
                 return true;
             }
 
-            if (!$this->userIsAllowedToDeleteThePage($user, $title)) {
+            if (!$this->currentUserIsASysop($user)) {
                 $error = '<br>' . $this->getMessage('collatehooks-nodeletepermission') . '.';
                 return false;
             }
 
-            $wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
-            $wrapper->setUser($user->getName());
             $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter();
             $deleter->deleteStylometricAnalysisData($title->getPrefixedURL());
         } catch (Exception $e) {

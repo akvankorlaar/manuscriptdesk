@@ -58,9 +58,10 @@ class ManuscriptDeskDeleter {
      */
     public function deleteCollationData($partial_url) {
         $wrapper = $this->wrapper;
-        $manuscripts_lowercase_title = $wrapper->getManuscriptsLowercaseTitle($partial_url);
-        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($manuscripts_lowercase_title, 'AllCollations', 'subtract');
+        $collations_lowercase_title = $wrapper->getCollationsLowercaseTitle($partial_url);
+        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($collations_lowercase_title, 'AllCollations', 'subtract');
         $wrapper->deleteFromCollations($partial_url);
+        return; 
     }
 
     /**
@@ -69,9 +70,10 @@ class ManuscriptDeskDeleter {
      */
     public function deleteStylometricAnalysisData($partial_url) {
         $wrapper = $this->wrapper;
-        $manuscripts_lowercase_title = $wrapper->getManuscriptsLowercaseTitle($partial_url);
-        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($manuscripts_lowercase_title, 'AllStylometricAnalysis', 'subtract');
+        $stylometricanalysis_lowercase_title = $wrapper->getStylometricAnalysisLowercaseTitle($partial_url);
+        $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($stylometricanalysis_lowercase_title, 'AllStylometricAnalysis', 'subtract');
         $wrapper->deleteFromStylometricAnalysis($partial_url);
+        return; 
     }
 
     private function subtractAlphabetNumbersTableManuscriptPages() {

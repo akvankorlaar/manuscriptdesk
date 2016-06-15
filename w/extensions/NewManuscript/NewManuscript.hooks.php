@@ -480,7 +480,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $paths->setExportPaths();
         $paths->setPartialUrl();
         $delete_wrapper = ObjectRegistry::getInstance()->getManuscriptDeskDeleteWrapper();
-        $delete_wrapper->setUserName($this->creator_user_name);
         $deleter = ObjectRegistry::getInstance()->getManuscriptDeskDeleter();
         $deleter->setNewManuscriptPaths($this->paths);
         $deleter->setCollectionTitle($this->collection_title);

@@ -194,6 +194,46 @@ class ManuscriptDeskDeleteWrapper {
         return $s->manuscripts_lowercase_title;
     }
 
+    public function getCollationsLowercaseTitle($partial_url) {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'collations', //from
+            array(
+          'collations_main_title_lowercase',
+            ), array(
+          'collations_url = ' . $dbr->addQuotes($partial_url),
+            )
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        $s = $res->fetchObject();
+        return $s->collations_main_title_lowercase;
+    }
+
+    public function getStylometricAnalysisLowercaseTitle($partial_url) {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'stylometricanalysis', //from
+            array(
+          'stylometricanalysis_main_title_lowercase',
+            ), array(
+          'stylometricanalysis_new_page_url = ' . $dbr->addQuotes($partial_url),
+            )
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        $s = $res->fetchObject();
+        return $s->stylometricanalysis_main_title_lowercase;
+    }
+
     public function getAlphabetNumbersWrapper() {
         return $this->alphabetnumbers_wrapper;
     }
