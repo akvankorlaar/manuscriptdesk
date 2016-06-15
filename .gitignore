@@ -7,22 +7,14 @@
 !README.md
 !Sidebar.txt
 !ManuscriptDesk.sql
-!exampleConf.php
+!ExampleConf.php
 
 #first specify which folder you do not want ignored
-!initialUpload
+!stylometricanalysissvg
 #after this, specify that you want to ignore everything in this folder
-initialUpload/*
+stylometricanalysissvg/*
 #make an exception for the file you want
-!initialUpload/.htaccess
-
-!zoomImages
-zoomImages/*
-!zoomImages/.htaccess
-
-!initialStylometricAnalysis
-initialStylometricAnalysis/*
-!initialStylometricAnalysis/.htaccess
+!stylometricanalysissvg/.htaccess
 
 !w
 w/*
