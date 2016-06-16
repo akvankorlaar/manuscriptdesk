@@ -176,7 +176,6 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
 
         if ($error_identifier === 'slicer-error-execute' || $error_identifier === 'error-newpage' || $error_identifier === 'error-database-manuscripts') {
             $this->deleteAllData();
-            wfErrorLog($error_identifier . "\r\n", $wgWebsiteRoot . DIRECTORY_SEPARATOR . 'ManuscriptDeskDebugLog.log');
         }
 
         return $this->getDefaultPage($error_message);

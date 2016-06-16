@@ -64,13 +64,10 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
 
         $this->python_path = $wgPythonPath;
         $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
-        $web_root = $wgWebsiteRoot;
-
         $svg_dir = $wgStylometricAnalysisOptions['svg_dir'];
-        $this->base_outputpath = $web_root . '/' . $svg_dir . '/' . $this->user_name;
+        $this->base_outputpath = $wgWebsiteRoot . $svg_dir . '/' . $this->user_name;
         $this->base_linkpath = $svg_dir . '/' . $this->user_name;
         $this->pystyl_path = $wgPystylPath;
-
         return true;
     }
 

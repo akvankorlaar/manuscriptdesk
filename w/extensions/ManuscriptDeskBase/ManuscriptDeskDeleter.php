@@ -73,6 +73,15 @@ class ManuscriptDeskDeleter {
         $stylometricanalysis_lowercase_title = $wrapper->getStylometricAnalysisLowercaseTitle($partial_url);
         $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($stylometricanalysis_lowercase_title, 'AllStylometricAnalysis', 'subtract');
         $wrapper->deleteFromStylometricAnalysis($partial_url);
+        $this->deleteStylometricAnalysisFiles($partial_url);
+        return; 
+    }
+    
+    private function deleteStylometricAnalysisFiles($partial_url) {
+        $wrapper = $this->wrapper; 
+        list($full_outputpath1, $full_outputpath2) = $this->wrapper->getStylometricAnalysisFullOutputPaths($partial_url);
+        unset($full_outputpath1);
+        unset($full_outputpath2);
         return; 
     }
 

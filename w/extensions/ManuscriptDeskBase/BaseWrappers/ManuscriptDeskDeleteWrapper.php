@@ -234,6 +234,27 @@ class ManuscriptDeskDeleteWrapper {
         return $s->stylometricanalysis_main_title_lowercase;
     }
 
+    public function getStylometricAnalysisFullOutputPaths($partial_url) {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'stylometricanalysis', //from
+            array(
+          'stylometricanalysis_full_outputpath1',
+          'stylometricanalysis_full_outputpath2'
+            ), array(
+          'stylometricanalysis_new_page_url = ' . $dbr->addQuotes($partial_url),
+            )
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        $s = $res->fetchObject();
+        return array($s->stylometricanalysis_full_outputpath1, $s->stylometricanalysis_full_outputpath2);
+    }
+
     public function getAlphabetNumbersWrapper() {
         return $this->alphabetnumbers_wrapper;
     }

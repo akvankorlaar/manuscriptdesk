@@ -69,6 +69,7 @@ $messages['en'] = array(
   'stylometricanalysis-error-stepsizesegmentsize' => 'The step size should not be higher than the segment size',
   'stylometricanalysis-error-mfi' => 'The MFI is lower than the minimum MFI',
   'stylometricanalysis-error-minmax' => 'The minimum size is higher than the maximum size',
+  'stylometricanalysis-move' => 'It is not allowed to move stylometric analysis pages',   
   //form field names for Form2
   '-stylometricanalysis-section-import' => 'Import Settings',
   '-stylometricanalysis-section-preprocess' => 'Preprocess Settings',

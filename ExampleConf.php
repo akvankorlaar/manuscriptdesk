@@ -317,3 +317,4 @@ $wgShowExceptionDetails = true;
 $wgOriginalImagesPath = rtrim($wgOriginalImagesPath, '/') . '/';
 $wgZoomImagesPath = rtrim($wgZoomImagesPath, '/') . '/';
 $wgPystylPath = rtrim($wgPystylPath, '/') . '/';
+$wgWebsiteRoot = retrim($wgWebsiteRoot, '/') . '/';
