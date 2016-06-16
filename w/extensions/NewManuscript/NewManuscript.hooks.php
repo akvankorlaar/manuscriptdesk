@@ -382,20 +382,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         }
     }
 
-    /**
-     * Determines whether the browser is Internet Explorer.
-     */
-    private function browserIsInternetExplorer() {
-
-        $user_agent = $_SERVER['HTTP_USER_AGENT'];
-
-        if (preg_match('/MSIE/i', $user_agent)) {
-            return true;
-        }
-
-        return false;
-    }
-
     private function getViewerPath($viewer_type) {
         if ($viewer_type === 'js') {
             return 'tools/ajax-tiledviewer/ajax-tiledviewer.php';
