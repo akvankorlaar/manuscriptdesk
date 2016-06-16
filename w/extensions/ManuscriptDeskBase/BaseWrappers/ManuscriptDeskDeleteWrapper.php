@@ -220,7 +220,7 @@ class ManuscriptDeskDeleteWrapper {
         $res = $dbr->select(
             'stylometricanalysis', //from
             array(
-          'stylometricanalysis_main_title_lowercase',
+          'stylometricanalysis_main_title_lowercase',    
             ), array(
           'stylometricanalysis_new_page_url = ' . $dbr->addQuotes($partial_url),
             )
@@ -241,7 +241,7 @@ class ManuscriptDeskDeleteWrapper {
             'stylometricanalysis', //from
             array(
           'stylometricanalysis_full_outputpath1',
-          'stylometricanalysis_full_outputpath2'
+          'stylometricanalysis_full_outputpath2',
             ), array(
           'stylometricanalysis_new_page_url = ' . $dbr->addQuotes($partial_url),
             )

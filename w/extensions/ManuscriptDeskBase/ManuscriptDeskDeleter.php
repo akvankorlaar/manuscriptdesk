@@ -61,7 +61,7 @@ class ManuscriptDeskDeleter {
         $collations_lowercase_title = $wrapper->getCollationsLowercaseTitle($partial_url);
         $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($collations_lowercase_title, 'AllCollations', 'subtract');
         $wrapper->deleteFromCollations($partial_url);
-        return; 
+        return;
     }
 
     /**
@@ -72,17 +72,21 @@ class ManuscriptDeskDeleter {
         $wrapper = $this->wrapper;
         $stylometricanalysis_lowercase_title = $wrapper->getStylometricAnalysisLowercaseTitle($partial_url);
         $wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($stylometricanalysis_lowercase_title, 'AllStylometricAnalysis', 'subtract');
-        $wrapper->deleteFromStylometricAnalysis($partial_url);
         $this->deleteStylometricAnalysisFiles($partial_url);
-        return; 
+        $wrapper->deleteFromStylometricAnalysis($partial_url);
+        return;
     }
-    
+
     private function deleteStylometricAnalysisFiles($partial_url) {
-        $wrapper = $this->wrapper; 
-        list($full_outputpath1, $full_outputpath2) = $this->wrapper->getStylometricAnalysisFullOutputPaths($partial_url);
-        unset($full_outputpath1);
-        unset($full_outputpath2);
-        return; 
+        try {
+            $wrapper = $this->wrapper;
+            list($full_outputpath1, $full_outputpath2) = $this->wrapper->getStylometricAnalysisFullOutputPaths($partial_url);
+            unlink($full_outputpath1);
+            unlink($full_outputpath2);
+            return;
+        } catch (Exception $e) {
+            return;
+        }
     }
 
     private function subtractAlphabetNumbersTableManuscriptPages() {
@@ -92,6 +96,7 @@ class ManuscriptDeskDeleter {
             $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($partial_url);
             $alphabetnumbes_context = $this->wrapper->getAlphabetNumbersWrapper()->determineAlphabetNumbersContextFromCollectionTitle($collection_title);
             $this->wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbes_context, 'subtract');
+            return; 
         } catch (Exception $e) {
             return;
         }
@@ -190,7 +195,7 @@ class ManuscriptDeskDeleter {
                 $this->wrapper->deletePageFromId($page_id);
             }
         } catch (Exception $e) {
-            return; 
+            return;
         }
 
         return;
