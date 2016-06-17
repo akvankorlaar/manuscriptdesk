@@ -59,14 +59,13 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * Set variables that are used throughout the special page 
      */
     protected function setVariables() {
-        global $wgStylometricAnalysisOptions, $wgWebsiteRoot, $wgPythonPath, $wgPystylPath;
+        global $wgStylometricAnalysisOptions, $wgArticleUrl, $wgPythonPath, $wgPystylPath, $wgStylometricAnalysisPath;
         parent::setVariables();
 
         $this->python_path = $wgPythonPath;
         $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
-        $svg_dir = $wgStylometricAnalysisOptions['svg_dir'];
-        $this->base_outputpath = $wgWebsiteRoot . $svg_dir . '/' . $this->user_name;
-        $this->base_linkpath = $svg_dir . '/' . $this->user_name;
+        $this->base_outputpath = $wgStylometricAnalysisPath . '/' .  $this->user_name;
+        $this->base_linkpath = $wgArticleUrl . 'Special:StylometricAnalysisImages?image=' . $this->user_name;
         $this->pystyl_path = $wgPystylPath;
         return true;
     }
@@ -265,8 +264,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * Construct the link path for the outputimages, which will be placed in the HTML 
      */
     private function constructFullLinkPathOfPystylOutputImages($file_name1, $file_name2) {
-        $full_linkpath1 = '/' . $this->base_linkpath . '/' . $file_name1;
-        $full_linkpath2 = '/' . $this->base_linkpath . '/' . $file_name2;
+        $full_linkpath1 = $this->base_linkpath . '/' . $file_name1;
+        $full_linkpath2 = $this->base_linkpath . '/' . $file_name2;
         return array($full_linkpath1, $full_linkpath2);
     }
 
@@ -317,7 +316,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         fclose($textfile);
 
         if (!is_file($full_textfilepath)) {
-            throw new Exception('stylometricanalysis-error-internal');
+            throw new Exception('error-readwrite');
         }
 
         return true;

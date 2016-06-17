@@ -313,8 +313,9 @@ $wgHelperScriptsOptions = array(
 //sends complete stack trace to output in case of an uncaught exceptions. This should never be set to true on a production server
 $wgShowExceptionDetails = true;
 
-//making sure these paths have a leading slash
-$wgOriginalImagesPath = rtrim($wgOriginalImagesPath, '/') . '/';
-$wgZoomImagesPath = rtrim($wgZoomImagesPath, '/') . '/';
-$wgPystylPath = rtrim($wgPystylPath, '/') . '/';
-$wgWebsiteRoot = rtrim($wgWebsiteRoot, '/') . '/';
+//making sure these paths do not end with a slash
+$wgOriginalImagesPath = rtrim($wgOriginalImagesPath, '/\\');
+$wgZoomImagesPath = rtrim($wgZoomImagesPath, '/\\');
+$wgPystylPath = rtrim($wgPystylPath, '/\\');
+$wgWebsiteRoot = rtrim($wgWebsiteRoot, '/\\');
+$wgStylometricAnalysisPath = rtrim($wgStylometricAnalysisPath, '/\\');

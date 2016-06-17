@@ -23,11 +23,10 @@
  * 
  */
 class SpecialZoomImages extends ManuscriptDeskImageApi {
-    
+
     /**
      * Class used to retrieve images used for the zoomviewer 
      */
-
     public function __construct() {
         parent::__construct('ZoomImages');
     }
@@ -36,7 +35,7 @@ class SpecialZoomImages extends ManuscriptDeskImageApi {
         global $wgZoomImagesPath;
 
         $image_arguments = $this->arguments;
-        $partial_path = $wgZoomImagesPath . $this->arguments;
+        $partial_path = $wgZoomImagesPath . '/' . $this->arguments;
 
         return $this->file_path = $partial_path;
     }
@@ -50,18 +49,19 @@ class SpecialZoomImages extends ManuscriptDeskImageApi {
             throw new \Exception('error-request');
         }
 
-        $response = $this->getRequest()->response();
 
         if (!is_file($this->file_path) && strpos($this->file_path, '.xml') === false) {
-            $response->header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
+            throw new \Exception('error-request');
         }
         elseif (strpos($this->file_path, '.xml') !== false) {
-            $file_path = substr($this->file_path, 0, strpos($this->file_path, "?"));
+            $response = $this->getRequest()->response();
+            $file_path = substr($this->file_path, 0, strpos($this->file_path, "?")); //some parameters are sent along with the xml path. Only use everything until the question mark
             $response->header('Content-Type: text/xml');
             $xml = simplexml_load_file($file_path);
             $this->getOutput()->addHTML($xml->asXML());
         }
         else {
+            $response = $this->getRequest()->response();
             $response->header('Content-Type: image/png');
             readfile($this->file_path);
         }

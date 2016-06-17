@@ -30,8 +30,9 @@ abstract class ManuscriptDeskImageApi extends SpecialPage {
      * the path to this location when the user is logged in
      * 
      * arguments sent to this page by HTTP GET 
-     * image=/user/manuscript in case of SpecialOriginalImages
-     * file=/User/Manuscript/TileGroup/0-0-0.jpg in case of SpecialZoomImages
+     * image=User/manuscript in case of SpecialOriginalImages
+     * image=User/Manuscript/TileGroup/0-0-0.jpg in case of SpecialZoomImages
+     * image=User/svgimagename in case of SpecialStylometricAnalysisImages
      */
     protected $arguments;
 
@@ -39,12 +40,12 @@ abstract class ManuscriptDeskImageApi extends SpecialPage {
      * path of the image on disk 
      */
     protected $file_path;
-    
+
     public function __construct($page_name) {
         parent::__construct($page_name);
     }
 
-    public function execute($subpage_args) {        
+    public function execute($subpage_args) {
         try {
             $this->checkUserIsAllowedToViewFile();
             $this->checkPageArguments();
@@ -53,8 +54,7 @@ abstract class ManuscriptDeskImageApi extends SpecialPage {
             $this->showFile();
             return true;
         } catch (Exception $e) {
-            $message = $this->msg($e->getMessage());
-            return $this->getOutput()->addHTML($message);
+            return $this->ShowFileNotFound();
         }
     }
 
@@ -84,6 +84,12 @@ abstract class ManuscriptDeskImageApi extends SpecialPage {
     protected function preventMediaWikiFromOutputtingSkin() {
         $out = $this->getOutput();
         $out->setArticleBodyOnly(true);
+        return;
+    }
+
+    protected function ShowFileNotFound() {
+        $response = $this->getRequest()->response();
+        $response->header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
         return;
     }
 

@@ -22,45 +22,38 @@
  * @copyright 2015 Arent van Korlaar
  * 
  */
-class SpecialOriginalImages extends ManuscriptDeskImageApi {
+class SpecialStylometricAnalysisImages extends ManuscriptDeskImageApi {
 
     /**
-     * Class used to retrieve when a user wants to see original images
+     * Class used to retrieve images used for the zoomviewer 
      */
     public function __construct() {
-        parent::__construct('OriginalImages');
+        parent::__construct('StylometricAnalysisImages');
     }
 
     protected function constructFilePath() {
-        global $wgOriginalImagesPath;
+        global $wgStylometricAnalysisPath;
+
         $image_arguments = $this->arguments;
-        $partial_path = $wgOriginalImagesPath . $this->arguments;
+        $partial_path = $wgStylometricAnalysisPath . '/' . $this->arguments;
 
-        if (!is_dir($partial_path)) {
-            throw new \Exception('error-request');
-        }
-
-        $file_scan = scandir($partial_path);
-
-        if (!isset($file_scan[2]) || $file_scan[2] === "") {
-            throw new \Exception('error-request');
-        }
-
-        return $this->file_path = $partial_path . '/' . $file_scan[2];
+        return $this->file_path = $partial_path;
     }
 
     /**
-     * Show the file. In case of this class the file will always be an image 
+     * Show the file to the browser. In case of this class the file has to be an .SVG (XML) file
      */
     protected function showFile() {
 
-        if (!isset($this->file_path) || !is_file($this->file_path)) {
+        if (!isset($this->file_path) || !is_file($this->file_path) || strpos($this->file_path, '.svg') === false) {
             throw new \Exception('error-request');
         }
         else {
             $response = $this->getRequest()->response();
-            $response->header('Content-Type: image/png');
-            readfile($this->file_path);
+            $file_path = $this->file_path;
+            $response->header('Content-Type: text/xml');
+            $xml = simplexml_load_file($file_path);
+            $this->getOutput()->addHTML($xml->asXML());
         }
 
         return;

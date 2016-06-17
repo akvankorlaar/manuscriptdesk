@@ -94,7 +94,7 @@ class NewManuscriptPaths {
         global $wgOriginalImagesPath;
         $posted_manuscript_title = $this->posted_manuscript_title;
         $user_name = $this->user_name;
-        return $wgOriginalImagesPath . $user_name . '/' . $posted_manuscript_title;
+        return $wgOriginalImagesPath . '/' . $user_name . '/' . $posted_manuscript_title;
     }
 
     /**
@@ -107,7 +107,7 @@ class NewManuscriptPaths {
     }
 
     private function setUserExportPath() {
-        $user_export_path = $this->getBaseExportPath() . $this->user_name;
+        $user_export_path = $this->getBaseExportPath() . '/' . $this->user_name;
         $this->makeDirectoryIfItDoesNotExist($user_export_path);
         return $this->user_export_path = $user_export_path;
     }
@@ -223,7 +223,7 @@ class NewManuscriptPaths {
     public function getSlicerPath() {
         global $wgWebsiteRoot, $wgNewManuscriptOptions;
 
-        $slicer_path = $wgWebsiteRoot . $wgNewManuscriptOptions['slicer_path'];
+        $slicer_path = $wgWebsiteRoot . '/' . $wgNewManuscriptOptions['slicer_path'];
 
         if (!file_exists($slicer_path)) {
             throw new \Exception('error-request');
