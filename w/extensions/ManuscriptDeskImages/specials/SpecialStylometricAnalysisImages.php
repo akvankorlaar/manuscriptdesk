@@ -50,13 +50,11 @@ class SpecialStylometricAnalysisImages extends ManuscriptDeskImageApi {
         }
         else {
             $response = $this->getRequest()->response();
-            $file_path = $this->file_path;
-            $response->header('Content-Type: text/xml');
-            $xml = simplexml_load_file($file_path);
-            $this->getOutput()->addHTML($xml->asXML());
+            $response->header('Content-Type: image/svg+xml');       
+            $test = file_get_contents($this->file_path);
+            $this->getOutput()->addHTML($test);
+            return; 
         }
-
-        return;
     }
 
 }

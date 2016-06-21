@@ -30,8 +30,8 @@
 #####Misc Settings#####
 //path to the extensions folder
 //website root. This is used to locate the zoomImages and initialUpload directories. The full path to the website root must be specified here. 
-$wgWebsiteRoot = '/path/to/website/root/';
-$wgExtensionAssetsPath = $wgWebsiteRoot . $wgScriptPath . '/extensions/';
+$wgWebsiteRoot = '/path/to/website/root';
+$wgExtensionAssetsPath = $wgWebsiteRoot . '/' . $wgScriptPath . '/extensions/';
 
 //these files are autoloaded to enable the extensions
 require_once( $wgExtensionAssetsPath . 'WikiEditor/WikiEditor.php');

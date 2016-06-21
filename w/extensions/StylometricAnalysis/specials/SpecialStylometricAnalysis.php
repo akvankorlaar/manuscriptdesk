@@ -65,7 +65,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
         $this->python_path = $wgPythonPath;
         $this->min_words_collection = $wgStylometricAnalysisOptions['min_words_collection'];
         $this->base_outputpath = $wgStylometricAnalysisPath . '/' .  $this->user_name;
-        $this->base_linkpath = $wgArticleUrl . 'Special:StylometricAnalysisImages?image=' . $this->user_name;
+        $this->base_linkpath = $wgArticleUrl . 'Special:StylometricAnalysisImages?image=';
         $this->pystyl_path = $wgPystylPath;
         return true;
     }
@@ -98,7 +98,7 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
             return true;
         }
 
-        throw new Exception('error-request');
+        throw new \Exception('error-request');
     }
 
     protected function getDefaultPage($error_message = '') {
@@ -264,8 +264,8 @@ class SpecialStylometricAnalysis extends ManuscriptDeskBaseSpecials {
      * Construct the link path for the outputimages, which will be placed in the HTML 
      */
     private function constructFullLinkPathOfPystylOutputImages($file_name1, $file_name2) {
-        $full_linkpath1 = $this->base_linkpath . '/' . $file_name1;
-        $full_linkpath2 = $this->base_linkpath . '/' . $file_name2;
+        $full_linkpath1 = $this->base_linkpath . $this->user_name . '/' . $file_name1;
+        $full_linkpath2 = $this->base_linkpath . $this->user_name . '/' . $file_name2;
         return array($full_linkpath1, $full_linkpath2);
     }
 

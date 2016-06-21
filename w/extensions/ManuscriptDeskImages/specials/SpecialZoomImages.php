@@ -33,10 +33,7 @@ class SpecialZoomImages extends ManuscriptDeskImageApi {
 
     protected function constructFilePath() {
         global $wgZoomImagesPath;
-
-        $image_arguments = $this->arguments;
         $partial_path = $wgZoomImagesPath . '/' . $this->arguments;
-
         return $this->file_path = $partial_path;
     }
 
@@ -45,12 +42,7 @@ class SpecialZoomImages extends ManuscriptDeskImageApi {
      */
     protected function showFile() {
 
-        if (!isset($this->file_path)) {
-            throw new \Exception('error-request');
-        }
-
-
-        if (!is_file($this->file_path) && strpos($this->file_path, '.xml') === false) {
+        if (!isset($this->file_path) || !is_file($this->file_path) && strpos($this->file_path, '.xml') === false) {
             throw new \Exception('error-request');
         }
         elseif (strpos($this->file_path, '.xml') !== false) {

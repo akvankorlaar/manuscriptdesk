@@ -414,18 +414,21 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
     /**
      * Get and show the images and the metatable for the stylometric analysis 
      */
-    private function getStylometricAnalysisResultVisualization($full_linkpath1, $visualization1, $full_linkpath2, $visualization2, $pystyl_config) {
+    private function getStylometricAnalysisResultVisualization($full_linkpath1, $visualization1, $full_linkpath2, $visualization2, $pystyl_config) {        
         $html = '';
         $html .= "<div id='visualization-wrap' style='display:block;'>";
-
+        
+        $full_linkpath1 = '/stylometricanalysissvg/Root/LadyAnnaBelleTheCharge20160618113454.svg';
+        $full_linkpath2 = '/stylometricanalysissvg/Root/LadyAnnaBelleTheCharge20160618113454.svg';    
+        
         $html .= "<div id='visualization-wrap1'>";
         $html .= "<h2>Visalisation 1: " . ucfirst($visualization1) . "</h2>";
-        $html .= "<object class='stylometricanalysis-image' id='stylometricanalysis-svg1' type='image/svg+xml' data='$full_linkpath1'>Your browser does not support SVG files, and so your visualization cannot dislpay</object>";
+        $html .= "<object class='stylometricanalysis-image' id='stylometricanalysis-svg1' type='image/svg+xml' data='$full_linkpath1'>Your browser does not support SVG files, and so your visualization cannot display</object>";
         $html .= "</div>";
 
         $html .= "<div id='visualization-wrap2'>";
         $html .= "<h2>Visualisation 2: " . ucfirst($visualization2) . "</h2>";
-        $html .= "<object class='stylometricanalysis-image' id='stylometricanalysis-svg2' type='image/svg+xml' data='$full_linkpath2'>Your browser does not support SVG files, and so your visualization cannot dislpay</object>";
+        $html .= "<object class='stylometricanalysis-image' id='stylometricanalysis-svg2' type='image/svg+xml' data='$full_linkpath2'>Your browser does not support SVG files, and so your visualization cannot display</object>";
         $html .= "</div>";
 
         $html .= "</div>";

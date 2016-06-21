@@ -222,7 +222,6 @@ class NewManuscriptPaths {
 
     public function getSlicerPath() {
         global $wgWebsiteRoot, $wgNewManuscriptOptions;
-
         $slicer_path = $wgWebsiteRoot . '/' . $wgNewManuscriptOptions['slicer_path'];
 
         if (!file_exists($slicer_path)) {

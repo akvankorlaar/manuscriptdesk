@@ -48,7 +48,9 @@ $dir = __DIR__ . '/';
 //Auto load classes 
 $wgAutoloadClasses['SpecialOriginalImages'] = $dir . 'specials/SpecialOriginalImages.php';
 $wgAutoloadClasses['SpecialZoomImages'] = $dir . 'specials/SpecialZoomImages.php';
+$wgAutoloadClasses['SpecialStylometricAnalysisImages'] = $dir . 'specials/SpecialStylometricAnalysisImages.php';
 $wgAutoloadClasses['ManuscriptDeskImageApi'] = $dir . 'specials/ManuscriptDeskImageApi.php';
 
 $wgSpecialPages['OriginalImages'] = 'SpecialOriginalImages';
 $wgSpecialPages['ZoomImages'] = 'SpecialZoomImages';
+$wgSpecialPages['StylometricAnalysisImages'] = 'SpecialStylometricAnalysisImages';
