@@ -36,7 +36,7 @@ class SpecialZoomImages extends ManuscriptDeskImageApi {
         global $wgZoomImagesPath;
 
         $image_arguments = $this->arguments;
-        $partial_path = $wgZoomImagesPath . $this->arguments;
+        $partial_path = $wgZoomImagesPath . '/' . $this->arguments;
 
         return $this->file_path = $partial_path;
     }

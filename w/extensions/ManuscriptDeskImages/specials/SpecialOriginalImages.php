@@ -35,7 +35,7 @@ class SpecialOriginalImages extends ManuscriptDeskImageApi {
     protected function constructFilePath() {
         global $wgOriginalImagesPath;
         $image_arguments = $this->arguments;
-        $partial_path = $wgOriginalImagesPath . $this->arguments;
+        $partial_path = $wgOriginalImagesPath . '/' . $this->arguments;
 
         if (!is_dir($partial_path)) {
             throw new \Exception('error-request');

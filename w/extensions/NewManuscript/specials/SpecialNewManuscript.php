@@ -163,7 +163,6 @@ class SpecialNewManuscript extends ManuscriptDeskBaseSpecials {
      * Handle exceptions and redirect  
      */
     protected function handleExceptions(Exception $exception_error) {
-        global $wgWebsiteRoot;
         $this->setViewer();
         $viewer = $this->viewer;
         $error_identifier = $exception_error->getMessage();

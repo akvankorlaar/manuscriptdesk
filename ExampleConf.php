@@ -265,11 +265,11 @@ $wgHiddenPrefs[] = 'usebetatoolbar';
 
 //Primary disk. Primary location of the website and the images  
 $wgPrimaryDisk = 'main disk here (for example C or /)';
-$wgOriginalImagesPath = '/full/path/to/original/images/somewhere/outside/of/the/website/root/';
-$wgZoomImagesPath = '/full/path/to/zoomimages/somewhere/outside/of/the/website/root/';
+$wgOriginalImagesPath = '/full/path/to/original/images/somewhere/outside/of/the/website/root';
+$wgZoomImagesPath = '/full/path/to/zoomimages/somewhere/outside/of/the/website/root';
 $wgPerlPath = 'perl'; //works if you can use 'perl path/to/perl/script.pl'. Alternative: /usr/bin/perl' for unix
 $wgPythonPath = 'python'; //works if you can use 'python path/to/python/script.py' in terminal
-$wgPystylPath = 'path/to/pystyl/'; //full/path/to/pystyl/
+$wgPystylPath = 'path/to/pystyl'; //full/path/to/pystyl
 
 //global configuration settings that are used within the 'collate' extension
 $wgCollationOptions = array(
@@ -314,7 +314,7 @@ $wgHelperScriptsOptions = array(
 $wgShowExceptionDetails = true;
 
 //making sure these paths have a leading slash
-$wgOriginalImagesPath = rtrim($wgOriginalImagesPath, '/') . '/';
-$wgZoomImagesPath = rtrim($wgZoomImagesPath, '/') . '/';
-$wgPystylPath = rtrim($wgPystylPath, '/') . '/';
-$wgWebsiteRoot = rtrim($wgWebsiteRoot, '/') . '/';
+$wgOriginalImagesPath = rtrim($wgOriginalImagesPath, '/');
+$wgZoomImagesPath = rtrim($wgZoomImagesPath, '/');
+$wgPystylPath = rtrim($wgPystylPath, '/');
+$wgWebsiteRoot = rtrim($wgWebsiteRoot, '/');
