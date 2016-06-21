@@ -383,7 +383,6 @@ class StylometricAnalysisViewer extends ManuscriptDeskBaseViewer {
     public function showStylometricAnalysisNamespacePage(array $data) {
 
         $out = $this->out;
-
         $data = $this->HTMLSpecialCharachtersArray($data);
 
         $user_name = isset($data['user']) ? $data['user'] : '';

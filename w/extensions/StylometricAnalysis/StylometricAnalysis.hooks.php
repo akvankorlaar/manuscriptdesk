@@ -188,7 +188,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
     }
 
     /**
-     * MediaWii OutputPageParserOutput hook. If user has no permission to view the page, show an error 
+     * MediaWiki OutputPageParserOutput hook. If user has no permission to view the page, show an error 
      */
     public function onOutputPageParserOutput(OutputPage &$out, ParserOutput $parser_output) {
 
