@@ -28,7 +28,12 @@ class AlphabetNumbersWrapper {
     }
 
     /**
-     * Subtract entries in the alphabetnumbers table when a page is deleted
+     * Subtract or add entries in the alphabetnumbers table
+     * 
+     * @param type string $main_title_lowercase
+     * @param type string $alphabetnumbers_context ('AllCollections', 'AllCollations', 'AllStylometricAnalysis', 'SingleManuscriptPages')
+     * @param type $mode ('add', 'subtract')
+     * @return type void
      */
     public function modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbers_context, $mode) {
         $first_character_of_page = $this->getFirstCharachterOfTitle($main_title_lowercase);
@@ -37,7 +42,7 @@ class AlphabetNumbersWrapper {
         if ($mode === 'add') {
             $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter + 1;
         }
-        else {
+        elseif ($mode === 'subtract') {
             $new_number_of_pages_starting_with_this_charachter = $number_of_pages_starting_with_this_charachter <= 0 ? 0 : $number_of_pages_starting_with_this_charachter - 1;
         }
 
@@ -407,6 +412,33 @@ class AlphabetNumbersWrapper {
         );
 
         return $res;
+    }
+
+    /**
+     * Get the lowercase title of the manuscript page
+     * 
+     * @param type string $partial_url Manuscripts:User/example
+     * @return type string example
+     * @throws \Exception if no record found
+     */
+    public function getManuscriptsLowercaseTitle($partial_url) {
+        $dbr = wfGetDB(DB_SLAVE);
+
+        $res = $dbr->select(
+            'manuscripts', //from
+            array(
+          'manuscripts_lowercase_title',
+            ), array(
+          'manuscripts_url = ' . $dbr->addQuotes($partial_url),
+            )
+        );
+
+        if ($res->numRows() !== 1) {
+            throw new \Exception('error-database');
+        }
+
+        $s = $res->fetchObject();
+        return $s->manuscripts_lowercase_title;
     }
 
 }

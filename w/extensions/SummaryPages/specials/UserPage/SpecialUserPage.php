@@ -192,7 +192,7 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
         $this->form_type = 'edit_single_page';
         $this->setWrapperAndViewer('view_collections_posted');
 
-        list($manuscript_old_title, $manuscript_url_old_title) = $this->request_processor->getEditSinglePageCollectionData();
+        list($manuscript_old_title, $old_partial_url) = $this->request_processor->getEditSinglePageCollectionData();
         $manuscript_new_title = $this->request_processor->getManuscriptNewTitleData();
 
         //if the new title and the old title are equal, do nothing and return 
@@ -202,23 +202,40 @@ class SpecialUserPage extends ManuscriptDeskBaseSpecials {
 
         $this->manuscript_old_title = $manuscript_old_title;
         $this->manuscript_new_title = $manuscript_new_title;
-        $this->manuscript_url_old_title = $manuscript_url_old_title;
-        $new_page_partial_url = $this->new_page_partial_url = $this->createNewPagePartialUrl($manuscript_new_title);
+        $this->manuscript_url_old_title = $old_partial_url;
+        $new_partial_url = $this->new_page_partial_url = $this->createNewPagePartialUrl($manuscript_new_title);
         $this->renameFilePaths($manuscript_old_title, $manuscript_new_title);
-        $this->updateDatabase($manuscript_new_title, $manuscript_url_old_title, $new_page_partial_url);
-        $this->createNewWikiPageWithOldPageText($manuscript_url_old_title, $new_page_partial_url);
-        $this->deleteOldWikiPage($manuscript_url_old_title);
+        $this->updateDatabase($manuscript_new_title, $old_partial_url, $new_partial_url);
+        $this->createNewWikiPageWithOldPageText($old_partial_url, $new_partial_url);
+        $this->deleteOldWikiPage($old_partial_url);
         return $this->getSingleCollectionPage();
     }
 
     private function createNewPagePartialUrl($manuscript_new_title) {
         $user_name = $this->user_name;
         $manuscripts_namespace_url = 'Manuscripts:';
-        return trim($manuscripts_namespace_url . $user_name . '/' . $manuscript_new_title);
+        return 'Manuscripts:' . $user_name . '/' . $manuscript_new_title;
     }
 
-    private function updateDatabase($manuscript_new_title, $manuscript_url_old_title, $new_page_partial_url) {
-        $status = $this->wrapper->updateManuscriptsTable($manuscript_new_title, $new_page_partial_url, $manuscript_url_old_title);
+    /**
+     * Update the manuscripts and the alphabetnumbers databases after renaming manuscript title
+     * 
+     * @param type string $manuscript_new_title
+     * @param type string $old_partial_url
+     * @param type string $new_partial_url
+     * @return type void
+     */
+    private function updateDatabase($manuscript_new_title, $old_partial_url, $new_partial_url) {
+        $wrapper = $this->wrapper;
+        $alphabetnumbers_wrapper = $wrapper->getAlphabetNumbersWrapper();
+        
+        $main_title_lowercase = $alphabetnumbers_wrapper->getManuscriptsLowercaseTitle($old_partial_url);
+        $alphabetnumbers_wrapper->modifyAlphabetNumbersSingleValue($main_title_lowercase, 'AllCollections', 'subtract');
+        
+        $wrapper->updateManuscriptsTable($manuscript_new_title, $new_partial_url, $old_partial_url);
+        
+        $new_main_title_lowercase = $alphabetnumbers_wrapper->getManuscriptsLowercaseTitle($new_partial_url);
+        $alphabetnumbers_wrapper->modifyAlphabetNumbersSingleValue($new_main_title_lowercase, 'AllCollections', 'add');
         return;
     }
 

@@ -250,8 +250,16 @@ class AllCollectionsWrapper implements SummaryPageWrapperInterface {
         return true;
     }
 
+    /**
+     * Update the manuscripts table and insert new values when title change
+     * 
+     * @param type string $manuscript_new_title
+     * @param type string $new_page_url
+     * @param type string $manuscript_url_old_title
+     * @return type void
+     * @throws \Exception if insert unsuccessfull
+     */
     public function updateManuscriptsTable($manuscript_new_title, $new_page_url, $manuscript_url_old_title) {
-
         $dbw = wfGetDB(DB_MASTER);
         $dbw->begin(__METHOD__);
 
@@ -262,7 +270,7 @@ class AllCollectionsWrapper implements SummaryPageWrapperInterface {
           'manuscripts_url' => $new_page_url,
           'manuscripts_lowercase_title' => strtolower($manuscript_new_title),
             ), array(
-          'manuscripts_url  = ' . $dbw->addQuotes($manuscript_url_old_title), //conditions ..why was url old title used ...
+          'manuscripts_url  = ' . $dbw->addQuotes($manuscript_url_old_title), //conditions
             ), __METHOD__, 'IGNORE'
         );
 

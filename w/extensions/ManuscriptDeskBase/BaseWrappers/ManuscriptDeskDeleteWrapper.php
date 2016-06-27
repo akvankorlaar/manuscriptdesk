@@ -68,10 +68,11 @@ class ManuscriptDeskDeleteWrapper {
 
         //If the collection is empty, delete the collection
         if ($res->numRows() !== 0) {
-            return;
+            return false;
         }
         else {
-            return $this->deleteFromCollections($collection_name);
+            $this->deleteFromCollections($collection_name);
+            return true;
         }
     }
 
@@ -173,27 +174,7 @@ class ManuscriptDeskDeleteWrapper {
 
         return;
     }
-
-    public function getManuscriptsLowercaseTitle($partial_url) {
-        $dbr = wfGetDB(DB_SLAVE);
-
-        $res = $dbr->select(
-            'manuscripts', //from
-            array(
-          'manuscripts_lowercase_title',
-            ), array(
-          'manuscripts_url = ' . $dbr->addQuotes($partial_url),
-            )
-        );
-
-        if ($res->numRows() !== 1) {
-            throw new \Exception('error-database');
-        }
-
-        $s = $res->fetchObject();
-        return $s->manuscripts_lowercase_title;
-    }
-
+    
     public function getCollationsLowercaseTitle($partial_url) {
         $dbr = wfGetDB(DB_SLAVE);
 

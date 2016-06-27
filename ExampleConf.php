@@ -30,8 +30,8 @@
 #####Misc Settings#####
 //path to the extensions folder
 //website root. This is used to locate the zoomImages and initialUpload directories. The full path to the website root must be specified here. 
-$wgWebsiteRoot = '/path/to/website/root/';
-$wgExtensionAssetsPath = $wgWebsiteRoot . $wgScriptPath . '/extensions/';
+$wgWebsiteRoot = '/path/to/website/root';
+$wgExtensionAssetsPath = $wgWebsiteRoot . '/' . $wgScriptPath . '/extensions/';
 
 //these files are autoloaded to enable the extensions
 require_once( $wgExtensionAssetsPath . 'WikiEditor/WikiEditor.php');
@@ -297,7 +297,6 @@ $wgStylometricAnalysisOptions = array(
   'wgmin_stylometricanalysis_collections' => 2, //minimum number of collections to be able to do stylometric analysis
   'wgmax_stylometricanalysis_collections' => 5, //maximum number of collections to be able to do stylometric analysis
   'minimum_pages_per_collection' => 10, //minimum pages within a collection to be able to do stylometric analysis
-  'svg_dir' => 'stylometricanalysissvg', //default directory name where the svg files will be stored on the website 
   'min_mfi' => 20, //minimum number of most frequent items
   'min_words_collection' => 100, //minimum words in a collection
   'tempstylometricanalysis_hours_before_delete' => 2, //hours before entries are deleted from the 'tempstylometricanalysis' table 
@@ -313,7 +312,7 @@ $wgHelperScriptsOptions = array(
 //sends complete stack trace to output in case of an uncaught exceptions. This should never be set to true on a production server
 $wgShowExceptionDetails = true;
 
-//making sure these paths have a leading slash
+//making sure these paths do not end with a slash
 $wgOriginalImagesPath = rtrim($wgOriginalImagesPath, '/');
 $wgZoomImagesPath = rtrim($wgZoomImagesPath, '/');
 $wgPystylPath = rtrim($wgPystylPath, '/');

@@ -93,10 +93,11 @@ class ManuscriptDeskDeleter {
         try {
             $partial_url = $this->paths->getPartialUrl();
             $collection_title = $this->collection_title;
-            $main_title_lowercase = $this->wrapper->getManuscriptsLowercaseTitle($partial_url);
-            $alphabetnumbes_context = $this->wrapper->getAlphabetNumbersWrapper()->determineAlphabetNumbersContextFromCollectionTitle($collection_title);
-            $this->wrapper->getAlphabetNumbersWrapper()->modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbes_context, 'subtract');
-            return; 
+            $alphabetnumbers_wrapper = $this->wrapper->getAlphabetNumbersWrapper();
+            $main_title_lowercase = $alphabetnumbers_wrapper->getManuscriptsLowercaseTitle($partial_url);
+            $alphabetnumbes_context = $alphabetnumbers_wrapper->determineAlphabetNumbersContextFromCollectionTitle($collection_title);
+            $alphabetnumbers_wrapper->modifyAlphabetNumbersSingleValue($main_title_lowercase, $alphabetnumbes_context, 'subtract');
+            return;
         } catch (Exception $e) {
             return;
         }
@@ -109,7 +110,7 @@ class ManuscriptDeskDeleter {
 
         if ($collection_title !== 'none') {
             $this->wrapper->checkAndDeleteCollectionifNeeded($this->collection_title);
-        }
+            }
 
         return;
     }
@@ -170,7 +171,6 @@ class ManuscriptDeskDeleter {
     }
 
     private function recursiveDeleteFromPath($path) {
-
         if (is_dir($path) === true) {
             $files = array_diff(scandir($path), array('.', '..'));
 
