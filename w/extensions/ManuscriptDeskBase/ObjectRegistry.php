@@ -400,7 +400,7 @@ class ObjectRegistry {
         return $this->alphabetnumbers_wrapper;
     }
 
-    private function getSignatureWrapper() {
+    public function getSignatureWrapper() {
         if (is_null($this->signature_wrapper)) {
             $this->signature_wrapper = new SignatureWrapper();
         }

@@ -48,6 +48,7 @@ $messages['en'] = array(
   'error-newpage' => 'The new Wiki Page could not be created (perhaps because this page already exists)',
   'error-request' => 'Something went wrong when processing your request',
   'manuscriptdesk-newpage' => 'You can add custom information to this page. The saved analysis will be preserved.',
+  'error-database' => 'There was an error when accessing the database',
 );
 
 $messages['en-gb'] = $messages['en'];

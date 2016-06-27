@@ -253,11 +253,39 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
                 $html .= $this->getHTMLLinkToEditCollection($user);
             }
 
+            $html .= $this->getHTMLLinkToCollectionOverview($user);
+
             $html .= $this->getHTMLPreviousNextPageLinks();
         }
 
         $html .= "</tr>";
         $html .= "</table>";
+        return $html;
+    }
+
+    /**
+     *  Get HTML link to collection overview (metadata, and all pages in collection)
+     * 
+     * @global type $wgArticleUrl
+     * @param User $user MediaWiki User object
+     * @return string HTML
+     */
+    private function getHTMLLinkToCollectionOverview(User $user) {
+        global $wgArticleUrl;
+
+        $collection_title = $this->collection_title;
+        $partial_url = $this->partial_url;
+        $edit_token = $user->getEditToken();
+
+        $html = "";
+        $html .= "<td>";
+        $html .= '<form class="manuscriptpage-form" action="' . $wgArticleUrl . 'Special:UserPage" method="post">';
+        $html .= "<input class='button-transparent' type='submit' value='Go to Collection Overview'>";
+        $html .= "<input type='hidden' name='collection_title' value='" . $collection_title . "'>";
+        $html .= "<input type='hidden' name='single_collection_posted' value = 'single_collection_posted'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
+        $html .= "</td>";
         return $html;
     }
 
@@ -276,7 +304,6 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
     }
 
     private function getHTMLLinkToEditCollection(User $user) {
-
         global $wgArticleUrl;
 
         $collection_title = $this->collection_title;
@@ -293,7 +320,7 @@ class NewManuscriptHooks extends ManuscriptDeskBaseHooks {
         $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
         $html .= "</form>";
         $html .= "</td>";
-
+        
         return $html;
     }
 

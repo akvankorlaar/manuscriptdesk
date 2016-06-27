@@ -30,8 +30,8 @@ abstract class ManuscriptDeskImageApi extends SpecialPage {
      * the path to this location when the user is logged in
      * 
      * arguments sent to this page by HTTP GET 
-     * image=/user/manuscript in case of SpecialOriginalImages
-     * file=/User/Manuscript/TileGroup/0-0-0.jpg in case of SpecialZoomImages
+     * image=User/Manuscript in case of SpecialOriginalImages
+     * file=User/Manuscript/TileGroup/0-0-0.jpg in case of SpecialZoomImages
      */
     protected $arguments;
 
@@ -39,15 +39,21 @@ abstract class ManuscriptDeskImageApi extends SpecialPage {
      * path of the image on disk 
      */
     protected $file_path;
-    
+
     public function __construct($page_name) {
         parent::__construct($page_name);
     }
 
-    public function execute($subpage_args) {        
+    /**
+     * Main entry poinit for the page
+     * 
+     * @param type $subpage_args
+     * @return boolean
+     */
+    public function execute($subpage_args) {
         try {
-            $this->checkUserIsAllowedToViewFile();
             $this->checkPageArguments();
+            $this->checkUserIsAllowedToViewFile();
             $this->preventMediaWikiFromOutputtingSkin();
             $this->constructFilePath();
             $this->showFile();
@@ -58,7 +64,31 @@ abstract class ManuscriptDeskImageApi extends SpecialPage {
         }
     }
 
+    /**
+     * Check whether the page arguments contain valid charachters
+     * 
+     * @return type void
+     */
+    protected function checkPageArguments() {
+        $request = $this->getRequest();
+        $this->arguments = $image_arguments = $request->getText('image');
+        $validator = ObjectRegistry::getInstance()->getManuscriptDeskBaseValidator();
+        $validator->validateStringUrl($image_arguments);
+        return;
+    }
+
+    /**
+     * Check if user is allowed to view the file. This depends on the image signature, and on whether the user has an account/valid edit token
+     * 
+     * @return type
+     * @throws \Exception
+     */
     protected function checkUserIsAllowedToViewFile() {
+
+        if ($this->signatureIsPublic()) {
+            return;
+        }
+
         $user = $this->getUser();
 
         if (!in_array('ManuscriptEditors', $user->getGroups())) {
@@ -73,12 +103,31 @@ abstract class ManuscriptDeskImageApi extends SpecialPage {
         return;
     }
 
-    protected function checkPageArguments() {
-        $request = $this->getRequest();
-        $this->arguments = $image_arguments = $request->getText('image');
-        $validator = ObjectRegistry::getInstance()->getManuscriptDeskBaseValidator();
-        $validator->validateStringUrl($image_arguments);
-        return;
+    /**
+     * Check if the signature of the manuscript is public
+     * 
+     * @return boolean
+     * @throws \Exception if page is not found
+     */
+    private function signatureIsPublic() {
+
+        if (!isset($this->arguments)) {
+            throw new \Exception('error-request');
+        }
+
+        $args = explode('/', $this->arguments);
+        $user_name = isset($args[0]) ? $args[0] : '';
+        $manuscript = isset($args[1]) ? $args[1] : '';
+
+        $partial_url = 'Manuscripts:' . $user_name . '/' . $manuscript;
+        $signature_wrapper = objectRegistry::getInstance()->getSignatureWrapper();
+        $signature = $signature_wrapper->getManuscriptSignature($partial_url);
+
+        if ($signature === 'public') {
+            return true;
+        }
+
+        return false;
     }
 
     protected function preventMediaWikiFromOutputtingSkin() {
