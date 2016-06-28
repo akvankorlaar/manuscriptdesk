@@ -32,7 +32,7 @@
             minZoom: 0.1
         });
 
-        panZoomInstance = svgPanZoom('#stylometricanalysis-svg2', {
+        panZoomInstance2 = svgPanZoom('#stylometricanalysis-svg2', {
             zoomEnabled: true,
             controlIconsEnabled: true,
             fit: true,

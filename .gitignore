@@ -95,4 +95,5 @@ w/skins/*
 !w/extensions/StylometricAnalysis/*/*/*/*/*/*/*/*/*/*
 !w/extensions/StylometricAnalysis/*/*/*/*/*/*/*/*/*/*/*
 
-w/extensions/NewManuscript/tools/zoomify/ZoomifyImageViewerExpress-min.js
+#Its probably legal to put this online since its already available on many websites
+#w/extensions/NewManuscript/tools/zoomify/ZoomifyImageViewerExpress-min.js

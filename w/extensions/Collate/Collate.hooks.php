@@ -48,6 +48,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
             $viewer = new CollateViewer($output);
             $viewer->showCollateNamespacePage($data);
         } catch (Exception $e) {
+            $this->page_exists = false; 
             return true;
         }
 
@@ -153,7 +154,7 @@ class CollateHooks extends ManuscriptDeskBaseHooks {
             return true;
         }
 
-        if (!$this->user_has_view_permission) {
+        if (!$this->user_has_view_permission && $this->page_exists) {
             $parseroutput->setText($this->getMessage('error-viewpermission'));
         }
 

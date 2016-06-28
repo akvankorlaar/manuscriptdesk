@@ -52,6 +52,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
 
             return true;
         } catch (Exception $e) {
+            $this->page_exists = false;
             return true;
         }
     }
@@ -196,7 +197,7 @@ class StylometricAnalysisHooks extends ManuscriptDeskBaseHooks {
             return true;
         }
 
-        if (!$this->user_has_view_permission) {
+        if (!$this->user_has_view_permission && $this->page_exists) {
             $parser_output->setText($this->getMessage('error-viewpermission'));
         }
 

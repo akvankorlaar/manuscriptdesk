@@ -30,6 +30,7 @@ abstract class ManuscriptDeskBaseHooks {
     protected $wrapper;
     protected $signature;
     protected $user_has_view_permission = false;
+    protected $page_exists = true; 
 
     public function __construct(ManuscriptDeskBaseWrapper $wrapper) {
         $this->wrapper = $wrapper;
