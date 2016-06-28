@@ -16,6 +16,11 @@ stylometricanalysissvg/*
 #make an exception for the file you want
 !stylometricanalysissvg/.htaccess
 
+!zoomviewerskins
+!zoomviewerskins/*
+!zoomviewerskins/*/*
+!zoomviewerskins/*/*/*
+
 !w
 w/*
 !w/extensions

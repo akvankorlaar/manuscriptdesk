@@ -43,6 +43,7 @@ you can install the extensions by:
 - Moving the content in w/extensions into your local MediaWiki's extensions folder (for example w/extensions).
 - Moving the content in w/skins into your local MediaWiki's skins folder (for example w/skins). Overwrite existing files. 
 - Moving the .htaccess file to your website root.
+- Moving the folders stylometricanalysissvg and zoomviewskins (+content) to your website root. 
 - Importing ManuscriptDesk.sql into your local MediaWiki's database (there should already be many tables in this database 
   after MediaWiki's default installation. These should remain there).
 - Going to LocalSettings.php located in the root of your MediaWiki installation (for example w/LocalSettings.php), and by appending all code in ExampleConf.php (except for the PHP tag) to this file.

@@ -1,0 +1,109 @@
+<!-- SKIN0 through SKIN39 are required unless JavaScript in the file "ZoomifyImageViewer.js" is 
+      changed.  SKIN0 through SKIN51 are required if using Edit Mode (implemented with zEditMode 
+      and zSaveHandlerPath parameters). Skin file names such as "toolbarBackground.png" may be 
+      changed in this file as long as they match the names of the skin graphic files.  This is useful, for 
+      example, for international localization.  Supported file formats include those commonly supported
+      by popular browsers: PNG, GIF, and JPG.  SKINMODE can be used to enable an alternative 
+      graphics fileset and is useful for supporting mobile devices with small screens. SKINMODE 
+      values include: 0 = auto-select folder based on mobile device detection (default);  1 = always 
+      use FOLDERSTANDARD files; 2 = always use FOLDERLARGE files. Filenames within the
+      folders are assumed to be the same, as listed in the XML FILES tag.  Overrides note: toolbar 
+      contents will be automatically validated as fitting within the toolbar width. If it does not, toolbar
+      elements will be hidden, beginning with the toolbar slider, then the progress display, and lastly
+      the logo and minimize / expand buttons. -->
+
+<SKINDATA>	
+	<SETUP
+		SKINMODE="0" 
+		FOLDERSTANDARD="standard"
+		FOLDERLARGE="large" />
+	<SIZESSTANDARD
+		TOOLBARW="-1"
+		TOOLBARH="20"
+		LOGOW="24"
+		LOGOH="20"
+		DIVIDERW="4"
+		DIVIDERH="18"
+		BUTTONW="15"
+		BUTTONH="15"
+		BUTTONSPAN="22"
+		SLIDERBUTTONW="13"
+		SLIDERBUTTONH="13"
+		SLIDERTRACKW="116"
+		SLIDERTRACKH="15"
+		SLIDERSPAN="120"
+		PROGRESSW="40" 
+		PROGRESSH="20"
+		PROGRESSFONTSIZE="12" />
+	<SIZESLARGE
+		TOOLBARW="-1"
+		TOOLBARH="40"
+		LOGOW="60"
+		LOGOH="50"
+		DIVIDERW="9"
+		DIVIDERH="35"
+		BUTTONW="30"
+		BUTTONH="30"
+		BUTTONSPAN="42"
+		SLIDERBUTTONW="23"
+		SLIDERBUTTONH="29"
+		SLIDERTRACKW="180"
+		SLIDERTRACKH="45"
+		SLIDERSPAN="184"
+		PROGRESSW="80" 
+		PROGRESSH="30"
+		PROGRESSFONTSIZE="24" />
+	<FILES
+		SKIN0="toolbarBackground.png"
+		SKIN1="toolbarLogo.png"
+		SKIN2="logoDivider.png"
+		SKIN3="toolbarMinimizeUp.png"
+		SKIN4="toolbarMinimizeOver.png"
+		SKIN5="toolbarMinimizeDown.png"
+		SKIN6="toolbarExpandUp.png"
+		SKIN7="toolbarExpandOver.png"
+		SKIN8="toolbarExpandDown.png"
+		SKIN9="zoomOutUp.png"
+		SKIN10="zoomOutOver.png"
+		SKIN11="zoomOutDown.png"
+		SKIN12="sliderTrack.png"
+		SKIN13="sliderTick.png"
+		SKIN14="sliderThumbUp.png"
+		SKIN15="sliderThumbOver.png"
+		SKIN16="sliderThumbDown.png"
+		SKIN17="zoomInUp.png"
+		SKIN18="zoomInOver.png"
+		SKIN19="zoomInDown.png"
+		SKIN20="zoomPanDivider.png"
+		SKIN21="panLeftUp.png"
+		SKIN22="panLeftOver.png"
+		SKIN23="panLeftDown.png"
+		SKIN24="panUpUp.png"
+		SKIN25="panUpOver.png"
+		SKIN26="panUpDown.png"
+		SKIN27="panDownUp.png"
+		SKIN28="panDownOver.png"
+		SKIN29="panDownDown.png"
+		SKIN30="panRightUp.png"
+		SKIN31="panRightOver.png"
+		SKIN32="panRightDown.png"
+		SKIN33="resetUp.png"
+		SKIN34="resetOver.png"
+		SKIN35="resetDown.png"
+		SKIN36="fullPageDivider.png"
+		SKIN37="fullPageUp.png"
+		SKIN38="fullPageOver.png"
+		SKIN39="fullPageDown.png"
+		SKIN40="editModeUp.png"
+		SKIN41="editModeOver.png"
+		SKIN42="editModeDown.png"
+		SKIN43="cancelUp.png"
+		SKIN44="cancelOver.png"
+		SKIN45="cancelDown.png"
+		SKIN46="deleteUp.png"
+		SKIN47="deleteOver.png"
+		SKIN48="deleteDown.png"
+		SKIN49="saveUp.png"
+		SKIN50="saveOver.png"
+		SKIN51="saveDown.png" />
+</SKINDATA>
