@@ -46,10 +46,10 @@ $wgExtensionCredits['parserhook'][] = array(
 $dir = __DIR__ . '/';
 
 //Auto load classes 
-//$wgAutoloadClasses['SpecialOriginalImages'] = $dir . 'specials/SpecialOriginalImages.php';
+$wgAutoloadClasses['SpecialManuscriptTEIExport'] = $dir . 'specials/SpecialManuscriptTEIExport.php';
 $wgAutoloadClasses['SpecialCollectionTEIExport'] = $dir . 'specials/SpecialCollectionTEIExport.php';
 $wgAutoloadClasses['TEIExportBase'] = $dir . 'specials/TEIExportBase.php';
 
-//$wgSpecialPages['OriginalImages'] = 'SpecialOriginalImages';
+$wgSpecialPages['ManuscriptTEIExport'] = 'SpecialManuscriptTEIExport';
 $wgSpecialPages['CollectionTEIExport'] = 'SpecialCollectionTEIExport';
 $wgExtensionMessagesFiles['TEIExport'] = $dir . 'TEIExport.i18n.php';
