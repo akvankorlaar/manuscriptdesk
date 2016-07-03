@@ -37,6 +37,7 @@ w/skins/*
 !w/extensions/HelperScripts
 !w/extensions/WikiEditor
 !w/extensions/ManuscriptDeskImages
+!w/extensions/TEIExport
 !w/skins/CbpTranscriptionEnhanced
 !w/skins/common
 
@@ -50,6 +51,7 @@ w/skins/*
 !w/extensions/HelperScripts/*
 !w/extensions/WikiEditor/*
 !w/extensions/ManuscriptDeskImages/*
+!w/extensions/TEIExport/*
 !w/skins/CbpTranscriptionEnhanced/*
 !w/skins/common/*
 
@@ -63,6 +65,7 @@ w/skins/*
 !w/extensions/HelperScripts/*/*
 !w/extensions/WikiEditor/*/*
 !w/extensions/ManuscriptDeskImages/*/*
+!w/extensions/TEIExport/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*
 !w/skins/common/*/*
 
@@ -76,6 +79,7 @@ w/skins/*
 !w/extensions/HelperScripts/*/*/*
 !w/extensions/WikiEditor/*/*/*
 !w/extensions/ManuscriptDeskImages/*/*/*
+!w/extensions/TEIExport/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*
 !w/skins/common/*/*/*
 
@@ -89,6 +93,7 @@ w/skins/*
 !w/extensions/HelperScripts/*/*/*/*
 !w/extensions/WikiEditor/*/*/*/*
 !w/extensions/ManuscriptDeskImages/*/*/*/*
+!w/extensions/TEIExport/*/*/*/*
 !w/skins/CbpTranscriptionEnhanced/*/*/*/*
 !w/skins/common/*/*/*/*
 

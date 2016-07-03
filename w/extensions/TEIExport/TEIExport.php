@@ -23,7 +23,7 @@
  */
 /**
  * Usage: Add the following line in LocalSettings.php:
- * require_once( "$IP/extensions/ManuscriptDeskImages/ManuscriptDeskImages.php" );
+ * require_once( "$IP/extensions/TEIExport/TEIExport.php" );
  */
 # Alert the user that this is not a valid entry point to MediaWiki if they try to access the special pages file directly.
 // Check environment
@@ -35,21 +35,21 @@ if (!defined('MEDIAWIKI')) {
 //Credits
 $wgExtensionCredits['parserhook'][] = array(
   'path' => __FILE__,
-  'name' => 'ManuscriptDeskImages',
+  'name' => 'TEIExport',
   'author' => 'Arent van Korlaar',
   'version' => '1.0',
   'url' => 'https://manuscriptdesk.uantwerpen.be',
-  'description' => 'This extension provides an API that can access the images uploaded to the Manuscript Desk',
+  'description' => 'This extension provides an API to export text from the manuscript desk in TEI format',
 );
 
 //Shortcut to this extension directory
 $dir = __DIR__ . '/';
 
 //Auto load classes 
-$wgAutoloadClasses['SpecialOriginalImages'] = $dir . 'specials/SpecialOriginalImages.php';
-$wgAutoloadClasses['SpecialZoomImages'] = $dir . 'specials/SpecialZoomImages.php';
-$wgAutoloadClasses['ManuscriptDeskImageApi'] = $dir . 'specials/ManuscriptDeskImageApi.php';
+//$wgAutoloadClasses['SpecialOriginalImages'] = $dir . 'specials/SpecialOriginalImages.php';
+$wgAutoloadClasses['SpecialCollectionTEIExport'] = $dir . 'specials/SpecialCollectionTEIExport.php';
+$wgAutoloadClasses['TEIExportBase'] = $dir . 'specials/TEIExportBase.php';
 
-$wgSpecialPages['OriginalImages'] = 'SpecialOriginalImages';
-$wgSpecialPages['ZoomImages'] = 'SpecialZoomImages';
-$wgExtensionMessagesFiles['ManuscriptDeskImages'] = $dir . 'ManuscriptDeskImages.i18n.php';
+//$wgSpecialPages['OriginalImages'] = 'SpecialOriginalImages';
+$wgSpecialPages['CollectionTEIExport'] = 'SpecialCollectionTEIExport';
+$wgExtensionMessagesFiles['TEIExport'] = $dir . 'TEIExport.i18n.php';

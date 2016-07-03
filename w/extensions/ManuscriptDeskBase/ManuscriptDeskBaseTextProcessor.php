@@ -31,14 +31,16 @@ class ManuscriptDeskBaseTextProcessor {
     }
 
     /**
-     * @param array $single_collection_data 
+     * Get all the texts for one collection by providing an array of urls
+     * 
+     * @param array $single_collection_data
      * @return string $all_texts_for_one_collection 
      */
     public function getAllTextsForOneCollection(array $single_collection_data) {
         $all_texts_for_one_collection = "";
         foreach ($single_collection_data as $index => $single_manuscript_url) {
             if ($index !== 'collection_name') {
-                $single_page_text = $this->getFilteredSinglePageText($single_manuscript_url);
+                    $single_page_text = $this->getFilteredSinglePageText($single_manuscript_url);
                 $all_texts_for_one_collection .= $single_page_text;
             }
         }
@@ -47,7 +49,7 @@ class ManuscriptDeskBaseTextProcessor {
     }
 
     /**
-     * @param string $single_manuscript_url 
+     * @param string $single_manuscript_url. Format Manuscript:username/title
      * @return string $filtered_raw_text 
      */
     public function getFilteredSinglePageText($single_manuscript_url) {
@@ -94,13 +96,13 @@ class ManuscriptDeskBaseTextProcessor {
 
         //note tag
         $raw_text = preg_replace('/<note[^<]+<\/note>/i', '', $raw_text);
-        
+
         //metamark
         $raw_text = preg_replace('/<metamark[^<]+<\/metamark>/i', '', $raw_text);
 
         //filter out any other tags, but keep all text in between the tags
         $raw_text = strip_tags($raw_text);
-        
+
         //change any occurrence of 2 or more spaces to a single space
         $raw_text = preg_replace('/ {2,}/', ' ', $raw_text);
 

@@ -44,6 +44,7 @@ require_once( $wgExtensionAssetsPath . 'SummaryPages/SummaryPages.php');
 require_once( $wgExtensionAssetsPath . 'StylometricAnalysis/StylometricAnalysis.php');
 require_once( $wgExtensionAssetsPath . 'HelperScripts/HelperScripts.php');
 require_once( $wgExtensionAssetsPath . 'ManuscriptDeskImages/ManuscriptDeskImages.php' );
+require_once( $wgExtensionAssetsPath . 'TEIExport/TEIExport.php');
 
 //$wgArticlePath is the base url that is used to create all internal links 
 $wgArticlePath = "/md/$1";

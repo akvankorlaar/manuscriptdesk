@@ -95,11 +95,6 @@ abstract class ManuscriptDeskImageApi extends SpecialPage {
             throw new \Exception('error-nopermission');
         }
 
-        $edit_token = $user->getEditToken();
-        if ($user->matchEditToken($edit_token) === false) {
-            throw new \Exception('error-nopermission');
-        }
-
         return;
     }
 
