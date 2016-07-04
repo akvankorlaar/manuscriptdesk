@@ -24,11 +24,12 @@
  */
 abstract class TEIExportBase extends SpecialPage {
     
-    /**
-     * Usage
-     * Example: Special:CollectionTEIExport?username=Username&collection=CollectionName
-     * Example: Special:ManuscriptTEIExport?username=Username&manuscript=ManuscriptName
-     */
+    public $usage = '
+    
+     Usage <br>
+     Example: Special:CollectionTEIExport?username=Username&collection=CollectionName <br>
+     Example: Special:ManuscriptTEIExport?username=Username&manuscript=ManuscriptName <br>
+     '; 
 
     /**
      * User name of the current user 
@@ -59,7 +60,7 @@ abstract class TEIExportBase extends SpecialPage {
             $this->outputTEIXML();
         } catch (Exception $e) {
             $response = $this->getRequest()->response();
-            $response->header('$_SERVER["SERVER_PROTOCOL"]." 404 Not Found"');
+            $this->getOutput()->addHTML($this->usage); 
             return;
         }
     }

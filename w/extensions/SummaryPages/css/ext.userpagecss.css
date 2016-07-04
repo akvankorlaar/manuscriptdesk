@@ -155,6 +155,10 @@ td {
   width: 20%;
 }
 
+.td-five {
+  width: 15%;   
+}
+
 table#metatable { 
   width:100%; 
   font-size: 100%;

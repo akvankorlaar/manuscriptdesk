@@ -34,6 +34,7 @@ $messages = array();
 $messages['en'] = array(
   'collectionteiexport'=> 'Collection TEI Export',
   'manuscriptteiexport' => 'Manuscript TEI Export',
+  'teiexport' => 'Download TEI',
 );
 
 $messages['en-gb'] = $messages['en'];

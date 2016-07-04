@@ -58,11 +58,11 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $created_message = $out->msg('userpage-created');
         $html .= "<br>";
 
-        $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $wgArticleUrl . "Special:UserPage' method='post'>";
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-long'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td><b>" . $out->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td class='td-three'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-three'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td class='td-three'></td>";
         $html .= "</tr>";
 
         foreach ($page_titles as $key => $array) {
@@ -71,18 +71,66 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
             $collection_date = isset($array['collections_date']) ? $array['collections_date'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-long'><input type='submit' class='userpage-collectionlist' name='collection_title' value='" . htmlspecialchars($collection_title) . "'></td>";
-            $html .= "<td>" . htmlspecialchars($collection_date) . "</td>";
+            $html .= "<td class='td-three'>" . $this->getSingleCollectionForm($collection_title) . "</td>";
+            $html .= "<td class='td-three'>" . htmlspecialchars($collection_date) . "</td>";
+            $html .= "<td class='td-three'>" . $this->getExportCollectionTEIForm($collection_title) . "</td>";
             $html .= "</tr>";
         }
 
         $html .= "</table>";
-        $html .= "<input type='hidden' name='single_collection_posted' value='single_collection_posted'>";
-        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
-        $html .= "</form>";
         $html .= "</div>";
 
         return $out->addHTML($html);
+    }
+
+    private function getSingleCollectionForm($collection_title) {
+        global $wgArticleUrl;
+        $edit_token = $this->out->getUser()->getEditToken();
+        $html = '';
+        $html .= "<form class='summarypage-form' id='userpage-collection' action='" . $wgArticleUrl . "Special:UserPage' method='post'>";
+        $html .= "<input type='submit' class='userpage-collectionlist' name='collection_title' value='" . htmlspecialchars($collection_title) . "'>";
+        $html .= "<input type='hidden' name='single_collection_posted' value='single_collection_posted'>";
+        $html .= "<input type='hidden' name='wpEditToken' value='$edit_token'>";
+        $html .= "</form>";
+        return $html;
+    }
+
+    /**
+     * Get HTML form to download the collection in TEI format
+     * 
+     * @global type $wgArticleUrl
+     * @param type $collection_title
+     * @return string HTML
+     */
+    private function getExportCollectionTEIForm($collection_title) {
+        global $wgArticleUrl;
+        $user_name = $this->user_name;
+        $out = $this->out;
+        $collection_tei_export = $wgArticleUrl . "Special:CollectionTEIExport?username=" . $user_name . "&collection=" . $collection_title;
+        $html = '';
+        $html .= "<form class='manuscriptpage-form' action='" . $collection_tei_export . "' method='post'>";
+        $html .= "<input type='submit' class='button-transparent' value='" . $out->msg('teiexport') . "'>";
+        $html .= "</form>";
+        return $html;
+    }
+
+    /**
+     * Get HTML form to download the single manuscript page in TEI format
+     * 
+     * @global type $wgArticleUrl
+     * @param type $manuscripts_title
+     * @return string HTML
+     */
+    private function getExportManuscriptTEIForm($manuscripts_title) {
+        global $wgArticleUrl;
+        $user_name = $this->user_name;
+        $out = $this->out;
+        $collection_tei_export = $wgArticleUrl . "Special:ManuscriptTEIExport?username=" . $user_name . "&manuscript=" . $manuscripts_title;
+        $html = '';
+        $html .= "<form class='manuscriptpage-form' action='" . $collection_tei_export . "' method='post'>";
+        $html .= "<input type='submit' class='button-transparent' value='" . $out->msg('teiexport') . "'>";
+        $html .= "</form>";
+        return $html;
     }
 
     public function showEmptyPageTitlesError($button_name) {
@@ -152,10 +200,11 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-four'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
-        $html .= "<td class='td-four'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
-        $html .= "<td class='td-four'><b>" . $out->msg('userpage-signature') . "</b></td>";
-        $html .= "<td class='td-four'></td>";
+        $html .= "<td class='td-five'>" . "<b>" . $out->msg('userpage-tabletitle') . "</b>" . "</td>";
+        $html .= "<td class='td-five'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td class='td-five'><b>" . $out->msg('userpage-signature') . "</b></td>";
+        $html .= "<td class='td-five'></td>";
+        $html .= "<td class='td-five'></td>";
         $html .= "</tr>";
 
         $counter = 0;
@@ -170,9 +219,10 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
             $html .= "<tr>";
             $html .= "<td class='td-four'><a href='" . $wgArticleUrl . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($partial_url) . "'>"
                 . htmlspecialchars($manuscripts_title) . "</a></td>";
-            $html .= "<td class='td-four'>" . htmlspecialchars($manuscripts_date) . "</td>";
-            $html .= "<td class='td-four'>" . $this->getChangeSignatureCollectionPageForm($partial_url, $signature, $collection_title) . "</td>";
-            $html .= "<td class='td-four'>" . $this->getEditSinglePageCollectionForm($counter, $collection_title, $manuscripts_title, $partial_url) . "</td>";
+            $html .= "<td class='td-five'>" . htmlspecialchars($manuscripts_date) . "</td>";
+            $html .= "<td class='td-five'>" . $this->getChangeSignatureCollectionPageForm($partial_url, $signature, $collection_title) . "</td>";
+            $html .= "<td class='td-five'>" . $this->getEditSinglePageCollectionForm($counter, $collection_title, $manuscripts_title, $partial_url) . "</td>";
+            $html .= "<td class='td-five'>" . $this->getExportManuscriptTEIForm($manuscripts_title) . "</td>";
             $html .= "</tr>";
 
             $counter+=1;
