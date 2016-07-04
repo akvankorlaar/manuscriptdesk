@@ -21,18 +21,11 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class UserPageManuscriptsViewer implements UserPageViewerInterface {
+class UserPageManuscriptsViewer extends UserPageBaseViewer implements UserPageViewerInterface {
 
     use HTMLUserPageMenuBar,
         HTMLJavascriptLoaderDots,
         HTMLPreviousNextPageLinks;
-
-    private $out;
-    private $user_name;
-
-    public function __construct(OutputPage $out) {
-        $this->out = $out;
-    }
 
     public function setUserName($user_name) {
 
@@ -66,9 +59,10 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface {
 
         $html .= "<table id='userpage-table' style='width: 100%;'>";
         $html .= "<tr>";
-        $html .= "<td class='td-three'><b>" . $out->msg('userpage-tabletitle') . "</b></td>";
-        $html .= "<td class='td-three'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
-        $html .= "<td class='td-three'><b>" . $out->msg('userpage-signature') . "</b></td>";
+        $html .= "<td class='td-four'><b>" . $out->msg('userpage-tabletitle') . "</b></td>";
+        $html .= "<td class='td-four'><b>" . $out->msg('userpage-creationdate') . "</b></td>";
+        $html .= "<td class='td-four'><b>" . $out->msg('userpage-signature') . "</b></td>";
+        $html .= "<td class='td-four'></td>";
         $html .= "</tr>";
 
         foreach ($page_data as $single_page_data) {
@@ -79,10 +73,11 @@ class UserPageManuscriptsViewer implements UserPageViewerInterface {
             $signature = isset($single_page_data['manuscripts_signature']) ? $single_page_data['manuscripts_signature'] : '';
 
             $html .= "<tr>";
-            $html .= "<td class='td-three'><a href='" . $article_url . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($title) . "'>" .
+            $html .= "<td class='td-four'><a href='" . $article_url . htmlspecialchars($partial_url) . "' title='" . htmlspecialchars($title) . "'>" .
                 htmlspecialchars($title) . "</a></td>";
-            $html .= "<td class='td-three'>" . htmlspecialchars($date) . "</td>";
-            $html .= "<td class='td-three'>" . $this->getChangeSignatureForm($partial_url, $signature, $button_name, $offset) . "</td>";
+            $html .= "<td class='td-four'>" . htmlspecialchars($date) . "</td>";
+            $html .= "<td class='td-four'>" . $this->getChangeSignatureForm($partial_url, $signature, $button_name, $offset) . "</td>";
+            $html .= "<td class='td-four'>" . $this->getExportManuscriptTEIForm($title) . "</td>";
             $html .= "</tr>";
         }
 

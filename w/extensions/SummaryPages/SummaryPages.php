@@ -75,6 +75,7 @@ $wgAutoloadClasses['UserPageStylometricAnalysisViewer'] = $dir . '/specials/User
 $wgAutoloadClasses['UserPageDefaultViewer'] = $dir . '/specials/UserPage/UserPageDefaultViewer.php';
 $wgAutoloadClasses['UserPageManuscriptsViewer'] = $dir . '/specials/UserPage/UserPageManuscriptsViewer.php';
 $wgAutoloadClasses['UserPageRequestProcessor'] = $dir . '/specials/UserPage/UserPageRequestProcessor.php';
+$wgAutoloadClasses['UserPageBaseViewer'] = $dir . '/specials/UserPage/UserPageBaseViewer.php';
 $wgAutoloadClasses['UserPageViewerInterface'] = $dir . '/specials/UserPage/UserPageViewerInterface.php';
 
 $wgAutoloadClasses['HTMLJavascriptLoaderDots'] = $dir . '/specials/HTMLJavascriptLoaderDots.php';
@@ -111,4 +112,4 @@ $wgResourceModules['ext.javascriptloaderdots'] = array(
 $summary_pages_hooks = new SummaryPagesHooks();
 
 $wgHooks['BeforePageDisplay'][] = array($summary_pages_hooks, 'onBeforePageDisplay');
-$wgHooks['UnitTestsList'][] = array($summary_pages_hooks, 'onUnitTestsList');    
+$wgHooks['UnitTestsList'][] = array($summary_pages_hooks, 'onUnitTestsList');

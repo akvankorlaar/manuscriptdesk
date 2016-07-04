@@ -22,11 +22,10 @@
  * @copyright 2015 Arent van Korlaar
  */
 abstract class ManuscriptDeskBaseViewer {
-    
+
     /**
      * Classes that extend this class are intended to be called when HTML is constructed for the output page
      */
-
     protected $out;
     protected $max_int_formfield_length = 5;
     protected $max_string_formfield_length = 50;

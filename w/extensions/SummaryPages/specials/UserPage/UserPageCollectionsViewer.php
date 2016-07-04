@@ -21,14 +21,12 @@
  * @author Arent van Korlaar <akvankorlaar 'at' gmail 'dot' com> 
  * @copyright 2015 Arent van Korlaar
  */
-class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements UserPageViewerInterface {
+class UserPageCollectionsViewer extends UserPageBaseViewer implements UserPageViewerInterface {
 
     use HTMLUserPageMenuBar,
         HTMLJavascriptLoaderDots,
         HTMLPreviousNextPageLinks,
         HTMLCollectionMetaTable;
-
-    private $user_name;
 
     public function setUserName($user_name) {
 
@@ -107,25 +105,6 @@ class UserPageCollectionsViewer extends ManuscriptDeskBaseViewer implements User
         $user_name = $this->user_name;
         $out = $this->out;
         $collection_tei_export = $wgArticleUrl . "Special:CollectionTEIExport?username=" . $user_name . "&collection=" . $collection_title;
-        $html = '';
-        $html .= "<form class='manuscriptpage-form' action='" . $collection_tei_export . "' method='post'>";
-        $html .= "<input type='submit' class='button-transparent' value='" . $out->msg('teiexport') . "'>";
-        $html .= "</form>";
-        return $html;
-    }
-
-    /**
-     * Get HTML form to download the single manuscript page in TEI format
-     * 
-     * @global type $wgArticleUrl
-     * @param type $manuscripts_title
-     * @return string HTML
-     */
-    private function getExportManuscriptTEIForm($manuscripts_title) {
-        global $wgArticleUrl;
-        $user_name = $this->user_name;
-        $out = $this->out;
-        $collection_tei_export = $wgArticleUrl . "Special:ManuscriptTEIExport?username=" . $user_name . "&manuscript=" . $manuscripts_title;
         $html = '';
         $html .= "<form class='manuscriptpage-form' action='" . $collection_tei_export . "' method='post'>";
         $html .= "<input type='submit' class='button-transparent' value='" . $out->msg('teiexport') . "'>";
