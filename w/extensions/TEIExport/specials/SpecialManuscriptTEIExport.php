@@ -24,8 +24,6 @@
  */
 class SpecialManuscriptTEIExport extends TEIExportBase {
 
-    private $manuscript_title;
-
     public function __construct() {
         parent::__construct('ManuscriptTEIExport');
     }
@@ -34,7 +32,7 @@ class SpecialManuscriptTEIExport extends TEIExportBase {
         $validator = objectRegistry::getInstance()->getManuscriptDeskBaseValidator();
         $request = $this->getRequest();
         $this->user_name = $validator->validateString($request->getText('username'));
-        $this->manuscript_title = $validator->validateString($request->getText('manuscript'));
+        $this->title = $validator->validateString($request->getText('manuscript'));
         return;
     }
 
@@ -53,11 +51,11 @@ class SpecialManuscriptTEIExport extends TEIExportBase {
      * @throws \Exception if no row found
      */
     private function getManuscriptsDatabaseData() {
-        if (!isset($this->user_name) || !isset($this->manuscript_title)) {
+        if (!isset($this->user_name) || !isset($this->title)) {
             throw new \Exception('error-request');
         }
 
-        $manuscript_title = $this->manuscript_title;
+        $manuscript_title = $this->title;
         $user_name = $this->user_name;
         $dbr = wfGetDB(DB_SLAVE);
 
@@ -85,7 +83,7 @@ class SpecialManuscriptTEIExport extends TEIExportBase {
 
     protected function formatTEIXML() {
 
-        if (!isset($this->page_texts) || !isset($this->manuscript_title)) {
+        if (!isset($this->page_texts) || !isset($this->title)) {
             throw new \Exception('error-request');
         }
 
@@ -93,7 +91,7 @@ class SpecialManuscriptTEIExport extends TEIExportBase {
 
         $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<TEI>';
-        $xml .= '<text xml:id="' . $this->manuscript_title . '">';
+        $xml .= '<text xml:id="' . $this->title . '">';
         $xml .= '<body>';
         $xml .= '<div>';
 
@@ -108,20 +106,6 @@ class SpecialManuscriptTEIExport extends TEIExportBase {
         $xml .= '</TEI>';
 
         $this->TEIXML = $xml;
-        return;
-    }
-
-    protected function outputTEIXML() {
-        if (!isset($this->user_name) || !isset($this->manuscript_title) || !isset($this->TEIXML)) {
-            throw new \Exception('error-request');
-        }
-
-        $response = $this->getRequest()->response();
-        $filename = $this->user_name . $this->manuscript_title . '.xml';
-        $response->header("Content-type: text/xml");
-        $response->header('Content-Disposition: attachment; filename="' . $filename . '"');
-        $response->header("Content-Length: " . strlen($this->TEIXML));
-        $this->getOutput()->addHTML($this->TEIXML);
         return;
     }
 

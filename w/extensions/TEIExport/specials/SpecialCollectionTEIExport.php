@@ -24,7 +24,6 @@
  */
 class SpecialCollectionTEIExport extends TEIExportBase {
 
-    private $collection_title;
     private $collection_metadata;
 
     public function __construct() {
@@ -35,7 +34,7 @@ class SpecialCollectionTEIExport extends TEIExportBase {
         $validator = objectRegistry::getInstance()->getManuscriptDeskBaseValidator();
         $request = $this->getRequest();
         $this->user_name = $validator->validateString($request->getText('username'));
-        $this->collection_title = $validator->validateString($request->getText('collection'));
+        $this->title = $validator->validateString($request->getText('collection'));
         return;
     }
 
@@ -62,11 +61,11 @@ class SpecialCollectionTEIExport extends TEIExportBase {
      * @throws \Exception if no urls found
      */
     private function getCollectionDatabaseData() {
-        if (!isset($this->user_name) || !isset($this->collection_title)) {
+        if (!isset($this->user_name) || !isset($this->title)) {
             throw new \Exception('error-request');
         }
 
-        $collection_name = $this->collection_title;
+        $collection_name = $this->title;
         $user_name = $this->user_name;
         $dbr = wfGetDB(DB_SLAVE);
         $collection_urls = array();
@@ -99,7 +98,7 @@ class SpecialCollectionTEIExport extends TEIExportBase {
     }
 
     private function setCollectionMetadata() {
-        $collection_name = $this->collection_title;
+        $collection_name = $this->title;
 
         $dbr = wfGetDB(DB_SLAVE);
         $meta_data = array();
@@ -153,7 +152,7 @@ class SpecialCollectionTEIExport extends TEIExportBase {
 
     protected function formatTEIXML() {
 
-        if (!isset($this->page_texts) || !isset($this->collection_title) || !isset($this->collection_metadata)) {
+        if (!isset($this->page_texts) || !isset($this->title) || !isset($this->collection_metadata)) {
             throw new \Exception('error-request');
         }
 
@@ -161,7 +160,7 @@ class SpecialCollectionTEIExport extends TEIExportBase {
 
         $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<TEI>';
-        $xml .= '<text xml:id="' . $this->collection_title . '">';
+        $xml .= '<text xml:id="' . $this->title . '">';
 
         $xml .= '<teiHeader>';
 
@@ -186,20 +185,6 @@ class SpecialCollectionTEIExport extends TEIExportBase {
         $xml .= '</TEI>';
 
         $this->TEIXML = $xml;
-        return;
-    }
-
-    protected function outputTEIXML() {
-        if (!isset($this->user_name) || !isset($this->collection_title) || !isset($this->TEIXML)) {
-            throw new \Exception('error-request');
-        }
-
-        $response = $this->getRequest()->response();
-        $filename = $this->user_name . $this->collection_title . '.xml';
-        $response->header("Content-type: text/xml");
-        $response->header('Content-Disposition: attachment; filename="' . $filename . '"');
-        $response->header("Content-Length: " . strlen($this->TEIXML));
-        $this->getOutput()->addHTML($this->TEIXML);
         return;
     }
 

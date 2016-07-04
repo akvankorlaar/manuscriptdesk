@@ -23,18 +23,23 @@
  * 
  */
 abstract class TEIExportBase extends SpecialPage {
-    
+
     public $usage = '
     
      Usage <br>
      Example: Special:CollectionTEIExport?username=Username&collection=CollectionName <br>
      Example: Special:ManuscriptTEIExport?username=Username&manuscript=ManuscriptName <br>
-     '; 
+     ';
 
     /**
      * User name of the current user 
      */
     protected $user_name;
+
+    /**
+     * Title of the manuscript or collection 
+     */
+    protected $title;
 
     /**
      * Unfiltered TEI Page texts of manuscript or entire collection 
@@ -60,7 +65,7 @@ abstract class TEIExportBase extends SpecialPage {
             $this->outputTEIXML();
         } catch (Exception $e) {
             $response = $this->getRequest()->response();
-            $this->getOutput()->addHTML($this->usage); 
+            $this->getOutput()->addHTML($this->usage);
             return;
         }
     }
@@ -88,5 +93,18 @@ abstract class TEIExportBase extends SpecialPage {
 
     abstract protected function formatTEIXML();
 
-    abstract protected function outputTEIXML();
+    protected function outputTEIXML() {
+        if (!isset($this->user_name) || !isset($this->title) || !isset($this->TEIXML)) {
+            throw new \Exception('error-request');
+        }
+
+        $response = $this->getRequest()->response();
+        $filename = $this->user_name . $this->title . '.xml';
+        $response->header("Content-type: text/xml");
+        $response->header('Content-Disposition: attachment; filename="' . $filename . '"');
+        $response->header("Content-Length: " . strlen($this->TEIXML));
+        $this->getOutput()->addHTML($this->TEIXML);
+        return;
+    }
+
 }
