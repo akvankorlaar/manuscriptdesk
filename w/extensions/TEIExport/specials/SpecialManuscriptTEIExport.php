@@ -77,7 +77,7 @@ class SpecialManuscriptTEIExport extends TEIExportBase {
         if ($res->numRows() !== 1) {
             throw new \Exception('error-request');
         }
-        
+
         $s = $res->fetchObject();
 
         return array($s->manuscripts_url, $s->manuscripts_title);
@@ -91,6 +91,8 @@ class SpecialManuscriptTEIExport extends TEIExportBase {
 
         $xml = '';
 
+        $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<TEI>';
         $xml .= '<text xml:id="' . $this->manuscript_title . '">';
         $xml .= '<body>';
         $xml .= '<div>';
@@ -103,6 +105,7 @@ class SpecialManuscriptTEIExport extends TEIExportBase {
         $xml .= '</div>';
         $xml .= '</body>';
         $xml .= '</text>';
+        $xml .= '</TEI>';
 
         $this->TEIXML = $xml;
         return;

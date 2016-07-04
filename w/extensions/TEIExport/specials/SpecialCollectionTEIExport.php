@@ -159,6 +159,8 @@ class SpecialCollectionTEIExport extends TEIExportBase {
 
         $xml = '';
 
+        $xml .= '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<TEI>';
         $xml .= '<text xml:id="' . $this->collection_title . '">';
 
         $xml .= '<teiHeader>';
@@ -181,6 +183,7 @@ class SpecialCollectionTEIExport extends TEIExportBase {
         $xml .= '</div>';
         $xml .= '</body>';
         $xml .= '</text>';
+        $xml .= '</TEI>';
 
         $this->TEIXML = $xml;
         return;
