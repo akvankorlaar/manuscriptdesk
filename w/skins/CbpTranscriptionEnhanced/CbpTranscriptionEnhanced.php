@@ -151,6 +151,12 @@ class CbpTranscriptionEnhancedTemplate extends QuickTemplate {
 <a href="http://be.dariah.eu/" target ="_blank">  
 <img src="<?php $this->text('stylepath'); ?>/CbpTranscriptionEnhanced/dariah.png"  alt="Manuscript Desk2" style="border: 0; height: 50px; float:left;"/>
 </a>
+<a href="http://www.fwo.be/" target ="_blank">  
+<img src="<?php $this->text('stylepath'); ?>/CbpTranscriptionEnhanced/fwo-logo.jpg"  alt="Manuscript Desk2" style="border: 0; height: 35px; margin-left: 20px; margin-top: 10px; float:left;"/>
+</a>
+<a href="http://www.belspo.be/" target ="_blank">  
+<img src="<?php $this->text('stylepath'); ?>/CbpTranscriptionEnhanced/belspo-logo.jpg"  alt="Manuscript Desk2" style="border: 0; height: 50px; margin-left: 20px; float:left;"/>
+</a>
 <a href="https://www.uantwerpen.be/en/rg/centre-for-manuscript-genetics/" target = "_blank">
 <img src="<?php $this->text('stylepath'); ?>/CbpTranscriptionEnhanced/cmg.png"  alt="Manuscript Desk" style="border: 0; height: 50px; float:right;"/>
 </a>
